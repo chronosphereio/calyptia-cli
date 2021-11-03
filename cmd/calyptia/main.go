@@ -14,6 +14,7 @@ import (
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/joho/godotenv"
 )
 
 func main() {
@@ -24,6 +25,8 @@ func main() {
 }
 
 func run() error {
+	_ = godotenv.Load()
+
 	var (
 		cloudURLStr   = env("CALYPTIA_CLOUD_URL", "https://cloud-api.calyptia.com")
 		auth0Domain   = env("AUTH0_DOMAIN", "sso.calyptia.com")

@@ -35,6 +35,7 @@ require (
 	github.com/influxdata/influxdb v1.9.5 // indirect
 	github.com/influxdata/influxdb-client-go/v2 v2.5.1 // indirect
 	github.com/influxdata/line-protocol v0.0.0-20200327222509-2487e7298839 // indirect
+	github.com/joho/godotenv v1.4.0 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/lucasepe/codename v0.2.0 // indirect
 	github.com/mattn/go-isatty v0.0.13 // indirect

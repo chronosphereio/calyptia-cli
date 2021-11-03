@@ -578,12 +578,8 @@ func (m model) View() string {
 				}
 			}
 
-			doc.WriteString(
-				lipgloss.JoinVertical(lipgloss.Left,
-					titleStyle.Copy().MarginLeft(2).Render("Overview"),
-					tw.Render(),
-				),
-			)
+			doc.WriteString(titleStyle.Copy().MarginLeft(2).Render("Overview") + "\n")
+			doc.WriteString(tw.Render())
 		}
 	}
 
@@ -600,9 +596,11 @@ func (m model) View() string {
 
 	if m.showAgentList {
 		doc.WriteString("\n\n")
-		docHeight := lipgloss.Height(doc.String())
 
-		m.agentList.SetSize(screenWidth, screenHeight-docHeight)
+		docHeight := lipgloss.Height(doc.String())
+		top, _, bottom, _ := docStyle.GetPadding()
+
+		m.agentList.SetSize(screenWidth, screenHeight-docHeight-top-bottom)
 		doc.WriteString(m.agentList.View())
 	}
 
