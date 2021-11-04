@@ -27,9 +27,6 @@ func (client *Client) Metrics(ctx context.Context, projectID string, start, inte
 	}
 
 	req.Header.Set("User-Agent", userAgent)
-	if client.AccessToken != "" {
-		req.Header.Set("Authorization", "Bearer "+client.AccessToken)
-	}
 
 	resp, err := client.HTTPClient.Do(req)
 	if err != nil {

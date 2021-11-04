@@ -24,9 +24,6 @@ func (client *Client) Agents(ctx context.Context, projectID string, last uint64)
 	}
 
 	req.Header.Set("User-Agent", "calyptia-cloud-cli")
-	if client.AccessToken != "" {
-		req.Header.Set("Authorization", "Bearer "+client.AccessToken)
-	}
 
 	resp, err := client.HTTPClient.Do(req)
 	if err != nil {

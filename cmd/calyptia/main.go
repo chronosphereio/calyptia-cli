@@ -84,10 +84,9 @@ func run() error {
 	} else if err != nil {
 		return err
 	} else {
-		m.cloud.AccessToken = accessToken.AccessToken
-		m.refreshToken = accessToken.RefreshToken
 		m.keys.Logout.SetEnabled(true)
 		m.fetchingProjects = true
+		m.cloud.HTTPClient = m.auth0.Client(m.ctx, accessToken)
 	}
 
 	p := tea.NewProgram(m)

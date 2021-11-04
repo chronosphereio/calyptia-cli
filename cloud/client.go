@@ -6,9 +6,8 @@ import (
 )
 
 type Client struct {
-	HTTPClient  *http.Client
-	BaseURL     *url.URL
-	AccessToken string
+	HTTPClient *http.Client
+	BaseURL    *url.URL
 }
 
 func cloneURL(u *url.URL) *url.URL {

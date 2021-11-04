@@ -26,9 +26,6 @@ func (client *Client) Projects(ctx context.Context, last uint64) ([]cloud.Projec
 	}
 
 	req.Header.Set("User-Agent", userAgent)
-	if client.AccessToken != "" {
-		req.Header.Set("Authorization", "Bearer "+client.AccessToken)
-	}
 
 	resp, err := client.HTTPClient.Do(req)
 	if err != nil {

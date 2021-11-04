@@ -5,15 +5,15 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/calyptia/cloud-cli/auth0"
 	"github.com/zalando/go-keyring"
+	"golang.org/x/oauth2"
 )
 
 const serviceName = "cloud.calyptia.com"
 
 var errAccessTokenNotFound = errors.New("access token not found")
 
-func saveAccessToken(tok auth0.AccessToken) error {
+func saveAccessToken(tok *oauth2.Token) error {
 	b, err := json.Marshal(tok)
 	if err != nil {
 		return fmt.Errorf("could not json marshall access token: %w", err)
@@ -22,20 +22,20 @@ func saveAccessToken(tok auth0.AccessToken) error {
 	return keyring.Set(serviceName, "access_token", string(b))
 }
 
-func savedAccessToken() (auth0.AccessToken, error) {
-	var tok auth0.AccessToken
+func savedAccessToken() (*oauth2.Token, error) {
 	s, err := keyring.Get(serviceName, "access_token")
 	if err == keyring.ErrNotFound {
-		return tok, errAccessTokenNotFound
+		return nil, errAccessTokenNotFound
 	}
 
 	if err != nil {
-		return tok, err
+		return nil, err
 	}
 
+	var tok *oauth2.Token
 	err = json.Unmarshal([]byte(s), &tok)
 	if err != nil {
-		return tok, fmt.Errorf("could not json unmarshall access token: %w", err)
+		return nil, fmt.Errorf("could not json unmarshall access token: %w", err)
 	}
 
 	return tok, nil

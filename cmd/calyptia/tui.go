@@ -22,6 +22,7 @@ import (
 	"github.com/hako/durafmt"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/pkg/browser"
+	"golang.org/x/oauth2"
 	"golang.org/x/term"
 )
 
@@ -85,9 +86,8 @@ type model struct {
 	help    help.Model
 	spinner spinner.Model
 
-	auth0        *auth0.Client
-	cloud        *cloudclient.Client
-	refreshToken string
+	auth0 *auth0.Client
+	cloud *cloudclient.Client
 
 	requestingDeviceCode bool
 	errDeviceCode        error
@@ -113,7 +113,7 @@ type model struct {
 }
 
 func (m model) Init() tea.Cmd {
-	if m.cloud.AccessToken == "" {
+	if m.requestingDeviceCode {
 		return tea.Batch(
 			m.requestDeviceCode,
 			spinner.Tick,
@@ -148,7 +148,7 @@ type fetchAccessTokenFailed struct {
 }
 
 type fetchAccessTokenOK struct {
-	accessToken auth0.AccessToken
+	accessToken *oauth2.Token
 }
 
 type refetchAccessToken struct{}
@@ -283,10 +283,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.errAgents = nil
 			}
 		case key.Matches(msg, m.keys.Logout):
-			m.keys.Logout.SetEnabled(false)
-			m.cloud.AccessToken = ""
 			_ = deleteAccessToken()
-
 			return m, tea.Quit
 		case key.Matches(msg, m.keys.Help):
 			m.help.ShowAll = !m.help.ShowAll
@@ -329,8 +326,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		saveAccessToken(msg.accessToken)
 
-		m.cloud.AccessToken = msg.accessToken.AccessToken
-		m.refreshToken = msg.accessToken.RefreshToken
+		m.cloud.HTTPClient = m.auth0.Client(m.ctx, msg.accessToken)
 
 		m.fetchingProjects = true
 
@@ -513,6 +509,7 @@ func (m model) View() string {
 
 	if m.showMetricsTable {
 		if len(m.metrics.Measurements) == 0 {
+			doc.WriteString(titleStyle.Copy().MarginLeft(2).Render("Overview") + "\n\n")
 			doc.WriteString("No measurements")
 		} else {
 			tw := table.NewWriter()
