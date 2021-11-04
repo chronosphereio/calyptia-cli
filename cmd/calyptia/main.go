@@ -53,16 +53,6 @@ func run() error {
 		return fmt.Errorf("invalid calyptia cloud url scheme: %q", cloudURL.Scheme)
 	}
 
-	accessToken, err := localAccessToken()
-	if err != nil {
-		return err
-	}
-
-	refreshToken, err := localRefreshToken()
-	if err != nil {
-		return err
-	}
-
 	m := model{
 		ctx:     context.Background(),
 		keys:    keys,
@@ -76,21 +66,23 @@ func run() error {
 			Audience:   auth0Audience,
 		},
 		cloud: &cloudclient.Client{
-			HTTPClient:  http.DefaultClient,
-			BaseURL:     cloudURL,
-			AccessToken: accessToken,
+			HTTPClient: http.DefaultClient,
+			BaseURL:    cloudURL,
 		},
-		refreshToken: refreshToken,
 	}
 	m.spinner.Spinner = spinner.Dot
 	m.spinner.Style = lipgloss.NewStyle().Foreground(lipgloss.Color("205"))
 
-	if accessToken != "" {
-		m.keys.Logout.SetEnabled(true)
-		m.refreshToken = refreshToken
-		m.fetchingProjects = true
-	} else {
+	accessToken, err := savedAccessToken()
+	if err == errAccessTokenNotFound {
 		m.requestingDeviceCode = true
+	} else if err != nil {
+		return err
+	} else {
+		m.cloud.AccessToken = accessToken.AccessToken
+		m.refreshToken = accessToken.RefreshToken
+		m.keys.Logout.SetEnabled(true)
+		m.fetchingProjects = true
 	}
 
 	p := tea.NewProgram(m)

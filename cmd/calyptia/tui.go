@@ -285,7 +285,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case key.Matches(msg, m.keys.Logout):
 			m.keys.Logout.SetEnabled(false)
 			m.cloud.AccessToken = ""
-			cleanupLocalAuth()
+			_ = deleteAccessToken()
 
 			return m, tea.Quit
 		case key.Matches(msg, m.keys.Help):
@@ -327,7 +327,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.fetchingAccessToken = false
 		m.errAccessToken = nil
 
-		saveLocalAuth(msg.accessToken)
+		saveAccessToken(msg.accessToken)
 
 		m.cloud.AccessToken = msg.accessToken.AccessToken
 		m.refreshToken = msg.accessToken.RefreshToken
@@ -641,12 +641,12 @@ func (item agentListItem) FilterValue() string { return item.Agent.Name }
 func (item agentListItem) Title() string       { return item.Agent.Name }
 func (item agentListItem) Description() string {
 	out := fmt.Sprintf("%s %s", item.Agent.Type, item.Agent.Version)
-	if item.Agent.LastMetricsAddedAt.After(time.Now().Add(rate * -2)) {
-		out += " (active)"
-	} else if item.Agent.FirstMetricsAddedAt.IsZero() {
+	if item.Agent.LastMetricsAddedAt.IsZero() {
 		out += " (inactive)"
+	} else if item.Agent.LastMetricsAddedAt.Before(time.Now().Add(rate * -2)) {
+		out += fmt.Sprintf(" (inactive for %s)", durafmt.ParseShort(time.Since(item.Agent.LastMetricsAddedAt)).LimitFirstN(1).String())
 	} else {
-		out += fmt.Sprintf(" (inactive for %s)", durafmt.ParseShort(time.Since(item.Agent.FirstMetricsAddedAt)).LimitFirstN(1).String())
+		out += " (active)"
 	}
 
 	return out
