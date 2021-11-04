@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 )
 
 // IsAuthorizationPendingError: You will see this error while waiting for the user to take action. Continue polling using the suggested interval retrieved in the previous step of this tutorial.
@@ -120,20 +121,16 @@ func (e Error) Error() string {
 }
 
 type AccessToken struct {
-	// AccessToken are used to call the Auth0 Authentication API's /userinfo endpoint or another API.
-	AccessToken string `json:"access_token"`
-	// Refresh Tokens are used to obtain a new Access Token or ID Token after the previous one has expired.
-	// It will only be present in the response if you included the offline_access scope and enabled Allow Offline Access for your API in the Dashboard.
+	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
-	// IDToken contain user information that must be decoded and extracted.
-	// It will only be present in the response if you included the `openid` scope.
-	IDToken   string `json:"id_token"`
-	TokenType string `json:"token_type"`
-	ExpiresIn int64  `json:"expires_in"`
+	ExpiresIn    int64  `json:"expires_in"`
+
+	// ExpiresAt does not come from the API. It is added using `ExpiresIn`.
+	ExpiresAt time.Time `json:"expires_at"`
 }
 
 func (client *Client) AccessToken(ctx context.Context, deviceCode string) (AccessToken, error) {
-	var at AccessToken
+	var tok AccessToken
 
 	body := url.Values{}
 	body.Set("grant_type", "urn:ietf:params:oauth:grant-type:device_code")
@@ -141,14 +138,15 @@ func (client *Client) AccessToken(ctx context.Context, deviceCode string) (Acces
 	body.Set("client_id", client.ClientID)
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "https://"+client.Domain+"/oauth/token", strings.NewReader(body.Encode()))
 	if err != nil {
-		return at, fmt.Errorf("could not create access token http request: %w", err)
+		return tok, fmt.Errorf("could not create access token http request: %w", err)
 	}
 
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
+	now := time.Now()
 	resp, err := client.HTTPClient.Do(req)
 	if err != nil {
-		return at, fmt.Errorf("could not http fetch access token: %w", err)
+		return tok, fmt.Errorf("could not http fetch access token: %w", err)
 	}
 
 	defer resp.Body.Close()
@@ -156,22 +154,79 @@ func (client *Client) AccessToken(ctx context.Context, deviceCode string) (Acces
 	if resp.StatusCode >= 400 {
 		got, err := io.ReadAll(resp.Body)
 		if err != nil {
-			return at, fmt.Errorf("could not read access token http error response: status_code=%d: %w", resp.StatusCode, err)
+			return tok, fmt.Errorf("could not read access token http error response: status_code=%d: %w", resp.StatusCode, err)
 		}
 
 		var e Error
 		err = json.Unmarshal(got, &e)
 		if err != nil {
-			return at, fmt.Errorf("could not json decode access token error http response: status_code=%d body=%s: %w", resp.StatusCode, string(got), err)
+			return tok, fmt.Errorf("could not json decode access token error http response: status_code=%d body=%s: %w", resp.StatusCode, string(got), err)
 		}
 
-		return at, e
+		return tok, e
 	}
 
-	err = json.NewDecoder(resp.Body).Decode(&at)
+	err = json.NewDecoder(resp.Body).Decode(&tok)
 	if err != nil {
-		return at, fmt.Errorf("could not json decode access token http response: %w", err)
+		return tok, fmt.Errorf("could not json decode access token http response: %w", err)
 	}
 
-	return at, nil
+	tok.ExpiresAt = now.Add(time.Second * time.Duration(tok.ExpiresIn))
+
+	return tok, nil
+}
+
+type RefreshToken struct {
+	AccessToken string `json:"access_token"`
+	ExpiresIn   int64  `json:"expires_in"`
+
+	// ExpiresAt does not come from the API. It is added using `ExpiresIn`.
+	ExpiresAt time.Time `json:"expires_at"`
+}
+
+func (client *Client) RefreshToken(ctx context.Context, refreshToken string) (RefreshToken, error) {
+	var tok RefreshToken
+
+	body := url.Values{}
+	body.Set("grant_type", "refresh_token")
+	body.Set("refresh_token", refreshToken)
+	body.Set("client_id", client.ClientID)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "https://"+client.Domain+"/oauth/token", strings.NewReader(body.Encode()))
+	if err != nil {
+		return tok, fmt.Errorf("could not create refresh token http request: %w", err)
+	}
+
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	now := time.Now()
+	resp, err := client.HTTPClient.Do(req)
+	if err != nil {
+		return tok, fmt.Errorf("could not http fetch refresh token: %w", err)
+	}
+
+	defer resp.Body.Close()
+
+	if resp.StatusCode >= 400 {
+		got, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return tok, fmt.Errorf("could not read refresh token http error response: status_code=%d: %w", resp.StatusCode, err)
+		}
+
+		var e Error
+		err = json.Unmarshal(got, &e)
+		if err != nil {
+			return tok, fmt.Errorf("could not json decode refresh token error http response: status_code=%d body=%s: %w", resp.StatusCode, string(got), err)
+		}
+
+		return tok, e
+	}
+
+	err = json.NewDecoder(resp.Body).Decode(&tok)
+	if err != nil {
+		return tok, fmt.Errorf("could not json decode refresh token http response: %w", err)
+	}
+
+	tok.ExpiresAt = now.Add(time.Second * time.Duration(tok.ExpiresIn))
+
+	return tok, nil
 }
