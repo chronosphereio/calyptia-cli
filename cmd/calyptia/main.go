@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"net/http"
@@ -38,7 +39,7 @@ func run() error {
 	fs.StringVar(&cloudURLStr, "calyptia-cloud-url", cloudURLStr, "Calyptia Cloud URL origin")
 	fs.StringVar(&auth0Domain, "auth0-domain", auth0Domain, "Auth0 domain")
 	fs.StringVar(&auth0ClientID, "auth0-client-id", auth0ClientID, "Auth0 client ID") // TODO: setup auth0 at build time.
-	fs.StringVar(&auth0Audience, "auth0-audience", auth0Audience, "Auth0 audiience")
+	fs.StringVar(&auth0Audience, "auth0-audience", auth0Audience, "Auth0 audience")
 	err := fs.Parse(os.Args[1:])
 	if err != nil {
 		return fmt.Errorf("could not parse flags: %w", err)
@@ -51,6 +52,10 @@ func run() error {
 
 	if cloudURL.Scheme != "https" && cloudURL.Scheme != "http" {
 		return fmt.Errorf("invalid calyptia cloud url scheme: %q", cloudURL.Scheme)
+	}
+
+	if auth0ClientID == "" {
+		return errors.New("missing auth0 client ID")
 	}
 
 	m := model{
