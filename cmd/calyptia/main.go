@@ -2,96 +2,89 @@ package main
 
 import (
 	"context"
-	"errors"
-	"flag"
 	"fmt"
 	"net/http"
 	"net/url"
 	"os"
 
 	"github.com/calyptia/cloud-cli/auth0"
-	cloudclient "github.com/calyptia/cloud-cli/cloud"
-	"github.com/charmbracelet/bubbles/help"
-	"github.com/charmbracelet/bubbles/spinner"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	"github.com/calyptia/cloud-cli/cloud"
 	"github.com/joho/godotenv"
+	"github.com/spf13/cobra"
 )
 
 func main() {
-	if err := run(); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
-}
-
-func run() error {
 	_ = godotenv.Load()
 
-	var (
-		cloudURLStr   = env("CALYPTIA_CLOUD_URL", "https://cloud-api.calyptia.com")
-		auth0Domain   = env("AUTH0_DOMAIN", "sso.calyptia.com")
-		auth0ClientID = os.Getenv("AUTH0_CLIENT_ID")
-		auth0Audience = env("AUTH0_AUDIENCE", "https://config.calyptia.com")
-	)
+	cmd := newCmd(context.Background())
+	cobra.CheckErr(cmd.Execute())
+}
 
-	fs := flag.NewFlagSet("calyptia", flag.ExitOnError)
-	fs.StringVar(&cloudURLStr, "calyptia-cloud-url", cloudURLStr, "Calyptia Cloud URL origin")
-	fs.StringVar(&auth0Domain, "auth0-domain", auth0Domain, "Auth0 domain")
-	fs.StringVar(&auth0ClientID, "auth0-client-id", auth0ClientID, "Auth0 client ID") // TODO: setup auth0 at build time.
-	fs.StringVar(&auth0Audience, "auth0-audience", auth0Audience, "Auth0 audience")
-	err := fs.Parse(os.Args[1:])
-	if err != nil {
-		return fmt.Errorf("could not parse flags: %w", err)
-	}
-
-	cloudURL, err := url.Parse(cloudURLStr)
-	if err != nil {
-		return fmt.Errorf("could not parse calyptia cloud url: %w", err)
-	}
-
-	if cloudURL.Scheme != "https" && cloudURL.Scheme != "http" {
-		return fmt.Errorf("invalid calyptia cloud url scheme: %q", cloudURL.Scheme)
-	}
-
-	if auth0ClientID == "" {
-		return errors.New("missing auth0 client ID")
-	}
-
-	m := model{
-		ctx:     context.Background(),
-		keys:    keys,
-		help:    help.NewModel(),
-		spinner: spinner.NewModel(),
-
+func newCmd(ctx context.Context) *cobra.Command {
+	config := &config{
+		ctx: ctx,
 		auth0: &auth0.Client{
 			HTTPClient: http.DefaultClient,
-			Domain:     auth0Domain,
-			ClientID:   auth0ClientID,
-			Audience:   auth0Audience,
 		},
-		cloud: &cloudclient.Client{
-			HTTPClient: http.DefaultClient,
-			BaseURL:    cloudURL,
+		cloud: &cloud.Client{
+			HTTPClient: http.DefaultClient, // Will be replaced by Auth0 token source.
 		},
 	}
-	m.spinner.Spinner = spinner.Dot
-	m.spinner.Style = lipgloss.NewStyle().Foreground(lipgloss.Color("205"))
 
-	accessToken, err := savedAccessToken()
-	if err == errAccessTokenNotFound {
-		m.requestingDeviceCode = true
-	} else if err != nil {
-		return err
-	} else {
-		m.keys.Logout.SetEnabled(true)
-		m.fetchingProjects = true
-		m.cloud.HTTPClient = m.auth0.Client(m.ctx, accessToken)
+	var cloudURLStr string
+
+	cobra.OnInitialize(func() {
+		if config.auth0.ClientID == "" {
+			cobra.CheckErr(fmt.Errorf("missing required auth0 client id"))
+		}
+
+		cloudURL, err := url.Parse(cloudURLStr)
+		if err != nil {
+			cobra.CheckErr(fmt.Errorf("invalid cloud url: %w", err))
+		}
+
+		if cloudURL.Scheme != "http" && cloudURL.Scheme != "https" {
+			cobra.CheckErr(fmt.Errorf("invalid cloud url scheme %q", cloudURL.Scheme))
+		}
+
+		config.cloud.BaseURL = cloudURL
+
+		tok, err := savedToken()
+		if err == errTokenNotFound {
+			return
+		}
+
+		if err != nil {
+			cobra.CheckErr(fmt.Errorf("could not retrive your stored auth info: %w", err))
+		}
+
+		// Now all requests will be authenticated and the token refreshes by its own.
+		config.cloud.HTTPClient = config.auth0.Client(config.ctx, tok)
+	})
+	cmd := &cobra.Command{
+		Use:   "calyptia",
+		Short: "Calyptia Cloud CLI",
 	}
 
-	p := tea.NewProgram(m)
-	p.EnterAltScreen()
-	return p.Start()
+	fs := cmd.Flags()
+	fs.StringVar(&config.auth0.Domain, "auth0-domain", env("AUTH0_DOMAIN", "sso.calyptia.com"), "Auth0 domain")
+	fs.StringVar(&config.auth0.ClientID, "auth0-client-id", os.Getenv("AUTH0_CLIENT_ID"), "Auth0 client ID")
+	fs.StringVar(&config.auth0.Audience, "auth0-audience", env("AUTH0_AUDIENCE", "https://config.calyptia.com"), "Auth0 audience")
+	fs.StringVar(&cloudURLStr, "cloud-url", env("CALYPTIA_CLOUD_URL", "https://cloud-api.calyptia.com"), "Calyptia Cloud URL")
+
+	cmd.AddCommand(
+		newCmdLogin(config),
+		newCmdGet(config),
+		newCmdTop(config),
+	)
+
+	return cmd
+}
+
+type config struct {
+	ctx   context.Context
+	auth0 *auth0.Client
+	cloud *cloud.Client
 }
 
 func env(key, fallback string) string {
@@ -100,4 +93,26 @@ func env(key, fallback string) string {
 		return fallback
 	}
 	return v
+}
+
+func (config *config) completeProjectIDs(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	pp, err := config.cloud.Projects(config.ctx, 0)
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveError
+	}
+
+	if len(pp) == 0 {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+
+	out := make([]string, len(pp))
+	for i, p := range pp {
+		out[i] = p.ID
+	}
+
+	return out, cobra.ShellCompDirectiveNoFileComp
+}
+
+func (config *config) completeOutputFormat(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	return []string{"table", "json"}, cobra.ShellCompDirectiveNoFileComp
 }

@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-	"sync"
 	"time"
 
 	"golang.org/x/oauth2"
@@ -19,29 +18,6 @@ import (
 func IsAuthorizationPendingError(err error) bool {
 	var e Error
 	return errors.As(err, &e) && e.Msg == "authorization_pending"
-}
-
-// IsSlowDownError: You are polling too fast. Slow down and use the suggested interval retrieved in the previous step of this tutorial. To avoid receiving this error due to network latency, you should start counting each interval after receipt of the last polling request's response.
-func IsSlowDownError(err error) bool {
-	var e Error
-	return errors.As(err, &e) && e.Msg == "slow_down"
-}
-
-// IsExpiredTokenError: The user has not authorized the device quickly enough, so the `device_code` has expired. Your application should notify the user that the flow has expired and prompt them to reinitiate the flow.
-// The `expired_token` error will be returned exactly once; after that, the dreaded `invalid_grant` will be returned. Your device **must** stop polling.
-func IsExpiredTokenError(err error) bool {
-	var e Error
-	return errors.As(err, &e) && e.Msg == "expired_token"
-}
-
-// IsAccessDeniedError: Finally, if access is denied, you will receive this.
-// This can occur for a variety of reasons, including:
-//   - the user refused to authorize the device
-//   - the authorization server denied the transaction
-//   - a configured rule denied access.
-func IsAccessDeniedError(err error) bool {
-	var e Error
-	return errors.As(err, &e) && e.Msg == "access_denied"
 }
 
 type Client struct {
@@ -180,10 +156,6 @@ func (client *Client) AccessToken(ctx context.Context, deviceCode string) (*oaut
 }
 
 func (client *Client) Client(ctx context.Context, t *oauth2.Token) *http.Client {
-	return oauth2.NewClient(ctx, client.TokenSource(ctx, t))
-}
-
-func (client *Client) TokenSource(ctx context.Context, t *oauth2.Token) oauth2.TokenSource {
 	tkr := &tokenRefresher{
 		ctx:  ctx,
 		conf: client,
@@ -191,10 +163,8 @@ func (client *Client) TokenSource(ctx context.Context, t *oauth2.Token) oauth2.T
 	if t != nil {
 		tkr.refreshToken = t.RefreshToken
 	}
-	return &reuseTokenSource{
-		t:   t,
-		new: tkr,
-	}
+
+	return oauth2.NewClient(ctx, oauth2.ReuseTokenSource(t, tkr))
 }
 
 type tokenRefresher struct {
@@ -256,25 +226,4 @@ func (tf *tokenRefresher) Token() (*oauth2.Token, error) {
 		RefreshToken: tf.refreshToken,
 		Expiry:       now.Add(time.Second * time.Duration(tok.ExpiresIn)),
 	}, nil
-}
-
-type reuseTokenSource struct {
-	new oauth2.TokenSource
-
-	mu sync.Mutex // guards t
-	t  *oauth2.Token
-}
-
-func (s *reuseTokenSource) Token() (*oauth2.Token, error) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	if s.t.Valid() {
-		return s.t, nil
-	}
-	t, err := s.new.Token()
-	if err != nil {
-		return nil, err
-	}
-	s.t = t
-	return t, nil
 }
