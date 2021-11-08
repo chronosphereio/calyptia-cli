@@ -13,6 +13,7 @@ go build ./cmd/calyptia
 Alternatively, you can install only the binary by running:
 
 ```
+go env -w GOPRIVATE=github.com/calyptia/cloud
 go install github.com/calyptia/cloud-cli@latest
 ```
 
