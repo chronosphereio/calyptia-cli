@@ -51,7 +51,7 @@ func newCmdGetProjects(config *config) *cobra.Command {
 	fs.StringVarP(&format, "output-format", "f", "table", "Output format. Allowed: table, json")
 	fs.Uint64VarP(&last, "last", "l", 0, "Last `N` projects. 0 means no limit")
 
-	cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
+	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
 
 	return cmd
 }

@@ -11,11 +11,17 @@ import (
 
 	"code.cloudfoundry.org/bytefmt"
 	"github.com/calyptia/cloud"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/term"
 )
+
+var titleStyle = lipgloss.NewStyle().
+	Background(lipgloss.Color("62")).
+	Foreground(lipgloss.Color("230")).
+	Padding(0, 1)
 
 func newCmdTopProject(config *config) *cobra.Command {
 	var start, interval time.Duration
@@ -25,6 +31,7 @@ func newCmdTopProject(config *config) *cobra.Command {
 		Short:             "Display metrics from a project",
 		Args:              cobra.ExactArgs(1),
 		ValidArgsFunction: config.completeProjectIDs,
+		// TODO: run an interactive "top" program.
 		RunE: func(cmd *cobra.Command, args []string) error {
 			projectID := args[0]
 
@@ -36,7 +43,7 @@ func newCmdTopProject(config *config) *cobra.Command {
 			g, gctx := errgroup.WithContext(config.ctx)
 			g.Go(func() error {
 				var err error
-				metrics, err = config.cloud.Metrics(gctx, projectID, start, interval)
+				metrics, err = config.cloud.ProjectMetrics(gctx, projectID, start, interval)
 				if err != nil {
 					return fmt.Errorf("could not fetch metrics: %w", err)
 				}
@@ -78,9 +85,10 @@ func newCmdTopProject(config *config) *cobra.Command {
 			}
 
 			{
-				fmt.Println("Overview")
+				fmt.Println(titleStyle.Render("Metrics"))
+
 				if len(metrics.Measurements) == 0 {
-					fmt.Println("No project metrics")
+					fmt.Println("No project metrics to display")
 				} else {
 					tw := table.NewWriter()
 					tw.SetStyle(table.StyleRounded)
@@ -113,46 +121,56 @@ func newCmdTopProject(config *config) *cobra.Command {
 					}
 					fmt.Println(tw.Render())
 				}
+			}
 
-				{
-					fmt.Println("Agents")
-					if len(agents) == 0 {
-						fmt.Println("No agents")
-					} else {
-						tw := table.NewWriter()
-						tw.SetStyle(table.StyleRounded)
-						if w, _, err := term.GetSize(int(os.Stdout.Fd())); err == nil {
-							tw.SetAllowedRowLength(w)
-						}
+			fmt.Println()
 
-						for _, agent := range agents {
-							metrics, ok := agentMetrics[agent.ID]
-							if !ok {
-								continue
-							}
+			{
+				fmt.Println(titleStyle.Render("Agents"))
 
-							row := table.Row{
-								agent.Name,
-								string(agent.Type) + " " + agent.Version,
-								agentStatus(agent.LastMetricsAddedAt),
-							}
-							for _, measurementName := range agentMeasurementNames(metrics.Measurements) {
-								measurement := metrics.Measurements[measurementName]
-								values := fmtLatestMetrics(measurement.Totals, interval)
-								if len(values) == 0 {
-									row = append(row, "No data")
-								} else {
-									row = append(row, strings.Join(values, ", "))
-								}
-							}
-
-							tw.AppendRow(row)
-						}
-
-						fmt.Println(tw.Render())
+				if len(agents) == 0 {
+					fmt.Println("0 agents")
+				} else {
+					tw := table.NewWriter()
+					tw.SetStyle(table.StyleRounded)
+					if w, _, err := term.GetSize(int(os.Stdout.Fd())); err == nil {
+						tw.SetAllowedRowLength(w)
 					}
-				}
 
+					for _, agent := range agents {
+						metrics, ok := agentMetrics[agent.ID]
+						if !ok {
+							continue
+						}
+
+						var mm []string
+						for _, measurementName := range agentMeasurementNames(metrics.Measurements) {
+							measurement := metrics.Measurements[measurementName]
+							values := fmtLatestMetrics(measurement.Totals, interval)
+							if len(values) != 0 {
+								name := strings.TrimPrefix(measurementName, "fluentbit_")
+								name = strings.TrimPrefix(name, "fluentd_")
+								mm = append(mm, fmt.Sprintf("%s: %s", name, strings.Join(values, ", ")))
+							}
+						}
+
+						var value string
+						if len(mm) == 0 {
+							value = "No data"
+						} else {
+							value = strings.Join(mm, "\n")
+						}
+						tw.AppendSeparator()
+						tw.AppendRow(table.Row{
+							agent.Name,
+							string(agent.Type) + " " + agent.Version,
+							agentStatus(agent.LastMetricsAddedAt),
+							value,
+						})
+					}
+
+					fmt.Println(tw.Render())
+				}
 			}
 
 			return nil

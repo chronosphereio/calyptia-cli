@@ -53,10 +53,10 @@ func newCmdGetAggregators(config *config) *cobra.Command {
 	fs.StringVar(&projectID, "project-id", "", "Parent project ID")
 	fs.Uint64VarP(&last, "last", "l", 0, "Last `N` aggregators. 0 means no limit")
 
-	cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
-	cmd.RegisterFlagCompletionFunc("project-id", config.completeProjectIDs)
+	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
+	_ = cmd.RegisterFlagCompletionFunc("project-id", config.completeProjectIDs)
 
-	cmd.MarkFlagRequired("project-id") // TODO: use default project ID from config cmd.
+	_ = cmd.MarkFlagRequired("project-id") // TODO: use default project ID from config cmd.
 
 	return cmd
 }

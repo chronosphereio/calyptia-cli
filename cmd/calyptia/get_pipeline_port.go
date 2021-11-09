@@ -53,10 +53,10 @@ func newCmdGetPipelinePorts(config *config) *cobra.Command {
 	fs.StringVar(&pipelineID, "pipeline-id", "", "Parent pipeline ID")
 	fs.Uint64VarP(&last, "last", "l", 0, "Last `N` pipeline ports. 0 means no limit")
 
-	cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
-	// cmd.RegisterFlagCompletionFunc("pipeline-id", nil) // TODO: complete pipelineID.
+	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
+	// _ = cmd.RegisterFlagCompletionFunc("pipeline-id", nil) // TODO: complete pipelineID.
 
-	cmd.MarkFlagRequired("pipeline-id") // TODO: use default pipeline ID from config cmd.
+	_ = cmd.MarkFlagRequired("pipeline-id") // TODO: use default pipeline ID from config cmd.
 
 	return cmd
 }
