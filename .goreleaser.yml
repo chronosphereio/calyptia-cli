@@ -2,5 +2,14 @@ builds:
   - main: ./cmd/calyptia
     ldflags:
       - -s -w -X main.version={{.Version}} -X main.defaultAuth0ClientID=${AUTH0_CLIENT_ID}
+    goos:
+      - darwin
+      - freebsd
+      - linux
+      - windows
+    goarch:
+      - amd64
+      - arm
+      - arm64
 universal_binaries:
   - replace: true
