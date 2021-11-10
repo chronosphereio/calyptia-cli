@@ -1,14 +1,13 @@
 builds:
   - main: ./cmd/calyptia
+    id: calyptia
     binary: calyptia
     ldflags:
       - -s -w -X main.version={{.Version}} -X main.defaultAuth0ClientID={{.Env.AUTH0_CLIENT_ID}}
-    goos:
-      - darwin
-      - linux
-      - windows
-    goarch:
-      - amd64
-      - arm64
+    targets:
+      - darwin_amd64
+      - darwin_arm64
+      - linux_amd64
+      - windows_amd64
 universal_binaries:
   - replace: true
