@@ -19,6 +19,7 @@ import (
 var (
 	defaultAuth0ClientID string // To be injected at build time: -ldflags="-X 'main.defaultAuth0ClientID=xxx'"
 	defaultCloudURLStr   = "https://cloud-api.calyptia.com"
+	version              = "dev" // To be injected at build time: -ldflags="-X 'main.version=xxx'"
 )
 
 func main() {
@@ -70,8 +71,9 @@ func newCmd(ctx context.Context) *cobra.Command {
 		config.cloud.HTTPClient = config.auth0.Client(config.ctx, tok)
 	})
 	cmd := &cobra.Command{
-		Use:   "calyptia",
-		Short: "Calyptia Cloud CLI",
+		Use:     "calyptia",
+		Short:   "Calyptia Cloud CLI",
+		Version: version,
 	}
 
 	fs := cmd.Flags()
