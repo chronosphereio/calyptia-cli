@@ -1,5 +1,6 @@
 builds:
   - main: ./cmd/calyptia
+    binary: calyptia
     ldflags:
       - -s -w -X main.version={{.Version}} -X main.defaultAuth0ClientID=${AUTH0_CLIENT_ID}
     goos:
