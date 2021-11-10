@@ -2,7 +2,7 @@ builds:
   - main: ./cmd/calyptia
     binary: calyptia
     ldflags:
-      - -s -w -X main.version={{.Version}} -X main.defaultAuth0ClientID=${AUTH0_CLIENT_ID}
+      - -s -w -X main.version={{.Version}} -X main.defaultAuth0ClientID={{.Env.AUTH0_CLIENT_ID}}
     goos:
       - darwin
       - freebsd
