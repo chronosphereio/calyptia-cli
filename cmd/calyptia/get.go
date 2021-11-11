@@ -15,6 +15,7 @@ func newCmdGet(config *config) *cobra.Command {
 		newCmdGetAggregatorPipelines(config),
 		newCmdGetPipelinePorts(config),
 		newCmdGetPipelineConfigHistory(config),
+		newCmdGetPipelineStatusHistory(config),
 	)
 
 	return cmd
