@@ -54,7 +54,7 @@ func newCmdGetAggregatorPipelines(config *config) *cobra.Command {
 	fs.Uint64VarP(&last, "last", "l", 0, "Last `N` pipelines. 0 means no limit")
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
-	// _ = cmd.RegisterFlagCompletionFunc("aggregator-id", nil) // TODO: complete aggregatorID.
+	_ = cmd.RegisterFlagCompletionFunc("aggregator-id", config.completeAggregatorIDs)
 
 	_ = cmd.MarkFlagRequired("aggregator-id") // TODO: use default aggregator ID from config cmd.
 

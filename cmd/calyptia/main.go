@@ -164,6 +164,100 @@ func (config *config) completeAgentIDs(cmd *cobra.Command, args []string, toComp
 	return out, cobra.ShellCompDirectiveNoFileComp
 }
 
+func (config *config) completeAggregatorIDs(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	pp, err := config.cloud.Projects(config.ctx, 0)
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveError
+	}
+
+	if len(pp) == 0 {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+
+	var out []string
+	var mu sync.Mutex
+	g, gctx := errgroup.WithContext(config.ctx)
+	for _, p := range pp {
+		p := p
+		g.Go(func() error {
+			aa, err := config.cloud.Aggregators(gctx, p.ID, 0)
+			if err != nil {
+				return err
+			}
+
+			mu.Lock()
+			for _, a := range aa {
+				out = append(out, a.ID)
+			}
+			mu.Unlock()
+
+			return nil
+		})
+	}
+	if err := g.Wait(); err != nil {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+
+	unique.Slice(&out, func(i, j int) bool {
+		return out[i] < out[j]
+	})
+
+	return out, cobra.ShellCompDirectiveNoFileComp
+}
+
+func (config *config) completePipelineIDs(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	pp, err := config.cloud.Projects(config.ctx, 0)
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveError
+	}
+
+	if len(pp) == 0 {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+
+	var out []string
+	var mu sync.Mutex
+	g, gctx := errgroup.WithContext(config.ctx)
+	for _, p := range pp {
+		p := p
+		g.Go(func() error {
+			aa, err := config.cloud.Aggregators(gctx, p.ID, 0)
+			if err != nil {
+				return err
+			}
+
+			g2, gctx2 := errgroup.WithContext(gctx)
+			for _, a := range aa {
+				a := a
+				g2.Go(func() error {
+					pp, err := config.cloud.AggregatorPipelines(gctx2, a.ID, 0)
+					if err != nil {
+						return err
+					}
+
+					mu.Lock()
+					for _, p := range pp {
+						out = append(out, p.ID)
+					}
+					mu.Unlock()
+
+					return nil
+				})
+			}
+			return g2.Wait()
+		})
+	}
+	if err := g.Wait(); err != nil {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+
+	unique.Slice(&out, func(i, j int) bool {
+		return out[i] < out[j]
+	})
+
+	return out, cobra.ShellCompDirectiveNoFileComp
+}
+
 func (config *config) completeOutputFormat(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	return []string{"table", "json"}, cobra.ShellCompDirectiveNoFileComp
 }

@@ -54,7 +54,7 @@ func newCmdGetPipelineStatusHistory(config *config) *cobra.Command {
 	fs.Uint64VarP(&last, "last", "l", 0, "Last `N` pipeline status history entries. 0 means no limit")
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
-	// _ = cmd.RegisterFlagCompletionFunc("pipeline-id", nil) // TODO: complete pipelineID.
+	_ = cmd.RegisterFlagCompletionFunc("pipeline-id", config.completePipelineIDs)
 
 	_ = cmd.MarkFlagRequired("pipeline-id") // TODO: use default pipeline ID from config cmd.
 
