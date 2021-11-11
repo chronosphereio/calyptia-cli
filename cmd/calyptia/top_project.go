@@ -261,13 +261,33 @@ func fmtLatestMetrics(metrics map[string][]cloud.MetricFields, interval time.Dur
 			continue
 		}
 
+		if strings.Contains(metricName, "dropped_records") {
+			values = append(values, fmtFloat64(*val)+"ev/s (dropped)")
+			continue
+		}
+
+		if strings.Contains(metricName, "retried_records") {
+			values = append(values, fmtFloat64(*val)+"ev/s (retried)")
+			continue
+		}
+
+		if strings.Contains(metricName, "retries_failed") {
+			values = append(values, fmtFloat64(*val)+"ev/s (retries failed)")
+			continue
+		}
+
+		if strings.Contains(metricName, "retries") {
+			values = append(values, fmtFloat64(*val)+"ev/s (retries)")
+			continue
+		}
+
 		if strings.Contains(metricName, "byte") || strings.Contains(metricName, "size") {
-			values = append(values, strings.ToLower(bytefmt.ByteSize(uint64(math.Round(*val))))+"/s")
+			values = append(values, strings.ToLower(bytefmt.ByteSize(uint64(math.Round(*val))))+"/s (bytes)")
 			continue
 		}
 
 		if strings.Contains(metricName, "record") {
-			values = append(values, fmtFloat64(*val)+"e/s")
+			values = append(values, fmtFloat64(*val)+"ev/s (events)")
 			continue
 		}
 
