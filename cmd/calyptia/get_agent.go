@@ -35,7 +35,7 @@ func newCmdGetAgents(config *config) *cobra.Command {
 				}
 
 				for _, a := range aa {
-					tw.AppendRow(table.Row{a.ID, a.Name, a.Type, a.Version, agentStatus(a.LastMetricsAddedAt), a.CreatedAt})
+					tw.AppendRow(table.Row{a.ID, a.Name, a.Type, a.Version, agentStatus(a.LastMetricsAddedAt, time.Minute*-5), a.CreatedAt})
 				}
 				fmt.Println(tw.Render())
 			case "json":
@@ -63,11 +63,11 @@ func newCmdGetAgents(config *config) *cobra.Command {
 	return cmd
 }
 
-func agentStatus(lastMetricsAddedAt time.Time) string {
+func agentStatus(lastMetricsAddedAt time.Time, start time.Duration) string {
 	var status string
 	if lastMetricsAddedAt.IsZero() {
 		status = "inactive"
-	} else if lastMetricsAddedAt.Before(time.Now().Add(time.Minute * -5)) {
+	} else if lastMetricsAddedAt.Before(time.Now().Add(start)) {
 		status = fmt.Sprintf("inactive for %s", durafmt.ParseShort(time.Since(lastMetricsAddedAt)).LimitFirstN(1))
 	} else {
 		status = "active"

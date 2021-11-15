@@ -63,6 +63,12 @@ func newCmdTopProject(config *config) *cobra.Command {
 
 				g1, gctx1 := errgroup.WithContext(gctx)
 				for _, a := range agents {
+					// Avoid metrics request if we know last metric was added before `start`.
+					inactive := a.LastMetricsAddedAt.IsZero() || a.LastMetricsAddedAt.Before(time.Now().Add(start))
+					if inactive {
+						continue
+					}
+
 					a := a
 					g1.Go(func() error {
 						m, err := config.cloud.AgentMetrics(gctx1, a.ID, start, interval)
@@ -136,35 +142,35 @@ func newCmdTopProject(config *config) *cobra.Command {
 					}
 
 					for _, agent := range agents {
-						metrics, ok := agentMetrics[agent.ID]
-						if !ok {
-							continue
-						}
-
-						var mm []string
-						for _, measurementName := range agentMeasurementNames(metrics.Measurements) {
-							measurement := metrics.Measurements[measurementName]
-							values := fmtLatestMetrics(measurement.Totals, interval)
-							if len(values) != 0 {
-								name := strings.TrimPrefix(measurementName, "fluentbit_")
-								name = strings.TrimPrefix(name, "fluentd_")
-								mm = append(mm, fmt.Sprintf("%s: %s", name, strings.Join(values, ", ")))
-							}
-						}
-
-						var value string
-						if len(mm) == 0 {
-							value = "No data"
-						} else {
-							value = strings.Join(mm, "\n")
-						}
-
-						tw.AppendRow(table.Row{
+						row := table.Row{
 							agent.Name,
 							string(agent.Type) + " " + agent.Version,
-							agentStatus(agent.LastMetricsAddedAt),
-							value,
-						})
+							agentStatus(agent.LastMetricsAddedAt, start),
+						}
+
+						if metrics, ok := agentMetrics[agent.ID]; ok {
+							var mm []string
+							for _, measurementName := range agentMeasurementNames(metrics.Measurements) {
+								measurement := metrics.Measurements[measurementName]
+								values := fmtLatestMetrics(measurement.Totals, interval)
+								if len(values) != 0 {
+									name := strings.TrimPrefix(measurementName, "fluentbit_")
+									name = strings.TrimPrefix(name, "fluentd_")
+									mm = append(mm, fmt.Sprintf("%s: %s", name, strings.Join(values, ", ")))
+								}
+							}
+
+							var value string
+							if len(mm) == 0 {
+								value = "No data"
+							} else {
+								value = strings.Join(mm, "\n")
+							}
+
+							row = append(row, value)
+						}
+
+						tw.AppendRow(row)
 					}
 
 					fmt.Println(tw.Render())
