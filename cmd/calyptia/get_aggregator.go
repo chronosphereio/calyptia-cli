@@ -4,9 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"sync"
 
+	"github.com/calyptia/cloud"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/spf13/cobra"
+	"golang.org/x/sync/errgroup"
 	"golang.org/x/term"
 )
 
@@ -59,4 +62,48 @@ func newCmdGetAggregators(config *config) *cobra.Command {
 	_ = cmd.MarkFlagRequired("project-id") // TODO: use default project ID from config cmd.
 
 	return cmd
+}
+
+func (config *config) fetchAllAggregators() ([]cloud.Aggregator, error) {
+	pp, err := config.cloud.Projects(config.ctx, 0)
+	if err != nil {
+		return nil, fmt.Errorf("could not prefetch projects: %w", err)
+	}
+
+	if len(pp) == 0 {
+		return nil, nil
+	}
+
+	var aa []cloud.Aggregator
+	var mu sync.Mutex
+	g, gctx := errgroup.WithContext(config.ctx)
+	for _, p := range pp {
+		p := p
+		g.Go(func() error {
+			got, err := config.cloud.Aggregators(gctx, p.ID, 0)
+			if err != nil {
+				return fmt.Errorf("could not fetch aggregators from project: %w", err)
+			}
+
+			mu.Lock()
+			aa = append(aa, got...)
+			mu.Unlock()
+
+			return nil
+		})
+	}
+	if err := g.Wait(); err != nil {
+		return nil, fmt.Errorf("could not fetch projects aggregators: %w", err)
+	}
+
+	var uniqueAggregators []cloud.Aggregator
+	aggregatorsIDs := map[string]struct{}{}
+	for _, a := range aa {
+		if _, ok := aggregatorsIDs[a.ID]; !ok {
+			uniqueAggregators = append(uniqueAggregators, a)
+			aggregatorsIDs[a.ID] = struct{}{}
+		}
+	}
+
+	return uniqueAggregators, nil
 }

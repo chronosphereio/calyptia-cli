@@ -6,8 +6,10 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"regexp"
 	"sync"
 
+	"github.com/calyptia/cloud"
 	"github.com/calyptia/cloud-cli/auth0"
 	cloudclient "github.com/calyptia/cloud/client"
 	"github.com/campoy/unique"
@@ -165,44 +167,54 @@ func (config *config) completeAgentIDs(cmd *cobra.Command, args []string, toComp
 }
 
 func (config *config) completeAggregatorIDs(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	pp, err := config.cloud.Projects(config.ctx, 0)
+	aa, err := config.fetchAllAggregators()
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveError
 	}
 
-	if len(pp) == 0 {
-		return nil, cobra.ShellCompDirectiveNoFileComp
+	return aggregatorsKeys(aa), cobra.ShellCompDirectiveNoFileComp
+}
+
+// aggregatorsKeys returns unique aggregator names first and then IDs.
+func aggregatorsKeys(aa []cloud.Aggregator) []string {
+	namesCount := map[string]int{}
+	for _, a := range aa {
+		if _, ok := namesCount[a.Name]; ok {
+			namesCount[a.Name] += 1
+			continue
+		}
+
+		namesCount[a.Name] = 1
 	}
 
 	var out []string
-	var mu sync.Mutex
-	g, gctx := errgroup.WithContext(config.ctx)
-	for _, p := range pp {
-		p := p
-		g.Go(func() error {
-			aa, err := config.cloud.Aggregators(gctx, p.ID, 0)
-			if err != nil {
-				return err
-			}
 
-			mu.Lock()
-			for _, a := range aa {
-				out = append(out, a.ID)
+	for _, a := range aa {
+		var nameIsUnique bool
+		for name, count := range namesCount {
+			if a.Name == name && count == 1 {
+				nameIsUnique = true
+				break
 			}
-			mu.Unlock()
+		}
+		if nameIsUnique {
+			out = append(out, a.Name)
+			continue
+		}
 
-			return nil
-		})
-	}
-	if err := g.Wait(); err != nil {
-		return nil, cobra.ShellCompDirectiveNoFileComp
+		out = append(out, a.ID)
 	}
 
-	unique.Slice(&out, func(i, j int) bool {
-		return out[i] < out[j]
-	})
+	return out
+}
 
-	return out, cobra.ShellCompDirectiveNoFileComp
+func findAggregatorByName(aa []cloud.Aggregator, name string) (cloud.Aggregator, bool) {
+	for _, a := range aa {
+		if a.Name == name {
+			return a, true
+		}
+	}
+	return cloud.Aggregator{}, false
 }
 
 func (config *config) completePipelineIDs(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -260,4 +272,10 @@ func (config *config) completePipelineIDs(cmd *cobra.Command, args []string, toC
 
 func (config *config) completeOutputFormat(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	return []string{"table", "json"}, cobra.ShellCompDirectiveNoFileComp
+}
+
+var reUUID4 = regexp.MustCompile("^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$")
+
+func validUUID(s string) bool {
+	return reUUID4.MatchString(s)
 }
