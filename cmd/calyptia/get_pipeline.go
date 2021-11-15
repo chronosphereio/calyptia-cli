@@ -10,12 +10,12 @@ import (
 	"golang.org/x/term"
 )
 
-func newCmdGetAggregatorPipelines(config *config) *cobra.Command {
+func newCmdGetPipelines(config *config) *cobra.Command {
 	var format string
 	var aggregatorKey string
 	var last uint64
 	cmd := &cobra.Command{
-		Use:   "aggregator_pipelines",
+		Use:   "pipelines",
 		Short: "Display latest pipelines from an aggregator",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			aggregatorID := aggregatorKey
