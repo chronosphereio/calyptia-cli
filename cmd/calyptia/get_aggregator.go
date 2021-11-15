@@ -27,7 +27,7 @@ func newCmdGetAggregators(config *config) *cobra.Command {
 			case "table":
 				tw := table.NewWriter()
 				tw.AppendHeader(table.Row{"ID", "Name", "Created at"})
-				tw.SetStyle(table.StyleRounded)
+				tw.Style().Options = table.OptionsNoBordersAndSeparators
 				if w, _, err := term.GetSize(int(os.Stdout.Fd())); err == nil {
 					tw.SetAllowedRowLength(w)
 				}

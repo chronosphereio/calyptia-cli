@@ -57,15 +57,13 @@ func newCmdTopAgent(config *config) *cobra.Command {
 					fmt.Println("No agent metrics to display")
 				} else {
 					tw := table.NewWriter()
-					tw.SetStyle(table.StyleRounded)
+					tw.Style().Options = table.OptionsNoBordersAndSeparators
 					if w, _, err := term.GetSize(int(os.Stdout.Fd())); err == nil {
 						tw.SetAllowedRowLength(w)
 					}
 
 					for _, measurementName := range agentMeasurementNames(metrics.Measurements) {
 						measurement := metrics.Measurements[measurementName]
-
-						tw.AppendSeparator()
 
 						for _, pluginName := range pluginNames(measurement.Plugins) {
 							// skip internal plugins.
