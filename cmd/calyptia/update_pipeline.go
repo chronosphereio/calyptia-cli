@@ -48,7 +48,7 @@ func newCmdUpdatePipeline(config *config) *cobra.Command {
 
 				a, ok := findPipelineByName(aa, pipelineKey)
 				if !ok {
-					return nil
+					return fmt.Errorf("could not find pipeline %q", pipelineKey)
 				}
 
 				pipelineID = a.ID

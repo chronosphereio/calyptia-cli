@@ -27,13 +27,27 @@ func newCmdTopProject(config *config) *cobra.Command {
 	var start, interval time.Duration
 	var last uint64
 	cmd := &cobra.Command{
-		Use:               "project id",
+		Use:               "project key",
 		Short:             "Display metrics from a project",
 		Args:              cobra.ExactArgs(1),
 		ValidArgsFunction: config.completeProjects,
 		// TODO: run an interactive "top" program.
 		RunE: func(cmd *cobra.Command, args []string) error {
-			projectID := args[0]
+			projectKey := args[0]
+			projectID := projectKey
+			if !validUUID(projectID) {
+				pp, err := config.cloud.Projects(config.ctx, 0)
+				if err != nil {
+					return err
+				}
+
+				p, ok := findProjectByName(pp, projectKey)
+				if !ok {
+					return fmt.Errorf("could not find project %q", projectKey)
+				}
+
+				projectID = p.ID
+			}
 
 			var metrics cloud.ProjectMetrics
 			var agents []cloud.Agent

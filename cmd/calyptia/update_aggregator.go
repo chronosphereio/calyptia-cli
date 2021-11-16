@@ -34,7 +34,7 @@ func newCmdUpdateAggregator(config *config) *cobra.Command {
 
 				a, ok := findAggregatorByName(aa, aggregatorKey)
 				if !ok {
-					return nil
+					return fmt.Errorf("could not find aggregator %q", aggregatorKey)
 				}
 
 				aggregatorID = a.ID

@@ -13,49 +13,49 @@ import (
 	"golang.org/x/term"
 )
 
-func newCmdTopAgent(config *config) *cobra.Command {
+func newCmdTopPipeline(config *config) *cobra.Command {
 	var start, interval time.Duration
 
 	cmd := &cobra.Command{
-		Use:               "agent key",
-		Short:             "Display metrics from an agent",
+		Use:               "pipeline key",
+		Short:             "Display metrics from a pipeline",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.completeAgents,
+		ValidArgsFunction: config.completePipelines,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			agentKey := args[0]
-			agentID := agentKey
-			if !validUUID(agentID) {
-				aa, err := config.fetchAllAgents()
+			pipelineKey := args[0]
+			pipelineID := pipelineKey
+			if !validUUID(pipelineID) {
+				pp, err := config.fetchAllPipelines()
 				if err != nil {
 					return err
 				}
 
-				a, ok := findAgentByName(aa, agentKey)
+				pip, ok := findPipelineByName(pp, pipelineKey)
 				if !ok {
-					return fmt.Errorf("could not find agent %q", agentKey)
+					return fmt.Errorf("could not find pipeline %q", pipelineKey)
 				}
 
-				agentID = a.ID
+				pipelineID = pip.ID
 			}
 
-			var agent cloud.Agent
+			var pipeline cloud.AggregatorPipeline
 			var metrics cloud.AgentMetrics
 
 			g, gctx := errgroup.WithContext(config.ctx)
 			g.Go(func() error {
 				var err error
-				agent, err = config.cloud.Agent(gctx, agentID)
+				pipeline, err = config.cloud.AggregatorPipeline(gctx, pipelineID)
 				if err != nil {
-					return fmt.Errorf("could not fetch agent: %w", err)
+					return fmt.Errorf("could not fetch pipeline: %w", err)
 				}
 
 				return nil
 			})
 			g.Go(func() error {
 				var err error
-				metrics, err = config.cloud.AgentMetrics(gctx, agentID, start, interval)
+				metrics, err = config.cloud.PipelineMetrics(gctx, pipelineID, start, interval)
 				if err != nil {
-					return fmt.Errorf("could not fetch agent metrics: %w", err)
+					return fmt.Errorf("could not fetch pipeline metrics: %w", err)
 				}
 
 				return nil
@@ -64,13 +64,13 @@ func newCmdTopAgent(config *config) *cobra.Command {
 				return err
 			}
 
-			_ = agent
+			_ = pipeline
 
 			{
 				fmt.Println(titleStyle.Render("Metrics"))
 
 				if len(metrics.Measurements) == 0 {
-					fmt.Println("No agent metrics to display")
+					fmt.Println("No pipeline metrics to display")
 				} else {
 					tw := table.NewWriter()
 					tw.Style().Options = table.OptionsNoBordersAndSeparators

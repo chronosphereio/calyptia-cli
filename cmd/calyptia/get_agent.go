@@ -30,12 +30,12 @@ func newCmdGetAgents(config *config) *cobra.Command {
 					return err
 				}
 
-				a, ok := findProjectByName(pp, projectKey)
+				p, ok := findProjectByName(pp, projectKey)
 				if !ok {
-					return nil
+					return fmt.Errorf("could not find project %q", projectKey)
 				}
 
-				projectID = a.ID
+				projectID = p.ID
 			}
 
 			aa, err := config.cloud.Agents(config.ctx, projectID, last)

@@ -11,6 +11,7 @@ func newCmdTop(config *config) *cobra.Command {
 	cmd.AddCommand(
 		newCmdTopProject(config),
 		newCmdTopAgent(config),
+		newCmdTopPipeline(config),
 	)
 
 	return cmd

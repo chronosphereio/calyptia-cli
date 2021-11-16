@@ -26,12 +26,12 @@ func newCmdCreateAggregator(config *config) *cobra.Command {
 					return err
 				}
 
-				a, ok := findProjectByName(pp, projectKey)
+				p, ok := findProjectByName(pp, projectKey)
 				if !ok {
-					return nil
+					return fmt.Errorf("could not find project %q", projectKey)
 				}
 
-				projectID = a.ID
+				projectID = p.ID
 			}
 
 			a, err := config.cloud.CreateAggregator(config.ctx, cloud.CreateAggregatorPayload{

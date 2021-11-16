@@ -34,7 +34,7 @@ func newCmdUpdateAgent(config *config) *cobra.Command {
 
 				a, ok := findAgentByName(aa, agentKey)
 				if !ok {
-					return nil
+					return fmt.Errorf("could not find agent %q", agentKey)
 				}
 
 				agentID = a.ID

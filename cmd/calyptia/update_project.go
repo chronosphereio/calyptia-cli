@@ -34,7 +34,7 @@ func newCmdUpdateProject(config *config) *cobra.Command {
 
 				a, ok := findProjectByName(pp, projectKey)
 				if !ok {
-					return nil
+					return fmt.Errorf("could not find project %q", projectKey)
 				}
 
 				projectID = a.ID
