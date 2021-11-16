@@ -26,9 +26,11 @@ func newCmdGetPipelines(config *config) *cobra.Command {
 				}
 
 				a, ok := findAggregatorByName(aa, aggregatorKey)
-				if ok {
-					aggregatorID = a.ID
+				if !ok {
+					return fmt.Errorf("could not find aggregator %q", aggregatorKey)
 				}
+
+				aggregatorID = a.ID
 			}
 			pp, err := config.cloud.AggregatorPipelines(config.ctx, aggregatorID, last)
 			if err != nil {
@@ -63,11 +65,11 @@ func newCmdGetPipelines(config *config) *cobra.Command {
 
 	fs := cmd.Flags()
 	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
-	fs.StringVar(&aggregatorKey, "aggregator", "", "Parent aggregator ID or Name")
+	fs.StringVar(&aggregatorKey, "aggregator", "", "Parent aggregator ID or name")
 	fs.Uint64VarP(&last, "last", "l", 0, "Last `N` pipelines. 0 means no limit")
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
-	_ = cmd.RegisterFlagCompletionFunc("aggregator", config.completeAggregatorIDs)
+	_ = cmd.RegisterFlagCompletionFunc("aggregator", config.completeAggregators)
 
 	_ = cmd.MarkFlagRequired("aggregator-id") // TODO: use default aggregator ID from config cmd.
 

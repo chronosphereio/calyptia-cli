@@ -12,12 +12,27 @@ import (
 
 func newCmdGetPipelineConfigHistory(config *config) *cobra.Command {
 	var format string
-	var pipelineID string
+	var pipelineKey string
 	var last uint64
 	cmd := &cobra.Command{
 		Use:   "pipeline_config_history",
 		Short: "Display latest config history from a pipeline",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			pipelineID := pipelineKey
+			if !validUUID(pipelineID) {
+				pp, err := config.fetchAllPipelines()
+				if err != nil {
+					return err
+				}
+
+				pip, ok := findPipelineByName(pp, pipelineKey)
+				if !ok {
+					return fmt.Errorf("could not find pipeline %q", pipelineKey)
+				}
+
+				pipelineID = pip.ID
+			}
+
 			cc, err := config.cloud.PipelineConfigHistory(config.ctx, pipelineID, last)
 			if err != nil {
 				return fmt.Errorf("could not fetch your pipeline config history: %w", err)
@@ -50,11 +65,11 @@ func newCmdGetPipelineConfigHistory(config *config) *cobra.Command {
 
 	fs := cmd.Flags()
 	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
-	fs.StringVar(&pipelineID, "pipeline-id", "", "Parent pipeline ID")
+	fs.StringVar(&pipelineKey, "pipeline", "", "Parent pipeline ID or name")
 	fs.Uint64VarP(&last, "last", "l", 0, "Last `N` pipeline config history entries. 0 means no limit")
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
-	_ = cmd.RegisterFlagCompletionFunc("pipeline-id", config.completePipelineIDs)
+	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.completePipelines)
 
 	_ = cmd.MarkFlagRequired("pipeline-id") // TODO: use default pipeline ID from config cmd.
 

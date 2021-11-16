@@ -166,7 +166,7 @@ func (config *config) completeAgentIDs(cmd *cobra.Command, args []string, toComp
 	return out, cobra.ShellCompDirectiveNoFileComp
 }
 
-func (config *config) completeAggregatorIDs(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+func (config *config) completeAggregators(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	aa, err := config.fetchAllAggregators()
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveError
@@ -217,17 +217,26 @@ func findAggregatorByName(aa []cloud.Aggregator, name string) (cloud.Aggregator,
 	return cloud.Aggregator{}, false
 }
 
-func (config *config) completePipelineIDs(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	pp, err := config.cloud.Projects(config.ctx, 0)
+func (config *config) completePipelines(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	pp, err := config.fetchAllPipelines()
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveError
 	}
 
-	if len(pp) == 0 {
-		return nil, cobra.ShellCompDirectiveNoFileComp
+	return pipelinesKeys(pp), cobra.ShellCompDirectiveNoFileComp
+}
+
+func (config *config) fetchAllPipelines() ([]cloud.AggregatorPipeline, error) {
+	pp, err := config.cloud.Projects(config.ctx, 0)
+	if err != nil {
+		return nil, fmt.Errorf("could not prefetch pipelines: %w", err)
 	}
 
-	var out []string
+	if len(pp) == 0 {
+		return nil, nil
+	}
+
+	var pipelines []cloud.AggregatorPipeline
 	var mu sync.Mutex
 	g, gctx := errgroup.WithContext(config.ctx)
 	for _, p := range pp {
@@ -242,14 +251,14 @@ func (config *config) completePipelineIDs(cmd *cobra.Command, args []string, toC
 			for _, a := range aa {
 				a := a
 				g2.Go(func() error {
-					pp, err := config.cloud.AggregatorPipelines(gctx2, a.ID, 0)
+					got, err := config.cloud.AggregatorPipelines(gctx2, a.ID, 0)
 					if err != nil {
 						return err
 					}
 
 					mu.Lock()
-					for _, p := range pp {
-						out = append(out, p.ID)
+					for _, pip := range got {
+						pipelines = append(pipelines, pip)
 					}
 					mu.Unlock()
 
@@ -260,14 +269,52 @@ func (config *config) completePipelineIDs(cmd *cobra.Command, args []string, toC
 		})
 	}
 	if err := g.Wait(); err != nil {
-		return nil, cobra.ShellCompDirectiveNoFileComp
+		return nil, err
 	}
 
-	unique.Slice(&out, func(i, j int) bool {
-		return out[i] < out[j]
-	})
+	return pipelines, nil
+}
 
-	return out, cobra.ShellCompDirectiveNoFileComp
+// pipelinesKeys returns unique pipeline names first and then IDs.
+func pipelinesKeys(aa []cloud.AggregatorPipeline) []string {
+	namesCount := map[string]int{}
+	for _, a := range aa {
+		if _, ok := namesCount[a.Name]; ok {
+			namesCount[a.Name] += 1
+			continue
+		}
+
+		namesCount[a.Name] = 1
+	}
+
+	var out []string
+
+	for _, a := range aa {
+		var nameIsUnique bool
+		for name, count := range namesCount {
+			if a.Name == name && count == 1 {
+				nameIsUnique = true
+				break
+			}
+		}
+		if nameIsUnique {
+			out = append(out, a.Name)
+			continue
+		}
+
+		out = append(out, a.ID)
+	}
+
+	return out
+}
+
+func findPipelineByName(pp []cloud.AggregatorPipeline, name string) (cloud.AggregatorPipeline, bool) {
+	for _, pip := range pp {
+		if pip.Name == name {
+			return pip, true
+		}
+	}
+	return cloud.AggregatorPipeline{}, false
 }
 
 func (config *config) completeOutputFormat(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

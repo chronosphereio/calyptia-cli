@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	code.cloudfoundry.org/bytefmt v0.0.0-20211005130812-5bb3c17173e5
-	github.com/calyptia/cloud v0.2.7
+	github.com/calyptia/cloud v0.2.8-0.20211116010300-9dae75436ca3
 	github.com/campoy/unique v0.0.0-20180121183637-88950e537e7e
 	github.com/charmbracelet/lipgloss v0.4.0
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
@@ -20,7 +20,7 @@ require (
 require (
 	github.com/alecthomas/participle/v2 v2.0.0-alpha7 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
-	github.com/calyptia/go-fluentbit-config v0.0.0-20211007161203-87a82f4b0688 // indirect
+	github.com/calyptia/go-fluentbit-config v0.0.2 // indirect
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect
 	github.com/danieljoos/wincred v1.1.0 // indirect
 	github.com/deepmap/oapi-codegen v1.8.2 // indirect
@@ -52,8 +52,8 @@ require (
 	github.com/sendgrid/rest v2.6.5+incompatible // indirect
 	github.com/sendgrid/sendgrid-go v3.10.3+incompatible // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	golang.org/x/net v0.0.0-20210428140749-89ef3d95e781 // indirect
-	golang.org/x/sys v0.0.0-20210823070655-63515b42dcdf // indirect
+	golang.org/x/net v0.0.0-20210510120150-4163338589ed // indirect
+	golang.org/x/sys v0.0.0-20210927094055-39ccf1dd6fa6 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.26.0 // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
