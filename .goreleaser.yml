@@ -1,3 +1,8 @@
+blobs:
+  - provider: gs
+    bucket: calyptia_cli_bucket
+    folder: "releases/{{.Version}}"
+
 builds:
   - main: ./cmd/calyptia
     id: calyptia

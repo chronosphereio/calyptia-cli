@@ -1,4 +1,4 @@
-name: Go
+name: CI
 
 on:
   push:
@@ -12,7 +12,7 @@ env:
   GOPRIVATE: github.com/calyptia/cloud
 
 jobs:
-  Go:
+  ci:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -44,6 +44,13 @@ jobs:
 
       - name: Test
         run: go test -race ./...
+
+      - name: Setup google credentials
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+          credentials_file_path: /tmp/gcloud.json
 
       - name: Release
         uses: goreleaser/goreleaser-action@v2
