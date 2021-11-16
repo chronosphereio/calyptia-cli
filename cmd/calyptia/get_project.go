@@ -55,3 +55,21 @@ func newCmdGetProjects(config *config) *cobra.Command {
 
 	return cmd
 }
+
+func (config *config) completeProjectIDs(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	pp, err := config.cloud.Projects(config.ctx, 0)
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveError
+	}
+
+	if len(pp) == 0 {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+
+	out := make([]string, len(pp))
+	for i, p := range pp {
+		out[i] = p.ID
+	}
+
+	return out, cobra.ShellCompDirectiveNoFileComp
+}
