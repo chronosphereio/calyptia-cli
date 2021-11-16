@@ -9,6 +9,7 @@ func newCmdDelete(config *config) *cobra.Command {
 	}
 
 	cmd.AddCommand(
+		newCmdDeleteAgents(config),
 		newCmdDeleteAgent(config),
 		newCmdDeleteAggregator(config),
 		newCmdDeletePipeline(config),

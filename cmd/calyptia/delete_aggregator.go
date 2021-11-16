@@ -28,7 +28,7 @@ func newCmdDeleteAggregator(config *config) *cobra.Command {
 					return fmt.Errorf("could not to read answer: %v", err)
 				}
 
-				answer = strings.ToLower(answer)
+				answer = strings.TrimSpace(strings.ToLower(answer))
 				if answer != "y" && answer != "yes" {
 					return nil
 				}
