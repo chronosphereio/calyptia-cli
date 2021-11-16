@@ -30,16 +30,16 @@ jobs:
           TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         run: git config --global url."https://${TOKEN}@github.com".insteadOf "https://github.com"
 
+      - name: Lint
+        uses: golangci/golangci-lint-action@v2
+        with:
+          version: latest
+
       - name: Download deps
         run: go mod download
 
       - name: Build
         run: go build ./cmd/calyptia
-
-      - name: Lint
-        uses: golangci/golangci-lint-action@v2
-        with:
-          version: latest
 
       - name: Test
         run: go test -race ./...
