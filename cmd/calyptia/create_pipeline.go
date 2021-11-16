@@ -137,7 +137,7 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 				if w, _, err := term.GetSize(int(os.Stdout.Fd())); err == nil {
 					tw.SetAllowedRowLength(w)
 				}
-				tw.AppendRow(table.Row{a.ID, a.Name, a.CreatedAt})
+				tw.AppendRow(table.Row{a.ID, a.Name, a.CreatedAt.Local()})
 				fmt.Println(tw.Render())
 			case "json":
 				err := json.NewEncoder(os.Stdout).Encode(a)

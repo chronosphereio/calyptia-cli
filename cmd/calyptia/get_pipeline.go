@@ -52,7 +52,7 @@ func newCmdGetPipelines(config *config) *cobra.Command {
 				}
 
 				for _, p := range pp {
-					tw.AppendRow(table.Row{p.ID, p.Name, p.ReplicasCount, p.Status.Status, p.CreatedAt})
+					tw.AppendRow(table.Row{p.ID, p.Name, p.ReplicasCount, p.Status.Status, p.CreatedAt.Local()})
 				}
 				fmt.Println(tw.Render())
 			case "json":

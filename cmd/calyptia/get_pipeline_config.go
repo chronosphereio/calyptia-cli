@@ -48,7 +48,7 @@ func newCmdGetPipelineConfigHistory(config *config) *cobra.Command {
 				}
 
 				for _, c := range cc {
-					tw.AppendRow(table.Row{c.ID, c.CreatedAt})
+					tw.AppendRow(table.Row{c.ID, c.CreatedAt.Local()})
 				}
 				fmt.Println(tw.Render())
 			case "json":

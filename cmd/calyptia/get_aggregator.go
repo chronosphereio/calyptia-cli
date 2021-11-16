@@ -36,7 +36,7 @@ func newCmdGetAggregators(config *config) *cobra.Command {
 				}
 
 				for _, a := range aa {
-					tw.AppendRow(table.Row{a.ID, a.Name, a.CreatedAt})
+					tw.AppendRow(table.Row{a.ID, a.Name, a.CreatedAt.Local()})
 				}
 				fmt.Println(tw.Render())
 			case "json":

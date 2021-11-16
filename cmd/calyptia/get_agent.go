@@ -38,7 +38,7 @@ func newCmdGetAgents(config *config) *cobra.Command {
 				}
 
 				for _, a := range aa {
-					tw.AppendRow(table.Row{a.ID, a.Name, a.Type, a.Version, agentStatus(a.LastMetricsAddedAt, time.Minute*-5), a.CreatedAt})
+					tw.AppendRow(table.Row{a.ID, a.Name, a.Type, a.Version, agentStatus(a.LastMetricsAddedAt, time.Minute*-5), a.CreatedAt.Local()})
 				}
 				fmt.Println(tw.Render())
 			case "json":

@@ -32,7 +32,7 @@ func newCmdGetProjects(config *config) *cobra.Command {
 				}
 
 				for _, p := range pp {
-					tw.AppendRow(table.Row{p.ID, p.Name, p.CreatedAt})
+					tw.AppendRow(table.Row{p.ID, p.Name, p.CreatedAt.Local()})
 				}
 				fmt.Println(tw.Render())
 			case "json":
