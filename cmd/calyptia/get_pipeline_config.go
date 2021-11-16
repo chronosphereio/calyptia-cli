@@ -71,7 +71,7 @@ func newCmdGetPipelineConfigHistory(config *config) *cobra.Command {
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.completePipelines)
 
-	_ = cmd.MarkFlagRequired("pipeline-id") // TODO: use default pipeline ID from config cmd.
+	_ = cmd.MarkFlagRequired("pipeline") // TODO: use default pipeline key from config cmd.
 
 	return cmd
 }
