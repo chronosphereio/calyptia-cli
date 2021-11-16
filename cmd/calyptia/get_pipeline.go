@@ -111,9 +111,7 @@ func (config *config) fetchAllPipelines() ([]cloud.AggregatorPipeline, error) {
 					}
 
 					mu.Lock()
-					for _, pip := range got {
-						pipelines = append(pipelines, pip)
-					}
+					pipelines = append(pipelines, got...)
 					mu.Unlock()
 
 					return nil
