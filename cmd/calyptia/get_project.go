@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/calyptia/cloud"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
@@ -56,7 +57,7 @@ func newCmdGetProjects(config *config) *cobra.Command {
 	return cmd
 }
 
-func (config *config) completeProjectIDs(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+func (config *config) completeProjects(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	pp, err := config.cloud.Projects(config.ctx, 0)
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveError
@@ -66,10 +67,47 @@ func (config *config) completeProjectIDs(cmd *cobra.Command, args []string, toCo
 		return nil, cobra.ShellCompDirectiveNoFileComp
 	}
 
-	out := make([]string, len(pp))
-	for i, p := range pp {
-		out[i] = p.ID
+	return projectsKeys(pp), cobra.ShellCompDirectiveNoFileComp
+}
+
+// projectsKeys returns unique project names first and then IDs.
+func projectsKeys(aa []cloud.Project) []string {
+	namesCount := map[string]int{}
+	for _, a := range aa {
+		if _, ok := namesCount[a.Name]; ok {
+			namesCount[a.Name] += 1
+			continue
+		}
+
+		namesCount[a.Name] = 1
 	}
 
-	return out, cobra.ShellCompDirectiveNoFileComp
+	var out []string
+
+	for _, a := range aa {
+		var nameIsUnique bool
+		for name, count := range namesCount {
+			if a.Name == name && count == 1 {
+				nameIsUnique = true
+				break
+			}
+		}
+		if nameIsUnique {
+			out = append(out, a.Name)
+			continue
+		}
+
+		out = append(out, a.ID)
+	}
+
+	return out
+}
+
+func findProjectByName(aa []cloud.Project, name string) (cloud.Project, bool) {
+	for _, a := range aa {
+		if a.Name == name {
+			return a, true
+		}
+	}
+	return cloud.Project{}, false
 }

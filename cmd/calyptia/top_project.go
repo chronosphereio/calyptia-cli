@@ -30,7 +30,7 @@ func newCmdTopProject(config *config) *cobra.Command {
 		Use:               "project id",
 		Short:             "Display metrics from a project",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.completeProjectIDs,
+		ValidArgsFunction: config.completeProjects,
 		// TODO: run an interactive "top" program.
 		RunE: func(cmd *cobra.Command, args []string) error {
 			projectID := args[0]

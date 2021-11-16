@@ -15,12 +15,27 @@ import (
 
 func newCmdGetAggregators(config *config) *cobra.Command {
 	var format string
-	var projectID string
+	var projectKey string
 	var last uint64
 	cmd := &cobra.Command{
 		Use:   "aggregators",
 		Short: "Display latest aggregators from a project",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			projectID := projectKey
+			if !validUUID(projectID) {
+				pp, err := config.cloud.Projects(config.ctx, 0)
+				if err != nil {
+					return err
+				}
+
+				a, ok := findProjectByName(pp, projectKey)
+				if !ok {
+					return nil
+				}
+
+				projectID = a.ID
+			}
+
 			aa, err := config.cloud.Aggregators(config.ctx, projectID, last)
 			if err != nil {
 				return fmt.Errorf("could not fetch your aggregators: %w", err)
@@ -53,13 +68,13 @@ func newCmdGetAggregators(config *config) *cobra.Command {
 
 	fs := cmd.Flags()
 	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
-	fs.StringVar(&projectID, "project-id", "", "Parent project ID")
+	fs.StringVar(&projectKey, "project", "", "Parent project ID or name")
 	fs.Uint64VarP(&last, "last", "l", 0, "Last `N` aggregators. 0 means no limit")
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
-	_ = cmd.RegisterFlagCompletionFunc("project-id", config.completeProjectIDs)
+	_ = cmd.RegisterFlagCompletionFunc("project", config.completeProjects)
 
-	_ = cmd.MarkFlagRequired("project-id") // TODO: use default project ID from config cmd.
+	_ = cmd.MarkFlagRequired("project") // TODO: use default project ID from config cmd.
 
 	return cmd
 }

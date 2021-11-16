@@ -12,13 +12,28 @@ import (
 )
 
 func newCmdCreateAggregator(config *config) *cobra.Command {
-	var projectID string
+	var projectKey string
 	var name string
 	var format string
 	cmd := &cobra.Command{
 		Use:   "aggregator",
 		Short: "Create a new aggregator",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			projectID := projectKey
+			if !validUUID(projectID) {
+				pp, err := config.cloud.Projects(config.ctx, 0)
+				if err != nil {
+					return err
+				}
+
+				a, ok := findProjectByName(pp, projectKey)
+				if !ok {
+					return nil
+				}
+
+				projectID = a.ID
+			}
+
 			a, err := config.cloud.CreateAggregator(config.ctx, cloud.CreateAggregatorPayload{
 				Name: name,
 			}, cloud.CreateAggregatorWithProjectID(projectID))
@@ -49,14 +64,14 @@ func newCmdCreateAggregator(config *config) *cobra.Command {
 	}
 
 	fs := cmd.Flags()
-	fs.StringVar(&projectID, "project-id", "", "Parent project ID")
+	fs.StringVar(&projectKey, "project", "", "Parent project ID or name")
 	fs.StringVar(&name, "name", "", "Aggregator name; leave it empty to generate a random name")
 	fs.StringVarP(&format, "output-format", "f", "table", "Output format. Allowed: table, json")
 
-	_ = cmd.RegisterFlagCompletionFunc("project-id", config.completeProjectIDs)
+	_ = cmd.RegisterFlagCompletionFunc("project", config.completeProjects)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
 
-	_ = cmd.MarkFlagRequired("project-id") // TODO: use default project ID from config cmd.
+	_ = cmd.MarkFlagRequired("project") // TODO: use default project ID from config cmd.
 
 	return cmd
 }
