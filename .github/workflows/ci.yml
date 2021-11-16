@@ -1,4 +1,4 @@
-name: Go
+name: CI
 
 on:
   push:
@@ -12,7 +12,7 @@ env:
   GOPRIVATE: github.com/calyptia/cloud
 
 jobs:
-  Go:
+  ci:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -30,20 +30,27 @@ jobs:
           TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         run: git config --global url."https://${TOKEN}@github.com".insteadOf "https://github.com"
 
+      - name: Lint
+        uses: golangci/golangci-lint-action@v2
+        with:
+          version: latest
+
       - name: Download deps
         run: go mod download
 
       - name: Build
         run: go build ./cmd/calyptia
 
-      - name: Lint
-        uses: golangci/golangci-lint-action@v2
-        with:
-          version: v1.42.1
-          skip-go-installation: true
-
       - name: Test
         run: go test -race ./...
+
+      - name: Setup google credentials
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+          credentials_file_path: /tmp/gcloud.json
 
       - name: Release
         uses: goreleaser/goreleaser-action@v2
