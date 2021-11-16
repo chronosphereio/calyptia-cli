@@ -48,7 +48,11 @@ func newCmdGetPipelinePorts(config *config) *cobra.Command {
 				}
 
 				for _, p := range pp {
-					tw.AppendRow(table.Row{p.ID, p.Protocol, p.FrontendPort, p.BackendPort, p.Endpoint, p.CreatedAt.Local()})
+					endpoint := p.Endpoint
+					if endpoint == "" {
+						endpoint = "Pending"
+					}
+					tw.AppendRow(table.Row{p.ID, p.Protocol, p.FrontendPort, p.BackendPort, endpoint, p.CreatedAt.Local()})
 				}
 				fmt.Println(tw.Render())
 			case "json":

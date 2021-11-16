@@ -129,6 +129,10 @@ func (config *config) completeAggregators(cmd *cobra.Command, args []string, toC
 		return nil, cobra.ShellCompDirectiveError
 	}
 
+	if aa == nil {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+
 	return aggregatorsKeys(aa), cobra.ShellCompDirectiveNoFileComp
 }
 

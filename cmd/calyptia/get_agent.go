@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/campoy/unique"
+	"github.com/calyptia/cloud"
 	"github.com/hako/durafmt"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/spf13/cobra"
@@ -81,45 +81,103 @@ func newCmdGetAgents(config *config) *cobra.Command {
 	return cmd
 }
 
-func (config *config) completeAgentIDs(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	pp, err := config.cloud.Projects(config.ctx, 0)
+func (config *config) completeAgents(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	aa, err := config.fetchAllAgents()
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveError
 	}
 
-	if len(pp) == 0 {
+	if len(aa) == 0 {
 		return nil, cobra.ShellCompDirectiveNoFileComp
 	}
 
-	var out []string
+	return agentsKeys(aa), cobra.ShellCompDirectiveNoFileComp
+}
+
+func (config *config) fetchAllAgents() ([]cloud.Agent, error) {
+	pp, err := config.cloud.Projects(config.ctx, 0)
+	if err != nil {
+		return nil, fmt.Errorf("could not prefetch projects: %w", err)
+	}
+
+	if len(pp) == 0 {
+		return nil, nil
+	}
+
+	var aa []cloud.Agent
 	var mu sync.Mutex
 	g, gctx := errgroup.WithContext(config.ctx)
 	for _, p := range pp {
 		p := p
 		g.Go(func() error {
-			aa, err := config.cloud.Agents(gctx, p.ID, 0)
+			got, err := config.cloud.Agents(gctx, p.ID, 0)
 			if err != nil {
-				return err
+				return fmt.Errorf("could not fetch agents from project: %w", err)
 			}
 
 			mu.Lock()
-			for _, a := range aa {
-				out = append(out, a.ID)
-			}
+			aa = append(aa, got...)
 			mu.Unlock()
 
 			return nil
 		})
 	}
 	if err := g.Wait(); err != nil {
-		return nil, cobra.ShellCompDirectiveNoFileComp
+		return nil, fmt.Errorf("could not fetch projects agents: %w", err)
 	}
 
-	unique.Slice(&out, func(i, j int) bool {
-		return out[i] < out[j]
-	})
+	var uniqueAgents []cloud.Agent
+	agentsIDs := map[string]struct{}{}
+	for _, a := range aa {
+		if _, ok := agentsIDs[a.ID]; !ok {
+			uniqueAgents = append(uniqueAgents, a)
+			agentsIDs[a.ID] = struct{}{}
+		}
+	}
 
-	return out, cobra.ShellCompDirectiveNoFileComp
+	return uniqueAgents, nil
+}
+
+// agentsKeys returns unique agent names first and then IDs.
+func agentsKeys(aa []cloud.Agent) []string {
+	namesCount := map[string]int{}
+	for _, a := range aa {
+		if _, ok := namesCount[a.Name]; ok {
+			namesCount[a.Name] += 1
+			continue
+		}
+
+		namesCount[a.Name] = 1
+	}
+
+	var out []string
+
+	for _, a := range aa {
+		var nameIsUnique bool
+		for name, count := range namesCount {
+			if a.Name == name && count == 1 {
+				nameIsUnique = true
+				break
+			}
+		}
+		if nameIsUnique {
+			out = append(out, a.Name)
+			continue
+		}
+
+		out = append(out, a.ID)
+	}
+
+	return out
+}
+
+func findAgentByName(aa []cloud.Agent, name string) (cloud.Agent, bool) {
+	for _, a := range aa {
+		if a.Name == name {
+			return a, true
+		}
+	}
+	return cloud.Agent{}, false
 }
 
 func agentStatus(lastMetricsAddedAt time.Time, start time.Duration) string {

@@ -10,6 +10,7 @@ func newCmdUpdate(config *config) *cobra.Command {
 
 	cmd.AddCommand(
 		newCmdUpdateProject(config),
+		newCmdUpdateAgent(config),
 		newCmdUpdateAggregator(config),
 		newCmdUpdatePipeline(config),
 	)

@@ -20,9 +20,23 @@ func newCmdTopAgent(config *config) *cobra.Command {
 		Use:               "agent id",
 		Short:             "Display metrics from an agent",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.completeAgentIDs,
+		ValidArgsFunction: config.completeAgents,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			agentID := args[0]
+			agentKey := args[0]
+			agentID := agentKey
+			if !validUUID(agentID) {
+				aa, err := config.fetchAllAgents()
+				if err != nil {
+					return err
+				}
+
+				a, ok := findAgentByName(aa, agentKey)
+				if !ok {
+					return nil
+				}
+
+				agentID = a.ID
+			}
 
 			var agent cloud.Agent
 			var metrics cloud.AgentMetrics
@@ -39,7 +53,7 @@ func newCmdTopAgent(config *config) *cobra.Command {
 			})
 			g.Go(func() error {
 				var err error
-				metrics, err = config.cloud.AgentMetrics(gctx, agentID, start, interval)
+				metrics, err = config.cloud.AgentMetrics(gctx, agentKey, start, interval)
 				if err != nil {
 					return fmt.Errorf("could not fetch agent metrics: %w", err)
 				}

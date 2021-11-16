@@ -133,6 +133,10 @@ func (config *config) completePipelines(cmd *cobra.Command, args []string, toCom
 		return nil, cobra.ShellCompDirectiveError
 	}
 
+	if pp == nil {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+
 	return pipelinesKeys(pp), cobra.ShellCompDirectiveNoFileComp
 }
 
