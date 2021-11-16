@@ -25,10 +25,6 @@ func Test_aggregatorsKeys(t *testing.T) {
 			given: []cloud.Aggregator{{ID: "id-1", Name: "name"}, {ID: "id-2", Name: "name"}, {ID: "id-3", Name: "other-name"}},
 			want:  []string{"id-1", "id-2", "other-name"},
 		},
-		{
-			given: []cloud.Aggregator{{ID: "id-1", Name: "name"}, {ID: "id-2", Name: "name"}, {ID: "id-1", Name: "name"}, {ID: "id-3", Name: "other-name"}},
-			want:  []string{"id-1", "id-2", "other-name"},
-		},
 	}
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
