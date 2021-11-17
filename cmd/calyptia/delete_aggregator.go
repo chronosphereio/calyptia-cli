@@ -10,7 +10,7 @@ import (
 func newCmdDeleteAggregator(config *config) *cobra.Command {
 	var confirmed bool
 	cmd := &cobra.Command{
-		Use:               "aggregator key",
+		Use:               "aggregator AGGREGATOR",
 		Short:             "Delete a single aggregator by ID or name",
 		Args:              cobra.ExactArgs(1),
 		ValidArgsFunction: config.completeAggregators,

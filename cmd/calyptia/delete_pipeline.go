@@ -10,7 +10,7 @@ import (
 func newCmdDeletePipeline(config *config) *cobra.Command {
 	var confirmed bool
 	cmd := &cobra.Command{
-		Use:               "pipeline key",
+		Use:               "pipeline PIPELINE",
 		Short:             "Delete a single pipeline by ID or name",
 		Args:              cobra.ExactArgs(1),
 		ValidArgsFunction: config.completePipelines,

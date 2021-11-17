@@ -17,7 +17,7 @@ func newCmdTopAgent(config *config) *cobra.Command {
 	var start, interval time.Duration
 
 	cmd := &cobra.Command{
-		Use:               "agent key",
+		Use:               "agent AGENT",
 		Short:             "Display metrics from an agent",
 		Args:              cobra.ExactArgs(1),
 		ValidArgsFunction: config.completeAgents,

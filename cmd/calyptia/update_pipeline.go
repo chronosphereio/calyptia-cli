@@ -19,7 +19,7 @@ func newCmdUpdatePipeline(config *config) *cobra.Command {
 	var outputFormat string
 
 	cmd := &cobra.Command{
-		Use:               "pipeline key",
+		Use:               "pipeline PIPELINE",
 		Short:             "Update a single pipeline by ID or name",
 		Args:              cobra.ExactArgs(1),
 		ValidArgsFunction: config.completePipelines,

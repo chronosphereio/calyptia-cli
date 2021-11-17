@@ -27,7 +27,7 @@ func newCmdTopProject(config *config) *cobra.Command {
 	var start, interval time.Duration
 	var last uint64
 	cmd := &cobra.Command{
-		Use:               "project key",
+		Use:               "project PROJECT",
 		Short:             "Display metrics from a project",
 		Args:              cobra.ExactArgs(1),
 		ValidArgsFunction: config.completeProjects,

@@ -14,7 +14,7 @@ func newCmdDeleteAgent(config *config) *cobra.Command {
 	var confirmed bool
 
 	cmd := &cobra.Command{
-		Use:               "agent key",
+		Use:               "agent AGENT",
 		Short:             "Delete a single agent by ID or name",
 		Args:              cobra.ExactArgs(1),
 		ValidArgsFunction: config.completeAgents,

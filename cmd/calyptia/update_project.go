@@ -11,7 +11,7 @@ func newCmdUpdateProject(config *config) *cobra.Command {
 	var newName string
 
 	cmd := &cobra.Command{
-		Use:               "project key",
+		Use:               "project PROJECT",
 		Short:             "Update a single project by ID or name",
 		Args:              cobra.ExactArgs(1),
 		ValidArgsFunction: config.completeProjects,

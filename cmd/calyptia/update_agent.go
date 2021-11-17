@@ -11,7 +11,7 @@ func newCmdUpdateAgent(config *config) *cobra.Command {
 	var newName string
 
 	cmd := &cobra.Command{
-		Use:               "agent key",
+		Use:               "agent AGENT",
 		Short:             "Update a single agent by ID or name",
 		Args:              cobra.ExactArgs(1),
 		ValidArgsFunction: config.completeAgents,

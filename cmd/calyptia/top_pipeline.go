@@ -17,7 +17,7 @@ func newCmdTopPipeline(config *config) *cobra.Command {
 	var start, interval time.Duration
 
 	cmd := &cobra.Command{
-		Use:               "pipeline key",
+		Use:               "pipeline PIPELINE",
 		Short:             "Display metrics from a pipeline",
 		Args:              cobra.ExactArgs(1),
 		ValidArgsFunction: config.completePipelines,
