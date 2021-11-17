@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"github.com/zalando/go-keyring"
 	"golang.org/x/oauth2"
@@ -24,7 +25,7 @@ func saveToken(tok *oauth2.Token) error {
 	}
 
 	err = keyring.Set(serviceName, "token", string(b))
-	if err == keyring.ErrUnsupportedPlatform || errors.Is(err, exec.ErrNotFound) {
+	if err == keyring.ErrUnsupportedPlatform || errors.Is(err, exec.ErrNotFound) || (err != nil && strings.Contains(err.Error(), "failed to unlock correct collection")) {
 		home, err := os.UserHomeDir()
 		if err != nil {
 			return err
@@ -55,7 +56,7 @@ func saveToken(tok *oauth2.Token) error {
 
 func savedToken() (*oauth2.Token, error) {
 	s, err := keyring.Get(serviceName, "token")
-	if err == keyring.ErrUnsupportedPlatform || errors.Is(err, exec.ErrNotFound) {
+	if err == keyring.ErrUnsupportedPlatform || errors.Is(err, exec.ErrNotFound) || (err != nil && strings.Contains(err.Error(), "failed to unlock correct collection")) {
 		err = nil
 
 		home, err := os.UserHomeDir()
