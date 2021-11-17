@@ -4,6 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/fs"
+	"os"
+	"os/exec"
+	"path/filepath"
 
 	"github.com/zalando/go-keyring"
 	"golang.org/x/oauth2"
@@ -19,11 +23,58 @@ func saveToken(tok *oauth2.Token) error {
 		return fmt.Errorf("could not json marshall token: %w", err)
 	}
 
-	return keyring.Set(serviceName, "token", string(b))
+	err = keyring.Set(serviceName, "token", string(b))
+	if err == keyring.ErrUnsupportedPlatform || errors.Is(err, exec.ErrNotFound) {
+		home, err := os.UserHomeDir()
+		if err != nil {
+			return err
+		}
+
+		fileName := filepath.Join(home, ".calyptia", "creds")
+		if _, err := os.Stat(fileName); os.IsNotExist(err) {
+			err = os.MkdirAll(filepath.Dir(fileName), fs.ModePerm)
+			if err != nil {
+				return fmt.Errorf("could not create directory: %w", err)
+			}
+		}
+
+		err = os.WriteFile(fileName, b, fs.ModePerm)
+		if err != nil {
+			return fmt.Errorf("could not store creds: %w", err)
+		}
+
+		return nil
+	}
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func savedToken() (*oauth2.Token, error) {
 	s, err := keyring.Get(serviceName, "token")
+	if err == keyring.ErrUnsupportedPlatform || errors.Is(err, exec.ErrNotFound) {
+		err = nil
+
+		home, err := os.UserHomeDir()
+		if err != nil {
+			return nil, fmt.Errorf("could not get user home dir: %w", err)
+		}
+
+		b, err := readFile(filepath.Join(home, ".calyptia", "creds"))
+		if os.IsNotExist(err) || errors.Is(err, fs.ErrNotExist) {
+			return nil, errTokenNotFound
+		}
+
+		if err != nil {
+			return nil, err
+		}
+
+		s = string(b)
+	}
+
 	if err == keyring.ErrNotFound {
 		return nil, errTokenNotFound
 	}
