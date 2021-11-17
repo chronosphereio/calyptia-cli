@@ -269,6 +269,10 @@ func fmtLatestMetrics(metrics map[string][]cloud.MetricFields, interval time.Dur
 				continue
 			}
 
+			if *curr < *prev {
+				continue
+			}
+
 			secs := interval.Seconds()
 			v := (*curr / secs) - (*prev / secs)
 			val = &v
