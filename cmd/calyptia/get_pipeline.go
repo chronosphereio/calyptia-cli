@@ -44,7 +44,6 @@ func newCmdGetPipelines(config *config) *cobra.Command {
 			switch format {
 			case "table":
 				tw := table.NewWriter()
-				// TODO: use pipeline name.
 				tw.AppendHeader(table.Row{"ID", "Name", "Replicas", "Status", "Created at"})
 				tw.Style().Options = table.OptionsNoBordersAndSeparators
 				if w, _, err := term.GetSize(int(os.Stdout.Fd())); err == nil {
