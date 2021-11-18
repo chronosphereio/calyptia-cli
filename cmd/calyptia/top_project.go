@@ -64,7 +64,9 @@ func newCmdTopProject(config *config) *cobra.Command {
 
 var (
 	itemStyle         = lipgloss.NewStyle().PaddingLeft(4)
+	inactiveItemStyle = lipgloss.NewStyle().PaddingLeft(4).Foreground(lipgloss.AdaptiveColor{Light: "#847A85", Dark: "#979797"})
 	selectedItemStyle = lipgloss.NewStyle().PaddingLeft(2).Foreground(lipgloss.Color("170"))
+	listHeaderStyle   = lipgloss.NewStyle().PaddingLeft(4)
 )
 
 func NewProjectModel(ctx context.Context, cloud *cloudclient.Client, projectKey string, metricsStart, metricsInterval time.Duration, lastAgents uint64) *ProjectModel {
@@ -92,11 +94,12 @@ type ProjectModel struct {
 	loading bool
 	err     error
 
-	agentList      list.Model
-	gotData        bool
-	projectMetrics cloud.ProjectMetrics
-	agents         []cloud.Agent
-	agentMetrics   map[string]cloud.AgentMetrics
+	agentListHeader string
+	agentList       list.Model
+	listInitialized bool
+	projectMetrics  cloud.ProjectMetrics
+	agents          []cloud.Agent
+	agentMetrics    map[string]cloud.AgentMetrics
 }
 
 type FetchProjectDataRequestedMsg struct{}
@@ -179,6 +182,10 @@ func (m *ProjectModel) fetchProjectData() tea.Msg {
 		return g1.Wait()
 	})
 	if err := g.Wait(); err != nil {
+		if m.listInitialized {
+			return nil
+		}
+
 		return GotProjectDataMsg{Err: err}
 	}
 
@@ -192,7 +199,7 @@ func (m *ProjectModel) fetchProjectData() tea.Msg {
 func (m *ProjectModel) Update(msg tea.Msg) (*ProjectModel, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
-		if m.gotData {
+		if m.listInitialized {
 			m.agentList.SetWidth(msg.Width)
 		}
 		return m, nil
@@ -200,14 +207,13 @@ func (m *ProjectModel) Update(msg tea.Msg) (*ProjectModel, tea.Cmd) {
 		m.loading = true
 		return m, m.fetchProjectData
 	case GotProjectDataMsg:
-		m.loading = false
-		m.gotData = true
-
 		if err := msg.Err; err != nil {
+			m.loading = false
 			m.err = err
 			return m, nil
 		}
 
+		m.loading = false
 		m.projectMetrics = msg.ProjectMetrics
 		m.agents = msg.Agents
 		m.agentMetrics = msg.AgentMetrics
@@ -244,18 +250,96 @@ func (m *ProjectModel) Update(msg tea.Msg) (*ProjectModel, tea.Cmd) {
 		}
 
 		defaultWidth, defaultHeigth := 36, 17
-		// if w, h, err := term.GetSize(int(os.Stdin.Fd())); err == nil {
-		// 	defaultWidth = w
-		// 	defaultHeigth = h
-		// }
+		if w, h, err := term.GetSize(int(os.Stdin.Fd())); err == nil {
+			defaultWidth = w
+			_ = h
+			// defaultHeigth = h
+		}
 
-		m.agentList = list.NewModel(items, itemDelegate{}, defaultWidth, defaultHeigth)
-		m.agentList.Title = "Agents"
+		if m.listInitialized {
+			m.agentList.SetItems(items)
+		} else {
+			m.agentList = list.NewModel(items, itemDelegate{}, defaultWidth, defaultHeigth)
+			m.agentList.SetShowTitle(false)
+			m.agentList.SetShowStatusBar(false)
+			m.agentList.SetShowFilter(false)
+		}
+		{
+			var cells []string
+			{
+				max := maxAgentListColumn(m.agentList, lipgloss.Width("AGENT"), func(item agentListItem) string { return item.agent.Name })
+				cells = append(cells, lipgloss.NewStyle().Width(max).Render("AGENT"))
+			}
+			{
+				max := maxAgentListColumn(m.agentList, lipgloss.Width("TYPE"), func(item agentListItem) string { return string(item.agent.Type) })
+				cells = append(cells, lipgloss.NewStyle().Width(max).Render("TYPE"))
+			}
+			{
+				max := maxAgentListColumn(m.agentList, lipgloss.Width("VERSION"), func(item agentListItem) string { return item.agent.Version })
+				cells = append(cells, lipgloss.NewStyle().Width(max).Render("VERSION"))
+			}
+			{
+				max := maxAgentListColumn(m.agentList, lipgloss.Width("INPUT"), func(item agentListItem) string { return item.values.input })
+				if max != 0 {
+					cells = append(cells, lipgloss.NewStyle().Width(max).Render("INPUT"))
+				}
+			}
+			{
+				max := maxAgentListColumn(m.agentList, 0, func(item agentListItem) string { return item.values.output })
+				if max != 0 {
+					if w := lipgloss.Width("OUTPUT"); w > max {
+						max = w
+					}
+					cells = append(cells, lipgloss.NewStyle().Width(max).Render("OUTPUT"))
+				}
+			}
+			{
+				max := maxAgentListColumn(m.agentList, 0, func(item agentListItem) string { return item.values.filter })
+				if max != 0 {
+					if w := lipgloss.Width("FILTER"); w > max {
+						max = w
+					}
+					cells = append(cells, lipgloss.NewStyle().Width(max).Render("FILTER"))
+				}
+			}
+			{
+				max := maxAgentListColumn(m.agentList, 0, func(item agentListItem) string { return item.values.storage })
+				if max != 0 {
+					if w := lipgloss.Width("STORAGE"); w > max {
+						max = w
+					}
+					cells = append(cells, lipgloss.NewStyle().Width(max).Render("STORAGE"))
+				}
+			}
+			{
+				max := maxAgentListColumn(m.agentList, 0, func(item agentListItem) string { return item.values.multiOutput })
+				if max != 0 {
+					if w := lipgloss.Width("MULTI OUTPUT"); w > max {
+						max = w
+					}
+					cells = append(cells, lipgloss.NewStyle().Width(max).Render("MULTI OUTPUT"))
+				}
+			}
+			{
+				max := maxAgentListColumn(m.agentList, 0, func(item agentListItem) string { return item.values.bareOutput })
+				if max != 0 {
+					if w := lipgloss.Width("BARE OUTPUT"); w > max {
+						max = w
+					}
+					cells = append(cells, lipgloss.NewStyle().Width(max).Render("BARE OUTPUT"))
+				}
+			}
+			m.agentListHeader = strings.Join(cells, "  ")
+		}
 
-		return m, nil
+		m.listInitialized = true
+
+		return m, tea.Tick(time.Second*30, func(time.Time) tea.Msg {
+			return m.fetchProjectData()
+		})
 	}
 
-	if m.gotData {
+	if m.listInitialized {
 		var cmd tea.Cmd
 		m.agentList, cmd = m.agentList.Update(msg)
 		return m, cmd
@@ -273,7 +357,7 @@ func (m *ProjectModel) View() string {
 		return fmt.Sprintf("Error: %v", err)
 	}
 
-	if !m.gotData {
+	if !m.listInitialized {
 		return ""
 	}
 
@@ -317,6 +401,7 @@ func (m *ProjectModel) View() string {
 	}
 
 	doc.WriteString("\n")
+	doc.WriteString(listHeaderStyle.Render(m.agentListHeader) + "\n")
 	doc.WriteString(m.agentList.View())
 
 	return doc.String()
@@ -351,37 +436,51 @@ func (d itemDelegate) Render(w io.Writer, m list.Model, index int, listItem list
 		return
 	}
 
-	str := fmt.Sprintf("%s | %s | %s", i.agent.Name, i.agent.Type, i.agent.Version)
-	var values []string
+	var cells []string
+	{
+		max := maxAgentListColumn(m, lipgloss.Width("AGENT"), func(item agentListItem) string { return item.agent.Name })
+		cells = append(cells, lipgloss.NewStyle().Width(max).Render(i.agent.Name))
+	}
+	{
+		max := maxAgentListColumn(m, lipgloss.Width("TYPE"), func(item agentListItem) string { return string(item.agent.Type) })
+		cells = append(cells, lipgloss.NewStyle().Width(max).Render(string(i.agent.Type)))
+	}
+	{
+		max := maxAgentListColumn(m, lipgloss.Width("VERSION"), func(item agentListItem) string { return item.agent.Version })
+		cells = append(cells, lipgloss.NewStyle().Width(max).Render(i.agent.Version))
+	}
 	if i.values.input != "" {
-		max := maxAgentListValue(m, func(item agentListItem) string { return item.values.input })
-		values = append(values, withWhitespace(i.values.input, max))
+		max := maxAgentListColumn(m, lipgloss.Width("INPUT"), func(item agentListItem) string { return item.values.input })
+		cells = append(cells, lipgloss.NewStyle().Width(max).Render(i.values.input))
 	}
 	if i.values.output != "" {
-		max := maxAgentListValue(m, func(item agentListItem) string { return item.values.output })
-		values = append(values, withWhitespace(i.values.output, max))
+		max := maxAgentListColumn(m, lipgloss.Width("OUTPUT"), func(item agentListItem) string { return item.values.output })
+		cells = append(cells, lipgloss.NewStyle().Width(max).Render(i.values.output))
 	}
 	if i.values.filter != "" {
-		max := maxAgentListValue(m, func(item agentListItem) string { return item.values.filter })
-		values = append(values, withWhitespace(i.values.filter, max))
+		max := maxAgentListColumn(m, lipgloss.Width("FILTER"), func(item agentListItem) string { return item.values.filter })
+		cells = append(cells, lipgloss.NewStyle().Width(max).Render(i.values.filter))
 	}
 	if i.values.storage != "" {
-		max := maxAgentListValue(m, func(item agentListItem) string { return item.values.storage })
-		values = append(values, withWhitespace(i.values.storage, max))
+		max := maxAgentListColumn(m, lipgloss.Width("STORAGE"), func(item agentListItem) string { return item.values.storage })
+		cells = append(cells, lipgloss.NewStyle().Width(max).Render(i.values.storage))
 	}
 	if i.values.multiOutput != "" {
-		max := maxAgentListValue(m, func(item agentListItem) string { return item.values.multiOutput })
-		values = append(values, withWhitespace(i.values.multiOutput, max))
+		max := maxAgentListColumn(m, lipgloss.Width("MULTI OUTPUT"), func(item agentListItem) string { return item.values.multiOutput })
+		cells = append(cells, lipgloss.NewStyle().Width(max).Render(i.values.multiOutput))
 	}
 	if i.values.bareOutput != "" {
-		max := maxAgentListValue(m, func(item agentListItem) string { return item.values.bareOutput })
-		values = append(values, withWhitespace(i.values.bareOutput, max))
-	}
-	if len(values) != 0 {
-		str += " | " + strings.Join(values, " | ")
+		max := maxAgentListColumn(m, lipgloss.Width("BARE OUTPUT"), func(item agentListItem) string { return item.values.bareOutput })
+		cells = append(cells, lipgloss.NewStyle().Width(max).Render(i.values.bareOutput))
 	}
 
+	str := strings.Join(cells, "  ")
+
 	fn := itemStyle.Render
+	if i.values.input == "" && i.values.output == "" && i.values.filter == "" && i.values.storage == "" && i.values.multiOutput == "" && i.values.bareOutput == "" {
+		fn = inactiveItemStyle.Render
+	}
+
 	if index == m.Index() {
 		fn = func(s string) string {
 			return selectedItemStyle.Render("> " + s)
@@ -391,8 +490,8 @@ func (d itemDelegate) Render(w io.Writer, m list.Model, index int, listItem list
 	fmt.Fprint(w, fn(str))
 }
 
-func maxAgentListValue(m list.Model, fn func(agentListItem) string) int {
-	var max int
+func maxAgentListColumn(m list.Model, min int, fn func(agentListItem) string) int {
+	max := min
 	for _, v := range m.Items() {
 		if item, ok := v.(agentListItem); ok {
 			if w := lipgloss.Width(fn(item)); w > max {
@@ -401,16 +500,6 @@ func maxAgentListValue(m list.Model, fn func(agentListItem) string) int {
 		}
 	}
 	return max
-}
-
-func withWhitespace(s string, max int) string {
-	w := lipgloss.Width(s)
-	repeat := max - w
-	if repeat < 0 {
-		repeat = 0
-	}
-	spaces := strings.Repeat(" ", repeat)
-	return spaces + s
 }
 
 func measurementNames(m map[string]cloud.ProjectMeasurement) []string {
