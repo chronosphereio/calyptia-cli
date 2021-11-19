@@ -15,18 +15,27 @@ import (
 	"github.com/calyptia/cloud"
 	cloudclient "github.com/calyptia/cloud/client"
 	"github.com/charmbracelet/bubbles/list"
+	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/jedib0t/go-pretty/v6/table"
+	"github.com/muesli/reflow/wordwrap"
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/term"
 )
 
-var titleStyle = lipgloss.NewStyle().
-	Background(lipgloss.Color("62")).
-	Foreground(lipgloss.Color("230")).
-	Padding(0, 1)
+var (
+	docStyle           = lipgloss.NewStyle().Padding(1)
+	hintStyle          = lipgloss.NewStyle().Padding(1, 0, 0, 2).Foreground(lipgloss.AdaptiveColor{Light: "#847A85", Dark: "#979797"})
+	titleStyle         = lipgloss.NewStyle().Padding(0, 1).MarginLeft(2).Background(lipgloss.Color("62")).Foreground(lipgloss.Color("230")).Bold(true)
+	errorStyle         = lipgloss.NewStyle().Foreground(lipgloss.Color("#FF1744"))
+	overviewTableStyle = lipgloss.NewStyle().Padding(1)
+	itemStyle          = lipgloss.NewStyle().PaddingLeft(2)
+	inactiveItemStyle  = lipgloss.NewStyle().PaddingLeft(2).Foreground(lipgloss.AdaptiveColor{Light: "#847A85", Dark: "#979797"})
+	selectedItemStyle  = lipgloss.NewStyle().PaddingLeft(0).Foreground(lipgloss.Color("170"))
+	listHeaderStyle    = lipgloss.NewStyle().PaddingLeft(2).Bold(true)
+)
 
 func newCmdTopProject(config *config) *cobra.Command {
 	var start, interval time.Duration
@@ -62,13 +71,6 @@ func newCmdTopProject(config *config) *cobra.Command {
 	return cmd
 }
 
-var (
-	itemStyle         = lipgloss.NewStyle().PaddingLeft(4)
-	inactiveItemStyle = lipgloss.NewStyle().PaddingLeft(4).Foreground(lipgloss.AdaptiveColor{Light: "#847A85", Dark: "#979797"})
-	selectedItemStyle = lipgloss.NewStyle().PaddingLeft(2).Foreground(lipgloss.Color("170"))
-	listHeaderStyle   = lipgloss.NewStyle().PaddingLeft(4)
-)
-
 func NewProjectModel(ctx context.Context, cloud *cloudclient.Client, projectKey string, metricsStart, metricsInterval time.Duration, lastAgents uint64) *ProjectModel {
 	return &ProjectModel{
 		Ctx:             ctx,
@@ -79,6 +81,11 @@ func NewProjectModel(ctx context.Context, cloud *cloudclient.Client, projectKey 
 		MetricsInterval: metricsInterval,
 		LastAgents:      lastAgents,
 		loading:         true,
+		spinner: func() spinner.Model {
+			m := spinner.NewModel()
+			m.Spinner = spinner.Dot
+			return m
+		}(),
 	}
 }
 
@@ -91,10 +98,11 @@ type ProjectModel struct {
 	MetricsInterval time.Duration
 	LastAgents      uint64
 
+	spinner spinner.Model
+
 	loading bool
 	err     error
 
-	agentListHeader string
 	agentList       list.Model
 	listInitialized bool
 	projectMetrics  cloud.ProjectMetrics
@@ -105,7 +113,10 @@ type ProjectModel struct {
 type FetchProjectDataRequestedMsg struct{}
 
 func (m *ProjectModel) Init() tea.Cmd {
-	return func() tea.Msg { return FetchProjectDataRequestedMsg{} }
+	return tea.Batch(
+		spinner.Tick,
+		func() tea.Msg { return FetchProjectDataRequestedMsg{} },
+	)
 }
 
 type GotProjectDataMsg struct {
@@ -220,31 +231,9 @@ func (m *ProjectModel) Update(msg tea.Msg) (*ProjectModel, tea.Cmd) {
 
 		items := make([]list.Item, len(m.agents))
 		for i, a := range m.agents {
-			item := agentListItem{
-				agent: a,
-			}
+			item := agentListItem{agent: a}
 			if metrics, ok := m.agentMetrics[a.ID]; ok {
-				for _, measurementName := range agentMeasurementNames(metrics.Measurements) {
-					measurement := metrics.Measurements[measurementName]
-					values := fmtLatestMetrics(measurement.Totals, m.MetricsInterval)
-					if len(values) != 0 {
-						value := strings.Join(values, ", ")
-						switch cloud.MeasurementType(measurementName) {
-						case cloud.FluentbitInputMeasurementType, cloud.FluentdInputMeasurementType:
-							item.values.input = value
-						case cloud.FluentbitOutputMeasurementType, cloud.FluentdOutputMeasurementType:
-							item.values.output = value
-						case cloud.FluentbitFilterMeasurementType, cloud.FluentdFilterMeasurementType:
-							item.values.filter = value
-						case cloud.FluentbitStorageMeasurementType, cloud.FluentdStorageMeasurementType:
-							item.values.storage = value
-						case cloud.FluentdMultiOutputMeasurementType:
-							item.values.multiOutput = value
-						case cloud.FluentdBareOutputMeasurementType:
-							item.values.bareOutput = value
-						}
-					}
-				}
+				item.values = makeAgentMeasurementValues(metrics, m.MetricsInterval)
 			}
 			items[i] = item
 		}
@@ -253,6 +242,7 @@ func (m *ProjectModel) Update(msg tea.Msg) (*ProjectModel, tea.Cmd) {
 		if w, h, err := term.GetSize(int(os.Stdin.Fd())); err == nil {
 			defaultWidth = w
 			_ = h
+			// TODO: setup view height.
 			// defaultHeigth = h
 		}
 
@@ -263,73 +253,8 @@ func (m *ProjectModel) Update(msg tea.Msg) (*ProjectModel, tea.Cmd) {
 			m.agentList.SetShowTitle(false)
 			m.agentList.SetShowStatusBar(false)
 			m.agentList.SetShowFilter(false)
-		}
-		{
-			var cells []string
-			{
-				max := maxAgentListColumn(m.agentList, lipgloss.Width("AGENT"), func(item agentListItem) string { return item.agent.Name })
-				cells = append(cells, lipgloss.NewStyle().Width(max).Render("AGENT"))
-			}
-			{
-				max := maxAgentListColumn(m.agentList, lipgloss.Width("TYPE"), func(item agentListItem) string { return string(item.agent.Type) })
-				cells = append(cells, lipgloss.NewStyle().Width(max).Render("TYPE"))
-			}
-			{
-				max := maxAgentListColumn(m.agentList, lipgloss.Width("VERSION"), func(item agentListItem) string { return item.agent.Version })
-				cells = append(cells, lipgloss.NewStyle().Width(max).Render("VERSION"))
-			}
-			{
-				max := maxAgentListColumn(m.agentList, lipgloss.Width("INPUT"), func(item agentListItem) string { return item.values.input })
-				if max != 0 {
-					cells = append(cells, lipgloss.NewStyle().Width(max).Render("INPUT"))
-				}
-			}
-			{
-				max := maxAgentListColumn(m.agentList, 0, func(item agentListItem) string { return item.values.output })
-				if max != 0 {
-					if w := lipgloss.Width("OUTPUT"); w > max {
-						max = w
-					}
-					cells = append(cells, lipgloss.NewStyle().Width(max).Render("OUTPUT"))
-				}
-			}
-			{
-				max := maxAgentListColumn(m.agentList, 0, func(item agentListItem) string { return item.values.filter })
-				if max != 0 {
-					if w := lipgloss.Width("FILTER"); w > max {
-						max = w
-					}
-					cells = append(cells, lipgloss.NewStyle().Width(max).Render("FILTER"))
-				}
-			}
-			{
-				max := maxAgentListColumn(m.agentList, 0, func(item agentListItem) string { return item.values.storage })
-				if max != 0 {
-					if w := lipgloss.Width("STORAGE"); w > max {
-						max = w
-					}
-					cells = append(cells, lipgloss.NewStyle().Width(max).Render("STORAGE"))
-				}
-			}
-			{
-				max := maxAgentListColumn(m.agentList, 0, func(item agentListItem) string { return item.values.multiOutput })
-				if max != 0 {
-					if w := lipgloss.Width("MULTI OUTPUT"); w > max {
-						max = w
-					}
-					cells = append(cells, lipgloss.NewStyle().Width(max).Render("MULTI OUTPUT"))
-				}
-			}
-			{
-				max := maxAgentListColumn(m.agentList, 0, func(item agentListItem) string { return item.values.bareOutput })
-				if max != 0 {
-					if w := lipgloss.Width("BARE OUTPUT"); w > max {
-						max = w
-					}
-					cells = append(cells, lipgloss.NewStyle().Width(max).Render("BARE OUTPUT"))
-				}
-			}
-			m.agentListHeader = strings.Join(cells, "  ")
+			m.agentList.Styles.HelpStyle.PaddingLeft(0).PaddingBottom(0)
+			// m.agentList.Styles.PaginationStyle.PaddingLeft(0)
 		}
 
 		m.listInitialized = true
@@ -337,6 +262,12 @@ func (m *ProjectModel) Update(msg tea.Msg) (*ProjectModel, tea.Cmd) {
 		return m, tea.Tick(time.Second*30, func(time.Time) tea.Msg {
 			return m.fetchProjectData()
 		})
+	}
+
+	if m.loading {
+		var cmd tea.Cmd
+		m.spinner, cmd = m.spinner.Update(msg)
+		return m, cmd
 	}
 
 	if m.listInitialized {
@@ -350,11 +281,15 @@ func (m *ProjectModel) Update(msg tea.Msg) (*ProjectModel, tea.Cmd) {
 
 func (m *ProjectModel) View() string {
 	if m.loading {
-		return "Loading..."
+		return hintStyle.Render(m.spinner.View() + " Loading...")
 	}
 
 	if err := m.err; err != nil {
-		return fmt.Sprintf("Error: %v", err)
+		limit := 36 - docStyle.GetPaddingLeft() - docStyle.GetPaddingRight()
+		if w, _, err := term.GetSize(int(os.Stdin.Fd())); err == nil {
+			limit = w - docStyle.GetPaddingLeft() - docStyle.GetPaddingRight()
+		}
+		return wordwrap.String(errorStyle.Render(fmt.Sprintf("Error: %v", err)), limit)
 	}
 
 	if !m.listInitialized {
@@ -364,10 +299,10 @@ func (m *ProjectModel) View() string {
 	var doc strings.Builder
 
 	{
-		doc.WriteString(titleStyle.Render("Metrics") + "\n")
+		doc.WriteString(titleStyle.Render("Overview") + "\n")
 
 		if len(m.projectMetrics.Measurements) == 0 {
-			doc.WriteString("No project metrics to display\n")
+			doc.WriteString(hintStyle.Render("No overview metrics to display") + "\n")
 		} else {
 			tw := table.NewWriter()
 			tw.Style().Options = table.OptionsNoBordersAndSeparators
@@ -396,15 +331,111 @@ func (m *ProjectModel) View() string {
 					tw.AppendRow(table.Row{fmt.Sprintf("%s (%s)", pluginName, measurementName), value})
 				}
 			}
-			doc.WriteString(tw.Render() + "\n")
+			doc.WriteString(overviewTableStyle.Render(tw.Render()) + "\n")
 		}
 	}
 
-	doc.WriteString("\n")
-	doc.WriteString(listHeaderStyle.Render(m.agentListHeader) + "\n")
+	doc.WriteString(listHeaderStyle.Render(m.viewAgentListHeader()) + "\n")
 	doc.WriteString(m.agentList.View())
 
 	return doc.String()
+}
+
+func (m *ProjectModel) viewAgentListHeader() string {
+	var cells []string
+	{
+		max := maxAgentListColumn(m.agentList, lipgloss.Width("AGENT"), func(item agentListItem) string { return item.agent.Name })
+		cells = append(cells, lipgloss.NewStyle().Width(max).Render("AGENT"))
+	}
+	{
+		max := maxAgentListColumn(m.agentList, lipgloss.Width("TYPE"), func(item agentListItem) string { return string(item.agent.Type) })
+		cells = append(cells, lipgloss.NewStyle().Width(max).Render("TYPE"))
+	}
+	{
+		max := maxAgentListColumn(m.agentList, lipgloss.Width("VERSION"), func(item agentListItem) string { return item.agent.Version })
+		cells = append(cells, lipgloss.NewStyle().Width(max).Render("VERSION"))
+	}
+	{
+		max := maxAgentListColumn(m.agentList, 0, func(item agentListItem) string { return item.values.input })
+		if max != 0 {
+			if w := lipgloss.Width("INPUT"); w > max {
+				max = w
+			}
+			cells = append(cells, lipgloss.NewStyle().Width(max).Render("INPUT"))
+		}
+	}
+	{
+		max := maxAgentListColumn(m.agentList, 0, func(item agentListItem) string { return item.values.output })
+		if max != 0 {
+			if w := lipgloss.Width("OUTPUT"); w > max {
+				max = w
+			}
+			cells = append(cells, lipgloss.NewStyle().Width(max).Render("OUTPUT"))
+		}
+	}
+	{
+		max := maxAgentListColumn(m.agentList, 0, func(item agentListItem) string { return item.values.filter })
+		if max != 0 {
+			if w := lipgloss.Width("FILTER"); w > max {
+				max = w
+			}
+			cells = append(cells, lipgloss.NewStyle().Width(max).Render("FILTER"))
+		}
+	}
+	{
+		max := maxAgentListColumn(m.agentList, 0, func(item agentListItem) string { return item.values.storage })
+		if max != 0 {
+			if w := lipgloss.Width("STORAGE"); w > max {
+				max = w
+			}
+			cells = append(cells, lipgloss.NewStyle().Width(max).Render("STORAGE"))
+		}
+	}
+	{
+		max := maxAgentListColumn(m.agentList, 0, func(item agentListItem) string { return item.values.multiOutput })
+		if max != 0 {
+			if w := lipgloss.Width("MULTI OUTPUT"); w > max {
+				max = w
+			}
+			cells = append(cells, lipgloss.NewStyle().Width(max).Render("MULTI OUTPUT"))
+		}
+	}
+	{
+		max := maxAgentListColumn(m.agentList, 0, func(item agentListItem) string { return item.values.bareOutput })
+		if max != 0 {
+			if w := lipgloss.Width("BARE OUTPUT"); w > max {
+				max = w
+			}
+			cells = append(cells, lipgloss.NewStyle().Width(max).Render("BARE OUTPUT"))
+		}
+	}
+	return strings.Join(cells, "  ")
+}
+
+func makeAgentMeasurementValues(metrics cloud.AgentMetrics, interval time.Duration) agentMeasurementValues {
+	var out agentMeasurementValues
+	for _, measurementName := range agentMeasurementNames(metrics.Measurements) {
+		measurement := metrics.Measurements[measurementName]
+		values := fmtLatestMetrics(measurement.Totals, interval)
+		if len(values) != 0 {
+			value := strings.Join(values, ", ")
+			switch cloud.MeasurementType(measurementName) {
+			case cloud.FluentbitInputMeasurementType, cloud.FluentdInputMeasurementType:
+				out.input = value
+			case cloud.FluentbitOutputMeasurementType, cloud.FluentdOutputMeasurementType:
+				out.output = value
+			case cloud.FluentbitFilterMeasurementType, cloud.FluentdFilterMeasurementType:
+				out.filter = value
+			case cloud.FluentbitStorageMeasurementType, cloud.FluentdStorageMeasurementType:
+				out.storage = value
+			case cloud.FluentdMultiOutputMeasurementType:
+				out.multiOutput = value
+			case cloud.FluentdBareOutputMeasurementType:
+				out.bareOutput = value
+			}
+		}
+	}
+	return out
 }
 
 type agentListItem struct {

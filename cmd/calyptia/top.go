@@ -1,6 +1,8 @@
 package main
 
 import (
+	"strings"
+
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
 )
@@ -66,33 +68,41 @@ func (m *Model) Init() tea.Cmd {
 }
 
 func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	var cmds []tea.Cmd
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "q", "esc", "ctrl+c":
-			return m, tea.Quit
+			cmds = append(cmds, tea.Quit)
 		}
 
 	case WentToProjectViewMsg:
 		m.currentView = ViewProject
 		m.viewHistory = append(m.viewHistory, m.currentView)
-		return m, nil
 	}
 
 	switch m.currentView {
 	case ViewProject:
 		var cmd tea.Cmd
 		m.projectModel, cmd = m.projectModel.Update(msg)
-		return m, cmd
+		cmds = append(cmds, cmd)
 	}
 
-	return m, nil
+	switch len(cmds) {
+	case 0:
+		return m, nil
+	case 1:
+		return m, cmds[0]
+	default:
+		return m, tea.Batch(cmds...)
+	}
 }
 
 func (m *Model) View() string {
+	var doc strings.Builder
 	switch m.currentView {
 	case ViewProject:
-		return m.projectModel.View()
+		doc.WriteString(m.projectModel.View())
 	}
-	return ""
+	return docStyle.Render(doc.String())
 }
