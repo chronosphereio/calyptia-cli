@@ -74,7 +74,7 @@ func newCmd(ctx context.Context) *cobra.Command {
 		Version: version,
 	}
 
-	fs := cmd.Flags()
+	fs := cmd.PersistentFlags()
 	fs.StringVar(&config.auth0.Domain, "auth0-domain", env("AUTH0_DOMAIN", "sso.calyptia.com"), "Auth0 domain")
 	fs.StringVar(&config.auth0.ClientID, "auth0-client-id", env("AUTH0_CLIENT_ID", defaultAuth0ClientID), "Auth0 client ID")
 	fs.StringVar(&config.auth0.Audience, "auth0-audience", env("AUTH0_AUDIENCE", "https://config.calyptia.com"), "Auth0 audience")
