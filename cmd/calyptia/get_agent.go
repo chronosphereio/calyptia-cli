@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -8,6 +9,7 @@ import (
 	"time"
 
 	"github.com/calyptia/cloud"
+	cloudclient "github.com/calyptia/cloud/client"
 	"github.com/hako/durafmt"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/spf13/cobra"
@@ -95,7 +97,11 @@ func (config *config) completeAgents(cmd *cobra.Command, args []string, toComple
 }
 
 func (config *config) fetchAllAgents() ([]cloud.Agent, error) {
-	pp, err := config.cloud.Projects(config.ctx, 0)
+	return fetchAllAgents(config.cloud, config.ctx)
+}
+
+func fetchAllAgents(client *cloudclient.Client, ctx context.Context) ([]cloud.Agent, error) {
+	pp, err := client.Projects(ctx, 0)
 	if err != nil {
 		return nil, fmt.Errorf("could not prefetch projects: %w", err)
 	}
@@ -106,11 +112,11 @@ func (config *config) fetchAllAgents() ([]cloud.Agent, error) {
 
 	var aa []cloud.Agent
 	var mu sync.Mutex
-	g, gctx := errgroup.WithContext(config.ctx)
+	g, gctx := errgroup.WithContext(ctx)
 	for _, p := range pp {
 		p := p
 		g.Go(func() error {
-			got, err := config.cloud.Agents(gctx, p.ID, 0)
+			got, err := client.Agents(gctx, p.ID, 0)
 			if err != nil {
 				return fmt.Errorf("could not fetch agents from project: %w", err)
 			}

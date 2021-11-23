@@ -11,7 +11,6 @@ import (
 	"sync"
 	"time"
 
-	"code.cloudfoundry.org/bytefmt"
 	"github.com/calyptia/cloud"
 	cloudclient "github.com/calyptia/cloud/client"
 	"github.com/charmbracelet/bubbles/list"
@@ -48,13 +47,12 @@ func newCmdTopProject(config *config) *cobra.Command {
 		// TODO: run an interactive "top" program.
 		RunE: func(cmd *cobra.Command, args []string) error {
 			projectKey := args[0]
-			initialModel := NewModel(
-				WithProject(NewProjectModel(config.ctx, config.cloud, projectKey, start, interval, last)),
-			)
-			p := tea.NewProgram(initialModel)
-			p.EnterAltScreen()
-
-			err := p.Start()
+			initialModel := &Model{
+				StartingProjectKey: projectKey,
+				ProjectModel:       NewProjectModel(config.ctx, config.cloud, projectKey, start, interval, last),
+				AgentModel:         NewAgentModel(config.ctx, config.cloud, projectKey, start, interval),
+			}
+			err := tea.NewProgram(initialModel, tea.WithAltScreen()).Start()
 			if err != nil {
 				return fmt.Errorf("could not run program: %w", err)
 			}
@@ -81,33 +79,56 @@ func NewProjectModel(ctx context.Context, cloud *cloudclient.Client, projectKey 
 		MetricsInterval: metricsInterval,
 		LastAgents:      lastAgents,
 		loading:         true,
-		spinner: func() spinner.Model {
+		Spinner: func() spinner.Model {
 			m := spinner.NewModel()
 			m.Spinner = spinner.Dot
 			return m
+		}(),
+		AgentList: func() list.Model {
+			defaultWidth, defaultHeigth := 36, 17
+			if w, h, err := term.GetSize(int(os.Stdin.Fd())); err == nil {
+				defaultWidth = w - docStyle.GetPaddingLeft() - docStyle.GetPaddingRight()
+				_ = h
+				// TODO: setup view height.
+				// defaultHeigth = h
+			}
+
+			agentList := list.NewModel([]list.Item{}, agentItemDelegate{}, defaultWidth, defaultHeigth)
+			agentList.SetShowTitle(false)
+			agentList.SetShowStatusBar(false)
+			agentList.SetShowFilter(false)
+			agentList.Styles.HelpStyle.PaddingLeft(0).PaddingBottom(0)
+			// agentList.Styles.PaginationStyle.PaddingLeft(0)
+			return agentList
 		}(),
 	}
 }
 
 type ProjectModel struct {
-	Ctx             context.Context
-	Cloud           *cloudclient.Client
-	ProjectKey      string
-	projectID       string
+	projectID string
+
+	ProjectKey string
+	Ctx        context.Context
+	Cloud      *cloudclient.Client
+
 	MetricsStart    time.Duration
 	MetricsInterval time.Duration
 	LastAgents      uint64
 
-	spinner spinner.Model
+	AgentList list.Model
+	Spinner   spinner.Model
 
 	loading bool
 	err     error
 
-	agentList       list.Model
-	listInitialized bool
-	projectMetrics  cloud.ProjectMetrics
-	agents          []cloud.Agent
-	agentMetrics    map[string]cloud.AgentMetrics
+	dataReady      bool
+	projectMetrics cloud.ProjectMetrics
+	agents         []cloud.Agent
+	agentsMetrics  map[string]cloud.AgentMetrics
+}
+
+func (m *ProjectModel) SetProjectID(projectID string) {
+	m.projectID = projectID
 }
 
 type FetchProjectDataRequestedMsg struct{}
@@ -123,7 +144,7 @@ type GotProjectDataMsg struct {
 	Err            error
 	ProjectMetrics cloud.ProjectMetrics
 	Agents         []cloud.Agent
-	AgentMetrics   map[string]cloud.AgentMetrics
+	AgentsMetrics  map[string]cloud.AgentMetrics
 }
 
 func (m *ProjectModel) fetchProjectData() tea.Msg {
@@ -193,7 +214,9 @@ func (m *ProjectModel) fetchProjectData() tea.Msg {
 		return g1.Wait()
 	})
 	if err := g.Wait(); err != nil {
-		if m.listInitialized {
+		if m.dataReady {
+			// Ignore errors if we already have data.
+			// TODO: maybe log it to a file?
 			return nil
 		}
 
@@ -203,20 +226,31 @@ func (m *ProjectModel) fetchProjectData() tea.Msg {
 	return GotProjectDataMsg{
 		ProjectMetrics: projectMetrics,
 		Agents:         agents,
-		AgentMetrics:   agentMetrics,
+		AgentsMetrics:  agentMetrics,
 	}
 }
 
 func (m *ProjectModel) Update(msg tea.Msg) (*ProjectModel, tea.Cmd) {
 	switch msg := msg.(type) {
-	case tea.WindowSizeMsg:
-		if m.listInitialized {
-			m.agentList.SetWidth(msg.Width)
+	case tea.KeyMsg:
+		if msg.Type == tea.KeyEnter && m.dataReady {
+			item, ok := m.AgentList.SelectedItem().(agentListItem)
+			if ok {
+				return m, GoToAgentView(item.agent.ID)
+			}
 		}
-		return m, nil
+
+	case tea.WindowSizeMsg:
+		if m.dataReady {
+			m.AgentList.SetWidth(msg.Width)
+			return m, nil
+		}
+
 	case FetchProjectDataRequestedMsg:
 		m.loading = true
+		m.err = nil
 		return m, m.fetchProjectData
+
 	case GotProjectDataMsg:
 		if err := msg.Err; err != nil {
 			m.loading = false
@@ -225,39 +259,22 @@ func (m *ProjectModel) Update(msg tea.Msg) (*ProjectModel, tea.Cmd) {
 		}
 
 		m.loading = false
+		m.err = nil
 		m.projectMetrics = msg.ProjectMetrics
 		m.agents = msg.Agents
-		m.agentMetrics = msg.AgentMetrics
+		m.agentsMetrics = msg.AgentsMetrics
 
 		items := make([]list.Item, len(m.agents))
 		for i, a := range m.agents {
 			item := agentListItem{agent: a}
-			if metrics, ok := m.agentMetrics[a.ID]; ok {
+			if metrics, ok := m.agentsMetrics[a.ID]; ok {
 				item.values = makeAgentMeasurementValues(metrics, m.MetricsInterval)
 			}
 			items[i] = item
 		}
 
-		defaultWidth, defaultHeigth := 36, 17
-		if w, h, err := term.GetSize(int(os.Stdin.Fd())); err == nil {
-			defaultWidth = w
-			_ = h
-			// TODO: setup view height.
-			// defaultHeigth = h
-		}
-
-		if m.listInitialized {
-			m.agentList.SetItems(items)
-		} else {
-			m.agentList = list.NewModel(items, itemDelegate{}, defaultWidth, defaultHeigth)
-			m.agentList.SetShowTitle(false)
-			m.agentList.SetShowStatusBar(false)
-			m.agentList.SetShowFilter(false)
-			m.agentList.Styles.HelpStyle.PaddingLeft(0).PaddingBottom(0)
-			// m.agentList.Styles.PaginationStyle.PaddingLeft(0)
-		}
-
-		m.listInitialized = true
+		m.AgentList.SetItems(items)
+		m.dataReady = true
 
 		return m, tea.Tick(time.Second*30, func(time.Time) tea.Msg {
 			return m.fetchProjectData()
@@ -266,13 +283,13 @@ func (m *ProjectModel) Update(msg tea.Msg) (*ProjectModel, tea.Cmd) {
 
 	if m.loading {
 		var cmd tea.Cmd
-		m.spinner, cmd = m.spinner.Update(msg)
+		m.Spinner, cmd = m.Spinner.Update(msg)
 		return m, cmd
 	}
 
-	if m.listInitialized {
+	if m.dataReady {
 		var cmd tea.Cmd
-		m.agentList, cmd = m.agentList.Update(msg)
+		m.AgentList, cmd = m.AgentList.Update(msg)
 		return m, cmd
 	}
 
@@ -281,7 +298,7 @@ func (m *ProjectModel) Update(msg tea.Msg) (*ProjectModel, tea.Cmd) {
 
 func (m *ProjectModel) View() string {
 	if m.loading {
-		return hintStyle.Render(m.spinner.View() + " Loading...")
+		return hintStyle.Render(m.Spinner.View() + " Loading...")
 	}
 
 	if err := m.err; err != nil {
@@ -292,7 +309,7 @@ func (m *ProjectModel) View() string {
 		return wordwrap.String(errorStyle.Render(fmt.Sprintf("Error: %v", err)), limit)
 	}
 
-	if !m.listInitialized {
+	if !m.dataReady {
 		return ""
 	}
 
@@ -336,7 +353,7 @@ func (m *ProjectModel) View() string {
 	}
 
 	doc.WriteString(listHeaderStyle.Render(m.viewAgentListHeader()) + "\n")
-	doc.WriteString(m.agentList.View())
+	doc.WriteString(m.AgentList.View())
 
 	return doc.String()
 }
@@ -344,19 +361,19 @@ func (m *ProjectModel) View() string {
 func (m *ProjectModel) viewAgentListHeader() string {
 	var cells []string
 	{
-		max := maxAgentListColumn(m.agentList, lipgloss.Width("AGENT"), func(item agentListItem) string { return item.agent.Name })
+		max := maxAgentListColumn(m.AgentList, lipgloss.Width("AGENT"), func(item agentListItem) string { return item.agent.Name })
 		cells = append(cells, lipgloss.NewStyle().Width(max).Render("AGENT"))
 	}
 	{
-		max := maxAgentListColumn(m.agentList, lipgloss.Width("TYPE"), func(item agentListItem) string { return string(item.agent.Type) })
+		max := maxAgentListColumn(m.AgentList, lipgloss.Width("TYPE"), func(item agentListItem) string { return string(item.agent.Type) })
 		cells = append(cells, lipgloss.NewStyle().Width(max).Render("TYPE"))
 	}
 	{
-		max := maxAgentListColumn(m.agentList, lipgloss.Width("VERSION"), func(item agentListItem) string { return item.agent.Version })
+		max := maxAgentListColumn(m.AgentList, lipgloss.Width("VERSION"), func(item agentListItem) string { return item.agent.Version })
 		cells = append(cells, lipgloss.NewStyle().Width(max).Render("VERSION"))
 	}
 	{
-		max := maxAgentListColumn(m.agentList, 0, func(item agentListItem) string { return item.values.input })
+		max := maxAgentListColumn(m.AgentList, 0, func(item agentListItem) string { return item.values.input })
 		if max != 0 {
 			if w := lipgloss.Width("INPUT"); w > max {
 				max = w
@@ -365,7 +382,7 @@ func (m *ProjectModel) viewAgentListHeader() string {
 		}
 	}
 	{
-		max := maxAgentListColumn(m.agentList, 0, func(item agentListItem) string { return item.values.output })
+		max := maxAgentListColumn(m.AgentList, 0, func(item agentListItem) string { return item.values.output })
 		if max != 0 {
 			if w := lipgloss.Width("OUTPUT"); w > max {
 				max = w
@@ -374,7 +391,7 @@ func (m *ProjectModel) viewAgentListHeader() string {
 		}
 	}
 	{
-		max := maxAgentListColumn(m.agentList, 0, func(item agentListItem) string { return item.values.filter })
+		max := maxAgentListColumn(m.AgentList, 0, func(item agentListItem) string { return item.values.filter })
 		if max != 0 {
 			if w := lipgloss.Width("FILTER"); w > max {
 				max = w
@@ -383,7 +400,7 @@ func (m *ProjectModel) viewAgentListHeader() string {
 		}
 	}
 	{
-		max := maxAgentListColumn(m.agentList, 0, func(item agentListItem) string { return item.values.storage })
+		max := maxAgentListColumn(m.AgentList, 0, func(item agentListItem) string { return item.values.storage })
 		if max != 0 {
 			if w := lipgloss.Width("STORAGE"); w > max {
 				max = w
@@ -392,7 +409,7 @@ func (m *ProjectModel) viewAgentListHeader() string {
 		}
 	}
 	{
-		max := maxAgentListColumn(m.agentList, 0, func(item agentListItem) string { return item.values.multiOutput })
+		max := maxAgentListColumn(m.AgentList, 0, func(item agentListItem) string { return item.values.multiOutput })
 		if max != 0 {
 			if w := lipgloss.Width("MULTI OUTPUT"); w > max {
 				max = w
@@ -401,7 +418,7 @@ func (m *ProjectModel) viewAgentListHeader() string {
 		}
 	}
 	{
-		max := maxAgentListColumn(m.agentList, 0, func(item agentListItem) string { return item.values.bareOutput })
+		max := maxAgentListColumn(m.AgentList, 0, func(item agentListItem) string { return item.values.bareOutput })
 		if max != 0 {
 			if w := lipgloss.Width("BARE OUTPUT"); w > max {
 				max = w
@@ -456,12 +473,12 @@ func (i agentListItem) FilterValue() string {
 	return i.agent.Name + " " + i.agent.ID + " " + string(i.agent.Type)
 }
 
-type itemDelegate struct{}
+type agentItemDelegate struct{}
 
-func (d itemDelegate) Height() int                               { return 1 }
-func (d itemDelegate) Spacing() int                              { return 0 }
-func (d itemDelegate) Update(msg tea.Msg, m *list.Model) tea.Cmd { return nil }
-func (d itemDelegate) Render(w io.Writer, m list.Model, index int, listItem list.Item) {
+func (d agentItemDelegate) Height() int                               { return 1 }
+func (d agentItemDelegate) Spacing() int                              { return 0 }
+func (d agentItemDelegate) Update(msg tea.Msg, m *list.Model) tea.Cmd { return nil }
+func (d agentItemDelegate) Render(w io.Writer, m list.Model, index int, listItem list.Item) {
 	i, ok := listItem.(agentListItem)
 	if !ok {
 		return
@@ -580,79 +597,25 @@ func fmtFloat64(f float64) string {
 }
 
 func fmtLatestMetrics(metrics map[string][]cloud.MetricFields, interval time.Duration) []string {
+	got := collectAgentMetricValues(metrics, interval)
 	var values []string
-
-	for _, metricName := range metricNames(metrics) {
-		points := metrics[metricName]
-
-		d := len(points)
-		if d < 2 {
-			continue
-		}
-
-		var val *float64
-		for i := d - 1; i > 0; i-- {
-			curr := points[i].Value
-			prev := points[i-1].Value
-
-			if curr == nil || prev == nil {
-				continue
-			}
-
-			if *curr < *prev {
-				continue
-			}
-
-			secs := interval.Seconds()
-			v := (*curr / secs) - (*prev / secs)
-			val = &v
-			break
-		}
-
-		if val == nil {
-			continue
-		}
-
-		if strings.Contains(metricName, "dropped_records") {
-			values = append(values, fmtFloat64(*val)+"ev/s (dropped)")
-			continue
-		}
-
-		if strings.Contains(metricName, "retried_records") {
-			values = append(values, fmtFloat64(*val)+"ev/s (retried)")
-			continue
-		}
-
-		if strings.Contains(metricName, "retries_failed") {
-			values = append(values, fmtFloat64(*val)+"ev/s (retries failed)")
-			continue
-		}
-
-		if strings.Contains(metricName, "retries") {
-			values = append(values, fmtFloat64(*val)+"ev/s (retries)")
-			continue
-		}
-
-		if strings.Contains(metricName, "byte") || strings.Contains(metricName, "size") {
-			values = append(values, strings.ToLower(bytefmt.ByteSize(uint64(math.Round(*val))))+"/s (bytes)")
-			continue
-		}
-
-		if strings.Contains(metricName, "record") {
-			values = append(values, fmtFloat64(*val)+"ev/s (events)")
-			continue
-		}
-
-		// TODO: handle "ratio" percentage metrics from fluentd.
-		// TODO: handle unknown generic metrics.
-
-		// if strings.Contains(metricName, "ratio") {
-		// 	values = append(values, fmtFloat64(*val)+"%")
-		// 	continue
-		// }
-
-		// values = append(values, fmtFloat64(*val)+"/s")
+	if got.size != "" {
+		values = append(values, fmt.Sprintf("size: %s", got.size))
 	}
-
+	if got.events != "" {
+		values = append(values, fmt.Sprintf("events: %s", got.events))
+	}
+	if got.retries != "" {
+		values = append(values, fmt.Sprintf("retries: %s", got.retries))
+	}
+	if got.retriedEvents != "" {
+		values = append(values, fmt.Sprintf("retried events: %s", got.retriedEvents))
+	}
+	if got.retriesFailed != "" {
+		values = append(values, fmt.Sprintf("retries failed: %s", got.retriesFailed))
+	}
+	if got.droppedEvents != "" {
+		values = append(values, fmt.Sprintf("dropped events: %s", got.droppedEvents))
+	}
 	return values
 }

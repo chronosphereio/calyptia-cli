@@ -26,83 +26,102 @@ type View string
 
 const (
 	ViewProject View = "project"
+	ViewAgent   View = "agent"
 )
-
-func NewModel(opts ...Opt) *Model {
-	m := &Model{}
-	for _, opt := range opts {
-		opt(m)
-	}
-	return m
-}
-
-type Opt func(*Model)
-
-func WithProject(mp *ProjectModel) Opt {
-	return func(m *Model) {
-		m.projectModel = mp
-	}
-}
 
 type Model struct {
 	currentView View
 	viewHistory []View
 
-	projectModel *ProjectModel
+	StartingProjectKey string
+	StartingAgentKey   string
+
+	ProjectModel *ProjectModel
+	AgentModel   *AgentModel
 }
 
-type WentToProjectViewMsg struct{}
+type WentToProjectViewMsg struct {
+	ProjectKey string
+}
 
-func GoToProjectView() tea.Msg {
-	return WentToProjectViewMsg{}
+func GoToProjectView(projectKey string) tea.Cmd {
+	return func() tea.Msg {
+		return WentToProjectViewMsg{ProjectKey: projectKey}
+	}
+}
+
+type WentToAgentViewMsg struct {
+	AgentKey string
+}
+
+func GoToAgentView(agentKey string) tea.Cmd {
+	return func() tea.Msg {
+		return WentToAgentViewMsg{AgentKey: agentKey}
+	}
 }
 
 func (m *Model) Init() tea.Cmd {
-	if m.projectModel != nil {
-		return tea.Batch(
-			m.projectModel.Init(),
-			GoToProjectView,
-		)
+	switch {
+	case m.StartingAgentKey != "":
+		return GoToAgentView(m.StartingAgentKey)
+	case m.StartingProjectKey != "":
+		return GoToProjectView(m.StartingProjectKey)
+	default:
+		return nil
 	}
-	return nil
 }
 
 func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	var cmds []tea.Cmd
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "q", "esc", "ctrl+c":
-			cmds = append(cmds, tea.Quit)
+			return m, tea.Quit
+		case "backspace":
+			if d := len(m.viewHistory); d > 1 {
+				m.currentView = m.viewHistory[d-2]
+				m.viewHistory = append(m.viewHistory, m.currentView)
+			}
+			return m, nil
 		}
 
 	case WentToProjectViewMsg:
 		m.currentView = ViewProject
 		m.viewHistory = append(m.viewHistory, m.currentView)
+		m.ProjectModel.ProjectKey = msg.ProjectKey
+		m.ProjectModel.SetProjectID(msg.ProjectKey)
+		return m, m.ProjectModel.Init()
+
+	case WentToAgentViewMsg:
+		m.currentView = ViewAgent
+		m.viewHistory = append(m.viewHistory, m.currentView)
+		m.AgentModel.AgentKey = msg.AgentKey
+		m.AgentModel.SetAgentID(msg.AgentKey)
+		return m, m.AgentModel.Init()
 	}
 
 	switch m.currentView {
 	case ViewProject:
 		var cmd tea.Cmd
-		m.projectModel, cmd = m.projectModel.Update(msg)
-		cmds = append(cmds, cmd)
+		m.ProjectModel, cmd = m.ProjectModel.Update(msg)
+		return m, cmd
+
+	case ViewAgent:
+		var cmd tea.Cmd
+		m.AgentModel, cmd = m.AgentModel.Update(msg)
+		return m, cmd
 	}
 
-	switch len(cmds) {
-	case 0:
-		return m, nil
-	case 1:
-		return m, cmds[0]
-	default:
-		return m, tea.Batch(cmds...)
-	}
+	return m, nil
 }
 
 func (m *Model) View() string {
 	var doc strings.Builder
 	switch m.currentView {
 	case ViewProject:
-		doc.WriteString(m.projectModel.View())
+		doc.WriteString(m.ProjectModel.View())
+	case ViewAgent:
+		doc.WriteString(m.AgentModel.View())
 	}
 	return docStyle.Render(doc.String())
 }
