@@ -44,14 +44,14 @@ func newCmdGetPipelines(config *config) *cobra.Command {
 			switch format {
 			case "table":
 				tw := table.NewWriter()
-				tw.AppendHeader(table.Row{"ID", "Name", "Replicas", "Status", "Created at"})
+				tw.AppendHeader(table.Row{"Name", "Replicas", "Status", "Ago"})
 				tw.Style().Options = table.OptionsNoBordersAndSeparators
 				if w, _, err := term.GetSize(int(os.Stdout.Fd())); err == nil {
 					tw.SetAllowedRowLength(w)
 				}
 
 				for _, p := range pp {
-					tw.AppendRow(table.Row{p.ID, p.Name, p.ReplicasCount, p.Status.Status, p.CreatedAt.Local()})
+					tw.AppendRow(table.Row{p.Name, p.ReplicasCount, p.Status.Status, fmtAgo(p.CreatedAt)})
 				}
 				fmt.Println(tw.Render())
 			case "json":

@@ -41,14 +41,14 @@ func newCmdGetPipelineStatusHistory(config *config) *cobra.Command {
 			switch format {
 			case "table":
 				tw := table.NewWriter()
-				tw.AppendHeader(table.Row{"ID", "Status", "Config ID", "Created at"})
+				tw.AppendHeader(table.Row{"Status", "Config ID", "Ago"})
 				tw.Style().Options = table.OptionsNoBordersAndSeparators
 				if w, _, err := term.GetSize(int(os.Stdout.Fd())); err == nil {
 					tw.SetAllowedRowLength(w)
 				}
 
 				for _, s := range ss {
-					tw.AppendRow(table.Row{s.ID, s.Status, s.Config.ID, s.CreatedAt.Local()})
+					tw.AppendRow(table.Row{s.Status, s.Config.ID, fmtAgo(s.CreatedAt)})
 				}
 				fmt.Println(tw.Render())
 			case "json":

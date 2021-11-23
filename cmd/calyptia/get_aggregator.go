@@ -44,14 +44,14 @@ func newCmdGetAggregators(config *config) *cobra.Command {
 			switch format {
 			case "table":
 				tw := table.NewWriter()
-				tw.AppendHeader(table.Row{"ID", "Name", "Created at"})
+				tw.AppendHeader(table.Row{"Name", "Ago"})
 				tw.Style().Options = table.OptionsNoBordersAndSeparators
 				if w, _, err := term.GetSize(int(os.Stdout.Fd())); err == nil {
 					tw.SetAllowedRowLength(w)
 				}
 
 				for _, a := range aa {
-					tw.AppendRow(table.Row{a.ID, a.Name, a.CreatedAt.Local()})
+					tw.AppendRow(table.Row{a.Name, fmtAgo(a.CreatedAt)})
 				}
 				fmt.Println(tw.Render())
 			case "json":
