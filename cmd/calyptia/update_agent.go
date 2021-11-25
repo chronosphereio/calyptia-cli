@@ -22,7 +22,8 @@ func newCmdUpdateAgent(config *config) *cobra.Command {
 
 			agentKey := args[0]
 			agentID := agentKey
-			if !validUUID(agentID) {
+			{
+				// We can only update the agent name. Early return if its the same.
 				if agentKey == newName {
 					return nil
 				}
@@ -33,11 +34,13 @@ func newCmdUpdateAgent(config *config) *cobra.Command {
 				}
 
 				a, ok := findAgentByName(aa, agentKey)
-				if !ok {
+				if !ok && !validUUID(agentID) {
 					return fmt.Errorf("could not find agent %q", agentKey)
 				}
 
-				agentID = a.ID
+				if ok {
+					agentID = a.ID
+				}
 			}
 
 			err := config.cloud.UpdateAgent(config.ctx, agentID, cloud.UpdateAgentOpts{

@@ -35,18 +35,20 @@ func newCmdDeletePipeline(config *config) *cobra.Command {
 			}
 
 			pipelineID := pipelineKey
-			if !validUUID(pipelineID) {
-				aa, err := config.fetchAllPipelines()
+			{
+				pp, err := config.fetchAllPipelines()
 				if err != nil {
 					return err
 				}
 
-				a, ok := findPipelineByName(aa, pipelineKey)
-				if !ok {
-					return nil
+				pip, ok := findPipelineByName(pp, pipelineKey)
+				if !ok && !validUUID(pipelineID) {
+					return nil // idempotent
 				}
 
-				pipelineID = a.ID
+				if ok {
+					pipelineID = pip.ID
+				}
 			}
 
 			err := config.cloud.DeleteAggregatorPipeline(config.ctx, pipelineID)

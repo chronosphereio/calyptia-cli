@@ -100,18 +100,20 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 			}
 
 			aggregatorID := aggregatorKey
-			if !validUUID(aggregatorID) {
+			{
 				aa, err := config.fetchAllAggregators()
 				if err != nil {
 					return err
 				}
 
 				a, ok := findAggregatorByName(aa, aggregatorKey)
-				if !ok {
+				if !ok && !validUUID(aggregatorID) {
 					return fmt.Errorf("could not find aggregator %q", aggregatorKey)
 				}
 
-				aggregatorID = a.ID
+				if ok {
+					aggregatorID = a.ID
+				}
 			}
 
 			a, err := config.cloud.CreateAggregatorPipeline(config.ctx, aggregatorID, cloud.AddAggregatorPipelinePayload{

@@ -20,18 +20,20 @@ func newCmdCreateAggregator(config *config) *cobra.Command {
 		Short: "Create a new aggregator",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			projectID := projectKey
-			if !validUUID(projectID) {
+			{
 				pp, err := config.cloud.Projects(config.ctx, 0)
 				if err != nil {
 					return err
 				}
 
 				p, ok := findProjectByName(pp, projectKey)
-				if !ok {
+				if !ok && !validUUID(projectID) {
 					return fmt.Errorf("could not find project %q", projectKey)
 				}
 
-				projectID = p.ID
+				if ok {
+					projectID = p.ID
+				}
 			}
 
 			a, err := config.cloud.CreateAggregator(config.ctx, cloud.CreateAggregatorPayload{

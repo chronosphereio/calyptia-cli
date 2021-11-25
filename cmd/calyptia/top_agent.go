@@ -131,18 +131,20 @@ func (m *AgentModel) fetchAgentData() tea.Msg {
 	var agent cloud.Agent
 	var agentMetrics cloud.AgentMetrics
 
-	if !validUUID(m.agentID) {
+	{
 		aa, err := fetchAllAgents(m.Cloud, m.Ctx)
 		if err != nil {
 			return GotAgentDataMsg{Err: fmt.Errorf("could not prefeth agents: %w", err)}
 		}
 
 		a, ok := findAgentByName(aa, m.AgentKey)
-		if !ok {
+		if !ok && !validUUID(m.agentID) {
 			return GotAgentDataMsg{Err: fmt.Errorf("could not find agent %q", m.AgentKey)}
 		}
 
-		m.agentID = a.ID
+		if ok {
+			m.agentID = a.ID
+		}
 	}
 
 	g, gctx := errgroup.WithContext(m.Ctx)

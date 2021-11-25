@@ -22,7 +22,8 @@ func newCmdUpdateAggregator(config *config) *cobra.Command {
 
 			aggregatorKey := args[0]
 			aggregatorID := aggregatorKey
-			if !validUUID(aggregatorID) {
+			{
+				// We can only update the aggregator name. Early return if its the same.
 				if aggregatorKey == newName {
 					return nil
 				}
@@ -33,11 +34,13 @@ func newCmdUpdateAggregator(config *config) *cobra.Command {
 				}
 
 				a, ok := findAggregatorByName(aa, aggregatorKey)
-				if !ok {
+				if !ok && !validUUID(aggregatorID) {
 					return fmt.Errorf("could not find aggregator %q", aggregatorKey)
 				}
 
-				aggregatorID = a.ID
+				if ok {
+					aggregatorID = a.ID
+				}
 			}
 
 			err := config.cloud.UpdateAggregator(config.ctx, aggregatorID, cloud.UpdateAggregatorOpts{

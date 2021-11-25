@@ -35,18 +35,20 @@ func newCmdDeleteAggregator(config *config) *cobra.Command {
 			}
 
 			aggregatorID := aggregatorKey
-			if !validUUID(aggregatorID) {
+			{
 				aa, err := config.fetchAllAggregators()
 				if err != nil {
 					return err
 				}
 
 				a, ok := findAggregatorByName(aa, aggregatorKey)
-				if !ok {
-					return nil
+				if !ok && !validUUID(aggregatorID) {
+					return nil // idempotent
 				}
 
-				aggregatorID = a.ID
+				if ok {
+					aggregatorID = a.ID
+				}
 			}
 
 			err := config.cloud.DeleteAggregator(config.ctx, aggregatorID)

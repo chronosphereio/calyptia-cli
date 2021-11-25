@@ -153,18 +153,20 @@ func (m *ProjectModel) fetchProjectData() tea.Msg {
 	agentMetrics := map[string]cloud.AgentMetrics{}
 	var mu sync.Mutex
 
-	if !validUUID(m.projectID) {
+	{
 		pp, err := m.Cloud.Projects(m.Ctx, 0)
 		if err != nil {
 			return GotProjectDataMsg{Err: fmt.Errorf("could not prefeth projects: %w", err)}
 		}
 
 		p, ok := findProjectByName(pp, m.ProjectKey)
-		if !ok {
+		if !ok && !validUUID(m.projectID) {
 			return GotProjectDataMsg{Err: fmt.Errorf("could not find project %q", m.ProjectKey)}
 		}
 
-		m.projectID = p.ID
+		if ok {
+			m.projectID = p.ID
+		}
 	}
 
 	g, gctx := errgroup.WithContext(m.Ctx)

@@ -19,18 +19,20 @@ func newCmdGetPipelineStatusHistory(config *config) *cobra.Command {
 		Short: "Display latest status history from a pipeline",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			pipelineID := pipelineKey
-			if !validUUID(pipelineID) {
+			{
 				pp, err := config.fetchAllPipelines()
 				if err != nil {
 					return err
 				}
 
 				pip, ok := findPipelineByName(pp, pipelineKey)
-				if !ok {
+				if !ok && !validUUID(pipelineID) {
 					return fmt.Errorf("could not find pipeline %q", pipelineKey)
 				}
 
-				pipelineID = pip.ID
+				if ok {
+					pipelineID = pip.ID
+				}
 			}
 
 			ss, err := config.cloud.PipelineStatusHistory(config.ctx, pipelineID, last)
