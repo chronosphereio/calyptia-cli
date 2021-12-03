@@ -129,9 +129,19 @@ func (config *config) fetchAllAggregators() ([]cloud.Aggregator, error) {
 }
 
 func (config *config) completeAggregators(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	aa, err := config.fetchAllAggregators()
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
+	var aa []cloud.Aggregator
+	if config.defaultProject != "" {
+		var err error
+		aa, err = config.cloud.Aggregators(config.ctx, config.defaultProject, 0)
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
+	} else {
+		var err error
+		aa, err = config.fetchAllAggregators()
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
 	}
 
 	if aa == nil {

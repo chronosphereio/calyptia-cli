@@ -38,6 +38,18 @@ func newCmd(ctx context.Context) *cobra.Command {
 		},
 	}
 
+	tok, err := savedToken()
+	if err != nil && err != errTokenNotFound {
+		cobra.CheckErr(fmt.Errorf("could not retrive your stored auth info: %w", err))
+	}
+
+	projectKey, err := savedDefaultProject()
+	if err != nil && err != errDefaultProjectNotFound {
+		cobra.CheckErr(fmt.Errorf("could not retrive your stored default project: %w", err))
+	}
+
+	config.defaultProject = projectKey
+
 	var cloudURLStr string
 
 	cobra.OnInitialize(func() {
@@ -56,28 +68,12 @@ func newCmd(ctx context.Context) *cobra.Command {
 
 		config.cloud.BaseURL = cloudURL.String()
 
-		tok, err := savedToken()
-		if err == errTokenNotFound {
+		if tok == nil {
 			return
-		}
-
-		if err != nil {
-			cobra.CheckErr(fmt.Errorf("could not retrive your stored auth info: %w", err))
 		}
 
 		// Now all requests will be authenticated and the token refreshes by its own.
 		config.cloud.HTTPClient = config.auth0.Client(config.ctx, tok)
-	}, func() {
-		if config.defaultProject != "" {
-			return
-		}
-
-		projectKey, err := savedDefaultProject()
-		if err == errDefaultProjectNotFound {
-			return
-		}
-
-		config.defaultProject = projectKey
 	})
 	cmd := &cobra.Command{
 		Use:           "calyptia",

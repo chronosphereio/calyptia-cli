@@ -125,13 +125,70 @@ func (config *config) fetchAllPipelines() ([]cloud.AggregatorPipeline, error) {
 		return nil, err
 	}
 
-	return pipelines, nil
+	var uniquePipelines []cloud.AggregatorPipeline
+	pipelineIDs := map[string]struct{}{}
+	for _, pip := range pipelines {
+		if _, ok := pipelineIDs[pip.ID]; !ok {
+			uniquePipelines = append(uniquePipelines, pip)
+			pipelineIDs[pip.ID] = struct{}{}
+		}
+	}
+
+	return uniquePipelines, nil
+}
+
+func (config *config) fetchAllProjectPipelines(projectID string) ([]cloud.AggregatorPipeline, error) {
+	aa, err := config.cloud.Aggregators(config.ctx, projectID, 0)
+	if err != nil {
+		return nil, fmt.Errorf("could not prefetch aggregators: %w", err)
+	}
+
+	var pipelines []cloud.AggregatorPipeline
+	var mu sync.Mutex
+
+	g, gctx := errgroup.WithContext(config.ctx)
+	for _, a := range aa {
+		a := a
+		g.Go(func() error {
+			got, err := config.cloud.AggregatorPipelines(gctx, a.ID, 0)
+			if err != nil {
+				return err
+			}
+
+			mu.Lock()
+			pipelines = append(pipelines, got...)
+			mu.Unlock()
+
+			return nil
+		})
+	}
+
+	var uniquePipelines []cloud.AggregatorPipeline
+	pipelineIDs := map[string]struct{}{}
+	for _, pip := range pipelines {
+		if _, ok := pipelineIDs[pip.ID]; !ok {
+			uniquePipelines = append(uniquePipelines, pip)
+			pipelineIDs[pip.ID] = struct{}{}
+		}
+	}
+
+	return uniquePipelines, g.Wait()
 }
 
 func (config *config) completePipelines(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	pp, err := config.fetchAllPipelines()
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
+	var pp []cloud.AggregatorPipeline
+	if config.defaultProject != "" {
+		var err error
+		pp, err = config.fetchAllProjectPipelines(config.defaultProject)
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
+	} else {
+		var err error
+		pp, err = config.fetchAllPipelines()
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
 	}
 
 	if pp == nil {

@@ -89,9 +89,19 @@ func newCmdGetAgents(config *config) *cobra.Command {
 }
 
 func (config *config) completeAgents(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	aa, err := config.fetchAllAgents()
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
+	var aa []cloud.Agent
+	if config.defaultProject != "" {
+		var err error
+		aa, err = config.cloud.Agents(config.ctx, config.defaultProject, 0)
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
+	} else {
+		var err error
+		aa, err = config.fetchAllAgents()
+		if err != nil {
+			return nil, cobra.ShellCompDirectiveError
+		}
 	}
 
 	if len(aa) == 0 {
