@@ -99,6 +99,7 @@ func newCmd(ctx context.Context) *cobra.Command {
 		newCmdCreate(config),
 		newCmdGet(config),
 		newCmdUpdate(config),
+		newCmdRollout(config),
 		newCmdDelete(config),
 		newCmdTop(config),
 	)
