@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"sync"
@@ -18,13 +19,17 @@ import (
 )
 
 func newCmdGetAgents(config *config) *cobra.Command {
-	var format string
 	var projectKey string
 	var last uint64
+	var format string
 	cmd := &cobra.Command{
 		Use:   "agents",
 		Short: "Display latest agents from a project",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			if projectKey == "" {
+				return errors.New("project required")
+			}
+
 			projectID := projectKey
 			{
 				pp, err := config.cloud.Projects(config.ctx, 0)
@@ -73,14 +78,12 @@ func newCmdGetAgents(config *config) *cobra.Command {
 	}
 
 	fs := cmd.Flags()
-	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
-	fs.StringVar(&projectKey, "project", "", "Parent project ID or name")
+	fs.StringVar(&projectKey, "project", config.defaultProject, "Parent project ID or name")
 	fs.Uint64VarP(&last, "last", "l", 0, "Last `N` agents. 0 means no limit")
+	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("project", config.completeProjects)
-
-	_ = cmd.MarkFlagRequired("project") // TODO: use default project ID from config cmd.
 
 	return cmd
 }

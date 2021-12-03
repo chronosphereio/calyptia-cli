@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 
@@ -19,6 +20,10 @@ func newCmdCreateAggregator(config *config) *cobra.Command {
 		Use:   "aggregator",
 		Short: "Create a new aggregator",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			if projectKey == "" {
+				return errors.New("project required")
+			}
+
 			projectID := projectKey
 			{
 				pp, err := config.cloud.Projects(config.ctx, 0)
@@ -66,14 +71,12 @@ func newCmdCreateAggregator(config *config) *cobra.Command {
 	}
 
 	fs := cmd.Flags()
-	fs.StringVar(&projectKey, "project", "", "Parent project ID or name")
+	fs.StringVar(&projectKey, "project", config.defaultProject, "Parent project ID or name")
 	fs.StringVar(&name, "name", "", "Aggregator name; leave it empty to generate a random name")
 	fs.StringVarP(&format, "output-format", "f", "table", "Output format. Allowed: table, json")
 
 	_ = cmd.RegisterFlagCompletionFunc("project", config.completeProjects)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
-
-	_ = cmd.MarkFlagRequired("project") // TODO: use default project ID from config cmd.
 
 	return cmd
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/calyptia/cloud"
@@ -11,16 +12,23 @@ func newCmdUpdateProject(config *config) *cobra.Command {
 	var newName string
 
 	cmd := &cobra.Command{
-		Use:               "project PROJECT",
+		Use:               "project [PROJECT]",
 		Short:             "Update a single project by ID or name",
-		Args:              cobra.ExactArgs(1),
+		Args:              cobra.MaximumNArgs(1),
 		ValidArgsFunction: config.completeProjects,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if newName == "" {
 				return nil
 			}
 
-			projectKey := args[0]
+			projectKey := config.defaultProject
+			if len(args) > 0 {
+				projectKey = args[0]
+			}
+			if projectKey == "" {
+				return errors.New("project required")
+			}
+
 			projectID := projectKey
 			{
 				if projectKey == newName {

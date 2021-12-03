@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"sync"
@@ -21,6 +22,10 @@ func newCmdGetAggregators(config *config) *cobra.Command {
 		Use:   "aggregators",
 		Short: "Display latest aggregators from a project",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			if projectKey == "" {
+				return errors.New("project required")
+			}
+
 			projectID := projectKey
 			{
 				pp, err := config.cloud.Projects(config.ctx, 0)
@@ -70,13 +75,11 @@ func newCmdGetAggregators(config *config) *cobra.Command {
 
 	fs := cmd.Flags()
 	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
-	fs.StringVar(&projectKey, "project", "", "Parent project ID or name")
+	fs.StringVar(&projectKey, "project", config.defaultProject, "Parent project ID or name")
 	fs.Uint64VarP(&last, "last", "l", 0, "Last `N` aggregators. 0 means no limit")
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("project", config.completeProjects)
-
-	_ = cmd.MarkFlagRequired("project") // TODO: use default project ID from config cmd.
 
 	return cmd
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -79,6 +80,10 @@ func newCmdDeleteAgents(config *config) *cobra.Command {
 		Use:   "agents",
 		Short: "Delete many agents from a project",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			if projectKey == "" {
+				return errors.New("project required")
+			}
+
 			projectID := projectKey
 			{
 				pp, err := config.cloud.Projects(config.ctx, 0)
@@ -156,13 +161,11 @@ func newCmdDeleteAgents(config *config) *cobra.Command {
 	}
 
 	fs := cmd.Flags()
-	fs.StringVar(&projectKey, "project", "", "Delete agents from this project ID or name")
+	fs.StringVar(&projectKey, "project", config.defaultProject, "Delete agents from this project ID or name")
 	fs.BoolVar(&inactive, "inactive", true, "Delete inactive agents only")
 	fs.BoolVarP(&confirmed, "yes", "y", false, "Confirm deletion")
 
 	_ = cmd.RegisterFlagCompletionFunc("project", config.completeProjects)
-
-	_ = cmd.MarkFlagRequired("project") // TODO: use default project ID from config cmd.
 
 	return cmd
 }

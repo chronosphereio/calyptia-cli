@@ -67,6 +67,17 @@ func newCmd(ctx context.Context) *cobra.Command {
 
 		// Now all requests will be authenticated and the token refreshes by its own.
 		config.cloud.HTTPClient = config.auth0.Client(config.ctx, tok)
+	}, func() {
+		if config.defaultProject != "" {
+			return
+		}
+
+		projectKey, err := savedDefaultProject()
+		if err == errDefaultProjectNotFound {
+			return
+		}
+
+		config.defaultProject = projectKey
 	})
 	cmd := &cobra.Command{
 		Use:     "calyptia",
@@ -82,6 +93,7 @@ func newCmd(ctx context.Context) *cobra.Command {
 
 	cmd.AddCommand(
 		newCmdLogin(config),
+		newCmdConfig(config),
 		newCmdCreate(config),
 		newCmdGet(config),
 		newCmdUpdate(config),
@@ -93,9 +105,10 @@ func newCmd(ctx context.Context) *cobra.Command {
 }
 
 type config struct {
-	ctx   context.Context
-	auth0 *auth0.Client
-	cloud *cloudclient.Client
+	ctx            context.Context
+	auth0          *auth0.Client
+	cloud          *cloudclient.Client
+	defaultProject string
 }
 
 func env(key, fallback string) string {

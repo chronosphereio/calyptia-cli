@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -40,13 +41,19 @@ func newCmdTopProject(config *config) *cobra.Command {
 	var start, interval time.Duration
 	var last uint64
 	cmd := &cobra.Command{
-		Use:               "project PROJECT",
+		Use:               "project [PROJECT]",
 		Short:             "Display metrics from a project",
-		Args:              cobra.ExactArgs(1),
+		Args:              cobra.MaximumNArgs(1),
 		ValidArgsFunction: config.completeProjects,
-		// TODO: run an interactive "top" program.
 		RunE: func(cmd *cobra.Command, args []string) error {
-			projectKey := args[0]
+			projectKey := config.defaultProject
+			if len(args) > 0 {
+				projectKey = args[0]
+			}
+			if projectKey == "" {
+				return errors.New("project required")
+			}
+
 			initialModel := &Model{
 				StartingProjectKey: projectKey,
 				ProjectModel:       NewProjectModel(config.ctx, config.cloud, projectKey, start, interval, last),
