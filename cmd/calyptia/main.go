@@ -80,9 +80,11 @@ func newCmd(ctx context.Context) *cobra.Command {
 		config.defaultProject = projectKey
 	})
 	cmd := &cobra.Command{
-		Use:     "calyptia",
-		Short:   "Calyptia Cloud CLI",
-		Version: version,
+		Use:           "calyptia",
+		Short:         "Calyptia Cloud CLI",
+		Version:       version,
+		SilenceErrors: true,
+		SilenceUsage:  true,
 	}
 
 	fs := cmd.PersistentFlags()
