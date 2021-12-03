@@ -270,7 +270,7 @@ func (m *ProjectModel) Update(msg tea.Msg) (*ProjectModel, tea.Cmd) {
 		for i, a := range m.agents {
 			item := agentListItem{agent: a}
 			if metrics, ok := m.agentsMetrics[a.ID]; ok {
-				item.values = makeAgentMeasurementValues(metrics, m.MetricsInterval)
+				item.values = makeAgentMeasurementValues(metrics)
 			}
 			items[i] = item
 		}
@@ -339,7 +339,7 @@ func (m *ProjectModel) View() string {
 					}
 
 					plugin := measurement.Plugins[pluginName]
-					values := fmtLatestMetrics(plugin.Metrics, m.MetricsInterval)
+					values := fmtLatestMetrics(plugin.Metrics)
 					var value string
 					if len(values) == 0 {
 						value = "No data"
@@ -431,11 +431,11 @@ func (m *ProjectModel) viewAgentListHeader() string {
 	return strings.Join(cells, "  ")
 }
 
-func makeAgentMeasurementValues(metrics cloud.AgentMetrics, interval time.Duration) agentMeasurementValues {
+func makeAgentMeasurementValues(metrics cloud.AgentMetrics) agentMeasurementValues {
 	var out agentMeasurementValues
 	for _, measurementName := range agentMeasurementNames(metrics.Measurements) {
 		measurement := metrics.Measurements[measurementName]
-		values := fmtLatestMetrics(measurement.Totals, interval)
+		values := fmtLatestMetrics(measurement.Totals)
 		if len(values) != 0 {
 			value := strings.Join(values, ", ")
 			switch cloud.MeasurementType(measurementName) {
@@ -598,8 +598,8 @@ func fmtFloat64(f float64) string {
 	return s
 }
 
-func fmtLatestMetrics(metrics map[string][]cloud.MetricFields, interval time.Duration) []string {
-	got := collectAgentMetricValues(metrics, interval)
+func fmtLatestMetrics(metrics map[string][]cloud.MetricFields) []string {
+	got := collectAgentMetricValues(metrics)
 	var values []string
 	if got.size != "" {
 		values = append(values, fmt.Sprintf("size: %s", got.size))

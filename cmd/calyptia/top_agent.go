@@ -214,7 +214,7 @@ func (m *AgentModel) Update(msg tea.Msg) (*AgentModel, tea.Cmd) {
 			for _, pluginName := range pluginNames(measurement.Plugins) {
 				item.plugin = pluginName
 				plugin := measurement.Plugins[pluginName]
-				item.values = collectAgentMetricValues(plugin.Metrics, m.MetricsInterval)
+				item.values = collectAgentMetricValues(plugin.Metrics)
 			}
 			items = append(items, item)
 		}
@@ -294,67 +294,60 @@ func (v agentMetricValues) Empty() bool {
 	return v.size == "" && v.events == "" && v.retries == "" && v.retriedEvents == "" && v.retriesFailed == "" && v.droppedEvents == ""
 }
 
-func collectAgentMetricValues(metrics map[string][]cloud.MetricFields, interval time.Duration) agentMetricValues {
+func collectAgentMetricValues(metrics map[string][]cloud.MetricFields) agentMetricValues {
 	var out agentMetricValues
 
 	for _, metricName := range metricNames(metrics) {
 		points := metrics[metricName]
 
 		d := len(points)
-		if d < 2 {
+		// We only need 2 points to calculate the rate, but the last one is not reliable
+		// As it's time value is not in the specified interval, and lots of times it is nil.
+		if d < 3 {
 			continue
 		}
 
-		var val *float64
-		for i := d - 1; i > 0; i-- {
-			curr := points[i].Value
-			prev := points[i-1].Value
+		curr := points[d-2]
+		prev := points[d-3]
 
-			if curr == nil || prev == nil {
-				continue
-			}
-
-			if *curr < *prev {
-				continue
-			}
-
-			secs := interval.Seconds()
-			v := (*curr / secs) - (*prev / secs)
-			val = &v
-			break
-		}
-
-		if val == nil {
+		if curr.Value == nil || prev.Value == nil {
 			continue
 		}
+
+		if *curr.Value < *prev.Value {
+			continue
+		}
+
+		secs := curr.Time.Sub(prev.Time).Seconds()
+		val := (*curr.Value / secs) - (*prev.Value / secs)
 
 		if strings.Contains(metricName, "dropped_records") {
-			out.droppedEvents = fmtFloat64(*val) + "ev/s"
+			out.droppedEvents = fmtFloat64(val) + "ev/s"
 			continue
 		}
 
 		if strings.Contains(metricName, "retried_records") {
-			out.retriedEvents = fmtFloat64(*val) + "ev/s"
+			out.retriedEvents = fmtFloat64(val) + "ev/s"
 			continue
 		}
 
 		if strings.Contains(metricName, "retries_failed") {
-			out.retriesFailed = fmtFloat64(*val) + "ev/s"
+			out.retriesFailed = fmtFloat64(val) + "ev/s"
 			continue
 		}
 
 		if strings.Contains(metricName, "retries") {
-			out.retries = fmtFloat64(*val) + "ev/s"
+			out.retries = fmtFloat64(val) + "ev/s"
 			continue
 		}
 
 		if strings.Contains(metricName, "byte") || strings.Contains(metricName, "size") {
-			out.size = strings.ToLower(bytefmt.ByteSize(uint64(math.Round(*val)))) + "/s"
+			out.size = strings.ToLower(bytefmt.ByteSize(uint64(math.Round(val)))) + "/s"
 			continue
 		}
 
 		if strings.Contains(metricName, "record") {
-			out.events = fmtFloat64(*val) + "ev/s"
+			out.events = fmtFloat64(val) + "ev/s"
 			continue
 		}
 

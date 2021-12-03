@@ -90,7 +90,7 @@ func newCmdTopPipeline(config *config) *cobra.Command {
 							}
 
 							plugin := measurement.Plugins[pluginName]
-							values := fmtLatestMetrics(plugin.Metrics, interval)
+							values := fmtLatestMetrics(plugin.Metrics)
 							var value string
 							if len(values) == 0 {
 								value = "No data"
