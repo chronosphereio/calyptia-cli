@@ -302,7 +302,7 @@ func collectAgentMetricValues(metrics map[string][]cloud.MetricFields) agentMetr
 
 		d := len(points)
 		// We only need 2 points to calculate the rate, but the last one is not reliable
-		// As it's time value is not in the specified interval, and lots of times it is nil.
+		// as its time value is not in the specified interval, and many times it happens to be nil.
 		if d < 3 {
 			continue
 		}
