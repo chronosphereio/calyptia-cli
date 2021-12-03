@@ -102,6 +102,10 @@ func (config *config) fetchAllPipelines() ([]cloud.AggregatorPipeline, error) {
 				return err
 			}
 
+			if len(aa) == 0 {
+				return nil
+			}
+
 			g2, gctx2 := errgroup.WithContext(gctx)
 			for _, a := range aa {
 				a := a
@@ -143,6 +147,10 @@ func (config *config) fetchAllProjectPipelines(projectID string) ([]cloud.Aggreg
 		return nil, fmt.Errorf("could not prefetch aggregators: %w", err)
 	}
 
+	if len(aa) == 0 {
+		return nil, nil
+	}
+
 	var pipelines []cloud.AggregatorPipeline
 	var mu sync.Mutex
 
@@ -163,6 +171,10 @@ func (config *config) fetchAllProjectPipelines(projectID string) ([]cloud.Aggreg
 		})
 	}
 
+	if err := g.Wait(); err != nil {
+		return nil, err
+	}
+
 	var uniquePipelines []cloud.AggregatorPipeline
 	pipelineIDs := map[string]struct{}{}
 	for _, pip := range pipelines {
@@ -172,7 +184,7 @@ func (config *config) fetchAllProjectPipelines(projectID string) ([]cloud.Aggreg
 		}
 	}
 
-	return uniquePipelines, g.Wait()
+	return uniquePipelines, nil
 }
 
 func (config *config) completePipelines(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
