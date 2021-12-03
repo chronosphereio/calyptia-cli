@@ -134,7 +134,7 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 			switch outputFormat {
 			case "table":
 				tw := table.NewWriter()
-				tw.AppendHeader(table.Row{"Name", "Ago"})
+				tw.AppendHeader(table.Row{"Name", "Age"})
 				tw.Style().Options = table.OptionsNoBordersAndSeparators
 				if w, _, err := term.GetSize(int(os.Stdout.Fd())); err == nil {
 					tw.SetAllowedRowLength(w)

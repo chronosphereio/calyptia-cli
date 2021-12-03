@@ -43,7 +43,7 @@ func newCmdGetPipelineConfigHistory(config *config) *cobra.Command {
 			switch format {
 			case "table":
 				tw := table.NewWriter()
-				tw.AppendHeader(table.Row{"ID", "Ago"})
+				tw.AppendHeader(table.Row{"ID", "Age"})
 				tw.Style().Options = table.OptionsNoBordersAndSeparators
 				if w, _, err := term.GetSize(int(os.Stdout.Fd())); err == nil {
 					tw.SetAllowedRowLength(w)

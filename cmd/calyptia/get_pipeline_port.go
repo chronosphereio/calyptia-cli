@@ -43,7 +43,7 @@ func newCmdGetPipelinePorts(config *config) *cobra.Command {
 			switch format {
 			case "table":
 				tw := table.NewWriter()
-				tw.AppendHeader(table.Row{"Protocol", "Frontend port", "Backend port", "Endpoint", "Ago"})
+				tw.AppendHeader(table.Row{"Protocol", "Frontend port", "Backend port", "Endpoint", "Age"})
 				tw.Style().Options = table.OptionsNoBordersAndSeparators
 				if w, _, err := term.GetSize(int(os.Stdout.Fd())); err == nil {
 					tw.SetAllowedRowLength(w)
