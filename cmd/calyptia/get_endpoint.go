@@ -10,13 +10,13 @@ import (
 	"golang.org/x/term"
 )
 
-func newCmdGetPipelinePorts(config *config) *cobra.Command {
+func newCmdGetEndpoints(config *config) *cobra.Command {
 	var format string
 	var pipelineKey string
 	var last uint64
 	cmd := &cobra.Command{
-		Use:   "pipeline_ports",
-		Short: "Display latest ports from a pipeline",
+		Use:   "endpoints",
+		Short: "Display latest endpoints from a pipeline",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			pipelineID := pipelineKey
 			{
@@ -72,7 +72,7 @@ func newCmdGetPipelinePorts(config *config) *cobra.Command {
 	fs := cmd.Flags()
 	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
 	fs.StringVar(&pipelineKey, "pipeline", "", "Parent pipeline ID or name")
-	fs.Uint64VarP(&last, "last", "l", 0, "Last `N` pipeline ports. 0 means no limit")
+	fs.Uint64VarP(&last, "last", "l", 0, "Last `N` pipeline endpoints. 0 means no limit")
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.completePipelines)
