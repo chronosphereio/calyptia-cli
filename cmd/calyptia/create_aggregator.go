@@ -15,6 +15,8 @@ import (
 func newCmdCreateAggregator(config *config) *cobra.Command {
 	var projectKey string
 	var name string
+	var addHealthCheckPipeline bool
+	var healthCheckPipelinePort uint
 	var format string
 	cmd := &cobra.Command{
 		Use:   "aggregator",
@@ -41,8 +43,10 @@ func newCmdCreateAggregator(config *config) *cobra.Command {
 				}
 			}
 
-			a, err := config.cloud.CreateAggregator(config.ctx, cloud.CreateAggregatorPayload{
-				Name: name,
+			a, err := config.cloud.CreateAggregator(config.ctx, cloud.AddAggregatorPayload{
+				Name:                    name,
+				AddHealthCheckPipeline:  addHealthCheckPipeline,
+				HealthCheckPipelinePort: healthCheckPipelinePort,
 			}, cloud.CreateAggregatorWithProjectID(projectID))
 			if err != nil {
 				return fmt.Errorf("could not create aggregator: %w", err)
@@ -73,6 +77,8 @@ func newCmdCreateAggregator(config *config) *cobra.Command {
 	fs := cmd.Flags()
 	fs.StringVar(&projectKey, "project", config.defaultProject, "Parent project ID or name")
 	fs.StringVar(&name, "name", "", "Aggregator name; leave it empty to generate a random name")
+	fs.BoolVar(&addHealthCheckPipeline, "healthcheck", true, "Add a health check pipeline by default with the aggregator")
+	fs.UintVar(&healthCheckPipelinePort, "healthcheck-port", 2020, "Health check pipeline port if a health check pipeline is added")
 	fs.StringVarP(&format, "output-format", "f", "table", "Output format. Allowed: table, json")
 
 	_ = cmd.RegisterFlagCompletionFunc("project", config.completeProjects)
