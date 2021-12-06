@@ -66,7 +66,7 @@ func newCmd(ctx context.Context) *cobra.Command {
 			cobra.CheckErr(fmt.Errorf("invalid cloud url scheme %q", cloudURL.Scheme))
 		}
 
-		config.cloud.BaseURL = cloudURL.String()
+		config.cloud.BaseURL = cloudclient.Endpoint(cloudURL.String())
 
 		if tok == nil {
 			return

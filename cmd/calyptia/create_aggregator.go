@@ -41,7 +41,7 @@ func newCmdCreateAggregator(config *config) *cobra.Command {
 				}
 			}
 
-			a, err := config.cloud.CreateAggregator(config.ctx, cloud.CreateAggregatorPayload{
+			a, err := config.cloud.CreateAggregator(config.ctx, cloud.AddAggregatorPayload{
 				Name: name,
 			}, cloud.CreateAggregatorWithProjectID(projectID))
 			if err != nil {

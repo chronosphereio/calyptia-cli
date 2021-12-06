@@ -66,7 +66,7 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 						for k, v := range m {
 							secrets = append(secrets, cloud.AddPipelineSecretPayload{
 								Key:   k,
-								Value: v,
+								Value: []byte(v),
 							})
 						}
 					case "json":
@@ -79,7 +79,7 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 						for k, v := range m {
 							secrets = append(secrets, cloud.AddPipelineSecretPayload{
 								Key:   k,
-								Value: fmt.Sprintf("%v", v),
+								Value: []byte(fmt.Sprintf("%v", v)),
 							})
 						}
 					case "yaml", "yml":
@@ -92,7 +92,7 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 						for k, v := range m {
 							secrets = append(secrets, cloud.AddPipelineSecretPayload{
 								Key:   k,
-								Value: fmt.Sprintf("%v", v),
+								Value: []byte(fmt.Sprintf("%v", v)),
 							})
 						}
 					}
