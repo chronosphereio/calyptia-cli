@@ -33,7 +33,7 @@ The first command you would want to run is `login`.
 calyptia login
 ```
 
-## Help
+## Commands
 
   - `login`: Login by authorizing this CLI with Calyptia Cloud through a browser
   - `completion`: generate the autocompletion script for the specified shell
