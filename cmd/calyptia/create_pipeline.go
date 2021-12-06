@@ -28,7 +28,7 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 	var outputFormat string
 	cmd := &cobra.Command{
 		Use:   "pipeline",
-		Short: "Create a new piepline",
+		Short: "Create a new pipeline",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// TODO: support `@INCLUDE`. See https://docs.fluentbit.io/manual/administration/configuring-fluent-bit/configuration-file#config_include_file-1
 			rawConfig, err := readFile(configFile)
@@ -144,7 +144,7 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 			case "json":
 				err := json.NewEncoder(os.Stdout).Encode(a)
 				if err != nil {
-					return fmt.Errorf("could not json encode your new piepline: %w", err)
+					return fmt.Errorf("could not json encode your new pipeline: %w", err)
 				}
 			default:
 				return fmt.Errorf("unknown output format %q", outputFormat)
