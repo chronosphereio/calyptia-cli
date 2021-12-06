@@ -37,7 +37,7 @@ func newCmdGetEndpoints(config *config) *cobra.Command {
 
 			pp, err := config.cloud.PipelinePorts(config.ctx, pipelineID, last)
 			if err != nil {
-				return fmt.Errorf("could not fetch your pipeline ports: %w", err)
+				return fmt.Errorf("could not fetch your pipeline endpoints: %w", err)
 			}
 
 			switch format {
@@ -60,7 +60,7 @@ func newCmdGetEndpoints(config *config) *cobra.Command {
 			case "json":
 				err := json.NewEncoder(os.Stdout).Encode(pp)
 				if err != nil {
-					return fmt.Errorf("could not json encode your pipeline ports: %w", err)
+					return fmt.Errorf("could not json encode your pipeline endpoints: %w", err)
 				}
 			default:
 				return fmt.Errorf("unknown output format %q", format)

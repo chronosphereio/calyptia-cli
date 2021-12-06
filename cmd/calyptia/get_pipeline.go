@@ -81,6 +81,149 @@ func newCmdGetPipelines(config *config) *cobra.Command {
 	return cmd
 }
 
+func newCmdGetPipeline(config *config) *cobra.Command {
+	var format string
+	var lastEndpoints, lastConfigHistory uint64
+	var includeEndpoints, includeConfigHistory bool
+	cmd := &cobra.Command{
+		Use:               "pipeline PIPELINE",
+		Args:              cobra.ExactArgs(1),
+		ValidArgsFunction: config.completePipelines,
+		Short:             "Display a pipelines by ID or name",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			pipelineKey := args[0]
+			pipelineID := pipelineKey
+			{
+				pp, err := config.fetchAllPipelines()
+				if err != nil {
+					return err
+				}
+
+				pip, ok := findPipelineByName(pp, pipelineKey)
+				if !ok && !validUUID(pipelineID) {
+					return fmt.Errorf("could not find pipeline %q", pipelineKey)
+				}
+
+				if ok {
+					pipelineID = pip.ID
+				}
+			}
+
+			var pip cloud.AggregatorPipeline
+			var ports []cloud.PipelinePort
+			var history []cloud.PipelineConfig
+			if format == "table" && (includeEndpoints || includeConfigHistory) {
+				g, gctx := errgroup.WithContext(config.ctx)
+				g.Go(func() error {
+					var err error
+					pip, err = config.cloud.AggregatorPipeline(config.ctx, pipelineID)
+					if err != nil {
+						return fmt.Errorf("could not fetch your pipeline: %w", err)
+					}
+					return nil
+				})
+				if includeEndpoints {
+					g.Go(func() error {
+						var err error
+						ports, err = config.cloud.PipelinePorts(gctx, pipelineID, lastEndpoints)
+						if err != nil {
+							return fmt.Errorf("could not fetch your pipeline endpoints: %w", err)
+						}
+						return nil
+					})
+				}
+				if includeConfigHistory {
+					g.Go(func() error {
+						var err error
+						history, err = config.cloud.PipelineConfigHistory(gctx, pipelineID, lastConfigHistory)
+						if err != nil {
+							return fmt.Errorf("could not fetch your pipeline config history: %w", err)
+						}
+						return nil
+					})
+				}
+
+				if err := g.Wait(); err != nil {
+					return err
+				}
+			} else {
+				var err error
+				pip, err = config.cloud.AggregatorPipeline(config.ctx, pipelineID)
+				if err != nil {
+					return fmt.Errorf("could not fetch your pipeline: %w", err)
+				}
+			}
+
+			switch format {
+			case "table":
+				{
+					tw := table.NewWriter()
+					tw.AppendHeader(table.Row{"Name", "Replicas", "Status", "Age"})
+					tw.Style().Options = table.OptionsNoBordersAndSeparators
+					if w, _, err := term.GetSize(int(os.Stdout.Fd())); err == nil {
+						tw.SetAllowedRowLength(w)
+					}
+
+					tw.AppendRow(table.Row{pip.Name, pip.ReplicasCount, pip.Status.Status, fmtAgo(pip.CreatedAt)})
+					fmt.Println(tw.Render())
+				}
+				if includeEndpoints {
+					tw := table.NewWriter()
+					tw.AppendHeader(table.Row{"Protocol", "Frontend port", "Backend port", "Endpoint", "Age"})
+					tw.Style().Options = table.OptionsNoBordersAndSeparators
+					if w, _, err := term.GetSize(int(os.Stdout.Fd())); err == nil {
+						tw.SetAllowedRowLength(w)
+					}
+
+					for _, p := range ports {
+						endpoint := p.Endpoint
+						if endpoint == "" {
+							endpoint = "Pending"
+						}
+						tw.AppendRow(table.Row{p.Protocol, p.FrontendPort, p.BackendPort, endpoint, fmtAgo(p.CreatedAt)})
+					}
+					fmt.Println()
+					fmt.Println(tw.Render())
+				}
+				if includeConfigHistory {
+					tw := table.NewWriter()
+					tw.AppendHeader(table.Row{"ID", "Age"})
+					tw.Style().Options = table.OptionsNoBordersAndSeparators
+					if w, _, err := term.GetSize(int(os.Stdout.Fd())); err == nil {
+						tw.SetAllowedRowLength(w)
+					}
+
+					for _, c := range history {
+						tw.AppendRow(table.Row{c.ID, fmtAgo(c.CreatedAt)})
+					}
+					fmt.Println()
+					fmt.Println(tw.Render())
+				}
+
+			case "json":
+				err := json.NewEncoder(os.Stdout).Encode(pip)
+				if err != nil {
+					return fmt.Errorf("could not json encode your pipelines: %w", err)
+				}
+			default:
+				return fmt.Errorf("unknown output format %q", format)
+			}
+			return nil
+		},
+	}
+
+	fs := cmd.Flags()
+	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
+	fs.BoolVar(&includeEndpoints, "include-endpoints", false, "Include endpoints in output (only available with table format)")
+	fs.BoolVar(&includeConfigHistory, "include-config-history", false, "Include config history in output (only available with table format)")
+	fs.Uint64Var(&lastEndpoints, "last-endpoints", 0, "Last `N` pipeline endpoints if included. 0 means no limit")
+	fs.Uint64Var(&lastConfigHistory, "last-config-history", 0, "Last `N` pipeline config history if included. 0 means no limit")
+
+	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
+
+	return cmd
+}
+
 func (config *config) fetchAllPipelines() ([]cloud.AggregatorPipeline, error) {
 	pp, err := config.cloud.Projects(config.ctx, 0)
 	if err != nil {
