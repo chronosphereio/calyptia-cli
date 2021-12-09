@@ -288,9 +288,12 @@ func (m *ProjectModel) Update(msg tea.Msg) (*ProjectModel, tea.Cmd) {
 		m.AgentList.SetItems(items)
 		m.dataReady = true
 
-		return m, tea.Tick(time.Second*30, func(time.Time) tea.Msg {
-			return m.fetchProjectData()
-		})
+		return m, tea.Batch(
+			tea.Tick(time.Second*30, func(time.Time) tea.Msg {
+				return m.fetchProjectData()
+			}),
+			SetDefaultProject(m.projectID),
+		)
 	}
 
 	if m.loading {

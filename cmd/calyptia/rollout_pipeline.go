@@ -4,11 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"text/tabwriter"
 
 	"github.com/calyptia/cloud"
-	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/spf13/cobra"
-	"golang.org/x/term"
 )
 
 func newCmdRolloutPipeline(config *config) *cobra.Command {
@@ -74,16 +73,12 @@ func newCmdRolloutPipeline(config *config) *cobra.Command {
 			if autoCreatePortsFromConfig && len(updated.AddedPorts) != 0 {
 				switch outputFormat {
 				case "table":
-					tw := table.NewWriter()
-					tw.AppendHeader(table.Row{"Protocol", "Frontend port", "Backend port"})
-					tw.Style().Options = table.OptionsNoBordersAndSeparators
-					if w, _, err := term.GetSize(int(os.Stdout.Fd())); err == nil {
-						tw.SetAllowedRowLength(w)
-					}
+					tw := tabwriter.NewWriter(os.Stdout, 0, 4, 1, ' ', 0)
+					fmt.Fprintln(tw, "PROTOCOL\tFRONTEND-PORT\tBACKEND-PORT")
 					for _, p := range updated.AddedPorts {
-						tw.AppendRow(table.Row{p.Protocol, p.FrontendPort, p.BackendPort})
+						fmt.Fprintf(tw, "%s\t%d\t%d\n", p.Protocol, p.FrontendPort, p.BackendPort)
 					}
-					fmt.Println(tw.Render())
+					tw.Flush()
 				case "json":
 					err := json.NewEncoder(os.Stdout).Encode(updated)
 					if err != nil {

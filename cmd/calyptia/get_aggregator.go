@@ -6,12 +6,11 @@ import (
 	"fmt"
 	"os"
 	"sync"
+	"text/tabwriter"
 
 	"github.com/calyptia/cloud"
-	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"
-	"golang.org/x/term"
 )
 
 func newCmdGetAggregators(config *config) *cobra.Command {
@@ -38,17 +37,12 @@ func newCmdGetAggregators(config *config) *cobra.Command {
 
 			switch format {
 			case "table":
-				tw := table.NewWriter()
-				tw.AppendHeader(table.Row{"Name", "Age"})
-				tw.Style().Options = table.OptionsNoBordersAndSeparators
-				if w, _, err := term.GetSize(int(os.Stdout.Fd())); err == nil {
-					tw.SetAllowedRowLength(w)
-				}
-
+				tw := tabwriter.NewWriter(os.Stdout, 0, 4, 1, ' ', 0)
+				fmt.Fprintln(tw, "NAME\tAGE")
 				for _, a := range aa {
-					tw.AppendRow(table.Row{a.Name, fmtAgo(a.CreatedAt)})
+					fmt.Fprintf(tw, "%s\t%s\n", a.Name, fmtAgo(a.CreatedAt))
 				}
-				fmt.Println(tw.Render())
+				tw.Flush()
 			case "json":
 				err := json.NewEncoder(os.Stdout).Encode(aa)
 				if err != nil {

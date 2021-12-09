@@ -3,11 +3,12 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
+	"text/tabwriter"
 
-	"github.com/jedib0t/go-pretty/v6/table"
+	"github.com/calyptia/cloud"
 	"github.com/spf13/cobra"
-	"golang.org/x/term"
 )
 
 func newCmdGetPipelineConfigHistory(config *config) *cobra.Command {
@@ -30,17 +31,7 @@ func newCmdGetPipelineConfigHistory(config *config) *cobra.Command {
 
 			switch format {
 			case "table":
-				tw := table.NewWriter()
-				tw.AppendHeader(table.Row{"ID", "Age"})
-				tw.Style().Options = table.OptionsNoBordersAndSeparators
-				if w, _, err := term.GetSize(int(os.Stdout.Fd())); err == nil {
-					tw.SetAllowedRowLength(w)
-				}
-
-				for _, c := range cc {
-					tw.AppendRow(table.Row{c.ID, fmtAgo(c.CreatedAt)})
-				}
-				fmt.Println(tw.Render())
+				renderPipelineConfigHistory(os.Stdout, cc)
 			case "json":
 				err := json.NewEncoder(os.Stdout).Encode(cc)
 				if err != nil {
@@ -64,4 +55,13 @@ func newCmdGetPipelineConfigHistory(config *config) *cobra.Command {
 	_ = cmd.MarkFlagRequired("pipeline") // TODO: use default pipeline key from config cmd.
 
 	return cmd
+}
+
+func renderPipelineConfigHistory(w io.Writer, cc []cloud.PipelineConfig) {
+	tw := tabwriter.NewWriter(w, 0, 4, 1, ' ', 0)
+	fmt.Fprintln(tw, "ID\tAGE")
+	for _, c := range cc {
+		fmt.Fprintf(tw, "%s\t%s\n", c.ID, fmtAgo(c.CreatedAt))
+	}
+	tw.Flush()
 }

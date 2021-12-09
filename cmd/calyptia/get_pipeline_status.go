@@ -4,10 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"text/tabwriter"
 
-	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/spf13/cobra"
-	"golang.org/x/term"
 )
 
 func newCmdGetPipelineStatusHistory(config *config) *cobra.Command {
@@ -30,17 +29,12 @@ func newCmdGetPipelineStatusHistory(config *config) *cobra.Command {
 
 			switch format {
 			case "table":
-				tw := table.NewWriter()
-				tw.AppendHeader(table.Row{"Status", "Config ID", "Age"})
-				tw.Style().Options = table.OptionsNoBordersAndSeparators
-				if w, _, err := term.GetSize(int(os.Stdout.Fd())); err == nil {
-					tw.SetAllowedRowLength(w)
-				}
-
+				tw := tabwriter.NewWriter(os.Stdout, 0, 4, 1, ' ', 0)
+				fmt.Fprintln(tw, "STATUS\tCONFIG-ID\tAGE")
 				for _, s := range ss {
-					tw.AppendRow(table.Row{s.Status, s.Config.ID, fmtAgo(s.CreatedAt)})
+					fmt.Fprintf(tw, "%s\t%s\t%s\n", s.Status, s.Config.ID, fmtAgo(s.CreatedAt))
 				}
-				fmt.Println(tw.Render())
+				tw.Flush()
 			case "json":
 				err := json.NewEncoder(os.Stdout).Encode(ss)
 				if err != nil {

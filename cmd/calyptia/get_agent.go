@@ -7,15 +7,14 @@ import (
 	"fmt"
 	"os"
 	"sync"
+	"text/tabwriter"
 	"time"
 
 	"github.com/calyptia/cloud"
 	cloudclient "github.com/calyptia/cloud/client"
 	"github.com/hako/durafmt"
-	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"
-	"golang.org/x/term"
 )
 
 func newCmdGetAgents(config *config) *cobra.Command {
@@ -42,17 +41,13 @@ func newCmdGetAgents(config *config) *cobra.Command {
 
 			switch format {
 			case "table":
-				tw := table.NewWriter()
-				tw.AppendHeader(table.Row{"Name", "Type", "Version", "Status", "Age"})
-				tw.Style().Options = table.OptionsNoBordersAndSeparators
-				if w, _, err := term.GetSize(int(os.Stdout.Fd())); err == nil {
-					tw.SetAllowedRowLength(w)
-				}
-
+				tw := tabwriter.NewWriter(os.Stdout, 0, 4, 1, ' ', 0)
+				fmt.Fprintln(tw, "NAME\tTYPE\tVERSION\tSTATUS\tAGE")
 				for _, a := range aa {
-					tw.AppendRow(table.Row{a.Name, a.Type, a.Version, agentStatus(a.LastMetricsAddedAt, time.Minute*-5), fmtAgo(a.CreatedAt)})
+					status := agentStatus(a.LastMetricsAddedAt, time.Minute*-5)
+					fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\n", a.Name, a.Type, a.Version, status, fmtAgo(a.CreatedAt))
 				}
-				fmt.Println(tw.Render())
+				tw.Flush()
 			case "json":
 				err := json.NewEncoder(os.Stdout).Encode(aa)
 				if err != nil {

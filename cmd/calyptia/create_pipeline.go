@@ -7,13 +7,12 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"text/tabwriter"
 
 	"github.com/calyptia/cloud"
-	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/joho/godotenv"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
-	"golang.org/x/term"
 	"gopkg.in/yaml.v2"
 )
 
@@ -121,14 +120,10 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 
 			switch outputFormat {
 			case "table":
-				tw := table.NewWriter()
-				tw.AppendHeader(table.Row{"Name", "Age"})
-				tw.Style().Options = table.OptionsNoBordersAndSeparators
-				if w, _, err := term.GetSize(int(os.Stdout.Fd())); err == nil {
-					tw.SetAllowedRowLength(w)
-				}
-				tw.AppendRow(table.Row{a.Name, fmtAgo(a.CreatedAt)})
-				fmt.Println(tw.Render())
+				tw := tabwriter.NewWriter(os.Stdout, 0, 4, 1, ' ', 0)
+				fmt.Fprintln(tw, "NAME\tAGE")
+				fmt.Fprintf(tw, "%s\t%s\n", a.Name, fmtAgo(a.CreatedAt))
+				tw.Flush()
 			case "json":
 				err := json.NewEncoder(os.Stdout).Encode(a)
 				if err != nil {

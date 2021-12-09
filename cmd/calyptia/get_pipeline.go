@@ -5,12 +5,11 @@ import (
 	"fmt"
 	"os"
 	"sync"
+	"text/tabwriter"
 
 	"github.com/calyptia/cloud"
-	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"
-	"golang.org/x/term"
 )
 
 func newCmdGetPipelines(config *config) *cobra.Command {
@@ -33,17 +32,12 @@ func newCmdGetPipelines(config *config) *cobra.Command {
 
 			switch format {
 			case "table":
-				tw := table.NewWriter()
-				tw.AppendHeader(table.Row{"Name", "Replicas", "Status", "Age"})
-				tw.Style().Options = table.OptionsNoBordersAndSeparators
-				if w, _, err := term.GetSize(int(os.Stdout.Fd())); err == nil {
-					tw.SetAllowedRowLength(w)
-				}
-
+				tw := tabwriter.NewWriter(os.Stdout, 0, 4, 1, ' ', 0)
+				fmt.Fprintln(tw, "NAME\tREPLICAS\tSTATUS\tAGE")
 				for _, p := range pp {
-					tw.AppendRow(table.Row{p.Name, p.ReplicasCount, p.Status.Status, fmtAgo(p.CreatedAt)})
+					fmt.Fprintf(tw, "%s\t%d\t%s\t%s\n", p.Name, p.ReplicasCount, p.Status.Status, fmtAgo(p.CreatedAt))
 				}
-				fmt.Println(tw.Render())
+				tw.Flush()
 			case "json":
 				err := json.NewEncoder(os.Stdout).Encode(pp)
 				if err != nil {
@@ -133,49 +127,19 @@ func newCmdGetPipeline(config *config) *cobra.Command {
 			switch format {
 			case "table":
 				{
-					tw := table.NewWriter()
-					tw.AppendHeader(table.Row{"Name", "Replicas", "Status", "Age"})
-					tw.Style().Options = table.OptionsNoBordersAndSeparators
-					if w, _, err := term.GetSize(int(os.Stdout.Fd())); err == nil {
-						tw.SetAllowedRowLength(w)
-					}
-
-					tw.AppendRow(table.Row{pip.Name, pip.ReplicasCount, pip.Status.Status, fmtAgo(pip.CreatedAt)})
-					fmt.Println(tw.Render())
+					tw := tabwriter.NewWriter(os.Stdout, 0, 4, 1, ' ', 0)
+					fmt.Fprintln(tw, "NAME\tREPLICAS\tSTATUS\tAGE")
+					fmt.Fprintf(tw, "%s\t%d\t%s\t%s\n", pip.Name, pip.ReplicasCount, pip.Status.Status, fmtAgo(pip.CreatedAt))
+					tw.Flush()
 				}
 				if includeEndpoints {
-					tw := table.NewWriter()
-					tw.AppendHeader(table.Row{"Protocol", "Frontend port", "Backend port", "Endpoint", "Age"})
-					tw.Style().Options = table.OptionsNoBordersAndSeparators
-					if w, _, err := term.GetSize(int(os.Stdout.Fd())); err == nil {
-						tw.SetAllowedRowLength(w)
-					}
-
-					for _, p := range ports {
-						endpoint := p.Endpoint
-						if endpoint == "" {
-							endpoint = "Pending"
-						}
-						tw.AppendRow(table.Row{p.Protocol, p.FrontendPort, p.BackendPort, endpoint, fmtAgo(p.CreatedAt)})
-					}
 					fmt.Println()
-					fmt.Println(tw.Render())
+					renderEndpointsTable(os.Stdout, ports)
 				}
 				if includeConfigHistory {
-					tw := table.NewWriter()
-					tw.AppendHeader(table.Row{"ID", "Age"})
-					tw.Style().Options = table.OptionsNoBordersAndSeparators
-					if w, _, err := term.GetSize(int(os.Stdout.Fd())); err == nil {
-						tw.SetAllowedRowLength(w)
-					}
-
-					for _, c := range history {
-						tw.AppendRow(table.Row{c.ID, fmtAgo(c.CreatedAt)})
-					}
 					fmt.Println()
-					fmt.Println(tw.Render())
+					renderPipelineConfigHistory(os.Stdout, history)
 				}
-
 			case "json":
 				err := json.NewEncoder(os.Stdout).Encode(pip)
 				if err != nil {

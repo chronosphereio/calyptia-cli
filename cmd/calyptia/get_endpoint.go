@@ -3,11 +3,12 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
+	"text/tabwriter"
 
-	"github.com/jedib0t/go-pretty/v6/table"
+	"github.com/calyptia/cloud"
 	"github.com/spf13/cobra"
-	"golang.org/x/term"
 )
 
 func newCmdGetEndpoints(config *config) *cobra.Command {
@@ -30,21 +31,7 @@ func newCmdGetEndpoints(config *config) *cobra.Command {
 
 			switch format {
 			case "table":
-				tw := table.NewWriter()
-				tw.AppendHeader(table.Row{"Protocol", "Frontend port", "Backend port", "Endpoint", "Age"})
-				tw.Style().Options = table.OptionsNoBordersAndSeparators
-				if w, _, err := term.GetSize(int(os.Stdout.Fd())); err == nil {
-					tw.SetAllowedRowLength(w)
-				}
-
-				for _, p := range pp {
-					endpoint := p.Endpoint
-					if endpoint == "" {
-						endpoint = "Pending"
-					}
-					tw.AppendRow(table.Row{p.Protocol, p.FrontendPort, p.BackendPort, endpoint, fmtAgo(p.CreatedAt)})
-				}
-				fmt.Println(tw.Render())
+				renderEndpointsTable(os.Stdout, pp)
 			case "json":
 				err := json.NewEncoder(os.Stdout).Encode(pp)
 				if err != nil {
@@ -68,4 +55,17 @@ func newCmdGetEndpoints(config *config) *cobra.Command {
 	_ = cmd.MarkFlagRequired("pipeline") // TODO: use default pipeline key from config cmd.
 
 	return cmd
+}
+
+func renderEndpointsTable(w io.Writer, pp []cloud.PipelinePort) {
+	tw := tabwriter.NewWriter(w, 0, 4, 1, ' ', 0)
+	fmt.Fprintln(tw, "PROTOCOL\tFRONTEND-PORT\tBACKEND-PORT\tENDPOINT\tAGE")
+	for _, p := range pp {
+		endpoint := p.Endpoint
+		if endpoint == "" {
+			endpoint = "Pending"
+		}
+		fmt.Fprintf(tw, "%s\t%d\t%d\t%s\t%s\n", p.Protocol, p.FrontendPort, p.BackendPort, endpoint, fmtAgo(p.CreatedAt))
+	}
+	tw.Flush()
 }

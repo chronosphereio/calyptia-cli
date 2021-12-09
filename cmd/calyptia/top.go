@@ -40,6 +40,16 @@ type Model struct {
 	AgentModel   *AgentModel
 }
 
+func SetDefaultProject(project string) tea.Cmd {
+	return func() tea.Msg {
+		return DefaultProjectSet{Project: project}
+	}
+}
+
+type DefaultProjectSet struct {
+	Project string
+}
+
 type WentToProjectViewMsg struct {
 	ProjectKey string
 }
@@ -84,6 +94,9 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			return m, nil
 		}
+
+	case DefaultProjectSet:
+		m.AgentModel.SetDefaultProject(msg.Project)
 
 	case WentToProjectViewMsg:
 		m.currentView = ViewProject
