@@ -19,21 +19,9 @@ func newCmdConfigSetProject(config *config) *cobra.Command {
 		ValidArgsFunction: config.completeProjects,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			projectKey := args[0]
-			projectID := projectKey
-			{
-				pp, err := config.cloud.Projects(config.ctx)
-				if err != nil {
-					return err
-				}
-
-				a, ok := findProjectByName(pp, projectKey)
-				if !ok && !validUUID(projectID) {
-					return fmt.Errorf("could not find project %q", projectKey)
-				}
-
-				if ok {
-					projectID = a.ID
-				}
+			projectID, err := config.loadProjectID(projectKey)
+			if err != nil {
+				return err
 			}
 
 			if err := saveDefaultProject(projectID); err != nil {

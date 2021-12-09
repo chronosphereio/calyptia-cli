@@ -29,28 +29,12 @@ func newCmdUpdateProject(config *config) *cobra.Command {
 				return errors.New("project required")
 			}
 
-			projectID := projectKey
-			{
-				if projectKey == newName {
-					return nil
-				}
-
-				pp, err := config.cloud.Projects(config.ctx)
-				if err != nil {
-					return err
-				}
-
-				a, ok := findProjectByName(pp, projectKey)
-				if !ok && !validUUID(projectID) {
-					return fmt.Errorf("could not find project %q", projectKey)
-				}
-
-				if ok {
-					projectID = a.ID
-				}
+			projectID, err := config.loadProjectID(projectKey)
+			if err != nil {
+				return err
 			}
 
-			err := config.cloud.UpdateProject(config.ctx, projectID, cloud.UpdateProjectOpts{
+			err = config.cloud.UpdateProject(config.ctx, projectID, cloud.UpdateProjectOpts{
 				Name: &newName,
 			})
 			if err != nil {

@@ -21,21 +21,9 @@ func newCmdGetPipelines(config *config) *cobra.Command {
 		Use:   "pipelines",
 		Short: "Display latest pipelines from an aggregator",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			aggregatorID := aggregatorKey
-			{
-				aa, err := config.fetchAllAggregators()
-				if err != nil {
-					return err
-				}
-
-				a, ok := findAggregatorByName(aa, aggregatorKey)
-				if !ok && !validUUID(aggregatorID) {
-					return fmt.Errorf("could not find aggregator %q", aggregatorKey)
-				}
-
-				if ok {
-					aggregatorID = a.ID
-				}
+			aggregatorID, err := config.loadAggregatorID(aggregatorKey)
+			if err != nil {
+				return err
 			}
 
 			pp, err := config.cloud.AggregatorPipelines(config.ctx, aggregatorID, cloud.LastPipelines(last))
@@ -92,21 +80,9 @@ func newCmdGetPipeline(config *config) *cobra.Command {
 		Short:             "Display a pipelines by ID or name",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			pipelineKey := args[0]
-			pipelineID := pipelineKey
-			{
-				pp, err := config.fetchAllPipelines()
-				if err != nil {
-					return err
-				}
-
-				pip, ok := findPipelineByName(pp, pipelineKey)
-				if !ok && !validUUID(pipelineID) {
-					return fmt.Errorf("could not find pipeline %q", pipelineKey)
-				}
-
-				if ok {
-					pipelineID = pip.ID
-				}
+			pipelineID, err := config.loadPipelineID(pipelineKey)
+			if err != nil {
+				return err
 			}
 
 			var pip cloud.AggregatorPipeline
@@ -386,11 +362,66 @@ func pipelinesKeys(aa []cloud.AggregatorPipeline) []string {
 	return out
 }
 
-func findPipelineByName(pp []cloud.AggregatorPipeline, name string) (cloud.AggregatorPipeline, bool) {
-	for _, pip := range pp {
-		if pip.Name == name {
-			return pip, true
+func (config *config) loadPipelineID(pipelineKey string) (string, error) {
+	if config.defaultProject != "" {
+		var err error
+		pp, err := config.cloud.ProjectPipelines(config.ctx, config.defaultProject, cloud.PipelinesWithName(pipelineKey), cloud.LastPipelines(2))
+		if err != nil {
+			return "", err
 		}
+
+		if len(pp) != 1 && !validUUID(pipelineKey) {
+			return "", fmt.Errorf("could not find pipeline %q", pipelineKey)
+		}
+
+		if len(pp) == 1 {
+			return pp[0].ID, nil
+		}
+
+		return pipelineKey, nil
 	}
-	return cloud.AggregatorPipeline{}, false
+
+	projs, err := config.cloud.Projects(config.ctx)
+	if err != nil {
+		return "", err
+	}
+
+	var founds []string
+	var mu sync.Mutex
+	g, gctx := errgroup.WithContext(config.ctx)
+	for _, proj := range projs {
+		proj := proj
+		g.Go(func() error {
+			pp, err := config.cloud.ProjectPipelines(gctx, proj.ID, cloud.PipelinesWithName(pipelineKey), cloud.LastPipelines(2))
+			if err != nil {
+				return err
+			}
+
+			if len(pp) != 1 && !validUUID(pipelineKey) {
+				return fmt.Errorf("could not find pipeline %q", pipelineKey)
+			}
+
+			if len(pp) == 1 {
+				mu.Lock()
+				founds = append(founds, pp[0].ID)
+				mu.Unlock()
+			}
+
+			return nil
+		})
+	}
+
+	if err := g.Wait(); err != nil {
+		return "", err
+	}
+
+	if len(founds) != 1 && !validUUID(pipelineKey) {
+		return "", fmt.Errorf("could not find pipeline %q", pipelineKey)
+	}
+
+	if len(founds) == 1 {
+		return founds[0], nil
+	}
+
+	return pipelineKey, nil
 }

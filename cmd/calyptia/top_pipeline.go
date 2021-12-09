@@ -23,21 +23,9 @@ func newCmdTopPipeline(config *config) *cobra.Command {
 		ValidArgsFunction: config.completePipelines,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			pipelineKey := args[0]
-			pipelineID := pipelineKey
-			{
-				pp, err := config.fetchAllPipelines()
-				if err != nil {
-					return err
-				}
-
-				pip, ok := findPipelineByName(pp, pipelineKey)
-				if !ok && !validUUID(pipelineID) {
-					return fmt.Errorf("could not find pipeline %q", pipelineKey)
-				}
-
-				if ok {
-					pipelineID = pip.ID
-				}
+			pipelineID, err := config.loadPipelineID(pipelineKey)
+			if err != nil {
+				return err
 			}
 
 			var pipeline cloud.AggregatorPipeline

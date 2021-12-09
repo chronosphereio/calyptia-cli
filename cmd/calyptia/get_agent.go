@@ -30,21 +30,9 @@ func newCmdGetAgents(config *config) *cobra.Command {
 				return errors.New("project required")
 			}
 
-			projectID := projectKey
-			{
-				pp, err := config.cloud.Projects(config.ctx)
-				if err != nil {
-					return err
-				}
-
-				p, ok := findProjectByName(pp, projectKey)
-				if !ok && !validUUID(projectID) {
-					return fmt.Errorf("could not find project %q", projectKey)
-				}
-
-				if ok {
-					projectID = p.ID
-				}
+			projectID, err := config.loadProjectID(projectKey)
+			if err != nil {
+				return err
 			}
 
 			aa, err := config.cloud.Agents(config.ctx, projectID, cloud.LastAgents(last))
@@ -192,13 +180,68 @@ func agentsKeys(aa []cloud.Agent) []string {
 	return out
 }
 
-func findAgentByName(aa []cloud.Agent, name string) (cloud.Agent, bool) {
-	for _, a := range aa {
-		if a.Name == name {
-			return a, true
+func (config *config) loadAgentID(agentKey string) (string, error) {
+	if config.defaultProject != "" {
+		var err error
+		pp, err := config.cloud.Agents(config.ctx, config.defaultProject, cloud.AgentsWithName(agentKey), cloud.LastAgents(2))
+		if err != nil {
+			return "", err
 		}
+
+		if len(pp) != 1 && !validUUID(agentKey) {
+			return "", fmt.Errorf("could not find agent %q", agentKey)
+		}
+
+		if len(pp) == 1 {
+			return pp[0].ID, nil
+		}
+
+		return agentKey, nil
 	}
-	return cloud.Agent{}, false
+
+	projs, err := config.cloud.Projects(config.ctx)
+	if err != nil {
+		return "", err
+	}
+
+	var founds []string
+	var mu sync.Mutex
+	g, gctx := errgroup.WithContext(config.ctx)
+	for _, proj := range projs {
+		proj := proj
+		g.Go(func() error {
+			pp, err := config.cloud.Agents(gctx, proj.ID, cloud.AgentsWithName(agentKey), cloud.LastAgents(2))
+			if err != nil {
+				return err
+			}
+
+			if len(pp) != 1 && !validUUID(agentKey) {
+				return fmt.Errorf("could not find agent %q", agentKey)
+			}
+
+			if len(pp) == 1 {
+				mu.Lock()
+				founds = append(founds, pp[0].ID)
+				mu.Unlock()
+			}
+
+			return nil
+		})
+	}
+
+	if err := g.Wait(); err != nil {
+		return "", err
+	}
+
+	if len(founds) != 1 && !validUUID(agentKey) {
+		return "", fmt.Errorf("could not find agent %q", agentKey)
+	}
+
+	if len(founds) == 1 {
+		return founds[0], nil
+	}
+
+	return agentKey, nil
 }
 
 func agentStatus(lastMetricsAddedAt time.Time, start time.Duration) string {

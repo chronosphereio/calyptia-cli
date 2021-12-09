@@ -18,21 +18,9 @@ func newCmdGetPipelineConfigHistory(config *config) *cobra.Command {
 		Use:   "pipeline_config_history",
 		Short: "Display latest config history from a pipeline",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			pipelineID := pipelineKey
-			{
-				pp, err := config.fetchAllPipelines()
-				if err != nil {
-					return err
-				}
-
-				pip, ok := findPipelineByName(pp, pipelineKey)
-				if !ok && !validUUID(pipelineID) {
-					return fmt.Errorf("could not find pipeline %q", pipelineKey)
-				}
-
-				if ok {
-					pipelineID = pip.ID
-				}
+			pipelineID, err := config.loadPipelineID(pipelineKey)
+			if err != nil {
+				return err
 			}
 
 			cc, err := config.cloud.PipelineConfigHistory(config.ctx, pipelineID, last)

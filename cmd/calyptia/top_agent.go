@@ -7,6 +7,7 @@ import (
 	"math"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
 	"code.cloudfoundry.org/bytefmt"
@@ -35,7 +36,7 @@ func newCmdTopAgent(config *config) *cobra.Command {
 			agentKey := args[0]
 			initialModel := &Model{
 				StartingAgentKey: agentKey,
-				AgentModel:       NewAgentModel(config.ctx, config.cloud, agentKey, start, interval),
+				AgentModel:       NewAgentModel(config.ctx, config.cloud, config.defaultProject, agentKey, start, interval),
 			}
 			err := tea.NewProgram(initialModel, tea.WithAltScreen()).Start()
 			if err != nil {
@@ -53,11 +54,12 @@ func newCmdTopAgent(config *config) *cobra.Command {
 	return cmd
 }
 
-func NewAgentModel(ctx context.Context, cloud *cloudclient.Client, agentKey string, metricsStart, metricsInterval time.Duration) *AgentModel {
+func NewAgentModel(ctx context.Context, cloud *cloudclient.Client, defaultProject, agentKey string, metricsStart, metricsInterval time.Duration) *AgentModel {
 	return &AgentModel{
 		Ctx:             ctx,
 		Cloud:           cloud,
 		AgentKey:        agentKey,
+		defaultProject:  defaultProject,
 		agentID:         agentKey,
 		MetricsStart:    metricsStart,
 		MetricsInterval: metricsInterval,
@@ -88,7 +90,8 @@ func NewAgentModel(ctx context.Context, cloud *cloudclient.Client, agentKey stri
 }
 
 type AgentModel struct {
-	agentID string
+	defaultProject string
+	agentID        string
 
 	AgentKey        string
 	MetricsStart    time.Duration
@@ -106,6 +109,10 @@ type AgentModel struct {
 	dataReady    bool
 	agent        cloud.Agent
 	agentMetrics cloud.AgentMetrics
+}
+
+func (m *AgentModel) SetDefaultProject(project string) {
+	m.defaultProject = project
 }
 
 func (m *AgentModel) SetAgentID(agentID string) {
@@ -131,19 +138,62 @@ func (m *AgentModel) fetchAgentData() tea.Msg {
 	var agent cloud.Agent
 	var agentMetrics cloud.AgentMetrics
 
-	{
-		aa, err := fetchAllAgents(m.Cloud, m.Ctx)
+	if m.defaultProject != "" {
+		var err error
+		pp, err := m.Cloud.Agents(m.Ctx, m.defaultProject, cloud.AgentsWithName(m.AgentKey), cloud.LastAgents(2))
 		if err != nil {
-			return GotAgentDataMsg{Err: fmt.Errorf("could not prefeth agents: %w", err)}
+			return GotAgentDataMsg{Err: err}
 		}
 
-		a, ok := findAgentByName(aa, m.AgentKey)
-		if !ok && !validUUID(m.agentID) {
+		if len(pp) != 1 && !validUUID(m.agentID) {
 			return GotAgentDataMsg{Err: fmt.Errorf("could not find agent %q", m.AgentKey)}
 		}
 
-		if ok {
-			m.agentID = a.ID
+		if len(pp) == 1 {
+			m.agentID = pp[0].ID
+		}
+	} else {
+
+		projs, err := m.Cloud.Projects(m.Ctx)
+		if err != nil {
+			return GotAgentDataMsg{Err: err}
+		}
+
+		var founds []string
+		var mu sync.Mutex
+		g, gctx := errgroup.WithContext(m.Ctx)
+		for _, proj := range projs {
+			proj := proj
+			g.Go(func() error {
+				pp, err := m.Cloud.Agents(gctx, proj.ID, cloud.AgentsWithName(m.AgentKey), cloud.LastAgents(2))
+				if err != nil {
+					return err
+				}
+
+				if len(pp) != 1 && !validUUID(m.agentID) {
+					return fmt.Errorf("could not find agent %q", m.AgentKey)
+				}
+
+				if len(pp) == 1 {
+					mu.Lock()
+					founds = append(founds, pp[0].ID)
+					mu.Unlock()
+				}
+
+				return nil
+			})
+		}
+
+		if err := g.Wait(); err != nil {
+			return GotAgentDataMsg{Err: err}
+		}
+
+		if len(founds) != 1 && !validUUID(m.agentID) {
+			return GotAgentDataMsg{Err: fmt.Errorf("could not find agent %q", m.AgentKey)}
+		}
+
+		if len(founds) == 1 {
+			m.agentID = founds[0]
 		}
 	}
 

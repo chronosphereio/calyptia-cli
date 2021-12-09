@@ -103,11 +103,19 @@ func projectsKeys(aa []cloud.Project) []string {
 	return out
 }
 
-func findProjectByName(aa []cloud.Project, name string) (cloud.Project, bool) {
-	for _, a := range aa {
-		if a.Name == name {
-			return a, true
-		}
+func (config *config) loadProjectID(projectKey string) (string, error) {
+	pp, err := config.cloud.Projects(config.ctx, cloud.ProjectsWithName(projectKey), cloud.LastProjects(2))
+	if err != nil {
+		return "", err
 	}
-	return cloud.Project{}, false
+
+	if len(pp) != 1 && !validUUID(projectKey) {
+		return "", fmt.Errorf("could not find project %q", projectKey)
+	}
+
+	if len(pp) == 1 {
+		return pp[0].ID, nil
+	}
+
+	return projectKey, nil
 }

@@ -35,21 +35,9 @@ func newCmdUpdatePipeline(config *config) *cobra.Command {
 			}
 
 			pipelineKey := args[0]
-			pipelineID := pipelineKey
-			{
-				aa, err := config.fetchAllPipelines()
-				if err != nil {
-					return err
-				}
-
-				a, ok := findPipelineByName(aa, pipelineKey)
-				if !ok && !validUUID(pipelineID) {
-					return fmt.Errorf("could not find pipeline %q", pipelineKey)
-				}
-
-				if ok {
-					pipelineID = a.ID
-				}
+			pipelineID, err := config.loadPipelineID(pipelineKey)
+			if err != nil {
+				return err
 			}
 
 			opts := cloud.UpdateAggregatorPipelineOpts{

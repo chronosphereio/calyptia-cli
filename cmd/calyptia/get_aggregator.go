@@ -26,21 +26,9 @@ func newCmdGetAggregators(config *config) *cobra.Command {
 				return errors.New("project required")
 			}
 
-			projectID := projectKey
-			{
-				pp, err := config.cloud.Projects(config.ctx)
-				if err != nil {
-					return err
-				}
-
-				p, ok := findProjectByName(pp, projectKey)
-				if !ok && !validUUID(projectID) {
-					return fmt.Errorf("could not find project %q", projectKey)
-				}
-
-				if ok {
-					projectID = p.ID
-				}
+			projectID, err := config.loadProjectID(projectKey)
+			if err != nil {
+				return err
 			}
 
 			aa, err := config.cloud.Aggregators(config.ctx, projectID, cloud.LastAggregators(last))
@@ -184,11 +172,66 @@ func aggregatorsKeys(aa []cloud.Aggregator) []string {
 	return out
 }
 
-func findAggregatorByName(aa []cloud.Aggregator, name string) (cloud.Aggregator, bool) {
-	for _, a := range aa {
-		if a.Name == name {
-			return a, true
+func (config *config) loadAggregatorID(aggregatorKey string) (string, error) {
+	if config.defaultProject != "" {
+		var err error
+		pp, err := config.cloud.Aggregators(config.ctx, config.defaultProject, cloud.AggregatorsWithName(aggregatorKey), cloud.LastAggregators(2))
+		if err != nil {
+			return "", err
 		}
+
+		if len(pp) != 1 && !validUUID(aggregatorKey) {
+			return "", fmt.Errorf("could not find aggregator %q", aggregatorKey)
+		}
+
+		if len(pp) == 1 {
+			return pp[0].ID, nil
+		}
+
+		return aggregatorKey, nil
 	}
-	return cloud.Aggregator{}, false
+
+	projs, err := config.cloud.Projects(config.ctx)
+	if err != nil {
+		return "", err
+	}
+
+	var founds []string
+	var mu sync.Mutex
+	g, gctx := errgroup.WithContext(config.ctx)
+	for _, proj := range projs {
+		proj := proj
+		g.Go(func() error {
+			pp, err := config.cloud.Aggregators(gctx, proj.ID, cloud.AggregatorsWithName(aggregatorKey), cloud.LastAggregators(2))
+			if err != nil {
+				return err
+			}
+
+			if len(pp) != 1 && !validUUID(aggregatorKey) {
+				return fmt.Errorf("could not find aggregator %q", aggregatorKey)
+			}
+
+			if len(pp) == 1 {
+				mu.Lock()
+				founds = append(founds, pp[0].ID)
+				mu.Unlock()
+			}
+
+			return nil
+		})
+	}
+
+	if err := g.Wait(); err != nil {
+		return "", err
+	}
+
+	if len(founds) != 1 && !validUUID(aggregatorKey) {
+		return "", fmt.Errorf("could not find aggregator %q", aggregatorKey)
+	}
+
+	if len(founds) == 1 {
+		return founds[0], nil
+	}
+
+	return aggregatorKey, nil
 }

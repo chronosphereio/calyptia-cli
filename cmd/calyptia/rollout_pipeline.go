@@ -24,21 +24,9 @@ func newCmdRolloutPipeline(config *config) *cobra.Command {
 		Short:             "Rollout a pipeline to a previous config",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			pipelineKey := args[0]
-			pipelineID := pipelineKey
-			{
-				aa, err := config.fetchAllPipelines()
-				if err != nil {
-					return err
-				}
-
-				a, ok := findPipelineByName(aa, pipelineKey)
-				if !ok && !validUUID(pipelineID) {
-					return fmt.Errorf("could not find pipeline %q", pipelineKey)
-				}
-
-				if ok {
-					pipelineID = a.ID
-				}
+			pipelineID, err := config.loadPipelineID(pipelineKey)
+			if err != nil {
+				return err
 			}
 
 			var rawConfig string

@@ -57,7 +57,7 @@ func newCmdTopProject(config *config) *cobra.Command {
 			initialModel := &Model{
 				StartingProjectKey: projectKey,
 				ProjectModel:       NewProjectModel(config.ctx, config.cloud, projectKey, start, interval, last),
-				AgentModel:         NewAgentModel(config.ctx, config.cloud, projectKey, start, interval),
+				AgentModel:         NewAgentModel(config.ctx, config.cloud, config.defaultProject, projectKey, start, interval),
 			}
 			err := tea.NewProgram(initialModel, tea.WithAltScreen()).Start()
 			if err != nil {
@@ -161,18 +161,17 @@ func (m *ProjectModel) fetchProjectData() tea.Msg {
 	var mu sync.Mutex
 
 	{
-		pp, err := m.Cloud.Projects(m.Ctx)
+		pp, err := m.Cloud.Projects(m.Ctx, cloud.ProjectsWithName(m.ProjectKey), cloud.LastProjects(2))
 		if err != nil {
 			return GotProjectDataMsg{Err: fmt.Errorf("could not prefeth projects: %w", err)}
 		}
 
-		p, ok := findProjectByName(pp, m.ProjectKey)
-		if !ok && !validUUID(m.projectID) {
+		if len(pp) != 1 && !validUUID(m.projectID) {
 			return GotProjectDataMsg{Err: fmt.Errorf("could not find project %q", m.ProjectKey)}
 		}
 
-		if ok {
-			m.projectID = p.ID
+		if len(pp) == 1 {
+			m.projectID = pp[0].ID
 		}
 	}
 

@@ -39,24 +39,12 @@ func newCmdDeleteAgent(config *config) *cobra.Command {
 				}
 			}
 
-			agentID := agentKey
-			{
-				aa, err := config.fetchAllAgents()
-				if err != nil {
-					return err
-				}
-
-				a, ok := findAgentByName(aa, agentKey)
-				if !ok && !validUUID(agentID) {
-					return nil // idempotent
-				}
-
-				if ok {
-					agentID = a.ID
-				}
+			agentID, err := config.loadAgentID(agentKey)
+			if err != nil {
+				return err
 			}
 
-			err := config.cloud.DeleteAgent(config.ctx, agentID)
+			err = config.cloud.DeleteAgent(config.ctx, agentID)
 			if err != nil {
 				return fmt.Errorf("could not delete agent: %w", err)
 			}
@@ -84,21 +72,9 @@ func newCmdDeleteAgents(config *config) *cobra.Command {
 				return errors.New("project required")
 			}
 
-			projectID := projectKey
-			{
-				pp, err := config.cloud.Projects(config.ctx)
-				if err != nil {
-					return err
-				}
-
-				a, ok := findProjectByName(pp, projectKey)
-				if !ok && !validUUID(projectID) {
-					return nil // idempotent
-				}
-
-				if ok {
-					projectID = a.ID
-				}
+			projectID, err := config.loadProjectID(projectKey)
+			if err != nil {
+				return err
 			}
 
 			aa, err := config.cloud.Agents(config.ctx, projectID)
