@@ -140,17 +140,21 @@ func (m *AgentModel) fetchAgentData() tea.Msg {
 
 	if m.defaultProject != "" {
 		var err error
-		pp, err := m.Cloud.Agents(m.Ctx, m.defaultProject, cloud.AgentsWithName(m.AgentKey), cloud.LastAgents(2))
+		aa, err := m.Cloud.Agents(m.Ctx, m.defaultProject, cloud.AgentsWithName(m.AgentKey), cloud.LastAgents(2))
 		if err != nil {
 			return GotAgentDataMsg{Err: err}
 		}
 
-		if len(pp) != 1 && !validUUID(m.agentID) {
+		if len(aa) != 1 && !validUUID(m.agentID) {
+			if len(aa) != 0 {
+				return GotAgentDataMsg{Err: fmt.Errorf("ambiguous agent name %q, use ID instead", m.AgentKey)}
+			}
+
 			return GotAgentDataMsg{Err: fmt.Errorf("could not find agent %q", m.AgentKey)}
 		}
 
-		if len(pp) == 1 {
-			m.agentID = pp[0].ID
+		if len(aa) == 1 {
+			m.agentID = aa[0].ID
 		}
 	} else {
 
@@ -165,18 +169,22 @@ func (m *AgentModel) fetchAgentData() tea.Msg {
 		for _, proj := range projs {
 			proj := proj
 			g.Go(func() error {
-				pp, err := m.Cloud.Agents(gctx, proj.ID, cloud.AgentsWithName(m.AgentKey), cloud.LastAgents(2))
+				aa, err := m.Cloud.Agents(gctx, proj.ID, cloud.AgentsWithName(m.AgentKey), cloud.LastAgents(2))
 				if err != nil {
 					return err
 				}
 
-				if len(pp) != 1 && !validUUID(m.agentID) {
+				if len(aa) != 1 && !validUUID(m.agentID) {
+					if len(aa) != 0 {
+						return fmt.Errorf("ambiguous agent name %q, use ID instead", m.AgentKey)
+					}
+
 					return fmt.Errorf("could not find agent %q", m.AgentKey)
 				}
 
-				if len(pp) == 1 {
+				if len(aa) == 1 {
 					mu.Lock()
-					founds = append(founds, pp[0].ID)
+					founds = append(founds, aa[0].ID)
 					mu.Unlock()
 				}
 
@@ -189,6 +197,10 @@ func (m *AgentModel) fetchAgentData() tea.Msg {
 		}
 
 		if len(founds) != 1 && !validUUID(m.agentID) {
+			if len(founds) != 0 {
+				return GotAgentDataMsg{Err: fmt.Errorf("ambiguous agent name %q, use ID instead", m.AgentKey)}
+			}
+
 			return GotAgentDataMsg{Err: fmt.Errorf("could not find agent %q", m.AgentKey)}
 		}
 

@@ -175,17 +175,21 @@ func aggregatorsKeys(aa []cloud.Aggregator) []string {
 func (config *config) loadAggregatorID(aggregatorKey string) (string, error) {
 	if config.defaultProject != "" {
 		var err error
-		pp, err := config.cloud.Aggregators(config.ctx, config.defaultProject, cloud.AggregatorsWithName(aggregatorKey), cloud.LastAggregators(2))
+		aa, err := config.cloud.Aggregators(config.ctx, config.defaultProject, cloud.AggregatorsWithName(aggregatorKey), cloud.LastAggregators(2))
 		if err != nil {
 			return "", err
 		}
 
-		if len(pp) != 1 && !validUUID(aggregatorKey) {
+		if len(aa) != 1 && !validUUID(aggregatorKey) {
+			if len(aa) != 0 {
+				return "", fmt.Errorf("ambiguous aggregator name %q, use ID instead", aggregatorKey)
+			}
+
 			return "", fmt.Errorf("could not find aggregator %q", aggregatorKey)
 		}
 
-		if len(pp) == 1 {
-			return pp[0].ID, nil
+		if len(aa) == 1 {
+			return aa[0].ID, nil
 		}
 
 		return aggregatorKey, nil
@@ -202,18 +206,22 @@ func (config *config) loadAggregatorID(aggregatorKey string) (string, error) {
 	for _, proj := range projs {
 		proj := proj
 		g.Go(func() error {
-			pp, err := config.cloud.Aggregators(gctx, proj.ID, cloud.AggregatorsWithName(aggregatorKey), cloud.LastAggregators(2))
+			aa, err := config.cloud.Aggregators(gctx, proj.ID, cloud.AggregatorsWithName(aggregatorKey), cloud.LastAggregators(2))
 			if err != nil {
 				return err
 			}
 
-			if len(pp) != 1 && !validUUID(aggregatorKey) {
+			if len(aa) != 1 && !validUUID(aggregatorKey) {
+				if len(aa) != 0 {
+					return fmt.Errorf("ambiguous aggregator name %q, use ID instead", aggregatorKey)
+				}
+
 				return fmt.Errorf("could not find aggregator %q", aggregatorKey)
 			}
 
-			if len(pp) == 1 {
+			if len(aa) == 1 {
 				mu.Lock()
-				founds = append(founds, pp[0].ID)
+				founds = append(founds, aa[0].ID)
 				mu.Unlock()
 			}
 
@@ -226,6 +234,10 @@ func (config *config) loadAggregatorID(aggregatorKey string) (string, error) {
 	}
 
 	if len(founds) != 1 && !validUUID(aggregatorKey) {
+		if len(founds) != 0 {
+			return "", fmt.Errorf("ambiguous aggregator name %q, use ID instead", aggregatorKey)
+		}
+
 		return "", fmt.Errorf("could not find aggregator %q", aggregatorKey)
 	}
 

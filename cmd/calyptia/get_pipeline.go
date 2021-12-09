@@ -371,6 +371,10 @@ func (config *config) loadPipelineID(pipelineKey string) (string, error) {
 		}
 
 		if len(pp) != 1 && !validUUID(pipelineKey) {
+			if len(pp) != 0 {
+				return "", fmt.Errorf("ambiguous pipeline name %q, use ID instead", pipelineKey)
+			}
+
 			return "", fmt.Errorf("could not find pipeline %q", pipelineKey)
 		}
 
@@ -398,6 +402,10 @@ func (config *config) loadPipelineID(pipelineKey string) (string, error) {
 			}
 
 			if len(pp) != 1 && !validUUID(pipelineKey) {
+				if len(pp) != 0 {
+					return fmt.Errorf("ambiguous pipeline name %q, use ID instead", pipelineKey)
+				}
+
 				return fmt.Errorf("could not find pipeline %q", pipelineKey)
 			}
 
@@ -416,6 +424,10 @@ func (config *config) loadPipelineID(pipelineKey string) (string, error) {
 	}
 
 	if len(founds) != 1 && !validUUID(pipelineKey) {
+		if len(founds) != 0 {
+			return "", fmt.Errorf("ambiguous pipeline name %q, use ID instead", pipelineKey)
+		}
+
 		return "", fmt.Errorf("could not find pipeline %q", pipelineKey)
 	}
 

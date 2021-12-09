@@ -110,6 +110,10 @@ func (config *config) loadProjectID(projectKey string) (string, error) {
 	}
 
 	if len(pp) != 1 && !validUUID(projectKey) {
+		if len(pp) != 0 {
+			return "", fmt.Errorf("ambiguous project name %q, use ID instead", projectKey)
+		}
+
 		return "", fmt.Errorf("could not find project %q", projectKey)
 	}
 

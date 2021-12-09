@@ -183,17 +183,20 @@ func agentsKeys(aa []cloud.Agent) []string {
 func (config *config) loadAgentID(agentKey string) (string, error) {
 	if config.defaultProject != "" {
 		var err error
-		pp, err := config.cloud.Agents(config.ctx, config.defaultProject, cloud.AgentsWithName(agentKey), cloud.LastAgents(2))
+		aa, err := config.cloud.Agents(config.ctx, config.defaultProject, cloud.AgentsWithName(agentKey), cloud.LastAgents(2))
 		if err != nil {
 			return "", err
 		}
 
-		if len(pp) != 1 && !validUUID(agentKey) {
+		if len(aa) != 1 && !validUUID(agentKey) {
+			if len(aa) != 0 {
+				return "", fmt.Errorf("ambiguous agent name %q, use ID instead", agentKey)
+			}
 			return "", fmt.Errorf("could not find agent %q", agentKey)
 		}
 
-		if len(pp) == 1 {
-			return pp[0].ID, nil
+		if len(aa) == 1 {
+			return aa[0].ID, nil
 		}
 
 		return agentKey, nil
@@ -210,18 +213,22 @@ func (config *config) loadAgentID(agentKey string) (string, error) {
 	for _, proj := range projs {
 		proj := proj
 		g.Go(func() error {
-			pp, err := config.cloud.Agents(gctx, proj.ID, cloud.AgentsWithName(agentKey), cloud.LastAgents(2))
+			aa, err := config.cloud.Agents(gctx, proj.ID, cloud.AgentsWithName(agentKey), cloud.LastAgents(2))
 			if err != nil {
 				return err
 			}
 
-			if len(pp) != 1 && !validUUID(agentKey) {
+			if len(aa) != 1 && !validUUID(agentKey) {
+				if len(aa) != 0 {
+					return fmt.Errorf("ambiguous agent name %q, use ID instead", agentKey)
+				}
+
 				return fmt.Errorf("could not find agent %q", agentKey)
 			}
 
-			if len(pp) == 1 {
+			if len(aa) == 1 {
 				mu.Lock()
-				founds = append(founds, pp[0].ID)
+				founds = append(founds, aa[0].ID)
 				mu.Unlock()
 			}
 
@@ -234,6 +241,10 @@ func (config *config) loadAgentID(agentKey string) (string, error) {
 	}
 
 	if len(founds) != 1 && !validUUID(agentKey) {
+		if len(founds) != 0 {
+			return "", fmt.Errorf("ambiguous agent name %q, use ID instead", agentKey)
+		}
+
 		return "", fmt.Errorf("could not find agent %q", agentKey)
 	}
 

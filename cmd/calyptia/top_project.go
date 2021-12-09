@@ -167,6 +167,10 @@ func (m *ProjectModel) fetchProjectData() tea.Msg {
 		}
 
 		if len(pp) != 1 && !validUUID(m.projectID) {
+			if len(pp) != 0 {
+				return GotProjectDataMsg{Err: fmt.Errorf("ambiguous project name %q, use ID instead", m.ProjectKey)}
+			}
+
 			return GotProjectDataMsg{Err: fmt.Errorf("could not find project %q", m.ProjectKey)}
 		}
 
