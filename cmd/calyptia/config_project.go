@@ -21,7 +21,7 @@ func newCmdConfigSetProject(config *config) *cobra.Command {
 			projectKey := args[0]
 			projectID := projectKey
 			{
-				pp, err := config.cloud.Projects(config.ctx, 0)
+				pp, err := config.cloud.Projects(config.ctx)
 				if err != nil {
 					return err
 				}

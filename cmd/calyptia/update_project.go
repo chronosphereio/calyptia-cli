@@ -35,7 +35,7 @@ func newCmdUpdateProject(config *config) *cobra.Command {
 					return nil
 				}
 
-				pp, err := config.cloud.Projects(config.ctx, 0)
+				pp, err := config.cloud.Projects(config.ctx)
 				if err != nil {
 					return err
 				}

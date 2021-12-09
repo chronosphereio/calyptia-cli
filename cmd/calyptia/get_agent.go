@@ -32,7 +32,7 @@ func newCmdGetAgents(config *config) *cobra.Command {
 
 			projectID := projectKey
 			{
-				pp, err := config.cloud.Projects(config.ctx, 0)
+				pp, err := config.cloud.Projects(config.ctx)
 				if err != nil {
 					return err
 				}
@@ -47,7 +47,7 @@ func newCmdGetAgents(config *config) *cobra.Command {
 				}
 			}
 
-			aa, err := config.cloud.Agents(config.ctx, projectID, last)
+			aa, err := config.cloud.Agents(config.ctx, projectID, cloud.LastAgents(last))
 			if err != nil {
 				return fmt.Errorf("could not fetch your agents: %w", err)
 			}
@@ -92,7 +92,7 @@ func (config *config) completeAgents(cmd *cobra.Command, args []string, toComple
 	var aa []cloud.Agent
 	if config.defaultProject != "" {
 		var err error
-		aa, err = config.cloud.Agents(config.ctx, config.defaultProject, 0)
+		aa, err = config.cloud.Agents(config.ctx, config.defaultProject)
 		if err != nil {
 			return nil, cobra.ShellCompDirectiveError
 		}
@@ -116,7 +116,7 @@ func (config *config) fetchAllAgents() ([]cloud.Agent, error) {
 }
 
 func fetchAllAgents(client *cloudclient.Client, ctx context.Context) ([]cloud.Agent, error) {
-	pp, err := client.Projects(ctx, 0)
+	pp, err := client.Projects(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("could not prefetch projects: %w", err)
 	}
@@ -131,7 +131,7 @@ func fetchAllAgents(client *cloudclient.Client, ctx context.Context) ([]cloud.Ag
 	for _, p := range pp {
 		p := p
 		g.Go(func() error {
-			got, err := client.Agents(gctx, p.ID, 0)
+			got, err := client.Agents(gctx, p.ID)
 			if err != nil {
 				return fmt.Errorf("could not fetch agents from project: %w", err)
 			}

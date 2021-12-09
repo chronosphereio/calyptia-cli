@@ -136,8 +136,8 @@ github.com/boltdb/bolt v1.3.1/go.mod h1:clJnj/oiGkjum5o1McbSZDSLxVThjynRyGBgiAx2
 github.com/bonitoo-io/go-sql-bigquery v0.3.4-1.4.0/go.mod h1:J4Y6YJm0qTWB9aFziB7cPeSyc6dOZFyJdteSeybVpXQ=
 github.com/c-bata/go-prompt v0.2.2/go.mod h1:VzqtzE2ksDBcdln8G7mk2RX9QyGjH+OVqOCSiVIqS34=
 github.com/cactus/go-statsd-client/statsd v0.0.0-20191106001114-12b4e2b38748/go.mod h1:l/bIBLeOl9eX+wxJAzxS4TveKRtAqlyDpHjhkfO0MEI=
-github.com/calyptia/cloud v0.2.10 h1:gPH2dUELl9RgGIdgURXTsdqF3IPo2tRZGmqYIg0Ipn8=
-github.com/calyptia/cloud v0.2.10/go.mod h1:om+iVQ2MYx5HN3MslneLhBoyY7cMUGrm1ATpindtS7U=
+github.com/calyptia/cloud v0.3.0 h1:T5M/3U7OP2HWRyAj9PGxlfyZvEeTc9PCwwF1pr8dTr4=
+github.com/calyptia/cloud v0.3.0/go.mod h1:vYOCvUJTxUEzpSMHkLjXLuNqq4JSmI4CTmXzCkAP1W0=
 github.com/calyptia/go-fluentbit-config v0.0.2 h1:glqdpreygQ8iAnPm5TCmddCTG2e+rXdgL/CIZVVVKx0=
 github.com/calyptia/go-fluentbit-config v0.0.2/go.mod h1:oZRN5STLxbeAfOkDDxdLInwCV0uPBPRaZRj3gq5Ig1o=
 github.com/casbin/casbin/v2 v2.1.2/go.mod h1:YcPU1XXisHhLzuxH9coDNf2FbKpjGlbCg3n9yuLkIJQ=

@@ -28,7 +28,7 @@ func newCmdCreateAggregator(config *config) *cobra.Command {
 
 			projectID := projectKey
 			{
-				pp, err := config.cloud.Projects(config.ctx, 0)
+				pp, err := config.cloud.Projects(config.ctx)
 				if err != nil {
 					return err
 				}

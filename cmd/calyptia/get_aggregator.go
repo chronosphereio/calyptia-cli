@@ -28,7 +28,7 @@ func newCmdGetAggregators(config *config) *cobra.Command {
 
 			projectID := projectKey
 			{
-				pp, err := config.cloud.Projects(config.ctx, 0)
+				pp, err := config.cloud.Projects(config.ctx)
 				if err != nil {
 					return err
 				}
@@ -43,7 +43,7 @@ func newCmdGetAggregators(config *config) *cobra.Command {
 				}
 			}
 
-			aa, err := config.cloud.Aggregators(config.ctx, projectID, last)
+			aa, err := config.cloud.Aggregators(config.ctx, projectID, cloud.LastAggregators(last))
 			if err != nil {
 				return fmt.Errorf("could not fetch your aggregators: %w", err)
 			}
@@ -85,7 +85,7 @@ func newCmdGetAggregators(config *config) *cobra.Command {
 }
 
 func (config *config) fetchAllAggregators() ([]cloud.Aggregator, error) {
-	pp, err := config.cloud.Projects(config.ctx, 0)
+	pp, err := config.cloud.Projects(config.ctx)
 	if err != nil {
 		return nil, fmt.Errorf("could not prefetch projects: %w", err)
 	}
@@ -100,7 +100,7 @@ func (config *config) fetchAllAggregators() ([]cloud.Aggregator, error) {
 	for _, p := range pp {
 		p := p
 		g.Go(func() error {
-			got, err := config.cloud.Aggregators(gctx, p.ID, 0)
+			got, err := config.cloud.Aggregators(gctx, p.ID)
 			if err != nil {
 				return fmt.Errorf("could not fetch aggregators from project: %w", err)
 			}
@@ -132,7 +132,7 @@ func (config *config) completeAggregators(cmd *cobra.Command, args []string, toC
 	var aa []cloud.Aggregator
 	if config.defaultProject != "" {
 		var err error
-		aa, err = config.cloud.Aggregators(config.ctx, config.defaultProject, 0)
+		aa, err = config.cloud.Aggregators(config.ctx, config.defaultProject)
 		if err != nil {
 			return nil, cobra.ShellCompDirectiveError
 		}

@@ -86,7 +86,7 @@ func newCmdDeleteAgents(config *config) *cobra.Command {
 
 			projectID := projectKey
 			{
-				pp, err := config.cloud.Projects(config.ctx, 0)
+				pp, err := config.cloud.Projects(config.ctx)
 				if err != nil {
 					return err
 				}
@@ -101,7 +101,7 @@ func newCmdDeleteAgents(config *config) *cobra.Command {
 				}
 			}
 
-			aa, err := config.cloud.Agents(config.ctx, projectID, 0)
+			aa, err := config.cloud.Agents(config.ctx, projectID)
 			if err != nil {
 				return fmt.Errorf("could not prefetch agents to delete: %w", err)
 			}

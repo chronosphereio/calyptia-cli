@@ -161,7 +161,7 @@ func (m *ProjectModel) fetchProjectData() tea.Msg {
 	var mu sync.Mutex
 
 	{
-		pp, err := m.Cloud.Projects(m.Ctx, 0)
+		pp, err := m.Cloud.Projects(m.Ctx)
 		if err != nil {
 			return GotProjectDataMsg{Err: fmt.Errorf("could not prefeth projects: %w", err)}
 		}
@@ -188,7 +188,7 @@ func (m *ProjectModel) fetchProjectData() tea.Msg {
 	})
 	g.Go(func() error {
 		var err error
-		agents, err = m.Cloud.Agents(gctx, m.projectID, m.LastAgents)
+		agents, err = m.Cloud.Agents(gctx, m.projectID, cloud.LastAgents(m.LastAgents))
 		if err != nil {
 			return fmt.Errorf("could not fetch agents: %w", err)
 		}

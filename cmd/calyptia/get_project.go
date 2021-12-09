@@ -18,7 +18,7 @@ func newCmdGetProjects(config *config) *cobra.Command {
 		Use:   "projects",
 		Short: "Display latest projects",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			pp, err := config.cloud.Projects(config.ctx, last)
+			pp, err := config.cloud.Projects(config.ctx, cloud.LastProjects(last))
 			if err != nil {
 				return fmt.Errorf("could not fetch your projects: %w", err)
 			}
@@ -58,7 +58,7 @@ func newCmdGetProjects(config *config) *cobra.Command {
 }
 
 func (config *config) completeProjects(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	pp, err := config.cloud.Projects(config.ctx, 0)
+	pp, err := config.cloud.Projects(config.ctx)
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveError
 	}

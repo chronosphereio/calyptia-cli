@@ -38,7 +38,7 @@ func newCmdGetPipelines(config *config) *cobra.Command {
 				}
 			}
 
-			pp, err := config.cloud.AggregatorPipelines(config.ctx, aggregatorID, last)
+			pp, err := config.cloud.AggregatorPipelines(config.ctx, aggregatorID, cloud.LastPipelines(last))
 			if err != nil {
 				return fmt.Errorf("could not fetch your pipelines: %w", err)
 			}
@@ -225,7 +225,7 @@ func newCmdGetPipeline(config *config) *cobra.Command {
 }
 
 func (config *config) fetchAllPipelines() ([]cloud.AggregatorPipeline, error) {
-	pp, err := config.cloud.Projects(config.ctx, 0)
+	pp, err := config.cloud.Projects(config.ctx)
 	if err != nil {
 		return nil, fmt.Errorf("could not prefetch pipelines: %w", err)
 	}
@@ -240,7 +240,7 @@ func (config *config) fetchAllPipelines() ([]cloud.AggregatorPipeline, error) {
 	for _, p := range pp {
 		p := p
 		g.Go(func() error {
-			aa, err := config.cloud.Aggregators(gctx, p.ID, 0)
+			aa, err := config.cloud.Aggregators(gctx, p.ID)
 			if err != nil {
 				return err
 			}
@@ -253,7 +253,7 @@ func (config *config) fetchAllPipelines() ([]cloud.AggregatorPipeline, error) {
 			for _, a := range aa {
 				a := a
 				g2.Go(func() error {
-					got, err := config.cloud.AggregatorPipelines(gctx2, a.ID, 0)
+					got, err := config.cloud.AggregatorPipelines(gctx2, a.ID)
 					if err != nil {
 						return err
 					}
@@ -285,7 +285,7 @@ func (config *config) fetchAllPipelines() ([]cloud.AggregatorPipeline, error) {
 }
 
 func (config *config) fetchAllProjectPipelines(projectID string) ([]cloud.AggregatorPipeline, error) {
-	aa, err := config.cloud.Aggregators(config.ctx, projectID, 0)
+	aa, err := config.cloud.Aggregators(config.ctx, projectID)
 	if err != nil {
 		return nil, fmt.Errorf("could not prefetch aggregators: %w", err)
 	}
@@ -301,7 +301,7 @@ func (config *config) fetchAllProjectPipelines(projectID string) ([]cloud.Aggreg
 	for _, a := range aa {
 		a := a
 		g.Go(func() error {
-			got, err := config.cloud.AggregatorPipelines(gctx, a.ID, 0)
+			got, err := config.cloud.AggregatorPipelines(gctx, a.ID)
 			if err != nil {
 				return err
 			}
