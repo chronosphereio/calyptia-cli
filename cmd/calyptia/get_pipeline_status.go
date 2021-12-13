@@ -10,9 +10,10 @@ import (
 )
 
 func newCmdGetPipelineStatusHistory(config *config) *cobra.Command {
-	var format string
 	var pipelineKey string
 	var last uint64
+	var format string
+	var showIDs bool
 	cmd := &cobra.Command{
 		Use:   "pipeline_status_history",
 		Short: "Display latest status history from a pipeline",
@@ -30,8 +31,14 @@ func newCmdGetPipelineStatusHistory(config *config) *cobra.Command {
 			switch format {
 			case "table":
 				tw := tabwriter.NewWriter(os.Stdout, 0, 4, 1, ' ', 0)
+				if showIDs {
+					fmt.Fprintf(tw, "ID\t")
+				}
 				fmt.Fprintln(tw, "STATUS\tCONFIG-ID\tAGE")
 				for _, s := range ss {
+					if showIDs {
+						fmt.Fprintf(tw, "%s\t", s.ID)
+					}
 					fmt.Fprintf(tw, "%s\t%s\t%s\n", s.Status, s.Config.ID, fmtAgo(s.CreatedAt))
 				}
 				tw.Flush()
@@ -48,9 +55,10 @@ func newCmdGetPipelineStatusHistory(config *config) *cobra.Command {
 	}
 
 	fs := cmd.Flags()
-	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
 	fs.StringVar(&pipelineKey, "pipeline", "", "Parent pipeline ID or name")
 	fs.Uint64VarP(&last, "last", "l", 0, "Last `N` pipeline status history entries. 0 means no limit")
+	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
+	fs.BoolVar(&showIDs, "show-ids", false, "Include status IDs in table output")
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.completePipelines)

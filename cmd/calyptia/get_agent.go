@@ -21,6 +21,7 @@ func newCmdGetAgents(config *config) *cobra.Command {
 	var projectKey string
 	var last uint64
 	var format string
+	var showIDs bool
 	cmd := &cobra.Command{
 		Use:   "agents",
 		Short: "Display latest agents from a project",
@@ -42,9 +43,15 @@ func newCmdGetAgents(config *config) *cobra.Command {
 			switch format {
 			case "table":
 				tw := tabwriter.NewWriter(os.Stdout, 0, 4, 1, ' ', 0)
+				if showIDs {
+					fmt.Fprint(tw, "ID\t")
+				}
 				fmt.Fprintln(tw, "NAME\tTYPE\tVERSION\tSTATUS\tAGE")
 				for _, a := range aa {
 					status := agentStatus(a.LastMetricsAddedAt, time.Minute*-5)
+					if showIDs {
+						fmt.Fprintf(tw, "%s\t", a.ID)
+					}
 					fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\n", a.Name, a.Type, a.Version, status, fmtAgo(a.CreatedAt))
 				}
 				tw.Flush()
@@ -64,6 +71,7 @@ func newCmdGetAgents(config *config) *cobra.Command {
 	fs.StringVar(&projectKey, "project", config.defaultProject, "Parent project ID or name")
 	fs.Uint64VarP(&last, "last", "l", 0, "Last `N` agents. 0 means no limit")
 	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
+	fs.BoolVar(&showIDs, "show-ids", false, "Include agent IDs in table output")
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("project", config.completeProjects)

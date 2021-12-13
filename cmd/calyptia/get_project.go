@@ -11,8 +11,9 @@ import (
 )
 
 func newCmdGetProjects(config *config) *cobra.Command {
-	var format string
 	var last uint64
+	var format string
+	var showIDs bool
 	cmd := &cobra.Command{
 		Use:   "projects",
 		Short: "Display latest projects",
@@ -25,8 +26,14 @@ func newCmdGetProjects(config *config) *cobra.Command {
 			switch format {
 			case "table":
 				tw := tabwriter.NewWriter(os.Stdout, 0, 4, 1, ' ', 0)
+				if showIDs {
+					fmt.Fprint(tw, "ID\t")
+				}
 				fmt.Fprintln(tw, "NAME\tAGE")
 				for _, p := range pp {
+					if showIDs {
+						fmt.Fprintf(tw, "%s\t", p.ID)
+					}
 					fmt.Fprintf(tw, "%s\t%s\n", p.Name, fmtAgo(p.CreatedAt))
 				}
 				tw.Flush()
@@ -43,8 +50,9 @@ func newCmdGetProjects(config *config) *cobra.Command {
 	}
 
 	fs := cmd.Flags()
-	fs.StringVarP(&format, "output-format", "f", "table", "Output format. Allowed: table, json")
 	fs.Uint64VarP(&last, "last", "l", 0, "Last `N` projects. 0 means no limit")
+	fs.StringVarP(&format, "output-format", "f", "table", "Output format. Allowed: table, json")
+	fs.BoolVar(&showIDs, "show-ids", false, "Include project IDs in table output")
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
 

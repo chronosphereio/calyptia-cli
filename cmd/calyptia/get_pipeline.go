@@ -13,9 +13,10 @@ import (
 )
 
 func newCmdGetPipelines(config *config) *cobra.Command {
-	var format string
 	var aggregatorKey string
 	var last uint64
+	var format string
+	var showIDs bool
 	cmd := &cobra.Command{
 		Use:   "pipelines",
 		Short: "Display latest pipelines from an aggregator",
@@ -33,8 +34,14 @@ func newCmdGetPipelines(config *config) *cobra.Command {
 			switch format {
 			case "table":
 				tw := tabwriter.NewWriter(os.Stdout, 0, 4, 1, ' ', 0)
+				if showIDs {
+					fmt.Fprintf(tw, "ID\t")
+				}
 				fmt.Fprintln(tw, "NAME\tREPLICAS\tSTATUS\tAGE")
 				for _, p := range pp {
+					if showIDs {
+						fmt.Fprintf(tw, "%s\t", p.ID)
+					}
 					fmt.Fprintf(tw, "%s\t%d\t%s\t%s\n", p.Name, p.ReplicasCount, p.Status.Status, fmtAgo(p.CreatedAt))
 				}
 				tw.Flush()
@@ -51,9 +58,10 @@ func newCmdGetPipelines(config *config) *cobra.Command {
 	}
 
 	fs := cmd.Flags()
-	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
 	fs.StringVar(&aggregatorKey, "aggregator", "", "Parent aggregator ID or name")
 	fs.Uint64VarP(&last, "last", "l", 0, "Last `N` pipelines. 0 means no limit")
+	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
+	fs.BoolVar(&showIDs, "show-ids", false, "Include pipeline IDs in table output")
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("aggregator", config.completeAggregators)
@@ -67,6 +75,7 @@ func newCmdGetPipeline(config *config) *cobra.Command {
 	var format string
 	var lastEndpoints, lastConfigHistory uint64
 	var includeEndpoints, includeConfigHistory bool
+	var showIDs bool
 	cmd := &cobra.Command{
 		Use:               "pipeline PIPELINE",
 		Args:              cobra.ExactArgs(1),
@@ -128,13 +137,19 @@ func newCmdGetPipeline(config *config) *cobra.Command {
 			case "table":
 				{
 					tw := tabwriter.NewWriter(os.Stdout, 0, 4, 1, ' ', 0)
+					if showIDs {
+						fmt.Fprint(tw, "ID\t")
+					}
 					fmt.Fprintln(tw, "NAME\tREPLICAS\tSTATUS\tAGE")
+					if showIDs {
+						fmt.Fprintf(tw, "%s\t", pip.ID)
+					}
 					fmt.Fprintf(tw, "%s\t%d\t%s\t%s\n", pip.Name, pip.ReplicasCount, pip.Status.Status, fmtAgo(pip.CreatedAt))
 					tw.Flush()
 				}
 				if includeEndpoints {
 					fmt.Println()
-					renderEndpointsTable(os.Stdout, ports)
+					renderEndpointsTable(os.Stdout, ports, showIDs)
 				}
 				if includeConfigHistory {
 					fmt.Println()
@@ -158,6 +173,7 @@ func newCmdGetPipeline(config *config) *cobra.Command {
 	fs.BoolVar(&includeConfigHistory, "include-config-history", false, "Include config history in output (only available with table format)")
 	fs.Uint64Var(&lastEndpoints, "last-endpoints", 0, "Last `N` pipeline endpoints if included. 0 means no limit")
 	fs.Uint64Var(&lastConfigHistory, "last-config-history", 0, "Last `N` pipeline config history if included. 0 means no limit")
+	fs.BoolVar(&showIDs, "show-ids", false, "Include IDs in table output")
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
 

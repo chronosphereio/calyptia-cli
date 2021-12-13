@@ -12,9 +12,10 @@ import (
 )
 
 func newCmdGetEndpoints(config *config) *cobra.Command {
-	var format string
 	var pipelineKey string
 	var last uint64
+	var format string
+	var showIDs bool
 	cmd := &cobra.Command{
 		Use:   "endpoints",
 		Short: "Display latest endpoints from a pipeline",
@@ -31,7 +32,7 @@ func newCmdGetEndpoints(config *config) *cobra.Command {
 
 			switch format {
 			case "table":
-				renderEndpointsTable(os.Stdout, pp)
+				renderEndpointsTable(os.Stdout, pp, showIDs)
 			case "json":
 				err := json.NewEncoder(os.Stdout).Encode(pp)
 				if err != nil {
@@ -45,9 +46,10 @@ func newCmdGetEndpoints(config *config) *cobra.Command {
 	}
 
 	fs := cmd.Flags()
-	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
 	fs.StringVar(&pipelineKey, "pipeline", "", "Parent pipeline ID or name")
 	fs.Uint64VarP(&last, "last", "l", 0, "Last `N` pipeline endpoints. 0 means no limit")
+	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
+	fs.BoolVar(&showIDs, "show-ids", false, "Include endpoint IDs in table output")
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.completePipelines)
@@ -57,13 +59,19 @@ func newCmdGetEndpoints(config *config) *cobra.Command {
 	return cmd
 }
 
-func renderEndpointsTable(w io.Writer, pp []cloud.PipelinePort) {
+func renderEndpointsTable(w io.Writer, pp []cloud.PipelinePort, showIDs bool) {
 	tw := tabwriter.NewWriter(w, 0, 4, 1, ' ', 0)
+	if showIDs {
+		fmt.Fprint(tw, "ID\t")
+	}
 	fmt.Fprintln(tw, "PROTOCOL\tFRONTEND-PORT\tBACKEND-PORT\tENDPOINT\tAGE")
 	for _, p := range pp {
 		endpoint := p.Endpoint
 		if endpoint == "" {
 			endpoint = "Pending"
+		}
+		if showIDs {
+			fmt.Fprintf(tw, "%s\t", p.ID)
 		}
 		fmt.Fprintf(tw, "%s\t%d\t%d\t%s\t%s\n", p.Protocol, p.FrontendPort, p.BackendPort, endpoint, fmtAgo(p.CreatedAt))
 	}

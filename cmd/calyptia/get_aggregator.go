@@ -14,9 +14,10 @@ import (
 )
 
 func newCmdGetAggregators(config *config) *cobra.Command {
-	var format string
 	var projectKey string
 	var last uint64
+	var format string
+	var showIDs bool
 	cmd := &cobra.Command{
 		Use:   "aggregators",
 		Short: "Display latest aggregators from a project",
@@ -38,8 +39,14 @@ func newCmdGetAggregators(config *config) *cobra.Command {
 			switch format {
 			case "table":
 				tw := tabwriter.NewWriter(os.Stdout, 0, 4, 1, ' ', 0)
+				if showIDs {
+					fmt.Fprint(tw, "ID\t")
+				}
 				fmt.Fprintln(tw, "NAME\tAGE")
 				for _, a := range aa {
+					if showIDs {
+						fmt.Fprintf(tw, "%s\t", a.ID)
+					}
 					fmt.Fprintf(tw, "%s\t%s\n", a.Name, fmtAgo(a.CreatedAt))
 				}
 				tw.Flush()
@@ -56,9 +63,10 @@ func newCmdGetAggregators(config *config) *cobra.Command {
 	}
 
 	fs := cmd.Flags()
-	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
 	fs.StringVar(&projectKey, "project", config.defaultProject, "Parent project ID or name")
 	fs.Uint64VarP(&last, "last", "l", 0, "Last `N` aggregators. 0 means no limit")
+	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
+	fs.BoolVar(&showIDs, "show-ids", false, "Include aggregator IDs in table output")
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("project", config.completeProjects)
