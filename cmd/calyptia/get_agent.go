@@ -131,11 +131,11 @@ func fetchAllAgents(client *cloudclient.Client, ctx context.Context) ([]cloud.Ag
 	}
 
 	var uniqueAgents []cloud.Agent
-	agentsIDs := map[string]struct{}{}
+	agentIDs := map[string]struct{}{}
 	for _, a := range aa {
-		if _, ok := agentsIDs[a.ID]; !ok {
+		if _, ok := agentIDs[a.ID]; !ok {
 			uniqueAgents = append(uniqueAgents, a)
-			agentsIDs[a.ID] = struct{}{}
+			agentIDs[a.ID] = struct{}{}
 		}
 	}
 
@@ -157,14 +157,12 @@ func agentsKeys(aa []cloud.Agent) []string {
 	var out []string
 
 	for _, a := range aa {
-		var nameIsUnique bool
-		for name, count := range namesCount {
-			if a.Name == name && count == 1 {
-				nameIsUnique = true
-				break
-			}
+		count, ok := namesCount[a.Name]
+		if !ok {
+			continue
 		}
-		if nameIsUnique {
+
+		if count == 1 {
 			out = append(out, a.Name)
 			continue
 		}
