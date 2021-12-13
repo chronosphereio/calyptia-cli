@@ -365,14 +365,6 @@ func (config *config) loadPipelineID(pipelineKey string) (string, error) {
 				return err
 			}
 
-			if len(pp) != 1 && !validUUID(pipelineKey) {
-				if len(pp) != 0 {
-					return fmt.Errorf("ambiguous pipeline name %q, use ID instead", pipelineKey)
-				}
-
-				return fmt.Errorf("could not find pipeline %q", pipelineKey)
-			}
-
 			if len(pp) == 1 {
 				mu.Lock()
 				founds = append(founds, pp[0].ID)

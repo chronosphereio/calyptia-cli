@@ -205,14 +205,6 @@ func (config *config) loadAggregatorID(aggregatorKey string) (string, error) {
 				return err
 			}
 
-			if len(aa) != 1 && !validUUID(aggregatorKey) {
-				if len(aa) != 0 {
-					return fmt.Errorf("ambiguous aggregator name %q, use ID instead", aggregatorKey)
-				}
-
-				return fmt.Errorf("could not find aggregator %q", aggregatorKey)
-			}
-
 			if len(aa) == 1 {
 				mu.Lock()
 				founds = append(founds, aa[0].ID)
