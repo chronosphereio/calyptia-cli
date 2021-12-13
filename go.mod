@@ -9,9 +9,8 @@ require (
 	github.com/charmbracelet/bubbletea v0.19.1
 	github.com/charmbracelet/lipgloss v0.4.0
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
-	github.com/jedib0t/go-pretty/v6 v6.2.4
 	github.com/joho/godotenv v1.4.0
-	github.com/muesli/reflow v0.3.0
+	github.com/juju/ansiterm v0.0.0-20210929141451-8b71cc96ebdc
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.2.1
 	github.com/zalando/go-keyring v0.1.1
@@ -23,7 +22,6 @@ require (
 
 require (
 	github.com/alecthomas/participle/v2 v2.0.0-alpha7 // indirect
-	github.com/atotto/clipboard v0.1.2 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/calyptia/go-fluentbit-config v0.0.2 // indirect
 	github.com/cenkalti/backoff/v4 v4.1.2 // indirect
@@ -45,17 +43,18 @@ require (
 	github.com/influxdata/line-protocol v0.0.0-20210922203350-b1ad95c89adf // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/lucasepe/codename v0.2.0 // indirect
+	github.com/lunixbochs/vtclean v1.0.0 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
 	github.com/muesli/ansi v0.0.0-20211018074035-2e021307bc4b // indirect
+	github.com/muesli/reflow v0.3.0 // indirect
 	github.com/muesli/termenv v0.9.0 // indirect
 	github.com/prometheus/client_golang v1.11.0 // indirect
 	github.com/prometheus/client_model v0.2.0 // indirect
 	github.com/prometheus/common v0.26.0 // indirect
 	github.com/prometheus/procfs v0.6.0 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
-	github.com/sahilm/fuzzy v0.1.0 // indirect
 	github.com/sendgrid/rest v2.6.5+incompatible // indirect
 	github.com/sendgrid/sendgrid-go v3.10.3+incompatible // indirect
 	github.com/spf13/pflag v1.0.5 // indirect

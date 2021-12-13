@@ -1,8 +1,11 @@
 package main
 
 import (
-	"strings"
+	"context"
+	"time"
 
+	"github.com/calyptia/cloud"
+	cloudclient "github.com/calyptia/cloud/client"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
 )
@@ -22,119 +25,113 @@ func newCmdTop(config *config) *cobra.Command {
 	return cmd
 }
 
-type View string
+func initialProjectModel(ctx context.Context, cloud *cloudclient.Client, projectKey string, metricsStart, metricsInterval time.Duration, last uint64) Model {
+	return Model{
+		currentView: "project",
+		project:     NewProjectModel(ctx, cloud, projectKey, metricsStart, metricsInterval, last),
+		agent:       NewAgentModel(ctx, cloud, "", metricsStart, metricsInterval),
+	}
+}
 
-const (
-	ViewProject View = "project"
-	ViewAgent   View = "agent"
-)
+func initialAgentModel(ctx context.Context, cloud *cloudclient.Client, agentKey string, metricsStart, metricsInterval time.Duration) Model {
+	return Model{
+		currentView: "agent",
+		agent:       NewAgentModel(ctx, cloud, agentKey, metricsStart, metricsInterval),
+	}
+}
+
+func initialPipelineModel(pipelineKey string) Model {
+	return Model{
+		currentView: "pipeline",
+		pipeline:    NewPipelineModel(pipelineKey),
+	}
+}
 
 type Model struct {
-	currentView View
-	viewHistory []View
-
-	StartingProjectKey string
-	StartingAgentKey   string
-
-	ProjectModel *ProjectModel
-	AgentModel   *AgentModel
+	currentView string
+	agent       AgentModel
+	project     ProjectModel
+	pipeline    PipelineModel
 }
 
-func SetDefaultProject(project string) tea.Cmd {
+func (m Model) Init() tea.Cmd {
+	switch m.currentView {
+	case "project":
+		return m.project.Init()
+	case "agent":
+		return m.agent.Init()
+	case "pipeline":
+		return m.pipeline.Init()
+	}
+	return nil
+}
+
+func NavigateBackToProject() tea.Msg {
+	return WentBackToProject{}
+}
+
+type WentBackToProject struct{}
+
+func NavigateToAgent(agent cloud.Agent, metrics cloud.AgentMetrics) tea.Cmd {
 	return func() tea.Msg {
-		return DefaultProjectSet{Project: project}
+		return WentToAgent{
+			Agent:   agent,
+			Metrics: metrics,
+		}
 	}
 }
 
-type DefaultProjectSet struct {
-	Project string
+type WentToAgent struct {
+	Agent   cloud.Agent
+	Metrics cloud.AgentMetrics
 }
 
-type WentToProjectViewMsg struct {
-	ProjectKey string
-}
-
-func GoToProjectView(projectKey string) tea.Cmd {
-	return func() tea.Msg {
-		return WentToProjectViewMsg{ProjectKey: projectKey}
-	}
-}
-
-type WentToAgentViewMsg struct {
-	AgentKey string
-}
-
-func GoToAgentView(agentKey string) tea.Cmd {
-	return func() tea.Msg {
-		return WentToAgentViewMsg{AgentKey: agentKey}
-	}
-}
-
-func (m *Model) Init() tea.Cmd {
-	switch {
-	case m.StartingAgentKey != "":
-		return GoToAgentView(m.StartingAgentKey)
-	case m.StartingProjectKey != "":
-		return GoToProjectView(m.StartingProjectKey)
-	default:
-		return nil
-	}
-}
-
-func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "q", "esc", "ctrl+c":
+		case "ctrl+c":
 			return m, tea.Quit
-		case "backspace":
-			if d := len(m.viewHistory); d > 1 {
-				m.currentView = m.viewHistory[d-2]
-				m.viewHistory = append(m.viewHistory, m.currentView)
-			}
-			return m, nil
 		}
 
-	case DefaultProjectSet:
-		m.AgentModel.SetDefaultProject(msg.Project)
+	case WentToAgent:
+		m.agent.SetBackEnabled(true)
+		m.agent.SetData(msg.Agent, msg.Metrics)
+		m.currentView = "agent"
+		return m, m.agent.ReloadData
 
-	case WentToProjectViewMsg:
-		m.currentView = ViewProject
-		m.viewHistory = append(m.viewHistory, m.currentView)
-		m.ProjectModel.ProjectKey = msg.ProjectKey
-		m.ProjectModel.SetProjectID(msg.ProjectKey)
-		return m, m.ProjectModel.Init()
-
-	case WentToAgentViewMsg:
-		m.currentView = ViewAgent
-		m.viewHistory = append(m.viewHistory, m.currentView)
-		m.AgentModel.AgentKey = msg.AgentKey
-		m.AgentModel.SetAgentID(msg.AgentKey)
-		return m, m.AgentModel.Init()
+	case WentBackToProject:
+		m.currentView = "project"
+		return m, m.project.ReloadData
 	}
 
 	switch m.currentView {
-	case ViewProject:
+	case "project":
 		var cmd tea.Cmd
-		m.ProjectModel, cmd = m.ProjectModel.Update(msg)
+		m.project, cmd = m.project.Update(msg)
 		return m, cmd
-
-	case ViewAgent:
+	case "agent":
 		var cmd tea.Cmd
-		m.AgentModel, cmd = m.AgentModel.Update(msg)
+		m.agent, cmd = m.agent.Update(msg)
+		return m, cmd
+	case "pipeline":
+		var cmd tea.Cmd
+		m.pipeline, cmd = m.pipeline.Update(msg)
 		return m, cmd
 	}
 
 	return m, nil
 }
 
-func (m *Model) View() string {
-	var doc strings.Builder
+func (m Model) View() string {
 	switch m.currentView {
-	case ViewProject:
-		doc.WriteString(m.ProjectModel.View())
-	case ViewAgent:
-		doc.WriteString(m.AgentModel.View())
+	case "project":
+		return m.project.View()
+	case "agent":
+		return m.agent.View()
+	case "pipeline":
+		return m.pipeline.View()
 	}
-	return docStyle.Render(doc.String())
+
+	return "Nothing to see here"
 }
