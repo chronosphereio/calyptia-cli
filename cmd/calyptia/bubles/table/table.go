@@ -49,6 +49,11 @@ type Model struct {
 func (m *Model) SetSize(width, height int) {
 	m.viewPort.Width = width
 	m.viewPort.Height = height - 1
+
+	if m.cursor > m.viewPort.YOffset+m.viewPort.Height-1 {
+		m.cursor = m.viewPort.YOffset + m.viewPort.Height - 1
+		m.updateView()
+	}
 }
 
 func (m *Model) SetNavEnabled(enabled bool) {
