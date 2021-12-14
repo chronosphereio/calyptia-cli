@@ -56,7 +56,6 @@ func NewAgentModel(ctx context.Context, cloud *cloudclient.Client, agentKey stri
 
 type AgentModel struct {
 	agentKey        string
-	projectID       string
 	metricsStart    time.Duration
 	metricsInterval time.Duration
 	cloud           *cloudclient.Client
@@ -104,23 +103,6 @@ func (m AgentModel) ReloadData() tea.Msg {
 type ReloadAgentDataRequested struct{}
 
 func (m AgentModel) loadAgentID() tea.Msg {
-	if m.projectID != "" {
-		aa, err := m.cloud.Agents(m.ctx, m.projectID, cloud.AgentsWithName(m.agentKey))
-		if err != nil {
-			return GotAgentError{err}
-		}
-
-		if len(aa) != 1 && !validUUID(m.agentKey) {
-			return GotAgentError{fmt.Errorf("ambiguous agent name %q, use ID instead", m.agentKey)}
-		}
-
-		if len(aa) == 1 {
-			return GotAgent{aa[0]}
-		}
-
-		return GotAgentID{m.agentKey}
-	}
-
 	pp, err := m.cloud.Projects(m.ctx)
 	if err != nil {
 		return GotAgentError{err}

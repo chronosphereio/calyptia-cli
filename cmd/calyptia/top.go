@@ -40,10 +40,10 @@ func initialAgentModel(ctx context.Context, cloud *cloudclient.Client, agentKey 
 	}
 }
 
-func initialPipelineModel(pipelineKey string) Model {
+func initialPipelineModel(ctx context.Context, cloud *cloudclient.Client, pipelineKey string, metricsStart, metricsInterval time.Duration) Model {
 	return Model{
 		currentView: "pipeline",
-		pipeline:    NewPipelineModel(pipelineKey),
+		pipeline:    NewPipelineModel(ctx, cloud, pipelineKey, metricsStart, metricsInterval),
 	}
 }
 
