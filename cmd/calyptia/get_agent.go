@@ -219,14 +219,6 @@ func (config *config) loadAgentID(agentKey string) (string, error) {
 				return err
 			}
 
-			if len(aa) != 1 && !validUUID(agentKey) {
-				if len(aa) != 0 {
-					return fmt.Errorf("ambiguous agent name %q, use ID instead", agentKey)
-				}
-
-				return fmt.Errorf("could not find agent %q", agentKey)
-			}
-
 			if len(aa) == 1 {
 				mu.Lock()
 				founds = append(founds, aa[0].ID)
