@@ -13,6 +13,7 @@ func newCmdUpdate(config *config) *cobra.Command {
 		newCmdUpdateAgent(config),
 		newCmdUpdateAggregator(config),
 		newCmdUpdatePipeline(config),
+		newCmdUpdatePipelineSecret(config),
 	)
 
 	return cmd
