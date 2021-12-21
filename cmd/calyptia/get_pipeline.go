@@ -73,8 +73,8 @@ func newCmdGetPipelines(config *config) *cobra.Command {
 
 func newCmdGetPipeline(config *config) *cobra.Command {
 	var format string
-	var lastEndpoints, lastConfigHistory uint64
-	var includeEndpoints, includeConfigHistory bool
+	var lastEndpoints, lastConfigHistory, lastSecrets uint64
+	var includeEndpoints, includeConfigHistory, includeSecrets bool
 	var showIDs bool
 	cmd := &cobra.Command{
 		Use:               "pipeline PIPELINE",
@@ -91,6 +91,7 @@ func newCmdGetPipeline(config *config) *cobra.Command {
 			var pip cloud.AggregatorPipeline
 			var ports []cloud.PipelinePort
 			var history []cloud.PipelineConfig
+			var secrets []cloud.PipelineSecret
 			if format == "table" && (includeEndpoints || includeConfigHistory) {
 				g, gctx := errgroup.WithContext(config.ctx)
 				g.Go(func() error {
@@ -117,6 +118,16 @@ func newCmdGetPipeline(config *config) *cobra.Command {
 						history, err = config.cloud.PipelineConfigHistory(gctx, pipelineID, lastConfigHistory)
 						if err != nil {
 							return fmt.Errorf("could not fetch your pipeline config history: %w", err)
+						}
+						return nil
+					})
+				}
+				if includeSecrets {
+					g.Go(func() error {
+						var err error
+						secrets, err = config.cloud.PipelineSecrets(gctx, pipelineID, lastSecrets)
+						if err != nil {
+							return fmt.Errorf("could not fetch your pipeline secrets: %w", err)
 						}
 						return nil
 					})
@@ -155,6 +166,10 @@ func newCmdGetPipeline(config *config) *cobra.Command {
 					fmt.Println()
 					renderPipelineConfigHistory(os.Stdout, history)
 				}
+				if includeSecrets {
+					fmt.Println()
+					renderPipelineSecrets(os.Stdout, secrets, showIDs)
+				}
 			case "json":
 				err := json.NewEncoder(os.Stdout).Encode(pip)
 				if err != nil {
@@ -171,8 +186,11 @@ func newCmdGetPipeline(config *config) *cobra.Command {
 	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
 	fs.BoolVar(&includeEndpoints, "include-endpoints", false, "Include endpoints in output (only available with table format)")
 	fs.BoolVar(&includeConfigHistory, "include-config-history", false, "Include config history in output (only available with table format)")
+	fs.BoolVar(&includeSecrets, "include-secrets", false, "Include secrets in output (only available with table format)")
 	fs.Uint64Var(&lastEndpoints, "last-endpoints", 0, "Last `N` pipeline endpoints if included. 0 means no limit")
 	fs.Uint64Var(&lastConfigHistory, "last-config-history", 0, "Last `N` pipeline config history if included. 0 means no limit")
+	fs.Uint64Var(&lastSecrets, "last-secrets", 0, "Last `N` pipeline secrets if included. 0 means no limit")
+
 	fs.BoolVar(&showIDs, "show-ids", false, "Include IDs in table output")
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
