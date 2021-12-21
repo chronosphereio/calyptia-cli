@@ -9,7 +9,6 @@ func newCmdCreate(config *config) *cobra.Command {
 	}
 
 	cmd.AddCommand(
-		newCmdCreateAggregator(config),
 		newCmdCreatePipeline(config),
 	)
 
