@@ -11,6 +11,7 @@ func newCmdGet(config *config) *cobra.Command {
 	cmd.AddCommand(
 		newCmdGetProjects(config),
 		newCmdGetAgents(config),
+		newCmdGetAgent(config),
 		newCmdGetAggregators(config),
 		newCmdGetPipelines(config),
 		newCmdGetPipeline(config),

@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strings"
 	"sync"
 	"text/tabwriter"
 	"time"
@@ -75,6 +76,69 @@ func newCmdGetAgents(config *config) *cobra.Command {
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("project", config.completeProjects)
+
+	return cmd
+}
+
+func newCmdGetAgent(config *config) *cobra.Command {
+	var format string
+	var showIDs bool
+	var onlyConfig bool
+
+	cmd := &cobra.Command{
+		Use:               "agent AGENT",
+		Short:             "Display a specific agent",
+		Args:              cobra.ExactArgs(1),
+		ValidArgsFunction: config.completeAgents,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			agentKey := args[0]
+			agentID, err := config.loadAgentID(agentKey)
+			if err != nil {
+				return err
+			}
+
+			agent, err := config.cloud.Agent(config.ctx, agentID)
+			if err != nil {
+				return fmt.Errorf("could not fetch your agent: %w", err)
+			}
+
+			if onlyConfig {
+				fmt.Println(strings.TrimSpace(agent.RawConfig))
+				return nil
+			}
+
+			switch format {
+			case "table":
+				tw := tabwriter.NewWriter(os.Stdout, 0, 4, 1, ' ', 0)
+				if showIDs {
+					fmt.Fprint(tw, "ID\t")
+				}
+				fmt.Fprintln(tw, "NAME\tTYPE\tVERSION\tSTATUS\tAGE")
+				status := agentStatus(agent.LastMetricsAddedAt, time.Minute*-5)
+				if showIDs {
+					fmt.Fprintf(tw, "%s\t", agent.ID)
+				}
+				fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\n", agent.Name, agent.Type, agent.Version, status, fmtAgo(agent.CreatedAt))
+				tw.Flush()
+			case "json":
+				err := json.NewEncoder(os.Stdout).Encode(agent)
+				if err != nil {
+					return fmt.Errorf("could not json encode your agent: %w", err)
+				}
+			default:
+				return fmt.Errorf("unknown output format %q", format)
+			}
+
+			return nil
+		},
+	}
+
+	fs := cmd.Flags()
+	fs.BoolVar(&onlyConfig, "only-config", false, "Only show the agent configuration")
+	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
+	fs.BoolVar(&showIDs, "show-ids", false, "Include agent IDs in table output")
+
+	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
 
 	return cmd
 }
