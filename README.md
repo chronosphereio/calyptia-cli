@@ -21,7 +21,7 @@ go install github.com/calyptia/cloud-cli@latest
 ## Run
 
 For the time being, the binary needs either `CALYPTIA_AUTH0_CLIENT_ID` or `--auth0-client-id` to run.<br>
-Configure an [auth0](https://auth0.com) project that allows "device code" grant type.
+Configure an [auth0](https://auth0.com) project (native) that allows "device code" grant type.
 
 ```
 calyptia --auth0-client-id ${CALYPTIA_AUTH0_CLIENT_ID}
