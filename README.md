@@ -50,17 +50,19 @@ calyptia login
     - `agents <options>`: Display latest agents from a project
     - `aggregators <options>`: Display latest aggregators from a project
     - `pipelines --aggregator AGGREGATOR <options>`: Display latest pipelines from an aggregator
-    - `pipeline_ports --pipeline PIPELINE <options>`: Display latest ports from a pipeline
+    - `pipeline PIPELINE <options>`: Display a single pipeline.
+    - `endpoints --pipeline PIPELINE <options>`: Display latest endpoints from a pipeline
     - `pipeline_config_history --pipeline PIPELINE <options>`: Display latest config history from a pipeline
     - `pipeline_status_history --pipeline PIPELINE <options>`: Display latest status history from a pipeline
-  - `create`: Create aggregators, pipelines, etc.
-    - `aggregator <options>`: Create a new aggregator
+    - `pipeline_secrets --pipeline PIPELINE <options>`: Display latest pipeline secrets.
+  - `create`: Create pipelines, etc.
     - `pipeline --aggregator AGGREGATOR <options>`: Create a new pipeline
   - `update`: Update aggregators, pipelines, etc.
     - `project [PROJECT] <options>`: Update a single project by ID or name
     - `agent AGENT <options>`: Update a single agent by ID or name
     - `aggregator AGGREGATOR <options>`: Update a single aggregator by ID or name
     - `pipeline PIPELINE <options>`: Update a single pipeline by ID or name
+    - `pipeline_secret ID VALUE <options>`: Update a pipeline secret value by its ID.
   - `rollout`: Rollout resources to previous versions
     - `pipeline PIPELINE <options>`: Rollout a pipeline to a previous config
   - `delete`: Delete aggregators, pipelines, etc.
