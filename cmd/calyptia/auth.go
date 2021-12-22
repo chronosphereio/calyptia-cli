@@ -56,8 +56,6 @@ func savedToken() (*oauth2.Token, error) {
 	}
 
 	if err != nil {
-		err = nil
-
 		home, err := os.UserHomeDir()
 		if err != nil {
 			return nil, fmt.Errorf("could not get user home dir: %w", err)
