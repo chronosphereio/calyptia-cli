@@ -6,9 +6,7 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
-	"os/exec"
 	"path/filepath"
-	"strings"
 
 	"github.com/zalando/go-keyring"
 	"golang.org/x/oauth2"
@@ -25,30 +23,27 @@ func saveToken(tok *oauth2.Token) error {
 	}
 
 	err = keyring.Set(serviceName, "token", string(b))
-	if err == keyring.ErrUnsupportedPlatform || errors.Is(err, exec.ErrNotFound) || (err != nil && strings.Contains(err.Error(), "failed to unlock correct collection")) {
-		home, err := os.UserHomeDir()
-		if err != nil {
-			return err
-		}
-
-		fileName := filepath.Join(home, ".calyptia", "creds")
-		if _, err := os.Stat(fileName); os.IsNotExist(err) {
-			err = os.MkdirAll(filepath.Dir(fileName), fs.ModePerm)
-			if err != nil {
-				return fmt.Errorf("could not create directory: %w", err)
-			}
-		}
-
-		err = os.WriteFile(fileName, b, fs.ModePerm)
-		if err != nil {
-			return fmt.Errorf("could not store creds: %w", err)
-		}
-
+	if err == nil {
 		return nil
 	}
 
+	home, err := os.UserHomeDir()
 	if err != nil {
-		return err
+		return fmt.Errorf("could not get user home dir: %w", err)
+	}
+
+	fileName := filepath.Join(home, ".calyptia", "creds")
+	if _, err := os.Stat(fileName); os.IsNotExist(err) {
+		dir := filepath.Dir(fileName)
+		err = os.MkdirAll(dir, fs.ModePerm)
+		if err != nil {
+			return fmt.Errorf("could not create directory %q: %w", dir, err)
+		}
+	}
+
+	err = os.WriteFile(fileName, b, fs.ModePerm)
+	if err != nil {
+		return fmt.Errorf("could not store creds file %q: %w", fileName, err)
 	}
 
 	return nil
@@ -56,7 +51,11 @@ func saveToken(tok *oauth2.Token) error {
 
 func savedToken() (*oauth2.Token, error) {
 	s, err := keyring.Get(serviceName, "token")
-	if err == keyring.ErrUnsupportedPlatform || errors.Is(err, exec.ErrNotFound) || (err != nil && strings.Contains(err.Error(), "failed to unlock correct collection")) {
+	if err == keyring.ErrNotFound {
+		return nil, errTokenNotFound
+	}
+
+	if err != nil {
 		err = nil
 
 		home, err := os.UserHomeDir()
@@ -74,14 +73,6 @@ func savedToken() (*oauth2.Token, error) {
 		}
 
 		s = string(b)
-	}
-
-	if err == keyring.ErrNotFound {
-		return nil, errTokenNotFound
-	}
-
-	if err != nil {
-		return nil, err
 	}
 
 	var tok *oauth2.Token
