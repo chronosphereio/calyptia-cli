@@ -46,7 +46,7 @@ jobs:
 
       - name: Setup google credentials
         if: startsWith(github.ref, 'refs/tags/v')
-        uses: google-github-actions/setup-gcloud@master
+        uses: google-github-actions/setup-gcloud@main
         with:
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
