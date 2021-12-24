@@ -27,6 +27,16 @@ Configure an [auth0](https://auth0.com) project (native) that allows "device cod
 calyptia --auth0-client-id ${CALYPTIA_AUTH0_CLIENT_ID}
 ```
 
+---
+**Better build**
+
+If you don't want to pass `--auth0-client-id` each time, you can inject the value at build time like this:
+
+```
+go install -ldflags="-X 'main.defaultAuth0ClientID=YOURS_HERE' github.com/calyptia/cloud-cli@latest
+```
+---
+
 The first command you would want to run is `login`.
 
 ```
