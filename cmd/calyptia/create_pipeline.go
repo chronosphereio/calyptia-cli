@@ -24,6 +24,7 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 	var secretsFile string
 	var secretsFormat string
 	var autoCreatePortsFromConfig bool
+	var resourceProfileName string
 	var outputFormat string
 	cmd := &cobra.Command{
 		Use:   "pipeline",
@@ -109,6 +110,7 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 				RawConfig:                 string(rawConfig),
 				Secrets:                   secrets,
 				AutoCreatePortsFromConfig: autoCreatePortsFromConfig,
+				ResourceProfile:           resourceProfileName,
 			})
 			if err != nil {
 				if e, ok := err.(*cloud.Error); ok && e.Detail != nil {
@@ -144,6 +146,7 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 	fs.StringVar(&secretsFile, "secrets-file", "", "Optional file where secrets are defined. You can store key values and reference them inside your config like so:\n{{ secrets.foo }}")
 	fs.StringVar(&secretsFormat, "secrets-format", "auto", "Secrets file format. Allowed: auto, env, json, yaml. Auto tries to detect it from file extension")
 	fs.BoolVar(&autoCreatePortsFromConfig, "auto-create-ports", true, "Automatically create pipeline ports from config")
+	fs.StringVar(&resourceProfileName, "resource-profile", string(cloud.DefaultPipelineResourceProfile), "Resource profile name")
 	fs.StringVar(&outputFormat, "output-format", "table", "Output format. Allowed: table, json")
 
 	_ = cmd.RegisterFlagCompletionFunc("aggregator", config.completeAggregators)
@@ -151,6 +154,7 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 		return []string{"auto", "env", "json", "yaml"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
+	_ = cmd.RegisterFlagCompletionFunc("resource-profile", config.completeResourceProfiles)
 
 	_ = cmd.MarkFlagRequired("aggregator") // TODO: use default aggregator key from config cmd.
 
