@@ -20,6 +20,7 @@ func newCmdGet(config *config) *cobra.Command {
 		newCmdGetPipelineConfig(config),
 		newCmdGetPipelineStatusHistory(config),
 		newCmdGetPipelineSecrets(config),
+		newCmdGetResourceProfiles(config),
 	)
 
 	return cmd
