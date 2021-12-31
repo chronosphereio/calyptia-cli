@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 	"text/tabwriter"
 
 	"github.com/calyptia/cloud"
@@ -23,6 +24,8 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 	var configFile string
 	var secretsFile string
 	var secretsFormat string
+	var files []string
+	var encryptFiles bool
 	var autoCreatePortsFromConfig bool
 	var resourceProfileName string
 	var outputFormat string
@@ -99,6 +102,27 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 				}
 			}
 
+			var addPipelineFilePayload []cloud.AddPipelineFilePayload
+			for _, f := range files {
+				if f == "" {
+					continue
+				}
+
+				name := filepath.Base(f)
+				name = strings.TrimSuffix(name, filepath.Ext(name))
+				// TODO: better sanitize file name.
+				contents, err := readFile(f)
+				if err != nil {
+					return fmt.Errorf("coult not read file %q: %w", f, err)
+				}
+
+				addPipelineFilePayload = append(addPipelineFilePayload, cloud.AddPipelineFilePayload{
+					Name:      name,
+					Contents:  contents,
+					Encrypted: encryptFiles,
+				})
+			}
+
 			aggregatorID, err := config.loadAggregatorID(aggregatorKey)
 			if err != nil {
 				return err
@@ -111,6 +135,7 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 				Secrets:                   secrets,
 				AutoCreatePortsFromConfig: autoCreatePortsFromConfig,
 				ResourceProfile:           resourceProfileName,
+				Files:                     addPipelineFilePayload,
 			})
 			if err != nil {
 				if e, ok := err.(*cloud.Error); ok && e.Detail != nil {
@@ -145,6 +170,8 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 	fs.StringVar(&configFile, "config-file", "fluent-bit.conf", "Fluent Bit config file used by pipeline")
 	fs.StringVar(&secretsFile, "secrets-file", "", "Optional file where secrets are defined. You can store key values and reference them inside your config like so:\n{{ secrets.foo }}")
 	fs.StringVar(&secretsFormat, "secrets-format", "auto", "Secrets file format. Allowed: auto, env, json, yaml. Auto tries to detect it from file extension")
+	fs.StringArrayVar(&files, "file", nil, "Optional file. You can reference this file contents from your config like so:\n{{ files.myfile }}\nPass as many as you want; bear in mind the file name can only contain alphanumeric characters.")
+	fs.BoolVar(&encryptFiles, "encrypt-files", false, "Encrypt file contents")
 	fs.BoolVar(&autoCreatePortsFromConfig, "auto-create-ports", true, "Automatically create pipeline ports from config")
 	fs.StringVar(&resourceProfileName, "resource-profile", string(cloud.DefaultPipelineResourceProfile), "Resource profile name")
 	fs.StringVar(&outputFormat, "output-format", "table", "Output format. Allowed: table, json")
