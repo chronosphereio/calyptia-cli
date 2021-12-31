@@ -35,12 +35,12 @@ func newCmdGetResourceProfiles(config *config) *cobra.Command {
 				if showIDs {
 					fmt.Fprintf(tw, "ID\t")
 				}
-				fmt.Fprintln(tw, "STORAGE-MAX-CHUNKS-UP\tSTORAGE-SYNC-FULL\tSTORAGE-BACKLOG-MEM-LIMIT\tSTORAGE-VOLUME-SIZE\tSTORAGE-MAX-CHUNKS-PAUSE\tCPU-BUFFER-WORKERS\tCPU-LIMIT\tCPU-REQUEST\tMEM-LIMIT\tMEM-REQUEST\tAGE")
+				fmt.Fprintln(tw, "NAME\tSTORAGE-MAX-CHUNKS-UP\tSTORAGE-SYNC-FULL\tSTORAGE-BACKLOG-MEM-LIMIT\tSTORAGE-VOLUME-SIZE\tSTORAGE-MAX-CHUNKS-PAUSE\tCPU-BUFFER-WORKERS\tCPU-LIMIT\tCPU-REQUEST\tMEM-LIMIT\tMEM-REQUEST\tAGE")
 				for _, p := range pp {
 					if showIDs {
 						fmt.Fprintf(tw, "%s\t", p.ID)
 					}
-					fmt.Fprintf(tw, "%s\t%d\t%v\t%s\t%s\t%v\t%d\t%s\t%s\t%s\t%s\t%s\tn", p.Name, p.StorageMaxChunksUp, p.StorageSyncFull, p.StorageBacklogMemLimit, p.StorageVolumeSize, p.StorageMaxChunksPause, p.CPUBufferWorkers, p.CPULimit, p.CPURequest, p.MemoryLimit, p.MemoryRequest, fmtAgo(p.CreatedAt))
+					fmt.Fprintf(tw, "%s\t%d\t%v\t%s\t%s\t%v\t%d\t%s\t%s\t%s\t%s\t%s\n", p.Name, p.StorageMaxChunksUp, p.StorageSyncFull, p.StorageBacklogMemLimit, p.StorageVolumeSize, p.StorageMaxChunksPause, p.CPUBufferWorkers, p.CPULimit, p.CPURequest, p.MemoryLimit, p.MemoryRequest, fmtAgo(p.CreatedAt))
 				}
 				tw.Flush()
 			case "json":
