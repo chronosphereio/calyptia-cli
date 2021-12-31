@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 	"sync"
 	"text/tabwriter"
 
@@ -72,10 +73,11 @@ func newCmdGetPipelines(config *config) *cobra.Command {
 }
 
 func newCmdGetPipeline(config *config) *cobra.Command {
-	var format string
+	var onlyConfig bool
 	var lastEndpoints, lastConfigHistory, lastSecrets uint64
 	var includeEndpoints, includeConfigHistory, includeSecrets bool
 	var showIDs bool
+	var format string
 	cmd := &cobra.Command{
 		Use:               "pipeline PIPELINE",
 		Args:              cobra.ExactArgs(1),
@@ -144,6 +146,11 @@ func newCmdGetPipeline(config *config) *cobra.Command {
 				}
 			}
 
+			if onlyConfig {
+				fmt.Println(strings.TrimSpace(pip.Config.RawConfig))
+				return nil
+			}
+
 			switch format {
 			case "table":
 				{
@@ -183,13 +190,14 @@ func newCmdGetPipeline(config *config) *cobra.Command {
 	}
 
 	fs := cmd.Flags()
-	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
+	fs.BoolVar(&onlyConfig, "only-config", false, "Only show the pipeline configuration")
 	fs.BoolVar(&includeEndpoints, "include-endpoints", false, "Include endpoints in output (only available with table format)")
 	fs.BoolVar(&includeConfigHistory, "include-config-history", false, "Include config history in output (only available with table format)")
 	fs.BoolVar(&includeSecrets, "include-secrets", false, "Include secrets in output (only available with table format)")
 	fs.Uint64Var(&lastEndpoints, "last-endpoints", 0, "Last `N` pipeline endpoints if included. 0 means no limit")
 	fs.Uint64Var(&lastConfigHistory, "last-config-history", 0, "Last `N` pipeline config history if included. 0 means no limit")
 	fs.Uint64Var(&lastSecrets, "last-secrets", 0, "Last `N` pipeline secrets if included. 0 means no limit")
+	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
 
 	fs.BoolVar(&showIDs, "show-ids", false, "Include IDs in table output")
 

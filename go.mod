@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	code.cloudfoundry.org/bytefmt v0.0.0-20211005130812-5bb3c17173e5
-	github.com/calyptia/cloud v0.3.2
+	github.com/calyptia/cloud v0.3.4
 	github.com/charmbracelet/bubbles v0.9.0
 	github.com/charmbracelet/bubbletea v0.19.2
 	github.com/charmbracelet/lipgloss v0.4.0
@@ -22,7 +22,7 @@ require (
 
 require (
 	github.com/alecthomas/participle/v2 v2.0.0-alpha7 // indirect
-	github.com/calyptia/go-fluentbit-config v0.0.2 // indirect
+	github.com/calyptia/go-fluentbit-config v0.0.3 // indirect
 	github.com/cenkalti/backoff/v4 v4.1.2 // indirect
 	github.com/containerd/console v1.0.2 // indirect
 	github.com/danieljoos/wincred v1.1.0 // indirect

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 	"text/tabwriter"
 
 	"github.com/calyptia/cloud"
@@ -53,6 +54,56 @@ func newCmdGetPipelineConfigHistory(config *config) *cobra.Command {
 	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.completePipelines)
 
 	_ = cmd.MarkFlagRequired("pipeline") // TODO: use default pipeline key from config cmd.
+
+	return cmd
+}
+
+func newCmdGetPipelineConfig(config *config) *cobra.Command {
+	var onlyConfig bool
+	var format string
+	cmd := &cobra.Command{
+		Use:   "pipeline_config CONFIG_ID",
+		Short: "Display a single pipeline config",
+		Args:  cobra.ExactArgs(1),
+		ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return nil, cobra.ShellCompDirectiveNoFileComp // TODO: complete pipeline config ID.
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			configID := args[0]
+
+			c, err := config.cloud.PipelineConfig(config.ctx, configID)
+			if err != nil {
+				return fmt.Errorf("could not fetch your pipeline config history: %w", err)
+			}
+
+			if onlyConfig {
+				fmt.Println(strings.TrimSpace(c.RawConfig))
+				return nil
+			}
+
+			switch format {
+			case "table":
+				tw := tabwriter.NewWriter(os.Stdout, 0, 4, 1, ' ', 0)
+				fmt.Fprintln(tw, "ID\tAGE")
+				fmt.Fprintf(tw, "%s\t%s\n", c.ID, fmtAgo(c.CreatedAt))
+				tw.Flush()
+			case "json":
+				err := json.NewEncoder(os.Stdout).Encode(c)
+				if err != nil {
+					return fmt.Errorf("could not json encode your pipeline config: %w", err)
+				}
+			default:
+				return fmt.Errorf("unknown output format %q", format)
+			}
+			return nil
+		},
+	}
+
+	fs := cmd.Flags()
+	fs.BoolVar(&onlyConfig, "only-config", false, "Only show the raw configuration")
+	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
+
+	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
 
 	return cmd
 }
