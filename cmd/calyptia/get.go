@@ -10,6 +10,7 @@ func newCmdGet(config *config) *cobra.Command {
 
 	cmd.AddCommand(
 		newCmdGetProjects(config),
+		newCmdGetMembers(config),
 		newCmdGetAgents(config),
 		newCmdGetAgent(config),
 		newCmdGetAggregators(config),
