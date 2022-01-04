@@ -20,6 +20,7 @@ import (
 func newCmdCreatePipeline(config *config) *cobra.Command {
 	var aggregatorKey string
 	var name string
+	var image string
 	var replicasCount uint64
 	var configFile string
 	var secretsFile string
@@ -128,10 +129,15 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 				return err
 			}
 
+			imagePtr := &image
+			if image == "" {
+				imagePtr = nil
+			}
 			a, err := config.cloud.CreateAggregatorPipeline(config.ctx, aggregatorID, cloud.AddAggregatorPipelinePayload{
 				Name:                      name,
 				ReplicasCount:             replicasCount,
 				RawConfig:                 string(rawConfig),
+				Image:                     imagePtr,
 				Secrets:                   secrets,
 				AutoCreatePortsFromConfig: autoCreatePortsFromConfig,
 				ResourceProfile:           resourceProfileName,
@@ -166,6 +172,7 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 	fs := cmd.Flags()
 	fs.StringVar(&aggregatorKey, "aggregator", "", "Parent aggregator ID or name")
 	fs.StringVar(&name, "name", "", "Pipeline name; leave it empty to generate a random name")
+	fs.StringVar(&image, "image", "", "Fluent-bit image to deploy")
 	fs.Uint64Var(&replicasCount, "replicas", 1, "Pipeline replica size")
 	fs.StringVar(&configFile, "config-file", "fluent-bit.conf", "Fluent Bit config file used by pipeline")
 	fs.StringVar(&secretsFile, "secrets-file", "", "Optional file where secrets are defined. You can store key values and reference them inside your config like so:\n{{ secrets.foo }}")
