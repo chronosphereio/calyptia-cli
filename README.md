@@ -40,7 +40,7 @@ If you don't want to pass `--auth0-client-id` each time, you can inject the valu
 
 ---
 ```markdown
-go install -ldflags="-X 'main.defaultAuth0ClientID=YOURS_HERE' github.com/calyptia/cloud-cli@latest
+go install -ldflags="-X 'main.defaultAuth0ClientID=YOURS_HERE'" github.com/calyptia/cloud-cli@latest
 ```
 ---
 The first command you would want to run is `login`.
