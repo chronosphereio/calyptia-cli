@@ -11,33 +11,33 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func newCmdGetPipelineSecrets(config *config) *cobra.Command {
+func newCmdGetPipelineFiles(config *config) *cobra.Command {
 	var pipelineKey string
 	var last uint64
 	var format string
 	var showIDs bool
 
 	cmd := &cobra.Command{
-		Use:   "pipeline_secrets",
-		Short: "Get pipeline secrets",
+		Use:   "pipeline_files",
+		Short: "Get pipeline files",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			pipelineID, err := config.loadPipelineID(pipelineKey)
 			if err != nil {
 				return err
 			}
 
-			ss, err := config.cloud.PipelineSecrets(config.ctx, pipelineID, last)
+			ff, err := config.cloud.PipelineFiles(config.ctx, pipelineID, last)
 			if err != nil {
-				return fmt.Errorf("could not fetch your pipeline secrets: %w", err)
+				return fmt.Errorf("could not fetch your pipeline files: %w", err)
 			}
 
 			switch format {
 			case "table":
-				renderPipelineSecrets(os.Stdout, ss, showIDs)
+				renderPipelineFiles(os.Stdout, ff, showIDs)
 			case "json":
-				err := json.NewEncoder(os.Stdout).Encode(ss)
+				err := json.NewEncoder(os.Stdout).Encode(ff)
 				if err != nil {
-					return fmt.Errorf("could not json encode your pipeline secrets: %w", err)
+					return fmt.Errorf("could not json encode your pipeline files: %w", err)
 				}
 			default:
 				return fmt.Errorf("unknown output format %q", format)
@@ -48,7 +48,7 @@ func newCmdGetPipelineSecrets(config *config) *cobra.Command {
 
 	fs := cmd.Flags()
 	fs.StringVar(&pipelineKey, "pipeline", "", "Parent pipeline ID or name")
-	fs.Uint64VarP(&last, "last", "l", 0, "Last `N` pipeline secrets. 0 means no limit")
+	fs.Uint64VarP(&last, "last", "l", 0, "Last `N` pipeline files. 0 means no limit")
 	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include status IDs in table output")
 
@@ -60,17 +60,17 @@ func newCmdGetPipelineSecrets(config *config) *cobra.Command {
 	return cmd
 }
 
-func renderPipelineSecrets(w io.Writer, ss []cloud.PipelineSecret, showIDs bool) {
+func renderPipelineFiles(w io.Writer, ff []cloud.PipelineFile, showIDs bool) {
 	tw := tabwriter.NewWriter(w, 0, 4, 1, ' ', 0)
 	if showIDs {
 		fmt.Fprint(tw, "ID\t")
 	}
-	fmt.Fprintln(tw, "KEY\tAGE")
-	for _, s := range ss {
+	fmt.Fprintln(tw, "NAME\tENCRYPTED\tAGE")
+	for _, f := range ff {
 		if showIDs {
-			fmt.Fprintf(tw, "%s\t", s.ID)
+			fmt.Fprintf(tw, "%s\t", f.ID)
 		}
-		fmt.Fprintf(tw, "%s\t%s\n", s.Key, fmtAgo(s.CreatedAt))
+		fmt.Fprintf(tw, "%s\t%v\t%s\n", f.Name, f.Encrypted, fmtAgo(f.CreatedAt))
 	}
 	tw.Flush()
 }
