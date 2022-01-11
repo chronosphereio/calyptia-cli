@@ -14,6 +14,7 @@ func newCmdUpdate(config *config) *cobra.Command {
 		newCmdUpdateAggregator(config),
 		newCmdUpdatePipeline(config),
 		newCmdUpdatePipelineSecret(config),
+		newCmdUpdatePipelineFile(config),
 	)
 
 	return cmd

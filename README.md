@@ -84,6 +84,7 @@ calyptia login
     - `aggregator AGGREGATOR <options>`: Update a single aggregator by ID or name
     - `pipeline PIPELINE <options>`: Update a single pipeline by ID or name
     - `pipeline_secret ID VALUE <options>`: Update a pipeline secret value by its ID.
+    - `pipeline_file --pipeline PIPELINE --file FILENAME <options>`: Update a single file from a pipeline by its name.
   - `rollout`: Rollout resources to previous versions
     - `pipeline PIPELINE <options>`: Rollout a pipeline to a previous config
   - `delete`: Delete aggregators, pipelines, etc.
