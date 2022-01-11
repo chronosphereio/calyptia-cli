@@ -75,6 +75,7 @@ calyptia login
     - `pipeline_status_history --pipeline PIPELINE <options>`: Display latest status history from a pipeline
     - `pipeline_secrets --pipeline PIPELINE <options>`: Display latest pipeline secrets.
     - `pipeline_files --pipeline PIPELINE <options>`: Display latest pipeline files.
+    - `pipeline_file --pipeline PIPELINE --name FILENAME`: Display a single pipeline file.
   - `create`: Create pipelines, etc.
     - `pipeline --aggregator AGGREGATOR <options>`: Create a new pipeline
     - `pipeline_file --pipeline PIPELINE --file FILEPATH <options>`: Create a new file within a pipeline.

@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"os"
 	"text/tabwriter"
 
@@ -60,17 +59,81 @@ func newCmdGetPipelineFiles(config *config) *cobra.Command {
 	return cmd
 }
 
-func renderPipelineFiles(w io.Writer, ff []cloud.PipelineFile, showIDs bool) {
-	tw := tabwriter.NewWriter(w, 0, 4, 1, ' ', 0)
-	if showIDs {
-		fmt.Fprint(tw, "ID\t")
+func newCmdGetPipelineFile(config *config) *cobra.Command {
+	var pipelineKey string
+	var name string
+	var format string
+	var showIDs, onlyContents bool
+
+	cmd := &cobra.Command{
+		Use:   "pipeline_file",
+		Short: "Get a single file from a pipeline by its name",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			pipelineID, err := config.loadPipelineID(pipelineKey)
+			if err != nil {
+				return err
+			}
+
+			ff, err := config.cloud.PipelineFiles(config.ctx, pipelineID, 0)
+			if err != nil {
+				return fmt.Errorf("could not find your pipeline file by name: %w", err)
+			}
+
+			var file cloud.PipelineFile
+			var found bool
+			for _, f := range ff {
+				if f.Name == name {
+					file = f
+					found = true
+					break
+				}
+			}
+
+			if !found {
+				return fmt.Errorf("could not find pipeline file %q", name)
+			}
+
+			if onlyContents {
+				fmt.Print(file.Contents)
+				return nil
+			}
+
+			switch format {
+			case "table":
+				tw := tabwriter.NewWriter(os.Stdout, 0, 4, 1, ' ', 0)
+				if showIDs {
+					fmt.Fprint(tw, "ID\t")
+				}
+				fmt.Fprintln(tw, "NAME\tENCRYPTED\tAGE")
+				if showIDs {
+					fmt.Fprintf(tw, "%s\t", file.ID)
+				}
+				fmt.Fprintf(tw, "%s\t%v\t%s\n", file.Name, file.Encrypted, fmtAgo(file.CreatedAt))
+				tw.Flush()
+			case "json":
+				err := json.NewEncoder(os.Stdout).Encode(file)
+				if err != nil {
+					return fmt.Errorf("could not json encode your pipeline file: %w", err)
+				}
+			default:
+				return fmt.Errorf("unknown output format %q", format)
+			}
+			return nil
+		},
 	}
-	fmt.Fprintln(tw, "NAME\tENCRYPTED\tAGE")
-	for _, f := range ff {
-		if showIDs {
-			fmt.Fprintf(tw, "%s\t", f.ID)
-		}
-		fmt.Fprintf(tw, "%s\t%v\t%s\n", f.Name, f.Encrypted, fmtAgo(f.CreatedAt))
-	}
-	tw.Flush()
+
+	fs := cmd.Flags()
+	fs.StringVar(&pipelineKey, "pipeline", "", "Parent pipeline ID or name")
+	fs.StringVar(&name, "name", "", "File name")
+	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
+	fs.BoolVar(&showIDs, "show-ids", false, "Include status IDs in table output")
+	fs.BoolVar(&onlyContents, "only-contents", false, "Only print file contents")
+
+	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.completePipelines)
+	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
+
+	_ = cmd.MarkFlagRequired("pipeline") // TODO: use default pipeline key from config cmd.
+	_ = cmd.MarkFlagRequired("name")
+
+	return cmd
 }
