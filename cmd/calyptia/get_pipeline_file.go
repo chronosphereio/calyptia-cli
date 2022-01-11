@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"text/tabwriter"
 
@@ -136,4 +137,19 @@ func newCmdGetPipelineFile(config *config) *cobra.Command {
 	_ = cmd.MarkFlagRequired("name")
 
 	return cmd
+}
+
+func renderPipelineFiles(w io.Writer, ff []cloud.PipelineFile, showIDs bool) {
+	tw := tabwriter.NewWriter(w, 0, 4, 1, ' ', 0)
+	if showIDs {
+		fmt.Fprint(tw, "ID\t")
+	}
+	fmt.Fprintln(tw, "NAME\tENCRYPTED\tAGE")
+	for _, f := range ff {
+		if showIDs {
+			fmt.Fprintf(tw, "%s\t", f.ID)
+		}
+		fmt.Fprintf(tw, "%s\t%v\t%s\n", f.Name, f.Encrypted, fmtAgo(f.CreatedAt))
+	}
+	tw.Flush()
 }
