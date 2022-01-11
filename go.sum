@@ -144,20 +144,8 @@ github.com/boltdb/bolt v1.3.1/go.mod h1:clJnj/oiGkjum5o1McbSZDSLxVThjynRyGBgiAx2
 github.com/bonitoo-io/go-sql-bigquery v0.3.4-1.4.0/go.mod h1:J4Y6YJm0qTWB9aFziB7cPeSyc6dOZFyJdteSeybVpXQ=
 github.com/c-bata/go-prompt v0.2.2/go.mod h1:VzqtzE2ksDBcdln8G7mk2RX9QyGjH+OVqOCSiVIqS34=
 github.com/cactus/go-statsd-client/statsd v0.0.0-20191106001114-12b4e2b38748/go.mod h1:l/bIBLeOl9eX+wxJAzxS4TveKRtAqlyDpHjhkfO0MEI=
-github.com/calyptia/cloud v0.3.1 h1:WQ4EbcWGcldmnYWRFjYfUuNQjGYXBARr2Ur9LR4mW2M=
-github.com/calyptia/cloud v0.3.1/go.mod h1:1ik8GNTyuFfEiPXoW8FzTFzdGbdeUnnqwRZJSWnWJVg=
-github.com/calyptia/cloud v0.3.2 h1:cI1HSqgNBiItxAN+TCfkvOBYC6nlgqccWB7t9e1wUFs=
-github.com/calyptia/cloud v0.3.2/go.mod h1:66oUmv4Vzy4Wf5hVaU6PD7FUYdLFJOutx9ZNgJ9kH2o=
-github.com/calyptia/cloud v0.3.4 h1:vaIe6z5Gg/QfDUU9OeRYRe8mTqqrCkQIe3Bb2jhAFO4=
-github.com/calyptia/cloud v0.3.4/go.mod h1:KxFKzTIRDK1Iz8jCqxDDlWR/wEtT6uKJw6hPAF8FcK4=
-github.com/calyptia/cloud v0.3.5 h1:xvmCBHbvZZPAevjRaVDF3V3EJnBDG762EjJM5gLexmg=
-github.com/calyptia/cloud v0.3.5/go.mod h1:KxFKzTIRDK1Iz8jCqxDDlWR/wEtT6uKJw6hPAF8FcK4=
-github.com/calyptia/cloud v0.3.6 h1:zeMobZAXOmH5aInqthLK+ok04IsHjHqGgbaX2O/IGQk=
-github.com/calyptia/cloud v0.3.6/go.mod h1:KxFKzTIRDK1Iz8jCqxDDlWR/wEtT6uKJw6hPAF8FcK4=
 github.com/calyptia/cloud v0.3.7 h1:z4Tp83hSJ+OjT2wuSX5O/YUZf5wMkcHNdk/YpL2C8Ys=
 github.com/calyptia/cloud v0.3.7/go.mod h1:KxFKzTIRDK1Iz8jCqxDDlWR/wEtT6uKJw6hPAF8FcK4=
-github.com/calyptia/go-fluentbit-config v0.0.2 h1:glqdpreygQ8iAnPm5TCmddCTG2e+rXdgL/CIZVVVKx0=
-github.com/calyptia/go-fluentbit-config v0.0.2/go.mod h1:oZRN5STLxbeAfOkDDxdLInwCV0uPBPRaZRj3gq5Ig1o=
 github.com/calyptia/go-fluentbit-config v0.0.3 h1:GgCYnFvDzvUr8Wh660os5mlc0BkHETdXuOoRh4q3FhY=
 github.com/calyptia/go-fluentbit-config v0.0.3/go.mod h1:oZRN5STLxbeAfOkDDxdLInwCV0uPBPRaZRj3gq5Ig1o=
 github.com/casbin/casbin/v2 v2.1.2/go.mod h1:YcPU1XXisHhLzuxH9coDNf2FbKpjGlbCg3n9yuLkIJQ=
@@ -174,8 +162,8 @@ github.com/cespare/xxhash/v2 v2.1.2/go.mod h1:VGX0DQ3Q6kWi7AoAeZDth3/j3BFtOZR5XL
 github.com/charmbracelet/bubbles v0.9.0 h1:lqJ8FXwoLceQF2J0A+dWo1Cuu1dNyjbW4Opgdi2vkhw=
 github.com/charmbracelet/bubbles v0.9.0/go.mod h1:NWT/c+0rYEnYChz5qCyX4Lj6fDw9gGToh9EFJPajghU=
 github.com/charmbracelet/bubbletea v0.14.1/go.mod h1:b5lOf5mLjMg1tRn1HVla54guZB+jvsyV0yYAQja95zE=
-github.com/charmbracelet/bubbletea v0.19.2 h1:tUSaPH1EFT8b6BbwAGm7a+uuTB3uI7hwaCOKQ7Yithk=
-github.com/charmbracelet/bubbletea v0.19.2/go.mod h1:VuXF2pToRxDUHcBUcPmCRUHRvFATM4Ckb/ql1rBl3KA=
+github.com/charmbracelet/bubbletea v0.19.3 h1:OKeO/Y13rQQqt4snX+lePB0QrnW80UdrMNolnCcmoAw=
+github.com/charmbracelet/bubbletea v0.19.3/go.mod h1:VuXF2pToRxDUHcBUcPmCRUHRvFATM4Ckb/ql1rBl3KA=
 github.com/charmbracelet/harmonica v0.1.0/go.mod h1:KSri/1RMQOZLbw7AHqgcBycp8pgJnQMYYT8QZRqZ1Ao=
 github.com/charmbracelet/lipgloss v0.3.0/go.mod h1:VkhdBS2eNAmRkTwRKLJCFhCOVkjntMusBDxv7TXahuk=
 github.com/charmbracelet/lipgloss v0.4.0 h1:768h64EFkGUr8V5yAKV7/Ta0NiVceiPaV+PphaW1K9g=
@@ -538,7 +526,6 @@ github.com/hashicorp/go-immutable-radix v1.2.0/go.mod h1:0y9vanUI8NX6FsYoO3zeMjh
 github.com/hashicorp/go-immutable-radix v1.3.1/go.mod h1:0y9vanUI8NX6FsYoO3zeMjhV/C5i9g4Q3DwcSNZ4P60=
 github.com/hashicorp/go-msgpack v0.5.3/go.mod h1:ahLV/dePpqEmjfWmKiqvPkv/twdG7iPBM1vqhUKIvfM=
 github.com/hashicorp/go-multierror v1.0.0/go.mod h1:dHtQlpGsu+cZNNAkkCN/P3hoUDHhCYQXV3UM06sGGrk=
-github.com/hashicorp/go-multierror v1.1.0 h1:B9UzwGQJehnUY1yNrnwREHc3fGbC2xefo8g4TbElacI=
 github.com/hashicorp/go-multierror v1.1.0/go.mod h1:spPvp8C1qA32ftKqdAHm4hHTbPw+vmowP0z+KUhOZdA=
 github.com/hashicorp/go-multierror v1.1.1 h1:H5DkEtf6CXdFp0N0Em5UCwQpXMWke8IA0+lD48awMYo=
 github.com/hashicorp/go-multierror v1.1.1/go.mod h1:iw975J/qwKPdAO1clOe2L8331t/9/fmwbPZ6JB6eMoM=
@@ -1116,8 +1103,6 @@ golang.org/x/net v0.0.0-20210410081132-afb366fc7cd1/go.mod h1:9tjilg8BloeKEkVJvy
 golang.org/x/net v0.0.0-20210428140749-89ef3d95e781/go.mod h1:OJAsFXCWl8Ukc7SiCT/9KSuxbyM7479/AVlXFRxuMCk=
 golang.org/x/net v0.0.0-20210503060351-7fd8e65b6420/go.mod h1:9nx3DQGgdP8bBQD5qxJ1jj9UTztislL4KSBs9R2vV5Y=
 golang.org/x/net v0.0.0-20210813160813-60bc85c4be6d/go.mod h1:9nx3DQGgdP8bBQD5qxJ1jj9UTztislL4KSBs9R2vV5Y=
-golang.org/x/net v0.0.0-20211201190559-0a0e4e1bb54c h1:WtYZ93XtWSO5KlOMgPZu7hXY9WhMZpprvlm5VwvAl8c=
-golang.org/x/net v0.0.0-20211201190559-0a0e4e1bb54c/go.mod h1:9nx3DQGgdP8bBQD5qxJ1jj9UTztislL4KSBs9R2vV5Y=
 golang.org/x/net v0.0.0-20211209124913-491a49abca63 h1:iocB37TsdFuN6IBRZ+ry36wrkoV51/tl5vOWqkcPGvY=
 golang.org/x/net v0.0.0-20211209124913-491a49abca63/go.mod h1:9nx3DQGgdP8bBQD5qxJ1jj9UTztislL4KSBs9R2vV5Y=
 golang.org/x/oauth2 v0.0.0-20180821212333-d2e6202438be/go.mod h1:N/0e6XlmueqKjAGxoOufVs8QHGRruUQn6yWY3a++T0U=
@@ -1562,7 +1547,6 @@ honnef.co/go/tools v0.0.1-2019.2.3/go.mod h1:a3bituU0lyd329TUQxRnasdCoJDkEUEAqEt
 honnef.co/go/tools v0.0.1-2020.1.3/go.mod h1:X/FiERA/W4tHapMX5mGpAtMSVEeEUOyHaw9vFzvIQ3k=
 honnef.co/go/tools v0.0.1-2020.1.4/go.mod h1:X/FiERA/W4tHapMX5mGpAtMSVEeEUOyHaw9vFzvIQ3k=
 k8s.io/api v0.17.5/go.mod h1:0zV5/ungglgy2Rlm3QK8fbxkXVs+BSJWpJP/+8gUVLY=
-k8s.io/apimachinery v0.17.5 h1:QAjfgeTtSGksdkgyaPrIb4lhU16FWMIzxKejYD5S0gc=
 k8s.io/apimachinery v0.17.5/go.mod h1:ioIo1G/a+uONV7Tv+ZmCbMG1/a3kVw5YcDdncd8ugQ0=
 k8s.io/apimachinery v0.23.1 h1:sfBjlDFwj2onG0Ijx5C+SrAoeUscPrmghm7wHP+uXlo=
 k8s.io/apimachinery v0.23.1/go.mod h1:SADt2Kl8/sttJ62RRsi9MIV4o8f5S3coArm0Iu3fBno=
