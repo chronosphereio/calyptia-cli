@@ -76,6 +76,7 @@ calyptia login
     - `pipeline_secrets --pipeline PIPELINE <options>`: Display latest pipeline secrets.
   - `create`: Create pipelines, etc.
     - `pipeline --aggregator AGGREGATOR <options>`: Create a new pipeline
+    - `pipeline_file --pipeline PIPELINE --file FILEPATH <options>`: Create a new file within a pipeline.
   - `update`: Update aggregators, pipelines, etc.
     - `project [PROJECT] <options>`: Update a single project by ID or name
     - `agent AGENT <options>`: Update a single agent by ID or name

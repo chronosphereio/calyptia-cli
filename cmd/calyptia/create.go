@@ -11,6 +11,7 @@ func newCmdCreate(config *config) *cobra.Command {
 	cmd.AddCommand(
 		newCmdCreatePipeline(config),
 		newCmdCreateResourceProfile(config),
+		newCmdCreatePipelineFile(config),
 	)
 
 	return cmd
