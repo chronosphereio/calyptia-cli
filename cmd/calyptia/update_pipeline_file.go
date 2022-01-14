@@ -38,10 +38,9 @@ func newCmdUpdatePipelineFile(config *config) *cobra.Command {
 
 			for _, f := range ff {
 				if f.Name == name {
-					c := string(contents)
 					return config.cloud.UpdatePipelineFile(config.ctx, f.ID, cloud.UpdatePipelineFileOpts{
-						Contents:  &c,
-						Encrypted: encrypt,
+						Contents:  &contents,
+						Encrypted: &encrypt,
 					})
 				}
 			}

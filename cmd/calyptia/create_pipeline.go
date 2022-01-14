@@ -39,67 +39,9 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 				return fmt.Errorf("could not read config file: %w", err)
 			}
 
-			var secrets []cloud.AddPipelineSecretPayload
-			if secretsFile != "" {
-				b, err := readFile(secretsFile)
-				if err != nil {
-					return fmt.Errorf("could not read secrets file: %w", err)
-				}
-
-				if secretsFormat == "" || secretsFormat == "auto" {
-					switch filepath.Ext(secretsFile) {
-					case ".env":
-						secretsFormat = "env"
-					case ".json":
-						secretsFormat = "json"
-					case ".yaml", ".yml":
-						secretsFormat = "yaml"
-					default:
-						return errors.Errorf("could not determine secrets format: %q", secretsFile)
-					}
-
-					switch secretsFormat {
-					case "env", "dotenv":
-						m, err := godotenv.Parse(bytes.NewReader(b))
-						if err != nil {
-							return fmt.Errorf("could not parse secrets file %q: %w", secretsFile, err)
-						}
-
-						secrets = make([]cloud.AddPipelineSecretPayload, 0, len(m))
-						for k, v := range m {
-							secrets = append(secrets, cloud.AddPipelineSecretPayload{
-								Key:   k,
-								Value: []byte(v),
-							})
-						}
-					case "json":
-						var m map[string]interface{}
-						if err := json.Unmarshal(b, &m); err != nil {
-							return fmt.Errorf("could not parse secrets file %q: %w", secretsFile, err)
-						}
-
-						secrets = make([]cloud.AddPipelineSecretPayload, 0, len(m))
-						for k, v := range m {
-							secrets = append(secrets, cloud.AddPipelineSecretPayload{
-								Key:   k,
-								Value: []byte(fmt.Sprintf("%v", v)),
-							})
-						}
-					case "yaml", "yml":
-						var m map[string]interface{}
-						if err := yaml.Unmarshal(b, &m); err != nil {
-							return fmt.Errorf("could not parse secrets file %q: %w", secretsFile, err)
-						}
-
-						secrets = make([]cloud.AddPipelineSecretPayload, 0, len(m))
-						for k, v := range m {
-							secrets = append(secrets, cloud.AddPipelineSecretPayload{
-								Key:   k,
-								Value: []byte(fmt.Sprintf("%v", v)),
-							})
-						}
-					}
-				}
+			secrets, err := parseAddPipelineSecretPayload(secretsFile, secretsFormat)
+			if err != nil {
+				return fmt.Errorf("could not read secrets file: %w", err)
 			}
 
 			var addPipelineFilePayload []cloud.AddPipelineFilePayload
@@ -202,4 +144,73 @@ func readFile(name string) ([]byte, error) {
 	}
 
 	return b, nil
+}
+
+func parseAddPipelineSecretPayload(file, format string) ([]cloud.AddPipelineSecretPayload, error) {
+	if file == "" {
+		return nil, nil
+	}
+
+	b, err := readFile(file)
+	if err != nil {
+		return nil, fmt.Errorf("could not read secrets file: %w", err)
+	}
+
+	if format == "" || format == "auto" {
+		switch filepath.Ext(file) {
+		case ".env":
+			format = "env"
+		case ".json":
+			format = "json"
+		case ".yaml", ".yml":
+			format = "yaml"
+		default:
+			return nil, errors.Errorf("could not determine secrets format: %q", file)
+		}
+	}
+
+	var secrets []cloud.AddPipelineSecretPayload
+	switch format {
+	case "env", "dotenv":
+		m, err := godotenv.Parse(bytes.NewReader(b))
+		if err != nil {
+			return nil, fmt.Errorf("could not parse secrets file %q: %w", file, err)
+		}
+
+		secrets = make([]cloud.AddPipelineSecretPayload, 0, len(m))
+		for k, v := range m {
+			secrets = append(secrets, cloud.AddPipelineSecretPayload{
+				Key:   k,
+				Value: []byte(v),
+			})
+		}
+	case "json":
+		var m map[string]interface{}
+		if err := json.Unmarshal(b, &m); err != nil {
+			return nil, fmt.Errorf("could not parse secrets file %q: %w", file, err)
+		}
+
+		secrets = make([]cloud.AddPipelineSecretPayload, 0, len(m))
+		for k, v := range m {
+			secrets = append(secrets, cloud.AddPipelineSecretPayload{
+				Key:   k,
+				Value: []byte(fmt.Sprintf("%v", v)),
+			})
+		}
+	case "yaml", "yml":
+		var m map[string]interface{}
+		if err := yaml.Unmarshal(b, &m); err != nil {
+			return nil, fmt.Errorf("could not parse secrets file %q: %w", file, err)
+		}
+
+		secrets = make([]cloud.AddPipelineSecretPayload, 0, len(m))
+		for k, v := range m {
+			secrets = append(secrets, cloud.AddPipelineSecretPayload{
+				Key:   k,
+				Value: []byte(fmt.Sprintf("%v", v)),
+			})
+		}
+	}
+
+	return secrets, nil
 }

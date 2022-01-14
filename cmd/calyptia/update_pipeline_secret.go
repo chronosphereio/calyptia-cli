@@ -19,7 +19,7 @@ func newCmdUpdatePipelineSecret(config *config) *cobra.Command {
 			// TODO: update secret by its key. The key is unique per pipeline.
 			secretID, value := args[0], args[1]
 			err := config.cloud.UpdatePipelineSecret(config.ctx, secretID, cloud.UpdatePipelineSecretOpts{
-				Value: &value,
+				Value: ptrBytes([]byte(value)),
 			})
 			if err != nil {
 				return fmt.Errorf("could not update pipeline secret: %w", err)

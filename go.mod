@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	code.cloudfoundry.org/bytefmt v0.0.0-20211005130812-5bb3c17173e5
-	github.com/calyptia/cloud v0.3.7
+	github.com/calyptia/cloud v0.3.9
 	github.com/charmbracelet/bubbles v0.9.0
 	github.com/charmbracelet/bubbletea v0.19.3
 	github.com/charmbracelet/lipgloss v0.4.0
@@ -37,7 +37,7 @@ require (
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/hashicorp/errwrap v1.0.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
-	github.com/hashicorp/go-version v1.3.0 // indirect
+	github.com/hashicorp/go-version v1.4.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/influxdata/influxdb v1.9.5 // indirect
 	github.com/influxdata/influxdb-client-go/v2 v2.6.0 // indirect
@@ -52,7 +52,7 @@ require (
 	github.com/muesli/termenv v0.9.0 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/sendgrid/rest v2.6.5+incompatible // indirect
-	github.com/sendgrid/sendgrid-go v3.10.4+incompatible // indirect
+	github.com/sendgrid/sendgrid-go v3.10.5+incompatible // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	golang.org/x/net v0.0.0-20211209124913-491a49abca63 // indirect
 	golang.org/x/sys v0.0.0-20211205182925-97ca703d548d // indirect
