@@ -26,6 +26,8 @@ func newCmdUpdatePipeline(config *config) *cobra.Command {
 	var files []string
 	var encryptFiles bool
 	var outputFormat string
+	var metadataPairs []string
+	var metadataFile string
 
 	cmd := &cobra.Command{
 		Use:               "pipeline PIPELINE",
@@ -71,6 +73,22 @@ func newCmdUpdatePipeline(config *config) *cobra.Command {
 				})
 			}
 
+			var metadata *json.RawMessage
+			if metadataFile != "" {
+				b, err := readFile(metadataFile)
+				if err != nil {
+					return fmt.Errorf("could not read metadata file: %w", err)
+				}
+
+				metadata = &json.RawMessage{}
+				*metadata = b
+			} else {
+				metadata, err = parseMetadataPairs(metadataPairs)
+				if err != nil {
+					return fmt.Errorf("could not parse metadata: %w", err)
+				}
+			}
+
 			pipelineKey := args[0]
 			pipelineID, err := config.loadPipelineID(pipelineKey)
 			if err != nil {
@@ -81,6 +99,7 @@ func newCmdUpdatePipeline(config *config) *cobra.Command {
 				AutoCreatePortsFromConfig: autoCreatePortsFromConfig,
 				Secrets:                   secrets,
 				Files:                     updatePipelineFileOpts,
+				Metadata:                  metadata,
 			}
 			if newName != "" {
 				opts.Name = &newName
@@ -129,6 +148,8 @@ func newCmdUpdatePipeline(config *config) *cobra.Command {
 	fs.StringVar(&secretsFormat, "secrets-format", "auto", "Secrets file format. Allowed: auto, env, json, yaml. Auto tries to detect it from file extension")
 	fs.StringArrayVar(&files, "file", nil, "Optional file. You can reference this file contents from your config like so:\n{{ files.myfile }}\nPass as many as you want; bear in mind the file name can only contain alphanumeric characters.")
 	fs.BoolVar(&encryptFiles, "encrypt-files", false, "Encrypt file contents")
+	fs.StringSliceVar(&metadataPairs, "metadata", nil, "Metadata to attach to the pipeline in the form of key:value. You could instead use a file with the --metadata-file option")
+	fs.StringVar(&metadataFile, "metadata-file", "", "Metadata JSON file to attach to the pipeline intead of passing multiple --metadata flags")
 	fs.StringVar(&outputFormat, "output-format", "table", "Output format. Allowed: table, json")
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)

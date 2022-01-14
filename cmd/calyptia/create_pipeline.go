@@ -29,6 +29,9 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 	var autoCreatePortsFromConfig bool
 	var resourceProfileName string
 	var outputFormat string
+	var metadataPairs []string
+	var metadataFile string
+
 	cmd := &cobra.Command{
 		Use:   "pipeline",
 		Short: "Create a new pipeline",
@@ -42,6 +45,22 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 			secrets, err := parseAddPipelineSecretPayload(secretsFile, secretsFormat)
 			if err != nil {
 				return fmt.Errorf("could not read secrets file: %w", err)
+			}
+
+			var metadata *json.RawMessage
+			if metadataFile != "" {
+				b, err := readFile(metadataFile)
+				if err != nil {
+					return fmt.Errorf("could not read metadata file: %w", err)
+				}
+
+				metadata = &json.RawMessage{}
+				*metadata = b
+			} else {
+				metadata, err = parseMetadataPairs(metadataPairs)
+				if err != nil {
+					return fmt.Errorf("could not parse metadata: %w", err)
+				}
 			}
 
 			var addPipelineFilePayload []cloud.AddPipelineFilePayload
@@ -78,6 +97,7 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 				AutoCreatePortsFromConfig: autoCreatePortsFromConfig,
 				ResourceProfile:           resourceProfileName,
 				Files:                     addPipelineFilePayload,
+				Metadata:                  metadata,
 			})
 			if err != nil {
 				if e, ok := err.(*cloud.Error); ok && e.Detail != nil {
@@ -116,6 +136,8 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 	fs.BoolVar(&encryptFiles, "encrypt-files", false, "Encrypt file contents")
 	fs.BoolVar(&autoCreatePortsFromConfig, "auto-create-ports", true, "Automatically create pipeline ports from config")
 	fs.StringVar(&resourceProfileName, "resource-profile", string(cloud.DefaultPipelineResourceProfile), "Resource profile name")
+	fs.StringSliceVar(&metadataPairs, "metadata", nil, "Metadata to attach to the pipeline in the form of key:value. You could instead use a file with the --metadata-file option")
+	fs.StringVar(&metadataFile, "metadata-file", "", "Metadata JSON file to attach to the pipeline intead of passing multiple --metadata flags")
 	fs.StringVar(&outputFormat, "output-format", "table", "Output format. Allowed: table, json")
 
 	_ = cmd.RegisterFlagCompletionFunc("aggregator", config.completeAggregators)
@@ -213,4 +235,38 @@ func parseAddPipelineSecretPayload(file, format string) ([]cloud.AddPipelineSecr
 	}
 
 	return secrets, nil
+}
+
+func parseMetadataPairs(pairs []string) (*json.RawMessage, error) {
+	if len(pairs) == 0 {
+		return nil, nil
+	}
+
+	m := make(map[string]interface{}, len(pairs))
+	for _, pair := range pairs {
+		parts := strings.SplitN(pair, ":", 2)
+		if len(parts) != 2 {
+			return nil, fmt.Errorf("invalid metadata: %q", pair)
+		}
+
+		key := parts[0]
+		var val interface{} = parts[1]
+
+		var dest interface{}
+		if err := json.Unmarshal([]byte(val.(string)), &dest); err == nil {
+			val = dest
+		}
+
+		m[key] = val
+	}
+
+	b, err := json.Marshal(m)
+	if err != nil {
+		return nil, fmt.Errorf("could not marshal metadata: %w", err)
+	}
+
+	metadata := &json.RawMessage{}
+	*metadata = b
+
+	return metadata, nil
 }
