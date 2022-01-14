@@ -26,12 +26,12 @@ func newCmdUpdatePipelineFile(config *config) *cobra.Command {
 			name := filepath.Base(file)
 			name = strings.TrimSuffix(name, filepath.Ext(name))
 
-			pipelinedID, err := config.loadPipelineID(pipelineKey)
+			pipelineID, err := config.loadPipelineID(pipelineKey)
 			if err != nil {
 				return err
 			}
 
-			ff, err := config.cloud.PipelineFiles(config.ctx, pipelinedID, 0)
+			ff, err := config.cloud.PipelineFiles(config.ctx, pipelineID, 0)
 			if err != nil {
 				return err
 			}
