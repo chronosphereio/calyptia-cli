@@ -11,7 +11,6 @@ import (
 )
 
 func newCmdGetMembers(config *config) *cobra.Command {
-	var projectKey string
 	var last uint64
 	var format string
 	var showIDs bool
@@ -19,12 +18,7 @@ func newCmdGetMembers(config *config) *cobra.Command {
 		Use:   "members",
 		Short: "Display latest members from a project",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			projectID, err := config.loadProjectID(projectKey)
-			if err != nil {
-				return err
-			}
-
-			mm, err := config.cloud.ProjectMembers(config.ctx, projectID, last)
+			mm, err := config.cloud.ProjectMembers(config.ctx, config.projectID, last)
 			if err != nil {
 				return fmt.Errorf("could not fetch your project members: %w", err)
 			}
@@ -68,13 +62,11 @@ func newCmdGetMembers(config *config) *cobra.Command {
 	}
 
 	fs := cmd.Flags()
-	fs.StringVar(&projectKey, "project", config.defaultProject, "Parent project ID or name")
 	fs.Uint64VarP(&last, "last", "l", 0, "Last `N` members. 0 means no limit")
 	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include member IDs in table output")
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
-	_ = cmd.RegisterFlagCompletionFunc("project", config.completeProjects)
 
 	return cmd
 }

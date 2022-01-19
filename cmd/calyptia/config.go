@@ -9,9 +9,9 @@ func newCmdConfig(config *config) *cobra.Command {
 	}
 
 	cmd.AddCommand(
-		newCmdConfigSetProject(config),
-		newCmdConfigCurrentProject(config),
-		newCmdConfigUnsetProject(config),
+		newCmdConfigSetToken(config),
+		newCmdConfigCurrentToken(config),
+		newCmdConfigUnsetToken(config),
 	)
 
 	return cmd

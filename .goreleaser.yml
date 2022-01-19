@@ -8,7 +8,7 @@ builds:
     id: calyptia
     binary: calyptia
     ldflags:
-      - -s -w -X main.version={{.Version}} -X main.defaultAuth0ClientID={{.Env.CALYPTIA_AUTH0_CLIENT_ID}}
+      - -s -w -X main.version={{.Version}}
     targets:
       - darwin_amd64
       - darwin_arm64

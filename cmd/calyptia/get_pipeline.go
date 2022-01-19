@@ -207,67 +207,7 @@ func newCmdGetPipeline(config *config) *cobra.Command {
 }
 
 func (config *config) fetchAllPipelines() ([]cloud.AggregatorPipeline, error) {
-	pp, err := config.cloud.Projects(config.ctx)
-	if err != nil {
-		return nil, fmt.Errorf("could not prefetch pipelines: %w", err)
-	}
-
-	if len(pp) == 0 {
-		return nil, nil
-	}
-
-	var pipelines []cloud.AggregatorPipeline
-	var mu sync.Mutex
-	g, gctx := errgroup.WithContext(config.ctx)
-	for _, p := range pp {
-		p := p
-		g.Go(func() error {
-			aa, err := config.cloud.Aggregators(gctx, p.ID)
-			if err != nil {
-				return err
-			}
-
-			if len(aa) == 0 {
-				return nil
-			}
-
-			g2, gctx2 := errgroup.WithContext(gctx)
-			for _, a := range aa {
-				a := a
-				g2.Go(func() error {
-					got, err := config.cloud.AggregatorPipelines(gctx2, a.ID)
-					if err != nil {
-						return err
-					}
-
-					mu.Lock()
-					pipelines = append(pipelines, got...)
-					mu.Unlock()
-
-					return nil
-				})
-			}
-			return g2.Wait()
-		})
-	}
-	if err := g.Wait(); err != nil {
-		return nil, err
-	}
-
-	var uniquePipelines []cloud.AggregatorPipeline
-	pipelineIDs := map[string]struct{}{}
-	for _, pip := range pipelines {
-		if _, ok := pipelineIDs[pip.ID]; !ok {
-			uniquePipelines = append(uniquePipelines, pip)
-			pipelineIDs[pip.ID] = struct{}{}
-		}
-	}
-
-	return uniquePipelines, nil
-}
-
-func (config *config) fetchAllProjectPipelines(projectID string) ([]cloud.AggregatorPipeline, error) {
-	aa, err := config.cloud.Aggregators(config.ctx, projectID)
+	aa, err := config.cloud.Aggregators(config.ctx, config.projectID)
 	if err != nil {
 		return nil, fmt.Errorf("could not prefetch aggregators: %w", err)
 	}
@@ -313,19 +253,9 @@ func (config *config) fetchAllProjectPipelines(projectID string) ([]cloud.Aggreg
 }
 
 func (config *config) completePipelines(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	var pp []cloud.AggregatorPipeline
-	if config.defaultProject != "" {
-		var err error
-		pp, err = config.fetchAllProjectPipelines(config.defaultProject)
-		if err != nil {
-			return nil, cobra.ShellCompDirectiveError
-		}
-	} else {
-		var err error
-		pp, err = config.fetchAllPipelines()
-		if err != nil {
-			return nil, cobra.ShellCompDirectiveError
-		}
+	pp, err := config.fetchAllPipelines()
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveError
 	}
 
 	if pp == nil {
@@ -369,68 +299,21 @@ func pipelinesKeys(aa []cloud.AggregatorPipeline) []string {
 }
 
 func (config *config) loadPipelineID(pipelineKey string) (string, error) {
-	if config.defaultProject != "" {
-		var err error
-		pp, err := config.cloud.ProjectPipelines(config.ctx, config.defaultProject, cloud.PipelinesWithName(pipelineKey), cloud.LastPipelines(2))
-		if err != nil {
-			return "", err
-		}
-
-		if len(pp) != 1 && !validUUID(pipelineKey) {
-			if len(pp) != 0 {
-				return "", fmt.Errorf("ambiguous pipeline name %q, use ID instead", pipelineKey)
-			}
-
-			return "", fmt.Errorf("could not find pipeline %q", pipelineKey)
-		}
-
-		if len(pp) == 1 {
-			return pp[0].ID, nil
-		}
-
-		return pipelineKey, nil
-	}
-
-	projs, err := config.cloud.Projects(config.ctx)
+	pp, err := config.cloud.ProjectPipelines(config.ctx, config.projectID, cloud.PipelinesWithName(pipelineKey), cloud.LastPipelines(2))
 	if err != nil {
 		return "", err
 	}
 
-	var founds []string
-	var mu sync.Mutex
-	g, gctx := errgroup.WithContext(config.ctx)
-	for _, proj := range projs {
-		proj := proj
-		g.Go(func() error {
-			pp, err := config.cloud.ProjectPipelines(gctx, proj.ID, cloud.PipelinesWithName(pipelineKey), cloud.LastPipelines(2))
-			if err != nil {
-				return err
-			}
-
-			if len(pp) == 1 {
-				mu.Lock()
-				founds = append(founds, pp[0].ID)
-				mu.Unlock()
-			}
-
-			return nil
-		})
-	}
-
-	if err := g.Wait(); err != nil {
-		return "", err
-	}
-
-	if len(founds) != 1 && !validUUID(pipelineKey) {
-		if len(founds) != 0 {
+	if len(pp) != 1 && !validUUID(pipelineKey) {
+		if len(pp) != 0 {
 			return "", fmt.Errorf("ambiguous pipeline name %q, use ID instead", pipelineKey)
 		}
 
 		return "", fmt.Errorf("could not find pipeline %q", pipelineKey)
 	}
 
-	if len(founds) == 1 {
-		return founds[0], nil
+	if len(pp) == 1 {
+		return pp[0].ID, nil
 	}
 
 	return pipelineKey, nil

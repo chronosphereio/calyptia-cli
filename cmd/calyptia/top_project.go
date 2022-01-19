@@ -24,16 +24,10 @@ func newCmdTopProject(config *config) *cobra.Command {
 	var start, interval time.Duration
 	var last uint64
 	cmd := &cobra.Command{
-		Use:               "project [PROJECT]",
-		Short:             "Display metrics from a project",
-		Args:              cobra.RangeArgs(0, 1),
-		ValidArgsFunction: config.completeProjects,
+		Use:   "project",
+		Short: "Display metrics from the current project",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			projectKey := config.defaultProject
-			if len(args) != 0 {
-				projectKey = args[0]
-			}
-			return tea.NewProgram(initialProjectModel(config.ctx, config.cloud, projectKey, start, interval, last), tea.WithAltScreen()).Start()
+			return tea.NewProgram(initialProjectModel(config.ctx, config.cloud, config.projectID, start, interval, last), tea.WithAltScreen()).Start()
 		},
 	}
 
@@ -45,12 +39,12 @@ func newCmdTopProject(config *config) *cobra.Command {
 	return cmd
 }
 
-func NewProjectModel(ctx context.Context, cloud *cloudclient.Client, projectKey string, metricsStart, metricsInterval time.Duration, last uint64) ProjectModel {
+func NewProjectModel(ctx context.Context, cloud *cloudclient.Client, projectID string, metricsStart, metricsInterval time.Duration, last uint64) ProjectModel {
 	projectTable := table.NewModel([]string{"PLUGIN", "INPUT-BYTES", "INPUT-RECORDS", "OUTPUT-BYTES", "OUTPUT-RECORDS"})
 	agentsTable := table.NewModel([]string{"AGENT", "TYPE", "VERSION", "INPUT-BYTES", "INPUT-RECORDS", "OUTPUT-BYTES", "OUTPUT-RECORDS"})
 	agentsTable.SetNavEnabled(true)
 	return ProjectModel{
-		projectKey:      projectKey,
+		projectID:       projectID,
 		metricsStart:    metricsStart,
 		metricsInterval: metricsInterval,
 		last:            last,
@@ -63,7 +57,6 @@ func NewProjectModel(ctx context.Context, cloud *cloudclient.Client, projectKey 
 }
 
 type ProjectModel struct {
-	projectKey      string
 	metricsStart    time.Duration
 	metricsInterval time.Duration
 	last            uint64
@@ -82,11 +75,7 @@ type ProjectModel struct {
 }
 
 func (m ProjectModel) Init() tea.Cmd {
-	if m.projectID == "" {
-		return m.loadProjectID
-	}
-
-	return nil
+	return m.loadData(m.ctx, false)
 }
 
 func (m ProjectModel) ReloadData() tea.Msg {
@@ -99,32 +88,7 @@ type GotProjectError struct {
 	Err error
 }
 
-func (m ProjectModel) loadProjectID() tea.Msg {
-	pp, err := m.cloud.Projects(m.ctx, cloud.ProjectsWithName(m.projectKey))
-	if err != nil {
-		return GotProjectError{err}
-	}
-
-	if len(pp) != 1 && !validUUID(m.projectKey) {
-		return GotProjectError{fmt.Errorf("ambiguous project name %q, use ID instead", m.projectKey)}
-	}
-
-	if len(pp) == 1 {
-		return GotProject{pp[0]}
-	}
-
-	return GotProjectID{m.projectKey}
-}
-
-type GotProject struct {
-	Project cloud.Project
-}
-
-type GotProjectID struct {
-	ProjectID string
-}
-
-func (m ProjectModel) loadData(ctx context.Context, withProject, skipError bool) tea.Cmd {
+func (m ProjectModel) loadData(ctx context.Context, skipError bool) tea.Cmd {
 	return func() tea.Msg {
 		var project cloud.Project
 		var projectMetrics cloud.ProjectMetrics
@@ -133,13 +97,11 @@ func (m ProjectModel) loadData(ctx context.Context, withProject, skipError bool)
 		var mu sync.Mutex
 
 		g, gctx := errgroup.WithContext(m.ctx)
-		if withProject {
-			g.Go(func() error {
-				var err error
-				project, err = m.cloud.Project(gctx, m.projectID)
-				return err
-			})
-		}
+		g.Go(func() error {
+			var err error
+			project, err = m.cloud.Project(gctx, m.projectID)
+			return err
+		})
 		g.Go(func() error {
 			var err error
 			projectMetrics, err = m.cloud.ProjectMetrics(gctx, m.projectID, m.metricsStart, m.metricsInterval)
@@ -196,7 +158,6 @@ func (m ProjectModel) loadData(ctx context.Context, withProject, skipError bool)
 		}
 
 		return GotProjectData{
-			WithProject:           withProject,
 			Project:               project,
 			ProjectMetrics:        projectMetrics,
 			Agents:                agents,
@@ -206,7 +167,6 @@ func (m ProjectModel) loadData(ctx context.Context, withProject, skipError bool)
 }
 
 type GotProjectData struct {
-	WithProject           bool
 	Project               cloud.Project
 	ProjectMetrics        cloud.ProjectMetrics
 	Agents                []cloud.Agent
@@ -240,26 +200,17 @@ func (m ProjectModel) Update(msg tea.Msg) (ProjectModel, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		m.updateSizes(msg.Width, msg.Height)
 		return m, nil
-	case GotProjectID:
-		m.projectID = msg.ProjectID
-		return m, m.loadData(m.ctx, true, false)
-	case GotProject:
-		m.project = msg.Project
-		m.projectID = msg.Project.ID
-		return m, m.loadData(m.ctx, false, false)
 	case ReloadAgentDataRequested:
 		var ctx context.Context
 		ctx, m.cancelFunc = context.WithCancel(m.ctx)
 		return m, tea.Tick(time.Second*5, func(t time.Time) tea.Msg {
-			return m.loadData(ctx, true, true)()
+			return m.loadData(ctx, true)()
 		})
 	case GotProjectData:
 		m.loading = false
 		m.err = nil
-		if msg.WithProject {
-			m.project = msg.Project
-			m.projectID = msg.Project.ID
-		}
+		m.project = msg.Project
+		m.projectID = msg.Project.ID
 
 		m.projectTableRows = projectMetricsToTableRows(msg.ProjectMetrics)
 		m.projectTable.SetRows(m.projectTableRows)

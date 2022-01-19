@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -60,7 +59,6 @@ func newCmdDeleteAgent(config *config) *cobra.Command {
 }
 
 func newCmdDeleteAgents(config *config) *cobra.Command {
-	var projectKey string
 	var inactive bool
 	var confirmed bool
 
@@ -68,16 +66,8 @@ func newCmdDeleteAgents(config *config) *cobra.Command {
 		Use:   "agents",
 		Short: "Delete many agents from a project",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if projectKey == "" {
-				return errors.New("project required")
-			}
 
-			projectID, err := config.loadProjectID(projectKey)
-			if err != nil {
-				return err
-			}
-
-			aa, err := config.cloud.Agents(config.ctx, projectID)
+			aa, err := config.cloud.Agents(config.ctx, config.projectID)
 			if err != nil {
 				return fmt.Errorf("could not prefetch agents to delete: %w", err)
 			}
@@ -137,11 +127,8 @@ func newCmdDeleteAgents(config *config) *cobra.Command {
 	}
 
 	fs := cmd.Flags()
-	fs.StringVar(&projectKey, "project", config.defaultProject, "Delete agents from this project ID or name")
 	fs.BoolVar(&inactive, "inactive", true, "Delete inactive agents only")
 	fs.BoolVarP(&confirmed, "yes", "y", false, "Confirm deletion")
-
-	_ = cmd.RegisterFlagCompletionFunc("project", config.completeProjects)
 
 	return cmd
 }
