@@ -25,24 +25,6 @@ go install github.com/calyptia/cloud-cli@latest
 
 ## Run
 
-For the time being, the binary needs either `CALYPTIA_AUTH0_CLIENT_ID` or `--auth0-client-id` to run.<br>
-Configure an [auth0](https://auth0.com) project (native) that allows "device code" grant type.
-
----
-```markdown
-calyptia --auth0-client-id ${CALYPTIA_AUTH0_CLIENT_ID}
-```
----
-
-**Better build**
-
-If you don't want to pass `--auth0-client-id` each time, you can inject the value at build time like this:
-
----
-```markdown
-go install -ldflags="-X 'main.defaultAuth0ClientID=YOURS_HERE'" github.com/calyptia/cloud-cli@latest
-```
----
 The first command you would want to run is `config set_token` otherwise you will have to always pass `--token` around.<br>
 Get a token (API key) from [cloud.calyptia.com](https://cloud.calyptia.com).
 
@@ -52,9 +34,17 @@ calyptia config set_token TOKEN
 ```
 ---
 
+Alternatively, you can set the CALYPTIA_CLOUD_TOKEN environment variable or pass the token on each command,
+as an example:
+---
+```markdown
+calyptia get members --token TOKEN
+```
+---
+
+
 ## Commands
 
-  - `login`: Login by authorizing this CLI with Calyptia Cloud through a browser
   - `completion`: generate the autocompletion script for the specified shell
     - `bash`: generate the autocompletion script for bash
     - `fish`: generate the autocompletion script for fish

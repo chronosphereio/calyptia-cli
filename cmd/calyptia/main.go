@@ -10,7 +10,6 @@ import (
 	"regexp"
 
 	"github.com/calyptia/cloud"
-	"github.com/calyptia/cloud-cli/auth0"
 	cloudclient "github.com/calyptia/cloud/client"
 	cloudtoken "github.com/calyptia/cloud/token"
 	"github.com/joho/godotenv"
@@ -18,9 +17,8 @@ import (
 )
 
 var (
-	defaultAuth0ClientID string // To be injected at build time: -ldflags="-X 'main.defaultAuth0ClientID=xxx'"
-	defaultCloudURLStr   = "https://cloud-api.calyptia.com"
-	version              = "dev" // To be injected at build time: -ldflags="-X 'main.version=xxx'"
+	defaultCloudURLStr = "https://cloud-api.calyptia.com"
+	version            = "dev" // To be injected at build time: -ldflags="-X 'main.version=xxx'"
 )
 
 func main() {
@@ -33,9 +31,6 @@ func main() {
 func newCmd(ctx context.Context) *cobra.Command {
 	config := &config{
 		ctx: ctx,
-		auth0: &auth0.Client{
-			HTTPClient: http.DefaultClient,
-		},
 		cloud: &cloudclient.Client{
 			HTTPClient: http.DefaultClient, // Will be replaced by Auth0 token source.
 		},
@@ -49,10 +44,6 @@ func newCmd(ctx context.Context) *cobra.Command {
 	var cloudURLStr string
 
 	cobra.OnInitialize(func() {
-		if config.auth0.ClientID == "" {
-			cobra.CheckErr(fmt.Errorf("missing required auth0 client id"))
-		}
-
 		cloudURL, err := url.Parse(cloudURLStr)
 		if err != nil {
 			cobra.CheckErr(fmt.Errorf("invalid cloud url: %w", err))
@@ -93,11 +84,8 @@ func newCmd(ctx context.Context) *cobra.Command {
 	}
 
 	fs := cmd.PersistentFlags()
-	fs.StringVar(&config.auth0.Domain, "auth0-domain", env("CALYPTIA_AUTH0_DOMAIN", "sso.calyptia.com"), "Auth0 domain")
-	fs.StringVar(&config.auth0.ClientID, "auth0-client-id", env("CALYPTIA_AUTH0_CLIENT_ID", defaultAuth0ClientID), "Auth0 client ID")
-	fs.StringVar(&config.auth0.Audience, "auth0-audience", env("CALYPTIA_AUTH0_AUDIENCE", "https://config.calyptia.com"), "Auth0 audience")
 	fs.StringVar(&cloudURLStr, "cloud-url", env("CALYPTIA_CLOUD_URL", defaultCloudURLStr), "Calyptia Cloud URL")
-	fs.StringVar(&token, "token", token, "Project token")
+	fs.StringVar(&token, "token", env("CALYPTIA_CLOUD_TOKEN", ""), "Calyptia Cloud Project token")
 
 	cmd.AddCommand(
 		newCmdConfig(config),
@@ -114,7 +102,6 @@ func newCmd(ctx context.Context) *cobra.Command {
 
 type config struct {
 	ctx          context.Context
-	auth0        *auth0.Client
 	cloud        *cloudclient.Client
 	projectToken string
 	projectID    string
