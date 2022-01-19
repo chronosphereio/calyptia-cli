@@ -2,7 +2,7 @@
 # Calyptia Cloud CLI
 
 [![CI](https://github.com/calyptia/cloud-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/calyptia/cloud-cli/actions/workflows/ci.yml)
-[![Codecov](https://codecov.io/gh/calyptia/cloud-cli/branch/main/graph/badge.svg)](https://codecov.io/gh/calyptia/cloud-cli)
+[![Codecov](https://codecov.io/gh/calyptia/cloud-cli/branch/main/graph/badge.svg?token=TY36W7B87A)](https://codecov.io/gh/calyptia/cloud-cli)
 
 ## Build instructions
 
