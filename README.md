@@ -36,6 +36,7 @@ calyptia config set_token TOKEN
 
 Alternatively, you can set the CALYPTIA_CLOUD_TOKEN environment variable or pass the token on each command,
 as an example:
+
 ---
 ```markdown
 calyptia get members --token TOKEN
