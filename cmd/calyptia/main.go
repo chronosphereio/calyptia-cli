@@ -2,14 +2,17 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
 	"os"
 	"regexp"
 
+	"github.com/calyptia/cloud"
 	"github.com/calyptia/cloud-cli/auth0"
 	cloudclient "github.com/calyptia/cloud/client"
+	cloudtoken "github.com/calyptia/cloud/token"
 	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
 )
@@ -38,17 +41,10 @@ func newCmd(ctx context.Context) *cobra.Command {
 		},
 	}
 
-	tok, err := savedToken()
+	token, err := savedToken()
 	if err != nil && err != errTokenNotFound {
-		cobra.CheckErr(fmt.Errorf("could not retrive your stored auth info: %w", err))
+		cobra.CheckErr(fmt.Errorf("could not retrive your stored token: %w", err))
 	}
-
-	projectKey, err := savedDefaultProject()
-	if err != nil && err != errDefaultProjectNotFound {
-		cobra.CheckErr(fmt.Errorf("could not retrive your stored default project: %w", err))
-	}
-
-	config.defaultProject = projectKey
 
 	var cloudURLStr string
 
@@ -68,12 +64,25 @@ func newCmd(ctx context.Context) *cobra.Command {
 
 		config.cloud.BaseURL = cloudclient.Endpoint(cloudURL.String())
 
-		if tok == nil {
+		if token == "" {
 			return
 		}
 
-		// Now all requests will be authenticated and the token refreshes by its own.
-		config.cloud.HTTPClient = config.auth0.Client(config.ctx, tok)
+		tokenVerifier := &cloudtoken.SignVerifier{}
+		b, err := tokenVerifier.Decode([]byte(token))
+		if err != nil {
+			return
+		}
+
+		var payload cloud.ProjectTokenPayload
+		err = json.Unmarshal(b, &payload)
+		if err != nil {
+			cobra.CheckErr(fmt.Errorf("could not decode token payload: %w", err))
+		}
+
+		config.cloud.SetProjectToken(token)
+		config.projectToken = token
+		config.projectID = payload.ProjectID
 	})
 	cmd := &cobra.Command{
 		Use:           "calyptia",
@@ -88,9 +97,9 @@ func newCmd(ctx context.Context) *cobra.Command {
 	fs.StringVar(&config.auth0.ClientID, "auth0-client-id", env("CALYPTIA_AUTH0_CLIENT_ID", defaultAuth0ClientID), "Auth0 client ID")
 	fs.StringVar(&config.auth0.Audience, "auth0-audience", env("CALYPTIA_AUTH0_AUDIENCE", "https://config.calyptia.com"), "Auth0 audience")
 	fs.StringVar(&cloudURLStr, "cloud-url", env("CALYPTIA_CLOUD_URL", defaultCloudURLStr), "Calyptia Cloud URL")
+	fs.StringVar(&token, "token", token, "Project token")
 
 	cmd.AddCommand(
-		newCmdLogin(config),
 		newCmdConfig(config),
 		newCmdCreate(config),
 		newCmdGet(config),
@@ -104,10 +113,11 @@ func newCmd(ctx context.Context) *cobra.Command {
 }
 
 type config struct {
-	ctx            context.Context
-	auth0          *auth0.Client
-	cloud          *cloudclient.Client
-	defaultProject string
+	ctx          context.Context
+	auth0        *auth0.Client
+	cloud        *cloudclient.Client
+	projectToken string
+	projectID    string
 }
 
 func env(key, fallback string) string {

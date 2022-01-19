@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io/fs"
@@ -9,20 +8,14 @@ import (
 	"path/filepath"
 
 	"github.com/zalando/go-keyring"
-	"golang.org/x/oauth2"
 )
 
 const serviceName = "cloud.calyptia.com"
 
 var errTokenNotFound = errors.New("token not found")
 
-func saveToken(tok *oauth2.Token) error {
-	b, err := json.Marshal(tok)
-	if err != nil {
-		return fmt.Errorf("could not json marshall token: %w", err)
-	}
-
-	err = keyring.Set(serviceName, "token", string(b))
+func saveToken(token string) error {
+	err := keyring.Set(serviceName, "project_token", token)
 	if err == nil {
 		return nil
 	}
@@ -32,7 +25,7 @@ func saveToken(tok *oauth2.Token) error {
 		return fmt.Errorf("could not get user home dir: %w", err)
 	}
 
-	fileName := filepath.Join(home, ".calyptia", "creds")
+	fileName := filepath.Join(home, ".calyptia", "project_token")
 	if _, err := os.Stat(fileName); os.IsNotExist(err) {
 		dir := filepath.Dir(fileName)
 		err = os.MkdirAll(dir, fs.ModePerm)
@@ -41,43 +34,61 @@ func saveToken(tok *oauth2.Token) error {
 		}
 	}
 
-	err = os.WriteFile(fileName, b, fs.ModePerm)
+	err = os.WriteFile(fileName, []byte(token), fs.ModePerm)
 	if err != nil {
-		return fmt.Errorf("could not store creds file %q: %w", fileName, err)
+		return fmt.Errorf("could not store file %q: %w", fileName, err)
 	}
 
 	return nil
 }
 
-func savedToken() (*oauth2.Token, error) {
-	s, err := keyring.Get(serviceName, "token")
+func savedToken() (string, error) {
+	token, err := keyring.Get(serviceName, "project_token")
 	if err == keyring.ErrNotFound {
-		return nil, errTokenNotFound
+		return "", errTokenNotFound
 	}
 
 	if err != nil {
 		home, err := os.UserHomeDir()
 		if err != nil {
-			return nil, fmt.Errorf("could not get user home dir: %w", err)
+			return "", fmt.Errorf("could not get user home dir: %w", err)
 		}
 
-		b, err := readFile(filepath.Join(home, ".calyptia", "creds"))
-		if os.IsNotExist(err) || errors.Is(err, fs.ErrNotExist) {
-			return nil, errTokenNotFound
+		b, err := readFile(filepath.Join(home, ".calyptia", "project_token"))
+		if errors.Is(err, fs.ErrNotExist) {
+			return "", errTokenNotFound
 		}
 
 		if err != nil {
-			return nil, err
+			return "", err
 		}
 
-		s = string(b)
+		token = string(b)
 	}
 
-	var tok *oauth2.Token
-	err = json.Unmarshal([]byte(s), &tok)
+	return token, nil
+}
+
+func deleteSavedToken() error {
+	err := keyring.Delete(serviceName, "project_token")
+	if err == nil {
+		return nil
+	}
+
+	home, err := os.UserHomeDir()
 	if err != nil {
-		return nil, fmt.Errorf("could not json unmarshall token: %w", err)
+		return err
 	}
 
-	return tok, nil
+	fileName := filepath.Join(home, ".calyptia", "project_token")
+	if _, err := os.Stat(fileName); os.IsNotExist(err) {
+		return nil
+	}
+
+	err = os.Remove(fileName)
+	if err != nil {
+		return fmt.Errorf("could not delete default project token: %w", err)
+	}
+
+	return nil
 }

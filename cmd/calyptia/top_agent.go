@@ -6,7 +6,6 @@ import (
 	"io"
 	"os"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/calyptia/cloud"
@@ -29,7 +28,7 @@ func newCmdTopAgent(config *config) *cobra.Command {
 		ValidArgsFunction: config.completeAgents,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			agentKey := args[0]
-			return tea.NewProgram(initialAgentModel(config.ctx, config.cloud, agentKey, start, interval), tea.WithAltScreen()).Start()
+			return tea.NewProgram(initialAgentModel(config.ctx, config.cloud, config.projectID, agentKey, start, interval), tea.WithAltScreen()).Start()
 		},
 	}
 
@@ -40,10 +39,11 @@ func newCmdTopAgent(config *config) *cobra.Command {
 	return cmd
 }
 
-func NewAgentModel(ctx context.Context, cloud *cloudclient.Client, agentKey string, metricsStart, metricsInterval time.Duration) AgentModel {
+func NewAgentModel(ctx context.Context, cloud *cloudclient.Client, projectID, agentKey string, metricsStart, metricsInterval time.Duration) AgentModel {
 	tbl := table.NewModel([]string{"PLUGIN", "INPUT-BYTES", "INPUT-RECORDS", "OUTPUT-BYTES", "OUTPUT-RECORDS"})
 	tbl.SetNavEnabled(true)
 	return AgentModel{
+		projectID:       projectID,
 		agentKey:        agentKey,
 		metricsStart:    metricsStart,
 		metricsInterval: metricsInterval,
@@ -55,6 +55,7 @@ func NewAgentModel(ctx context.Context, cloud *cloudclient.Client, agentKey stri
 }
 
 type AgentModel struct {
+	projectID       string
 	agentKey        string
 	metricsStart    time.Duration
 	metricsInterval time.Duration
@@ -103,45 +104,21 @@ func (m AgentModel) ReloadData() tea.Msg {
 type ReloadAgentDataRequested struct{}
 
 func (m AgentModel) loadAgentID() tea.Msg {
-	pp, err := m.cloud.Projects(m.ctx)
+	aa, err := m.cloud.Agents(m.ctx, m.projectID, cloud.AgentsWithName(m.agentKey))
 	if err != nil {
 		return GotAgentError{err}
 	}
 
-	var founds []cloud.Agent
-	var mu sync.Mutex
-	g, gctx := errgroup.WithContext(m.ctx)
-	for _, p := range pp {
-		p := p
-		g.Go(func() error {
-			aa, err := m.cloud.Agents(gctx, p.ID, cloud.AgentsWithName(m.agentKey))
-			if err != nil {
-				return err
-			}
-
-			if len(aa) == 1 {
-				mu.Lock()
-				founds = append(founds, aa[0])
-				mu.Unlock()
-			}
-
-			return nil
-		})
-	}
-	if err := g.Wait(); err != nil {
-		return GotAgentError{err}
-	}
-
-	if len(founds) != 1 && !validUUID(m.agentKey) {
-		if len(founds) != 0 {
+	if len(aa) != 1 && !validUUID(m.agentKey) {
+		if len(aa) != 0 {
 			return GotAgentError{fmt.Errorf("ambiguous agent name %q, use ID instead", m.agentKey)}
 		}
 
 		return GotAgentError{fmt.Errorf("could not find agent %q", m.agentKey)}
 	}
 
-	if len(founds) == 1 {
-		return GotAgent{founds[0]}
+	if len(aa) == 1 {
+		return GotAgent{aa[0]}
 	}
 
 	return GotAgentID{m.agentKey}
