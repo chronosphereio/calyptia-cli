@@ -3,27 +3,25 @@ on:
   pull_request:
   workflow_dispatch:
 jobs:
-  docs:
+  lint:
     runs-on: ubuntu-latest
-    name: PR - Markdownlint
+    name: PR - Linters
     steps:
-      - uses: actions/checkout@v2
-      - name: Run markdownlint
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Run markdown lint
         uses: actionshub/markdownlint@2.0.2
-  golangci:
-    runs-on: ubuntu-latest
-    name: PR - GolangCI
-    steps:
-      - uses: actions/checkout@v2
-      - name: Lint reviewdog
-        uses: reviewdog/action-golangci-lint@v2
-  actions:
-    runs-on: ubuntu-latest
-    name: PR - Actionlint
-    steps:
-      - uses: actions/checkout@v2
-      - run: |
+
+      - name: Run action lint
+        run: |
           echo "::add-matcher::.github/actionlint-matcher.json"
           bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
           ./actionlint -color -shellcheck=
         shell: bash
+
+      - name: Run golangci lint
+        if: github.event_name == 'pull_request'
+        uses: reviewdog/action-golangci-lint@v2
