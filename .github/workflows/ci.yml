@@ -8,10 +8,43 @@ on:
     branches: [main]
   workflow_dispatch:
 
-env:
-  GOPRIVATE: github.com/calyptia/cloud
-
 jobs:
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs:
+      - ci
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Configure git for private modules
+        env:
+          TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        run: git config --global url."https://${TOKEN}@github.com".insteadOf "https://github.com"
+        continue-on-error: true
+
+      - name: Setup
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
+
+      - name: Setup google credentials
+        uses: google-github-actions/setup-gcloud@v0
+        with:
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+          credentials_file_path: /tmp/gcloud.json
+        continue-on-error: true
+
+      - name: Release
+        uses: goreleaser/goreleaser-action@v2
+        with:
+          args: release --rm-dist
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   ci:
     runs-on: ubuntu-latest
     steps:
@@ -20,15 +53,16 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup
-        uses: actions/setup-go@v2
-        with:
-          go-version: 1.17
-
       - name: Configure git for private modules
         env:
           TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         run: git config --global url."https://${TOKEN}@github.com".insteadOf "https://github.com"
+        continue-on-error: true
+
+      - name: Setup
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
 
       - name: Lint
         uses: golangci/golangci-lint-action@v2
@@ -37,7 +71,7 @@ jobs:
 
       - name: Test
         run: |
-          go test -race -covermode=atomic -coverprofile=coverage.out ./...
+          go test -v -race -covermode=atomic -coverprofile=coverage.out ./...
           go tool cover -html=coverage.out -o coverage.html
 
       - name: Upload coverage artifacts
@@ -54,25 +88,4 @@ jobs:
           file: ./coverage.out
           flags: ${{ runner.os }}
           token: ${{ secrets.CODECOV_TOKEN }}
-
-      - name: Build
-        run: go build ./cmd/calyptia
-
-      - name: Test
-        run: go test -race ./...
-
-      - name: Setup google credentials
-        if: startsWith(github.ref, 'refs/tags/v')
-        uses: google-github-actions/setup-gcloud@v0
-        with:
-          service_account_key: ${{ secrets.GCP_SA_KEY }}
-          export_default_credentials: true
-          credentials_file_path: /tmp/gcloud.json
-
-      - name: Release
-        uses: goreleaser/goreleaser-action@v2
-        if: startsWith(github.ref, 'refs/tags/v')
-        with:
-          args: release --rm-dist
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
