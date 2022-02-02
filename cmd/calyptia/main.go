@@ -85,7 +85,7 @@ func newCmd(ctx context.Context) *cobra.Command {
 
 	fs := cmd.PersistentFlags()
 	fs.StringVar(&cloudURLStr, "cloud-url", env("CALYPTIA_CLOUD_URL", defaultCloudURLStr), "Calyptia Cloud URL")
-	fs.StringVar(&token, "token", env("CALYPTIA_CLOUD_TOKEN", ""), "Calyptia Cloud Project token")
+	fs.StringVar(&token, "token", env("CALYPTIA_CLOUD_TOKEN", token), "Calyptia Cloud Project token")
 
 	cmd.AddCommand(
 		newCmdConfig(config),

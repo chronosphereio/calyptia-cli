@@ -48,23 +48,25 @@ func savedToken() (string, error) {
 		return "", errTokenNotFound
 	}
 
-	if err != nil {
-		home, err := os.UserHomeDir()
-		if err != nil {
-			return "", fmt.Errorf("could not get user home dir: %w", err)
-		}
-
-		b, err := readFile(filepath.Join(home, ".calyptia", "project_token"))
-		if errors.Is(err, fs.ErrNotExist) {
-			return "", errTokenNotFound
-		}
-
-		if err != nil {
-			return "", err
-		}
-
-		token = string(b)
+	if err == nil {
+		return token, nil
 	}
+
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return "", fmt.Errorf("could not get user home dir: %w", err)
+	}
+
+	b, err := readFile(filepath.Join(home, ".calyptia", "project_token"))
+	if errors.Is(err, fs.ErrNotExist) {
+		return "", errTokenNotFound
+	}
+
+	if err != nil {
+		return "", err
+	}
+
+	token = string(b)
 
 	return token, nil
 }
