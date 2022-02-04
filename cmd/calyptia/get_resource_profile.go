@@ -6,7 +6,7 @@ import (
 	"os"
 	"text/tabwriter"
 
-	"github.com/calyptia/cloud"
+	cloud "github.com/calyptia/api/types"
 	"github.com/spf13/cobra"
 )
 
@@ -24,7 +24,9 @@ func newCmdGetResourceProfiles(config *config) *cobra.Command {
 				return err
 			}
 
-			pp, err := config.cloud.ResourceProfiles(config.ctx, aggregatorID, last)
+			pp, err := config.cloud.ResourceProfiles(config.ctx, aggregatorID, cloud.ResourceProfilesParams{
+				Last: &last,
+			})
 			if err != nil {
 				return fmt.Errorf("could not fetch your resource profiles: %w", err)
 			}
@@ -72,8 +74,8 @@ func newCmdGetResourceProfiles(config *config) *cobra.Command {
 func (config *config) completeResourceProfiles(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	// TODO: complete resource profiles.
 	return []string{
-		string(cloud.HighPerformanceGuaranteedDelivery),
-		string(cloud.HighPerformanceOptimalThroughput),
-		string(cloud.BestEffortLowResource),
+		cloud.ResourceProfileHighPerformanceGuaranteedDelivery,
+		cloud.ResourceProfileHighPerformanceOptimalThroughput,
+		cloud.ResourceProfileBestEffortLowResource,
 	}, cobra.ShellCompDirectiveNoFileComp
 }

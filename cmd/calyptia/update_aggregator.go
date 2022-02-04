@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/calyptia/cloud"
+	cloud "github.com/calyptia/api/types"
 	"github.com/spf13/cobra"
 )
 
@@ -31,7 +31,7 @@ func newCmdUpdateAggregator(config *config) *cobra.Command {
 				return err
 			}
 
-			err = config.cloud.UpdateAggregator(config.ctx, aggregatorID, cloud.UpdateAggregatorOpts{
+			err = config.cloud.UpdateAggregator(config.ctx, aggregatorID, cloud.UpdateAggregator{
 				Name: &newName,
 			})
 			if err != nil {

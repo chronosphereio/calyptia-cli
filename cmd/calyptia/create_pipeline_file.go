@@ -8,7 +8,7 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/calyptia/cloud"
+	cloud "github.com/calyptia/api/types"
 	"github.com/spf13/cobra"
 )
 
@@ -34,7 +34,7 @@ func newCmdCreatePipelineFile(config *config) *cobra.Command {
 				return err
 			}
 
-			out, err := config.cloud.CreatePipelineFile(config.ctx, pipelineID, cloud.AddPipelineFilePayload{
+			out, err := config.cloud.CreatePipelineFile(config.ctx, pipelineID, cloud.CreatePipelineFile{
 				Name:      name,
 				Contents:  contents,
 				Encrypted: encrypt,

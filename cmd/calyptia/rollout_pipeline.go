@@ -6,7 +6,7 @@ import (
 	"os"
 	"text/tabwriter"
 
-	"github.com/calyptia/cloud"
+	cloud "github.com/calyptia/api/types"
 	"github.com/spf13/cobra"
 )
 
@@ -30,7 +30,7 @@ func newCmdRolloutPipeline(config *config) *cobra.Command {
 
 			var rawConfig string
 			if toConfigID != "" {
-				h, err := config.cloud.PipelineConfigHistory(config.ctx, pipelineID, 0)
+				h, err := config.cloud.PipelineConfigHistory(config.ctx, pipelineID, cloud.PipelineConfigHistoryParams{})
 				if err != nil {
 					return err
 				}
@@ -46,7 +46,9 @@ func newCmdRolloutPipeline(config *config) *cobra.Command {
 					return fmt.Errorf("could not find config %q", toConfigID)
 				}
 			} else if stepsBack > 0 {
-				h, err := config.cloud.PipelineConfigHistory(config.ctx, pipelineID, stepsBack)
+				h, err := config.cloud.PipelineConfigHistory(config.ctx, pipelineID, cloud.PipelineConfigHistoryParams{
+					Last: &stepsBack,
+				})
 				if err != nil {
 					return err
 				}
@@ -62,9 +64,9 @@ func newCmdRolloutPipeline(config *config) *cobra.Command {
 
 			fmt.Println(rawConfig)
 
-			updated, err := config.cloud.UpdateAggregatorPipeline(config.ctx, pipelineID, cloud.UpdateAggregatorPipelineOpts{
+			updated, err := config.cloud.UpdatePipeline(config.ctx, pipelineID, cloud.UpdatePipeline{
 				RawConfig:                 &rawConfig,
-				AutoCreatePortsFromConfig: autoCreatePortsFromConfig,
+				AutoCreatePortsFromConfig: &autoCreatePortsFromConfig,
 			})
 			if err != nil {
 				return err

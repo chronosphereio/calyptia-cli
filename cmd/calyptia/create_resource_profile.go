@@ -6,7 +6,7 @@ import (
 	"os"
 	"text/tabwriter"
 
-	"github.com/calyptia/cloud"
+	cloud "github.com/calyptia/api/types"
 	"github.com/spf13/cobra"
 )
 
@@ -65,7 +65,7 @@ func newCmdCreateResourceProfile(config *config) *cobra.Command {
 				return err
 			}
 
-			rp, err := config.cloud.CreateResourceProfile(config.ctx, aggregatorID, cloud.AddResourceProfilePayload{
+			rp, err := config.cloud.CreateResourceProfile(config.ctx, aggregatorID, cloud.CreateResourceProfile{
 				Name:                   name,
 				StorageMaxChunksUp:     spec.Resources.Storage.MaxChunksUp,
 				StorageSyncFull:        spec.Resources.Storage.SyncFull,

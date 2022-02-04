@@ -10,7 +10,7 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/calyptia/cloud"
+	cloud "github.com/calyptia/api/types"
 	"github.com/joho/godotenv"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -42,7 +42,7 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 				return fmt.Errorf("could not read config file: %w", err)
 			}
 
-			secrets, err := parseAddPipelineSecretPayload(secretsFile, secretsFormat)
+			secrets, err := parseCreatePipelineSecret(secretsFile, secretsFormat)
 			if err != nil {
 				return fmt.Errorf("could not read secrets file: %w", err)
 			}
@@ -63,7 +63,7 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 				}
 			}
 
-			var addPipelineFilePayload []cloud.AddPipelineFilePayload
+			var addFilesPayload []cloud.CreatePipelineFile
 			for _, f := range files {
 				if f == "" {
 					continue
@@ -77,7 +77,7 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 					return fmt.Errorf("coult not read file %q: %w", f, err)
 				}
 
-				addPipelineFilePayload = append(addPipelineFilePayload, cloud.AddPipelineFilePayload{
+				addFilesPayload = append(addFilesPayload, cloud.CreatePipelineFile{
 					Name:      name,
 					Contents:  contents,
 					Encrypted: encryptFiles,
@@ -89,14 +89,14 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 				return err
 			}
 
-			a, err := config.cloud.CreateAggregatorPipeline(config.ctx, aggregatorID, cloud.AddAggregatorPipelinePayload{
+			a, err := config.cloud.CreatePipeline(config.ctx, aggregatorID, cloud.CreatePipeline{
 				Name:                      name,
 				ReplicasCount:             replicasCount,
 				RawConfig:                 string(rawConfig),
 				Secrets:                   secrets,
 				AutoCreatePortsFromConfig: autoCreatePortsFromConfig,
-				ResourceProfile:           resourceProfileName,
-				Files:                     addPipelineFilePayload,
+				ResourceProfileName:       resourceProfileName,
+				Files:                     addFilesPayload,
 				Metadata:                  metadata,
 			})
 			if err != nil {
@@ -135,7 +135,7 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 	fs.StringArrayVar(&files, "file", nil, "Optional file. You can reference this file contents from your config like so:\n{{ files.myfile }}\nPass as many as you want; bear in mind the file name can only contain alphanumeric characters.")
 	fs.BoolVar(&encryptFiles, "encrypt-files", false, "Encrypt file contents")
 	fs.BoolVar(&autoCreatePortsFromConfig, "auto-create-ports", true, "Automatically create pipeline ports from config")
-	fs.StringVar(&resourceProfileName, "resource-profile", string(cloud.DefaultPipelineResourceProfile), "Resource profile name")
+	fs.StringVar(&resourceProfileName, "resource-profile", cloud.DefaultResourceProfileName, "Resource profile name")
 	fs.StringSliceVar(&metadataPairs, "metadata", nil, "Metadata to attach to the pipeline in the form of key:value. You could instead use a file with the --metadata-file option")
 	fs.StringVar(&metadataFile, "metadata-file", "", "Metadata JSON file to attach to the pipeline intead of passing multiple --metadata flags")
 	fs.StringVar(&outputFormat, "output-format", "table", "Output format. Allowed: table, json")
@@ -168,7 +168,7 @@ func readFile(name string) ([]byte, error) {
 	return b, nil
 }
 
-func parseAddPipelineSecretPayload(file, format string) ([]cloud.AddPipelineSecretPayload, error) {
+func parseCreatePipelineSecret(file, format string) ([]cloud.CreatePipelineSecret, error) {
 	if file == "" {
 		return nil, nil
 	}
@@ -191,7 +191,7 @@ func parseAddPipelineSecretPayload(file, format string) ([]cloud.AddPipelineSecr
 		}
 	}
 
-	var secrets []cloud.AddPipelineSecretPayload
+	var secrets []cloud.CreatePipelineSecret
 	switch format {
 	case "env", "dotenv":
 		m, err := godotenv.Parse(bytes.NewReader(b))
@@ -199,9 +199,9 @@ func parseAddPipelineSecretPayload(file, format string) ([]cloud.AddPipelineSecr
 			return nil, fmt.Errorf("could not parse secrets file %q: %w", file, err)
 		}
 
-		secrets = make([]cloud.AddPipelineSecretPayload, 0, len(m))
+		secrets = make([]cloud.CreatePipelineSecret, 0, len(m))
 		for k, v := range m {
-			secrets = append(secrets, cloud.AddPipelineSecretPayload{
+			secrets = append(secrets, cloud.CreatePipelineSecret{
 				Key:   k,
 				Value: []byte(v),
 			})
@@ -212,9 +212,9 @@ func parseAddPipelineSecretPayload(file, format string) ([]cloud.AddPipelineSecr
 			return nil, fmt.Errorf("could not parse secrets file %q: %w", file, err)
 		}
 
-		secrets = make([]cloud.AddPipelineSecretPayload, 0, len(m))
+		secrets = make([]cloud.CreatePipelineSecret, 0, len(m))
 		for k, v := range m {
-			secrets = append(secrets, cloud.AddPipelineSecretPayload{
+			secrets = append(secrets, cloud.CreatePipelineSecret{
 				Key:   k,
 				Value: []byte(fmt.Sprintf("%v", v)),
 			})
@@ -225,9 +225,9 @@ func parseAddPipelineSecretPayload(file, format string) ([]cloud.AddPipelineSecr
 			return nil, fmt.Errorf("could not parse secrets file %q: %w", file, err)
 		}
 
-		secrets = make([]cloud.AddPipelineSecretPayload, 0, len(m))
+		secrets = make([]cloud.CreatePipelineSecret, 0, len(m))
 		for k, v := range m {
-			secrets = append(secrets, cloud.AddPipelineSecretPayload{
+			secrets = append(secrets, cloud.CreatePipelineSecret{
 				Key:   k,
 				Value: []byte(fmt.Sprintf("%v", v)),
 			})

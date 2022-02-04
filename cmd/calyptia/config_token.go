@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 
-	cloudtoken "github.com/calyptia/cloud/token"
 	"github.com/spf13/cobra"
 )
 
@@ -14,8 +13,7 @@ func newCmdConfigSetToken(config *config) *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			token := args[0]
-			tokenVerifier := &cloudtoken.SignVerifier{}
-			_, err := tokenVerifier.Decode([]byte(token))
+			_, err := decodeToken([]byte(token))
 			if err != nil {
 				return err
 			}

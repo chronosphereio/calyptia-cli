@@ -8,7 +8,7 @@ import (
 	"text/tabwriter"
 	"time"
 
-	"github.com/calyptia/cloud"
+	cloud "github.com/calyptia/api/types"
 	"github.com/hako/durafmt"
 	"github.com/spf13/cobra"
 )
@@ -21,7 +21,9 @@ func newCmdGetAgents(config *config) *cobra.Command {
 		Use:   "agents",
 		Short: "Display latest agents from a project",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			aa, err := config.cloud.Agents(config.ctx, config.projectID, cloud.LastAgents(last))
+			aa, err := config.cloud.Agents(config.ctx, config.projectID, cloud.AgentsParams{
+				Last: &last,
+			})
 			if err != nil {
 				return fmt.Errorf("could not fetch your agents: %w", err)
 			}
@@ -129,7 +131,7 @@ func newCmdGetAgent(config *config) *cobra.Command {
 func (config *config) completeAgents(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	var aa []cloud.Agent
 	var err error
-	aa, err = config.cloud.Agents(config.ctx, config.projectID)
+	aa, err = config.cloud.Agents(config.ctx, config.projectID, cloud.AgentsParams{})
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveError
 	}
@@ -174,7 +176,10 @@ func agentsKeys(aa []cloud.Agent) []string {
 
 func (config *config) loadAgentID(agentKey string) (string, error) {
 	var err error
-	aa, err := config.cloud.Agents(config.ctx, config.projectID, cloud.AgentsWithName(agentKey), cloud.LastAgents(2))
+	aa, err := config.cloud.Agents(config.ctx, config.projectID, cloud.AgentsParams{
+		Name: &agentKey,
+		Last: ptrUint64(2),
+	})
 	if err != nil {
 		return "", err
 	}

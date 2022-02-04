@@ -2,13 +2,13 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"os"
-	"strings"
 	"text/tabwriter"
 
-	"github.com/calyptia/cloud"
+	cloud "github.com/calyptia/api/types"
 	"github.com/spf13/cobra"
 )
 
@@ -25,7 +25,9 @@ func newCmdGetPipelineConfigHistory(config *config) *cobra.Command {
 				return err
 			}
 
-			cc, err := config.cloud.PipelineConfigHistory(config.ctx, pipelineID, last)
+			cc, err := config.cloud.PipelineConfigHistory(config.ctx, pipelineID, cloud.PipelineConfigHistoryParams{
+				Last: &last,
+			})
 			if err != nil {
 				return fmt.Errorf("could not fetch your pipeline config history: %w", err)
 			}
@@ -69,33 +71,36 @@ func newCmdGetPipelineConfig(config *config) *cobra.Command {
 			return nil, cobra.ShellCompDirectiveNoFileComp // TODO: complete pipeline config ID.
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			configID := args[0]
+			return errors.New("not implemented")
+			// TODO: implement get single pipeline config endpoint.
 
-			c, err := config.cloud.PipelineConfig(config.ctx, configID)
-			if err != nil {
-				return fmt.Errorf("could not fetch your pipeline config history: %w", err)
-			}
+			// configID := args[0]
 
-			if onlyConfig {
-				fmt.Println(strings.TrimSpace(c.RawConfig))
-				return nil
-			}
+			// c, err := config.cloud.PipelineConfig(config.ctx, configID)
+			// if err != nil {
+			// 	return fmt.Errorf("could not fetch your pipeline config history: %w", err)
+			// }
 
-			switch format {
-			case "table":
-				tw := tabwriter.NewWriter(os.Stdout, 0, 4, 1, ' ', 0)
-				fmt.Fprintln(tw, "ID\tAGE")
-				fmt.Fprintf(tw, "%s\t%s\n", c.ID, fmtAgo(c.CreatedAt))
-				tw.Flush()
-			case "json":
-				err := json.NewEncoder(os.Stdout).Encode(c)
-				if err != nil {
-					return fmt.Errorf("could not json encode your pipeline config: %w", err)
-				}
-			default:
-				return fmt.Errorf("unknown output format %q", format)
-			}
-			return nil
+			// if onlyConfig {
+			// 	fmt.Println(strings.TrimSpace(c.RawConfig))
+			// 	return nil
+			// }
+
+			// switch format {
+			// case "table":
+			// 	tw := tabwriter.NewWriter(os.Stdout, 0, 4, 1, ' ', 0)
+			// 	fmt.Fprintln(tw, "ID\tAGE")
+			// 	fmt.Fprintf(tw, "%s\t%s\n", c.ID, fmtAgo(c.CreatedAt))
+			// 	tw.Flush()
+			// case "json":
+			// 	err := json.NewEncoder(os.Stdout).Encode(c)
+			// 	if err != nil {
+			// 		return fmt.Errorf("could not json encode your pipeline config: %w", err)
+			// 	}
+			// default:
+			// 	return fmt.Errorf("unknown output format %q", format)
+			// }
+			// return nil
 		},
 	}
 

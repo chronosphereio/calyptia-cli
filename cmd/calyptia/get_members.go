@@ -7,6 +7,7 @@ import (
 	"strings"
 	"text/tabwriter"
 
+	cloud "github.com/calyptia/api/types"
 	"github.com/spf13/cobra"
 )
 
@@ -18,7 +19,9 @@ func newCmdGetMembers(config *config) *cobra.Command {
 		Use:   "members",
 		Short: "Display latest members from a project",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			mm, err := config.cloud.ProjectMembers(config.ctx, config.projectID, last)
+			mm, err := config.cloud.Members(config.ctx, config.projectID, cloud.MembersParams{
+				Last: &last,
+			})
 			if err != nil {
 				return fmt.Errorf("could not fetch your project members: %w", err)
 			}

@@ -7,7 +7,7 @@ import (
 	"os"
 	"text/tabwriter"
 
-	"github.com/calyptia/cloud"
+	cloud "github.com/calyptia/api/types"
 	"github.com/spf13/cobra"
 )
 
@@ -26,7 +26,9 @@ func newCmdGetPipelineSecrets(config *config) *cobra.Command {
 				return err
 			}
 
-			ss, err := config.cloud.PipelineSecrets(config.ctx, pipelineID, last)
+			ss, err := config.cloud.PipelineSecrets(config.ctx, pipelineID, cloud.PipelineSecretsParams{
+				Last: &last,
+			})
 			if err != nil {
 				return fmt.Errorf("could not fetch your pipeline secrets: %w", err)
 			}

@@ -8,9 +8,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/calyptia/cloud"
+	cloudclient "github.com/calyptia/api/client"
+	cloud "github.com/calyptia/api/types"
 	"github.com/calyptia/cloud-cli/cmd/calyptia/bubles/table"
-	cloudclient "github.com/calyptia/cloud/client"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
@@ -104,7 +104,9 @@ func (m AgentModel) ReloadData() tea.Msg {
 type ReloadAgentDataRequested struct{}
 
 func (m AgentModel) loadAgentID() tea.Msg {
-	aa, err := m.cloud.Agents(m.ctx, m.projectID, cloud.AgentsWithName(m.agentKey))
+	aa, err := m.cloud.Agents(m.ctx, m.projectID, cloud.AgentsParams{
+		Name: &m.agentKey,
+	})
 	if err != nil {
 		return GotAgentError{err}
 	}
@@ -135,7 +137,10 @@ type GotAgentID struct {
 func (m AgentModel) loadData(ctx context.Context, withAgent, skipError bool) tea.Cmd {
 	return func() tea.Msg {
 		if !withAgent {
-			metrics, err := m.cloud.AgentMetrics(ctx, m.agentID, m.metricsStart, m.metricsInterval)
+			metrics, err := m.cloud.AgentMetrics(ctx, m.agentID, cloud.MetricsParams{
+				Start:    m.metricsStart,
+				Interval: m.metricsInterval,
+			})
 			if err != nil {
 				// cancelled
 				if ctx.Err() != nil {
@@ -165,7 +170,10 @@ func (m AgentModel) loadData(ctx context.Context, withAgent, skipError bool) tea
 		})
 		g.Go(func() error {
 			var err error
-			agentMetrics, err = m.cloud.AgentMetrics(gctx, m.agentID, m.metricsStart, m.metricsInterval)
+			agentMetrics, err = m.cloud.AgentMetrics(gctx, m.agentID, cloud.MetricsParams{
+				Start:    m.metricsStart,
+				Interval: m.metricsInterval,
+			})
 			return err
 		})
 		if err := g.Wait(); err != nil {

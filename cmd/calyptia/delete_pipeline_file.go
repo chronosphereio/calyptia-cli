@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	cloud "github.com/calyptia/api/types"
 	"github.com/spf13/cobra"
 )
 
@@ -39,7 +40,7 @@ func newCmdDeletePipelineFile(config *config) *cobra.Command {
 				return err
 			}
 
-			ff, err := config.cloud.PipelineFiles(config.ctx, pipelineID, 0)
+			ff, err := config.cloud.PipelineFiles(config.ctx, pipelineID, cloud.PipelineFilesParams{})
 			if err != nil {
 				return err
 			}

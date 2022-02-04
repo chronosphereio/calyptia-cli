@@ -6,7 +6,7 @@ import (
 	"os"
 	"text/tabwriter"
 
-	"github.com/calyptia/cloud"
+	cloud "github.com/calyptia/api/types"
 	"github.com/spf13/cobra"
 )
 
@@ -18,7 +18,9 @@ func newCmdGetAggregators(config *config) *cobra.Command {
 		Use:   "aggregators",
 		Short: "Display latest aggregators from a project",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			aa, err := config.cloud.Aggregators(config.ctx, config.projectID, cloud.LastAggregators(last))
+			aa, err := config.cloud.Aggregators(config.ctx, config.projectID, cloud.AggregatorsParams{
+				Last: &last,
+			})
 			if err != nil {
 				return fmt.Errorf("could not fetch your aggregators: %w", err)
 			}
@@ -60,7 +62,7 @@ func newCmdGetAggregators(config *config) *cobra.Command {
 }
 
 func (config *config) completeAggregators(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	aa, err := config.cloud.Aggregators(config.ctx, config.projectID)
+	aa, err := config.cloud.Aggregators(config.ctx, config.projectID, cloud.AggregatorsParams{})
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveError
 	}
@@ -106,7 +108,10 @@ func aggregatorsKeys(aa []cloud.Aggregator) []string {
 }
 
 func (config *config) loadAggregatorID(aggregatorKey string) (string, error) {
-	aa, err := config.cloud.Aggregators(config.ctx, config.projectID, cloud.AggregatorsWithName(aggregatorKey), cloud.LastAggregators(2))
+	aa, err := config.cloud.Aggregators(config.ctx, config.projectID, cloud.AggregatorsParams{
+		Name: &aggregatorKey,
+		Last: ptrUint64(2),
+	})
 	if err != nil {
 		return "", err
 	}

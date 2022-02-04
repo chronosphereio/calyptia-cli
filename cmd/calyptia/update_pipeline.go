@@ -9,7 +9,7 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/calyptia/cloud"
+	cloud "github.com/calyptia/api/types"
 	"github.com/joho/godotenv"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -45,12 +45,12 @@ func newCmdUpdatePipeline(config *config) *cobra.Command {
 				rawConfig = string(b)
 			}
 
-			secrets, err := parseUpdatePipelineSecretOpts(secretsFile, secretsFormat)
+			secrets, err := parseUpdatePipelineSecrets(secretsFile, secretsFormat)
 			if err != nil {
 				return err
 			}
 
-			var updatePipelineFileOpts []cloud.UpdatePipelineFileOpts
+			var updatePipelineFiles []cloud.UpdatePipelineFile
 			for _, f := range files {
 				if f == "" {
 					continue
@@ -66,7 +66,7 @@ func newCmdUpdatePipeline(config *config) *cobra.Command {
 
 				fmt.Println("encrypting file", encryptFiles)
 
-				updatePipelineFileOpts = append(updatePipelineFileOpts, cloud.UpdatePipelineFileOpts{
+				updatePipelineFiles = append(updatePipelineFiles, cloud.UpdatePipelineFile{
 					Name:      &name,
 					Contents:  &contents,
 					Encrypted: &encryptFiles,
@@ -95,23 +95,23 @@ func newCmdUpdatePipeline(config *config) *cobra.Command {
 				return err
 			}
 
-			opts := cloud.UpdateAggregatorPipelineOpts{
-				AutoCreatePortsFromConfig: autoCreatePortsFromConfig,
+			update := cloud.UpdatePipeline{
+				AutoCreatePortsFromConfig: &autoCreatePortsFromConfig,
 				Secrets:                   secrets,
-				Files:                     updatePipelineFileOpts,
+				Files:                     updatePipelineFiles,
 				Metadata:                  metadata,
 			}
 			if newName != "" {
-				opts.Name = &newName
+				update.Name = &newName
 			}
 			if newReplicasCount != 0 {
-				opts.ReplicasCount = &newReplicasCount
+				update.ReplicasCount = &newReplicasCount
 			}
 			if rawConfig != "" {
-				opts.RawConfig = &rawConfig
+				update.RawConfig = &rawConfig
 			}
 
-			updated, err := config.cloud.UpdateAggregatorPipeline(config.ctx, pipelineID, opts)
+			updated, err := config.cloud.UpdatePipeline(config.ctx, pipelineID, update)
 			if err != nil {
 				return fmt.Errorf("could not update pipeline: %w", err)
 			}
@@ -157,7 +157,7 @@ func newCmdUpdatePipeline(config *config) *cobra.Command {
 	return cmd
 }
 
-func parseUpdatePipelineSecretOpts(file, format string) ([]cloud.UpdatePipelineSecretOpts, error) {
+func parseUpdatePipelineSecrets(file, format string) ([]cloud.UpdatePipelineSecret, error) {
 	if file == "" {
 		return nil, nil
 	}
@@ -180,7 +180,7 @@ func parseUpdatePipelineSecretOpts(file, format string) ([]cloud.UpdatePipelineS
 		}
 	}
 
-	var secrets []cloud.UpdatePipelineSecretOpts
+	var secrets []cloud.UpdatePipelineSecret
 	switch format {
 	case "env", "dotenv":
 		m, err := godotenv.Parse(bytes.NewReader(b))
@@ -188,9 +188,9 @@ func parseUpdatePipelineSecretOpts(file, format string) ([]cloud.UpdatePipelineS
 			return nil, fmt.Errorf("could not parse secrets file %q: %w", file, err)
 		}
 
-		secrets = make([]cloud.UpdatePipelineSecretOpts, 0, len(m))
+		secrets = make([]cloud.UpdatePipelineSecret, 0, len(m))
 		for k, v := range m {
-			secrets = append(secrets, cloud.UpdatePipelineSecretOpts{
+			secrets = append(secrets, cloud.UpdatePipelineSecret{
 				Key:   &k,
 				Value: ptrBytes([]byte(v)),
 			})
@@ -201,9 +201,9 @@ func parseUpdatePipelineSecretOpts(file, format string) ([]cloud.UpdatePipelineS
 			return nil, fmt.Errorf("could not parse secrets file %q: %w", file, err)
 		}
 
-		secrets = make([]cloud.UpdatePipelineSecretOpts, 0, len(m))
+		secrets = make([]cloud.UpdatePipelineSecret, 0, len(m))
 		for k, v := range m {
-			secrets = append(secrets, cloud.UpdatePipelineSecretOpts{
+			secrets = append(secrets, cloud.UpdatePipelineSecret{
 				Key:   &k,
 				Value: ptrBytes([]byte(fmt.Sprintf("%v", v))),
 			})
@@ -214,9 +214,9 @@ func parseUpdatePipelineSecretOpts(file, format string) ([]cloud.UpdatePipelineS
 			return nil, fmt.Errorf("could not parse secrets file %q: %w", file, err)
 		}
 
-		secrets = make([]cloud.UpdatePipelineSecretOpts, 0, len(m))
+		secrets = make([]cloud.UpdatePipelineSecret, 0, len(m))
 		for k, v := range m {
-			secrets = append(secrets, cloud.UpdatePipelineSecretOpts{
+			secrets = append(secrets, cloud.UpdatePipelineSecret{
 				Key:   &k,
 				Value: ptrBytes([]byte(fmt.Sprintf("%v", v))),
 			})

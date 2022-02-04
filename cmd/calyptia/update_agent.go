@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/calyptia/cloud"
+	cloud "github.com/calyptia/api/types"
 	"github.com/spf13/cobra"
 )
 
@@ -31,7 +31,7 @@ func newCmdUpdateAgent(config *config) *cobra.Command {
 				return err
 			}
 
-			err = config.cloud.UpdateAgent(config.ctx, agentID, cloud.UpdateAgentOpts{
+			err = config.cloud.UpdateAgent(config.ctx, agentID, cloud.UpdateAgent{
 				Name: &newName,
 			})
 			if err != nil {

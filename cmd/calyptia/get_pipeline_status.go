@@ -6,6 +6,7 @@ import (
 	"os"
 	"text/tabwriter"
 
+	cloud "github.com/calyptia/api/types"
 	"github.com/spf13/cobra"
 )
 
@@ -23,7 +24,9 @@ func newCmdGetPipelineStatusHistory(config *config) *cobra.Command {
 				return err
 			}
 
-			ss, err := config.cloud.PipelineStatusHistory(config.ctx, pipelineID, last)
+			ss, err := config.cloud.PipelineStatusHistory(config.ctx, pipelineID, cloud.PipelineStatusHistoryParams{
+				Last: &last,
+			})
 			if err != nil {
 				return fmt.Errorf("could not fetch your pipeline status history: %w", err)
 			}

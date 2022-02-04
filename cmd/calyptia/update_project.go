@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/calyptia/cloud"
+	cloud "github.com/calyptia/api/types"
 	"github.com/spf13/cobra"
 )
 
@@ -18,7 +18,7 @@ func newCmdUpdateProject(config *config) *cobra.Command {
 				return nil
 			}
 
-			err := config.cloud.UpdateProject(config.ctx, config.projectID, cloud.UpdateProjectOpts{
+			err := config.cloud.UpdateProject(config.ctx, config.projectID, cloud.UpdateProject{
 				Name: &newName,
 			})
 			if err != nil {

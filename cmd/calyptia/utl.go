@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"code.cloudfoundry.org/bytefmt"
-	"github.com/calyptia/cloud"
+	cloud "github.com/calyptia/api/types"
 	"github.com/hako/durafmt"
 )
 
@@ -81,20 +81,20 @@ func (rates *Rates) Apply(measurement, metric string, points []cloud.MetricField
 	}
 
 	if strings.Contains(metric, "record") {
-		switch cloud.MeasurementType(measurement) {
-		case cloud.FluentbitInputMeasurementType, cloud.FluentdInputMeasurementType:
+		switch measurement {
+		case "fluentbit_input", "fluentd_input":
 			rates.InputRecords = rate(points)
-		case cloud.FluentbitOutputMeasurementType, cloud.FluentdOutputMeasurementType:
+		case "fluentbit_output", "fluentd_output":
 			rates.OutputRecords = rate(points)
 		}
 		return
 	}
 
 	if strings.Contains(metric, "byte") || strings.Contains(metric, "size") {
-		switch cloud.MeasurementType(measurement) {
-		case cloud.FluentbitInputMeasurementType, cloud.FluentdInputMeasurementType:
+		switch measurement {
+		case "fluentbit_input", "fluentd_input":
 			rates.InputBytes = rate(points)
-		case cloud.FluentbitOutputMeasurementType, cloud.FluentdOutputMeasurementType:
+		case "fluentbit_output", "fluentd_output":
 			rates.OutputBytes = rate(points)
 		}
 	}
@@ -153,7 +153,7 @@ func projectMeasurementNames(measurements map[string]cloud.ProjectMeasurement) [
 	return names
 }
 
-func measurementNames(measurements map[string]cloud.Measurement) []string {
+func measurementNames(measurements map[string]cloud.AgentMeasurement) []string {
 	if len(measurements) == 0 {
 		return nil
 	}
@@ -164,4 +164,8 @@ func measurementNames(measurements map[string]cloud.Measurement) []string {
 	}
 	sort.Stable(sort.StringSlice(names))
 	return names
+}
+
+func ptrUint64(v uint64) *uint64 {
+	return &v
 }

@@ -2,16 +2,13 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
 	"os"
 	"regexp"
 
-	"github.com/calyptia/cloud"
-	cloudclient "github.com/calyptia/cloud/client"
-	cloudtoken "github.com/calyptia/cloud/token"
+	cloudclient "github.com/calyptia/api/client"
 	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
 )
@@ -32,7 +29,7 @@ func newCmd(ctx context.Context) *cobra.Command {
 	config := &config{
 		ctx: ctx,
 		cloud: &cloudclient.Client{
-			HTTPClient: http.DefaultClient, // Will be replaced by Auth0 token source.
+			Client: http.DefaultClient,
 		},
 	}
 
@@ -53,27 +50,20 @@ func newCmd(ctx context.Context) *cobra.Command {
 			cobra.CheckErr(fmt.Errorf("invalid cloud url scheme %q", cloudURL.Scheme))
 		}
 
-		config.cloud.BaseURL = cloudclient.Endpoint(cloudURL.String())
+		config.cloud.BaseURL = cloudURL.String()
 
 		if token == "" {
 			return
 		}
 
-		tokenVerifier := &cloudtoken.SignVerifier{}
-		b, err := tokenVerifier.Decode([]byte(token))
+		projectID, err := decodeToken([]byte(token))
 		if err != nil {
 			return
 		}
 
-		var payload cloud.ProjectTokenPayload
-		err = json.Unmarshal(b, &payload)
-		if err != nil {
-			cobra.CheckErr(fmt.Errorf("could not decode token payload: %w", err))
-		}
-
 		config.cloud.SetProjectToken(token)
 		config.projectToken = token
-		config.projectID = payload.ProjectID
+		config.projectID = projectID
 	})
 	cmd := &cobra.Command{
 		Use:           "calyptia",

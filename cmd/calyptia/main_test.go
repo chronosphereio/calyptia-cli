@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/calyptia/cloud"
+	cloud "github.com/calyptia/api/types"
 )
 
 func Test_aggregatorsKeys(t *testing.T) {

@@ -7,7 +7,7 @@ import (
 	"os"
 	"text/tabwriter"
 
-	"github.com/calyptia/cloud"
+	cloud "github.com/calyptia/api/types"
 	"github.com/spf13/cobra"
 )
 
@@ -25,7 +25,9 @@ func newCmdGetEndpoints(config *config) *cobra.Command {
 				return err
 			}
 
-			pp, err := config.cloud.PipelinePorts(config.ctx, pipelineID, last)
+			pp, err := config.cloud.PipelinePorts(config.ctx, pipelineID, cloud.PipelinePortsParams{
+				Last: &last,
+			})
 			if err != nil {
 				return fmt.Errorf("could not fetch your pipeline endpoints: %w", err)
 			}

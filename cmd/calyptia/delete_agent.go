@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/calyptia/cloud"
+	cloud "github.com/calyptia/api/types"
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"
 )
@@ -66,8 +66,7 @@ func newCmdDeleteAgents(config *config) *cobra.Command {
 		Use:   "agents",
 		Short: "Delete many agents from a project",
 		RunE: func(cmd *cobra.Command, args []string) error {
-
-			aa, err := config.cloud.Agents(config.ctx, config.projectID)
+			aa, err := config.cloud.Agents(config.ctx, config.projectID, cloud.AgentsParams{})
 			if err != nil {
 				return fmt.Errorf("could not prefetch agents to delete: %w", err)
 			}

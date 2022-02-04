@@ -8,7 +8,7 @@ import (
 	"sync"
 	"text/tabwriter"
 
-	"github.com/calyptia/cloud"
+	cloud "github.com/calyptia/api/types"
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"
 )
@@ -27,7 +27,9 @@ func newCmdGetPipelines(config *config) *cobra.Command {
 				return err
 			}
 
-			pp, err := config.cloud.AggregatorPipelines(config.ctx, aggregatorID, cloud.LastPipelines(last))
+			pp, err := config.cloud.Pipelines(config.ctx, aggregatorID, cloud.PipelinesParams{
+				Last: &last,
+			})
 			if err != nil {
 				return fmt.Errorf("could not fetch your pipelines: %w", err)
 			}
@@ -90,7 +92,7 @@ func newCmdGetPipeline(config *config) *cobra.Command {
 				return err
 			}
 
-			var pip cloud.AggregatorPipeline
+			var pip cloud.Pipeline
 			var ports []cloud.PipelinePort
 			var history []cloud.PipelineConfig
 			var secrets []cloud.PipelineSecret
@@ -98,7 +100,7 @@ func newCmdGetPipeline(config *config) *cobra.Command {
 				g, gctx := errgroup.WithContext(config.ctx)
 				g.Go(func() error {
 					var err error
-					pip, err = config.cloud.AggregatorPipeline(config.ctx, pipelineID)
+					pip, err = config.cloud.Pipeline(config.ctx, pipelineID)
 					if err != nil {
 						return fmt.Errorf("could not fetch your pipeline: %w", err)
 					}
@@ -107,7 +109,9 @@ func newCmdGetPipeline(config *config) *cobra.Command {
 				if includeEndpoints {
 					g.Go(func() error {
 						var err error
-						ports, err = config.cloud.PipelinePorts(gctx, pipelineID, lastEndpoints)
+						ports, err = config.cloud.PipelinePorts(gctx, pipelineID, cloud.PipelinePortsParams{
+							Last: &lastEndpoints,
+						})
 						if err != nil {
 							return fmt.Errorf("could not fetch your pipeline endpoints: %w", err)
 						}
@@ -117,7 +121,9 @@ func newCmdGetPipeline(config *config) *cobra.Command {
 				if includeConfigHistory {
 					g.Go(func() error {
 						var err error
-						history, err = config.cloud.PipelineConfigHistory(gctx, pipelineID, lastConfigHistory)
+						history, err = config.cloud.PipelineConfigHistory(gctx, pipelineID, cloud.PipelineConfigHistoryParams{
+							Last: &lastConfigHistory,
+						})
 						if err != nil {
 							return fmt.Errorf("could not fetch your pipeline config history: %w", err)
 						}
@@ -127,7 +133,9 @@ func newCmdGetPipeline(config *config) *cobra.Command {
 				if includeSecrets {
 					g.Go(func() error {
 						var err error
-						secrets, err = config.cloud.PipelineSecrets(gctx, pipelineID, lastSecrets)
+						secrets, err = config.cloud.PipelineSecrets(gctx, pipelineID, cloud.PipelineSecretsParams{
+							Last: &lastSecrets,
+						})
 						if err != nil {
 							return fmt.Errorf("could not fetch your pipeline secrets: %w", err)
 						}
@@ -140,7 +148,7 @@ func newCmdGetPipeline(config *config) *cobra.Command {
 				}
 			} else {
 				var err error
-				pip, err = config.cloud.AggregatorPipeline(config.ctx, pipelineID)
+				pip, err = config.cloud.Pipeline(config.ctx, pipelineID)
 				if err != nil {
 					return fmt.Errorf("could not fetch your pipeline: %w", err)
 				}
@@ -206,8 +214,8 @@ func newCmdGetPipeline(config *config) *cobra.Command {
 	return cmd
 }
 
-func (config *config) fetchAllPipelines() ([]cloud.AggregatorPipeline, error) {
-	aa, err := config.cloud.Aggregators(config.ctx, config.projectID)
+func (config *config) fetchAllPipelines() ([]cloud.Pipeline, error) {
+	aa, err := config.cloud.Aggregators(config.ctx, config.projectID, cloud.AggregatorsParams{})
 	if err != nil {
 		return nil, fmt.Errorf("could not prefetch aggregators: %w", err)
 	}
@@ -216,14 +224,14 @@ func (config *config) fetchAllPipelines() ([]cloud.AggregatorPipeline, error) {
 		return nil, nil
 	}
 
-	var pipelines []cloud.AggregatorPipeline
+	var pipelines []cloud.Pipeline
 	var mu sync.Mutex
 
 	g, gctx := errgroup.WithContext(config.ctx)
 	for _, a := range aa {
 		a := a
 		g.Go(func() error {
-			got, err := config.cloud.AggregatorPipelines(gctx, a.ID)
+			got, err := config.cloud.Pipelines(gctx, a.ID, cloud.PipelinesParams{})
 			if err != nil {
 				return err
 			}
@@ -240,7 +248,7 @@ func (config *config) fetchAllPipelines() ([]cloud.AggregatorPipeline, error) {
 		return nil, err
 	}
 
-	var uniquePipelines []cloud.AggregatorPipeline
+	var uniquePipelines []cloud.Pipeline
 	pipelineIDs := map[string]struct{}{}
 	for _, pip := range pipelines {
 		if _, ok := pipelineIDs[pip.ID]; !ok {
@@ -266,7 +274,7 @@ func (config *config) completePipelines(cmd *cobra.Command, args []string, toCom
 }
 
 // pipelinesKeys returns unique pipeline names first and then IDs.
-func pipelinesKeys(aa []cloud.AggregatorPipeline) []string {
+func pipelinesKeys(aa []cloud.Pipeline) []string {
 	namesCount := map[string]int{}
 	for _, a := range aa {
 		if _, ok := namesCount[a.Name]; ok {
@@ -299,7 +307,10 @@ func pipelinesKeys(aa []cloud.AggregatorPipeline) []string {
 }
 
 func (config *config) loadPipelineID(pipelineKey string) (string, error) {
-	pp, err := config.cloud.ProjectPipelines(config.ctx, config.projectID, cloud.PipelinesWithName(pipelineKey), cloud.LastPipelines(2))
+	pp, err := config.cloud.ProjectPipelines(config.ctx, config.projectID, cloud.PipelinesParams{
+		Name: &pipelineKey,
+		Last: ptrUint64(2),
+	})
 	if err != nil {
 		return "", err
 	}

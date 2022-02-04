@@ -7,7 +7,7 @@ import (
 	"os"
 	"text/tabwriter"
 
-	"github.com/calyptia/cloud"
+	cloud "github.com/calyptia/api/types"
 	"github.com/spf13/cobra"
 )
 
@@ -26,7 +26,9 @@ func newCmdGetPipelineFiles(config *config) *cobra.Command {
 				return err
 			}
 
-			ff, err := config.cloud.PipelineFiles(config.ctx, pipelineID, last)
+			ff, err := config.cloud.PipelineFiles(config.ctx, pipelineID, cloud.PipelineFilesParams{
+				Last: &last,
+			})
 			if err != nil {
 				return fmt.Errorf("could not fetch your pipeline files: %w", err)
 			}
@@ -75,7 +77,7 @@ func newCmdGetPipelineFile(config *config) *cobra.Command {
 				return err
 			}
 
-			ff, err := config.cloud.PipelineFiles(config.ctx, pipelineID, 0)
+			ff, err := config.cloud.PipelineFiles(config.ctx, pipelineID, cloud.PipelineFilesParams{})
 			if err != nil {
 				return fmt.Errorf("could not find your pipeline file by name: %w", err)
 			}

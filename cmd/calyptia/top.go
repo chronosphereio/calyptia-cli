@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/calyptia/cloud"
-	cloudclient "github.com/calyptia/cloud/client"
+	cloudclient "github.com/calyptia/api/client"
+	cloud "github.com/calyptia/api/types"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
 )

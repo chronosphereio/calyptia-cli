@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/calyptia/cloud"
+	cloud "github.com/calyptia/api/types"
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"
 )
@@ -18,7 +18,7 @@ func newCmdUpdatePipelineSecret(config *config) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// TODO: update secret by its key. The key is unique per pipeline.
 			secretID, value := args[0], args[1]
-			err := config.cloud.UpdatePipelineSecret(config.ctx, secretID, cloud.UpdatePipelineSecretOpts{
+			err := config.cloud.UpdatePipelineSecret(config.ctx, secretID, cloud.UpdatePipelineSecret{
 				Value: ptrBytes([]byte(value)),
 			})
 			if err != nil {
@@ -42,7 +42,7 @@ func (config *config) completeSecretIDs(cmd *cobra.Command, args []string, toCom
 	for _, pip := range pipelines {
 		pip := pip
 		g.Go(func() error {
-			ss, err := config.cloud.PipelineSecrets(gctx, pip.ID, 0)
+			ss, err := config.cloud.PipelineSecrets(gctx, pip.ID, cloud.PipelineSecretsParams{})
 			if err != nil {
 				return err
 			}

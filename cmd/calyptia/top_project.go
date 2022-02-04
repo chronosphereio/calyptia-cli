@@ -10,9 +10,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/calyptia/cloud"
+	cloudclient "github.com/calyptia/api/client"
+	cloud "github.com/calyptia/api/types"
 	"github.com/calyptia/cloud-cli/cmd/calyptia/bubles/table"
-	cloudclient "github.com/calyptia/cloud/client"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
@@ -104,12 +104,17 @@ func (m ProjectModel) loadData(ctx context.Context, skipError bool) tea.Cmd {
 		})
 		g.Go(func() error {
 			var err error
-			projectMetrics, err = m.cloud.ProjectMetrics(gctx, m.projectID, m.metricsStart, m.metricsInterval)
+			projectMetrics, err = m.cloud.ProjectMetrics(gctx, m.projectID, cloud.MetricsParams{
+				Start:    m.metricsStart,
+				Interval: m.metricsInterval,
+			})
 			return err
 		})
 		g.Go(func() error {
 			var err error
-			agents, err = m.cloud.Agents(gctx, m.projectID, cloud.LastAgents(m.last))
+			agents, err = m.cloud.Agents(gctx, m.projectID, cloud.AgentsParams{
+				Last: &m.last,
+			})
 			if err != nil {
 				return err
 			}
@@ -127,7 +132,10 @@ func (m ProjectModel) loadData(ctx context.Context, skipError bool) tea.Cmd {
 					}
 
 					g2.Go(func() error {
-						agentMetrics, err := m.cloud.AgentMetrics(gctx2, agent.ID, m.metricsStart, m.metricsInterval)
+						agentMetrics, err := m.cloud.AgentMetrics(gctx2, agent.ID, cloud.MetricsParams{
+							Start:    m.metricsStart,
+							Interval: m.metricsInterval,
+						})
 						if err != nil {
 							return err
 						}

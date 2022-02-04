@@ -7,9 +7,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/calyptia/cloud"
+	cloudclient "github.com/calyptia/api/client"
+	cloud "github.com/calyptia/api/types"
 	"github.com/calyptia/cloud-cli/cmd/calyptia/bubles/table"
-	cloudclient "github.com/calyptia/cloud/client"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
@@ -64,12 +64,12 @@ type PipelineModel struct {
 	loading     bool
 	err         error
 	pipelineID  string
-	pipeline    cloud.AggregatorPipeline
+	pipeline    cloud.Pipeline
 	tableRows   []table.Row
 	table       table.Model
 }
 
-func (m *PipelineModel) SetData(pipeline cloud.AggregatorPipeline, metrics cloud.AgentMetrics) {
+func (m *PipelineModel) SetData(pipeline cloud.Pipeline, metrics cloud.AgentMetrics) {
 	m.loading = false
 	m.err = nil
 	m.pipelineKey = pipeline.ID
@@ -101,18 +101,20 @@ func (m PipelineModel) ReloadData() tea.Msg {
 type ReloadPipelineDataRequested struct{}
 
 func (m PipelineModel) loadPipelineID() tea.Msg {
-	pp, err := m.cloud.Projects(m.ctx)
+	pp, err := m.cloud.Projects(m.ctx, cloud.ProjectsParams{})
 	if err != nil {
 		return GotPipelineError{err}
 	}
 
-	var founds []cloud.AggregatorPipeline
+	var founds []cloud.Pipeline
 	var mu sync.Mutex
 	g, gctx := errgroup.WithContext(m.ctx)
 	for _, p := range pp {
 		p := p
 		g.Go(func() error {
-			aa, err := m.cloud.ProjectPipelines(gctx, p.ID, cloud.PipelinesWithName(m.pipelineKey))
+			aa, err := m.cloud.ProjectPipelines(gctx, p.ID, cloud.PipelinesParams{
+				Name: &m.pipelineKey,
+			})
 			if err != nil {
 				return err
 			}
@@ -146,7 +148,7 @@ func (m PipelineModel) loadPipelineID() tea.Msg {
 }
 
 type GotPipeline struct {
-	Pipeline cloud.AggregatorPipeline
+	Pipeline cloud.Pipeline
 }
 
 type GotPipelineID struct {
@@ -156,7 +158,10 @@ type GotPipelineID struct {
 func (m PipelineModel) loadData(ctx context.Context, withPipeline, skipError bool) tea.Cmd {
 	return func() tea.Msg {
 		if !withPipeline {
-			metrics, err := m.cloud.PipelineMetrics(ctx, m.pipelineID, m.metricsStart, m.metricsInterval)
+			metrics, err := m.cloud.PipelineMetrics(ctx, m.pipelineID, cloud.MetricsParams{
+				Start:    m.metricsStart,
+				Interval: m.metricsInterval,
+			})
 			if err != nil {
 				// cancelled
 				if ctx.Err() != nil {
@@ -176,17 +181,20 @@ func (m PipelineModel) loadData(ctx context.Context, withPipeline, skipError boo
 			}
 		}
 
-		var pipeline cloud.AggregatorPipeline
+		var pipeline cloud.Pipeline
 		var pipelineMetrics cloud.AgentMetrics
 		g, gctx := errgroup.WithContext(ctx)
 		g.Go(func() error {
 			var err error
-			pipeline, err = m.cloud.AggregatorPipeline(gctx, m.pipelineID)
+			pipeline, err = m.cloud.Pipeline(gctx, m.pipelineID)
 			return err
 		})
 		g.Go(func() error {
 			var err error
-			pipelineMetrics, err = m.cloud.PipelineMetrics(gctx, m.pipelineID, m.metricsStart, m.metricsInterval)
+			pipelineMetrics, err = m.cloud.PipelineMetrics(gctx, m.pipelineID, cloud.MetricsParams{
+				Start:    m.metricsStart,
+				Interval: m.metricsInterval,
+			})
 			return err
 		})
 		if err := g.Wait(); err != nil {
@@ -216,7 +224,7 @@ type GotPipelineError struct {
 
 type GotPipelineData struct {
 	WithPipeline    bool
-	Pipeline        cloud.AggregatorPipeline
+	Pipeline        cloud.Pipeline
 	PipelineMetrics cloud.AgentMetrics
 }
 
