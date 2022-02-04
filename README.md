@@ -9,7 +9,7 @@
 ---
 
 ```markdown
-go env -w GOPRIVATE=github.com/calyptia/cloud
+go env -w GOPRIVATE=github.com/calyptia/api
 go mod download
 go build ./cmd/calyptia
 ```
@@ -23,7 +23,7 @@ Alternatively, you can install only the binary by running:
 ---
 
 ```markdown
-go env -w GOPRIVATE=github.com/calyptia/cloud
+go env -w GOPRIVATE=github.com/calyptia/api
 go install github.com/calyptia/cloud-cli@latest
 ```
 
