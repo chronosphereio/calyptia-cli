@@ -10,15 +10,21 @@ import (
 func newCmdUpdateEndpoint(config *config) *cobra.Command {
 	var protocol string
 	var port uint
+	var pport *uint
 	var portID string
 
+	if port == 0 {
+		pport = nil
+	} else {
+		pport = &port
+	}
 	cmd := &cobra.Command{
 		Use:   "endpoint",
 		Short: "Update pipeline endpoint",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			opts := cloud.UpdatePipelinePort{
-				BackendPort:  &port,
-				FrontendPort: &port,
+				BackendPort:  pport,
+				FrontendPort: pport,
 				Protocol:     &protocol,
 			}
 			err := config.cloud.UpdatePipelinePort(config.ctx, portID, opts)
