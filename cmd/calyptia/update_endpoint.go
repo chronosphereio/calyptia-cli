@@ -14,7 +14,7 @@ func newCmdUpdateEndpoint(config *config) *cobra.Command {
 	var ports string
 
 	cmd := &cobra.Command{
-		Use:   "endpoint",
+		Use:   "endpoint ENDPOINT",
 		Short: "Update pipeline endpoint",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
