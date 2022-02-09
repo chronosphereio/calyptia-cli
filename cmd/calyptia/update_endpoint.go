@@ -11,15 +11,17 @@ import (
 
 func newCmdUpdateEndpoint(config *config) *cobra.Command {
 	var protocol string
-	var portID string
 	var ports string
 
 	cmd := &cobra.Command{
 		Use:   "endpoint",
 		Short: "Update pipeline endpoint",
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var fport, bport uint
 			var fpport, bpport *uint
+
+			portID := args[0]
 
 			if ports != "" {
 				colon := strings.Index(ports, ":")
@@ -64,7 +66,6 @@ func newCmdUpdateEndpoint(config *config) *cobra.Command {
 	fs := cmd.Flags()
 	fs.StringVar(&protocol, "protocol", "", "Endpoint protocol, tcp or tcps")
 	fs.StringVar(&ports, "ports", "", "define frontend and backend port, either: [port] or [frotend]:[backend]")
-	fs.StringVar(&portID, "id", "", "Endpoint port ID")
 
 	// _ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
 	// _ = cmd.RegisterFlagCompletionFunc("pipeline", config.completePipelines)
