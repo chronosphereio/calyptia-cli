@@ -39,7 +39,7 @@ func newCmdUpdateEndpoint(config *config) *cobra.Command {
 					}
 					fport = uint(port)
 
-					port, err = strconv.ParseUint(ports[colon+1:len(ports)], 10, 16)
+					port, err = strconv.ParseUint(ports[colon+1:], 10, 16)
 					if err != nil {
 						return fmt.Errorf("unable to parse frontend port number: %w", err)
 					}
