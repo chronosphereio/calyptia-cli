@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	cloud "github.com/calyptia/api/types"
 	"github.com/spf13/cobra"
+
+	cloud "github.com/calyptia/api/types"
 )
 
 func newCmdDeletePipelineFile(config *config) *cobra.Command {

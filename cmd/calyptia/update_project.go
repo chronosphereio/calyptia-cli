@@ -3,8 +3,9 @@ package main
 import (
 	"fmt"
 
-	cloud "github.com/calyptia/api/types"
 	"github.com/spf13/cobra"
+
+	cloud "github.com/calyptia/api/types"
 )
 
 func newCmdUpdateProject(config *config) *cobra.Command {

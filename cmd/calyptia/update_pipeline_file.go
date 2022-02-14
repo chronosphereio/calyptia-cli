@@ -5,8 +5,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	cloud "github.com/calyptia/api/types"
 	"github.com/spf13/cobra"
+
+	cloud "github.com/calyptia/api/types"
 )
 
 func newCmdUpdatePipelineFile(config *config) *cobra.Command {

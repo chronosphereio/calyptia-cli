@@ -5,8 +5,9 @@ import (
 	"strconv"
 	"strings"
 
-	cloud "github.com/calyptia/api/types"
 	"github.com/spf13/cobra"
+
+	cloud "github.com/calyptia/api/types"
 )
 
 func newCmdUpdateEndpoint(config *config) *cobra.Command {

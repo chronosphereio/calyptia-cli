@@ -8,9 +8,10 @@ import (
 	"os"
 	"regexp"
 
-	cloudclient "github.com/calyptia/api/client"
 	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
+
+	cloudclient "github.com/calyptia/api/client"
 )
 
 var (

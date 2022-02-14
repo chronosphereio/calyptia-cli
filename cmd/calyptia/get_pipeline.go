@@ -8,9 +8,10 @@ import (
 	"sync"
 	"text/tabwriter"
 
-	cloud "github.com/calyptia/api/types"
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"
+
+	cloud "github.com/calyptia/api/types"
 )
 
 func newCmdGetPipelines(config *config) *cobra.Command {
