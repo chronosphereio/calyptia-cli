@@ -8,9 +8,10 @@ import (
 	"text/tabwriter"
 	"time"
 
-	cloud "github.com/calyptia/api/types"
 	"github.com/hako/durafmt"
 	"github.com/spf13/cobra"
+
+	cloud "github.com/calyptia/api/types"
 )
 
 func newCmdGetAgents(config *config) *cobra.Command {

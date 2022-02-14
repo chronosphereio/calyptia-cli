@@ -4,10 +4,11 @@ import (
 	"context"
 	"time"
 
-	cloudclient "github.com/calyptia/api/client"
-	cloud "github.com/calyptia/api/types"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
+
+	cloudclient "github.com/calyptia/api/client"
+	cloud "github.com/calyptia/api/types"
 )
 
 func newCmdTop(config *config) *cobra.Command {

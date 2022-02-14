@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"sync"
 
-	cloud "github.com/calyptia/api/types"
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"
+
+	cloud "github.com/calyptia/api/types"
 )
 
 func newCmdUpdatePipelineSecret(config *config) *cobra.Command {

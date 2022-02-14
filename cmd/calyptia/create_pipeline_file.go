@@ -8,8 +8,9 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	cloud "github.com/calyptia/api/types"
 	"github.com/spf13/cobra"
+
+	cloud "github.com/calyptia/api/types"
 )
 
 func newCmdCreatePipelineFile(config *config) *cobra.Command {

@@ -10,14 +10,15 @@ import (
 	"sync"
 	"time"
 
-	cloudclient "github.com/calyptia/api/client"
-	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cloud-cli/cmd/calyptia/bubles/table"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/term"
+
+	cloudclient "github.com/calyptia/api/client"
+	cloud "github.com/calyptia/api/types"
+	"github.com/calyptia/cloud-cli/cmd/calyptia/bubles/table"
 )
 
 func newCmdTopProject(config *config) *cobra.Command {

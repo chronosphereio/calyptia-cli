@@ -10,11 +10,12 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	cloud "github.com/calyptia/api/types"
 	"github.com/joho/godotenv"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v2"
+
+	cloud "github.com/calyptia/api/types"
 )
 
 func newCmdCreatePipeline(config *config) *cobra.Command {

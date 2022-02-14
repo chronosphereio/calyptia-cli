@@ -7,8 +7,9 @@ import (
 	"os"
 	"text/tabwriter"
 
-	cloud "github.com/calyptia/api/types"
 	"github.com/spf13/cobra"
+
+	cloud "github.com/calyptia/api/types"
 )
 
 func newCmdGetEndpoints(config *config) *cobra.Command {

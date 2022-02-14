@@ -5,9 +5,10 @@ import (
 	"strings"
 	"time"
 
-	cloud "github.com/calyptia/api/types"
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"
+
+	cloud "github.com/calyptia/api/types"
 )
 
 func newCmdDeleteAgent(config *config) *cobra.Command {

@@ -8,8 +8,9 @@ import (
 	"time"
 
 	"code.cloudfoundry.org/bytefmt"
-	cloud "github.com/calyptia/api/types"
 	"github.com/hako/durafmt"
+
+	cloud "github.com/calyptia/api/types"
 )
 
 func fmtAgo(t time.Time) string {
