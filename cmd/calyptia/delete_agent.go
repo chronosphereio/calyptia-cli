@@ -84,7 +84,7 @@ func newCmdDeleteAgents(config *config) *cobra.Command {
 			}
 
 			if len(aa) == 0 {
-				fmt.Println("Nothing to delete")
+				fmt.Fprintln(cmd.OutOrStdout(), "No agents to delete")
 				return nil
 			}
 

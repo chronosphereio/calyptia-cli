@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"os"
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
@@ -35,9 +34,9 @@ func newCmdGetEndpoints(config *config) *cobra.Command {
 
 			switch format {
 			case "table":
-				renderEndpointsTable(os.Stdout, pp, showIDs)
+				renderEndpointsTable(cmd.OutOrStdout(), pp, showIDs)
 			case "json":
-				err := json.NewEncoder(os.Stdout).Encode(pp)
+				err := json.NewEncoder(cmd.OutOrStdout()).Encode(pp)
 				if err != nil {
 					return fmt.Errorf("could not json encode your pipeline endpoints: %w", err)
 				}

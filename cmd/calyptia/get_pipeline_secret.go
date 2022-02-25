@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"os"
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
@@ -36,9 +35,9 @@ func newCmdGetPipelineSecrets(config *config) *cobra.Command {
 
 			switch format {
 			case "table":
-				renderPipelineSecrets(os.Stdout, ss, showIDs)
+				renderPipelineSecrets(cmd.OutOrStdout(), ss, showIDs)
 			case "json":
-				err := json.NewEncoder(os.Stdout).Encode(ss)
+				err := json.NewEncoder(cmd.OutOrStdout()).Encode(ss)
 				if err != nil {
 					return fmt.Errorf("could not json encode your pipeline secrets: %w", err)
 				}

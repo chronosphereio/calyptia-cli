@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"os"
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
@@ -35,9 +34,9 @@ func newCmdGetPipelineConfigHistory(config *config) *cobra.Command {
 
 			switch format {
 			case "table":
-				renderPipelineConfigHistory(os.Stdout, cc)
+				renderPipelineConfigHistory(cmd.OutOrStdout(), cc)
 			case "json":
-				err := json.NewEncoder(os.Stdout).Encode(cc)
+				err := json.NewEncoder(cmd.OutOrStdout()).Encode(cc)
 				if err != nil {
 					return fmt.Errorf("could not json encode your pipeline config history: %w", err)
 				}
@@ -83,18 +82,18 @@ func newCmdGetPipelineConfig(config *config) *cobra.Command {
 			// }
 
 			// if onlyConfig {
-			// 	fmt.Println(strings.TrimSpace(c.RawConfig))
+			// fmt.Println(cmd.OutOrStdout(), strings.TrimSpace(c.RawConfig))
 			// 	return nil
 			// }
 
 			// switch format {
 			// case "table":
-			// 	tw := tabwriter.NewWriter(os.Stdout, 0, 4, 1, ' ', 0)
+			// 	tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
 			// 	fmt.Fprintln(tw, "ID\tAGE")
 			// 	fmt.Fprintf(tw, "%s\t%s\n", c.ID, fmtAgo(c.CreatedAt))
 			// 	tw.Flush()
 			// case "json":
-			// 	err := json.NewEncoder(os.Stdout).Encode(c)
+			// 	err := json.NewEncoder(cmd.OutOrStdout()).Encode(c)
 			// 	if err != nil {
 			// 		return fmt.Errorf("could not json encode your pipeline config: %w", err)
 			// 	}

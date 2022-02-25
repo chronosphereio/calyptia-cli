@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 	"strings"
 	"sync"
 	"text/tabwriter"
@@ -37,7 +36,7 @@ func newCmdGetPipelines(config *config) *cobra.Command {
 
 			switch format {
 			case "table":
-				tw := tabwriter.NewWriter(os.Stdout, 0, 4, 1, ' ', 0)
+				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
 				if showIDs {
 					fmt.Fprintf(tw, "ID\t")
 				}
@@ -50,7 +49,7 @@ func newCmdGetPipelines(config *config) *cobra.Command {
 				}
 				tw.Flush()
 			case "json":
-				err := json.NewEncoder(os.Stdout).Encode(pp)
+				err := json.NewEncoder(cmd.OutOrStdout()).Encode(pp)
 				if err != nil {
 					return fmt.Errorf("could not json encode your pipelines: %w", err)
 				}
@@ -156,14 +155,14 @@ func newCmdGetPipeline(config *config) *cobra.Command {
 			}
 
 			if onlyConfig {
-				fmt.Println(strings.TrimSpace(pip.Config.RawConfig))
+				fmt.Fprintln(cmd.OutOrStdout(), strings.TrimSpace(pip.Config.RawConfig))
 				return nil
 			}
 
 			switch format {
 			case "table":
 				{
-					tw := tabwriter.NewWriter(os.Stdout, 0, 4, 1, ' ', 0)
+					tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
 					if showIDs {
 						fmt.Fprint(tw, "ID\t")
 					}
@@ -175,19 +174,19 @@ func newCmdGetPipeline(config *config) *cobra.Command {
 					tw.Flush()
 				}
 				if includeEndpoints {
-					fmt.Println()
-					renderEndpointsTable(os.Stdout, ports, showIDs)
+					fmt.Fprintln(cmd.OutOrStdout(), "## Endpoints")
+					renderEndpointsTable(cmd.OutOrStdout(), ports, showIDs)
 				}
 				if includeConfigHistory {
-					fmt.Println()
-					renderPipelineConfigHistory(os.Stdout, history)
+					fmt.Fprintln(cmd.OutOrStdout(), "## Config History")
+					renderPipelineConfigHistory(cmd.OutOrStdout(), history)
 				}
 				if includeSecrets {
-					fmt.Println()
-					renderPipelineSecrets(os.Stdout, secrets, showIDs)
+					fmt.Fprintln(cmd.OutOrStdout(), "## Secrets")
+					renderPipelineSecrets(cmd.OutOrStdout(), secrets, showIDs)
 				}
 			case "json":
-				err := json.NewEncoder(os.Stdout).Encode(pip)
+				err := json.NewEncoder(cmd.OutOrStdout()).Encode(pip)
 				if err != nil {
 					return fmt.Errorf("could not json encode your pipelines: %w", err)
 				}

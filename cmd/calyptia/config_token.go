@@ -28,7 +28,7 @@ func newCmdConfigCurrentToken(config *config) *cobra.Command {
 		Use:   "current_token",
 		Short: "Get the current configured default project token",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			fmt.Println(config.projectToken)
+			fmt.Fprintln(cmd.OutOrStdout(), config.projectToken)
 			return nil
 		},
 	}

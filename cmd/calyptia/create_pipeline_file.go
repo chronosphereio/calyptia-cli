@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 	"path/filepath"
 	"strings"
 	"text/tabwriter"
@@ -46,14 +45,14 @@ func newCmdCreatePipelineFile(config *config) *cobra.Command {
 
 			switch outputFormat {
 			case "table":
-				tw := tabwriter.NewWriter(os.Stdout, 0, 4, 1, ' ', 0)
+				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
 				fmt.Fprintln(tw, "ID\tAGE")
 				fmt.Fprintf(tw, "%s\t%s\n", out.ID, fmtAgo(out.CreatedAt))
 				tw.Flush()
 
 				return nil
 			case "json":
-				err := json.NewEncoder(os.Stdout).Encode(out)
+				err := json.NewEncoder(cmd.OutOrStdout()).Encode(out)
 				if err != nil {
 					return fmt.Errorf("could not json encode your newly created file: %w", err)
 				}
