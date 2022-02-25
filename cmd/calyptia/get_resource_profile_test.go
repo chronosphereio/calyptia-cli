@@ -90,10 +90,12 @@ func Test_newCmdGetResourceProfiles(t *testing.T) {
 		got := &bytes.Buffer{}
 		cmd := newCmdGetResourceProfiles(configWithMock(&ClientMock{
 			ResourceProfilesFunc: func(ctx context.Context, aggregatorID string, params cloud.ResourceProfilesParams) ([]cloud.ResourceProfile, error) {
+				wantNoEq(t, nil, params.Last)
+				wantEq(t, uint64(2), *params.Last)
 				return want, nil
 			},
 		}))
-		cmd.SetArgs([]string{"--aggregator=" + zeroUUID4})
+		cmd.SetArgs([]string{"--aggregator=" + zeroUUID4, "--last=2"})
 		cmd.SetOutput(got)
 
 		err := cmd.Execute()
