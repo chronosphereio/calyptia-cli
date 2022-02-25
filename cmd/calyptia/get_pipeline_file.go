@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"os"
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
@@ -36,9 +35,9 @@ func newCmdGetPipelineFiles(config *config) *cobra.Command {
 
 			switch format {
 			case "table":
-				renderPipelineFiles(os.Stdout, ff, showIDs)
+				renderPipelineFiles(cmd.OutOrStdout(), ff, showIDs)
 			case "json":
-				err := json.NewEncoder(os.Stdout).Encode(ff)
+				err := json.NewEncoder(cmd.OutOrStdout()).Encode(ff)
 				if err != nil {
 					return fmt.Errorf("could not json encode your pipeline files: %w", err)
 				}
@@ -104,7 +103,7 @@ func newCmdGetPipelineFile(config *config) *cobra.Command {
 
 			switch format {
 			case "table":
-				tw := tabwriter.NewWriter(os.Stdout, 0, 4, 1, ' ', 0)
+				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
 				if showIDs {
 					fmt.Fprint(tw, "ID\t")
 				}
@@ -115,7 +114,7 @@ func newCmdGetPipelineFile(config *config) *cobra.Command {
 				fmt.Fprintf(tw, "%s\t%v\t%s\n", file.Name, file.Encrypted, fmtAgo(file.CreatedAt))
 				tw.Flush()
 			case "json":
-				err := json.NewEncoder(os.Stdout).Encode(file)
+				err := json.NewEncoder(cmd.OutOrStdout()).Encode(file)
 				if err != nil {
 					return fmt.Errorf("could not json encode your pipeline file: %w", err)
 				}

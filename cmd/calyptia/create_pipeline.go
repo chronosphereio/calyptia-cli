@@ -110,12 +110,12 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 
 			switch outputFormat {
 			case "table":
-				tw := tabwriter.NewWriter(os.Stdout, 0, 4, 1, ' ', 0)
+				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
 				fmt.Fprintln(tw, "NAME\tAGE")
 				fmt.Fprintf(tw, "%s\t%s\n", a.Name, fmtAgo(a.CreatedAt))
 				tw.Flush()
 			case "json":
-				err := json.NewEncoder(os.Stdout).Encode(a)
+				err := json.NewEncoder(cmd.OutOrStdout()).Encode(a)
 				if err != nil {
 					return fmt.Errorf("could not json encode your new pipeline: %w", err)
 				}

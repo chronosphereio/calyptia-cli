@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 	"strings"
 	"text/tabwriter"
 	"time"
@@ -31,7 +30,7 @@ func newCmdGetAgents(config *config) *cobra.Command {
 
 			switch format {
 			case "table":
-				tw := tabwriter.NewWriter(os.Stdout, 0, 4, 1, ' ', 0)
+				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
 				if showIDs {
 					fmt.Fprint(tw, "ID\t")
 				}
@@ -45,7 +44,7 @@ func newCmdGetAgents(config *config) *cobra.Command {
 				}
 				tw.Flush()
 			case "json":
-				err := json.NewEncoder(os.Stdout).Encode(aa)
+				err := json.NewEncoder(cmd.OutOrStdout()).Encode(aa)
 				if err != nil {
 					return fmt.Errorf("could not json encode your agents: %w", err)
 				}
@@ -89,13 +88,13 @@ func newCmdGetAgent(config *config) *cobra.Command {
 			}
 
 			if onlyConfig {
-				fmt.Println(strings.TrimSpace(agent.RawConfig))
+				fmt.Fprintln(cmd.OutOrStdout(), strings.TrimSpace(agent.RawConfig))
 				return nil
 			}
 
 			switch format {
 			case "table":
-				tw := tabwriter.NewWriter(os.Stdout, 0, 4, 1, ' ', 0)
+				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
 				if showIDs {
 					fmt.Fprint(tw, "ID\t")
 				}
@@ -107,7 +106,7 @@ func newCmdGetAgent(config *config) *cobra.Command {
 				fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\n", agent.Name, agent.Type, agent.Version, status, fmtAgo(agent.CreatedAt))
 				tw.Flush()
 			case "json":
-				err := json.NewEncoder(os.Stdout).Encode(agent)
+				err := json.NewEncoder(cmd.OutOrStdout()).Encode(agent)
 				if err != nil {
 					return fmt.Errorf("could not json encode your agent: %w", err)
 				}

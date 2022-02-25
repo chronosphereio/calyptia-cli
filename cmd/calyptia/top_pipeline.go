@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"sync"
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -13,9 +12,8 @@ import (
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/term"
 
-	cloudclient "github.com/calyptia/api/client"
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cloud-cli/cmd/calyptia/bubles/table"
+	table "github.com/calyptia/go-bubble-table"
 )
 
 func newCmdTopPipeline(config *config) *cobra.Command {
@@ -28,7 +26,7 @@ func newCmdTopPipeline(config *config) *cobra.Command {
 		ValidArgsFunction: config.completePipelines,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			pipelineKey := args[0]
-			return tea.NewProgram(initialPipelineModel(config.ctx, config.cloud, pipelineKey, start, interval), tea.WithAltScreen()).Start()
+			return tea.NewProgram(initialPipelineModel(config.ctx, config.cloud, config.projectID, pipelineKey, start, interval), tea.WithAltScreen()).Start()
 		},
 	}
 
@@ -39,10 +37,10 @@ func newCmdTopPipeline(config *config) *cobra.Command {
 	return cmd
 }
 
-func NewPipelineModel(ctx context.Context, cloud *cloudclient.Client, pipelineKey string, metricsStart, metricsInterval time.Duration) PipelineModel {
-	tbl := table.NewModel([]string{"PLUGIN", "INPUT-BYTES", "INPUT-RECORDS", "OUTPUT-BYTES", "OUTPUT-RECORDS"})
-	tbl.SetNavEnabled(true)
+func NewPipelineModel(ctx context.Context, cloud Client, projectID, pipelineKey string, metricsStart, metricsInterval time.Duration) PipelineModel {
+	tbl := table.New([]string{"PLUGIN", "INPUT-BYTES", "INPUT-RECORDS", "OUTPUT-BYTES", "OUTPUT-RECORDS"}, 0, 0)
 	return PipelineModel{
+		projectID:       projectID,
 		pipelineKey:     pipelineKey,
 		metricsStart:    metricsStart,
 		metricsInterval: metricsInterval,
@@ -54,10 +52,11 @@ func NewPipelineModel(ctx context.Context, cloud *cloudclient.Client, pipelineKe
 }
 
 type PipelineModel struct {
+	projectID       string
 	pipelineKey     string
 	metricsStart    time.Duration
 	metricsInterval time.Duration
-	cloud           *cloudclient.Client
+	cloud           Client
 	ctx             context.Context
 
 	cancelFunc  context.CancelFunc
@@ -102,47 +101,23 @@ func (m PipelineModel) ReloadData() tea.Msg {
 type ReloadPipelineDataRequested struct{}
 
 func (m PipelineModel) loadPipelineID() tea.Msg {
-	pp, err := m.cloud.Projects(m.ctx, cloud.ProjectsParams{})
+	aa, err := m.cloud.ProjectPipelines(m.ctx, m.projectID, cloud.PipelinesParams{
+		Name: &m.pipelineKey,
+	})
 	if err != nil {
 		return GotPipelineError{err}
 	}
 
-	var founds []cloud.Pipeline
-	var mu sync.Mutex
-	g, gctx := errgroup.WithContext(m.ctx)
-	for _, p := range pp {
-		p := p
-		g.Go(func() error {
-			aa, err := m.cloud.ProjectPipelines(gctx, p.ID, cloud.PipelinesParams{
-				Name: &m.pipelineKey,
-			})
-			if err != nil {
-				return err
-			}
-
-			if len(aa) == 1 {
-				mu.Lock()
-				founds = append(founds, aa[0])
-				mu.Unlock()
-			}
-
-			return nil
-		})
-	}
-	if err := g.Wait(); err != nil {
-		return GotPipelineError{err}
-	}
-
-	if len(founds) != 1 && !validUUID(m.pipelineKey) {
-		if len(founds) != 0 {
+	if len(aa) != 1 && !validUUID(m.pipelineKey) {
+		if len(aa) != 0 {
 			return GotPipelineError{fmt.Errorf("ambiguous pipeline name %q, use ID instead", m.pipelineKey)}
 		}
 
 		return GotPipelineError{fmt.Errorf("could not find pipeline %q", m.pipelineKey)}
 	}
 
-	if len(founds) == 1 {
-		return GotPipeline{founds[0]}
+	if len(aa) == 1 {
+		return GotPipeline{aa[0]}
 	}
 
 	return GotPipelineID{m.pipelineKey}

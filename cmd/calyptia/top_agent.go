@@ -14,9 +14,8 @@ import (
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/term"
 
-	cloudclient "github.com/calyptia/api/client"
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cloud-cli/cmd/calyptia/bubles/table"
+	table "github.com/calyptia/go-bubble-table"
 )
 
 func newCmdTopAgent(config *config) *cobra.Command {
@@ -40,9 +39,8 @@ func newCmdTopAgent(config *config) *cobra.Command {
 	return cmd
 }
 
-func NewAgentModel(ctx context.Context, cloud *cloudclient.Client, projectID, agentKey string, metricsStart, metricsInterval time.Duration) AgentModel {
-	tbl := table.NewModel([]string{"PLUGIN", "INPUT-BYTES", "INPUT-RECORDS", "OUTPUT-BYTES", "OUTPUT-RECORDS"})
-	tbl.SetNavEnabled(true)
+func NewAgentModel(ctx context.Context, cloud Client, projectID, agentKey string, metricsStart, metricsInterval time.Duration) AgentModel {
+	tbl := table.New([]string{"PLUGIN", "INPUT-BYTES", "INPUT-RECORDS", "OUTPUT-BYTES", "OUTPUT-RECORDS"}, 0, 0)
 	return AgentModel{
 		projectID:       projectID,
 		agentKey:        agentKey,
@@ -60,7 +58,7 @@ type AgentModel struct {
 	agentKey        string
 	metricsStart    time.Duration
 	metricsInterval time.Duration
-	cloud           *cloudclient.Client
+	cloud           Client
 	ctx             context.Context
 
 	cancelFunc  context.CancelFunc

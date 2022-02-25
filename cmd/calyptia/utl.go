@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math"
+	"regexp"
 	"sort"
 	"strings"
 	"time"
@@ -12,6 +13,14 @@ import (
 
 	cloud "github.com/calyptia/api/types"
 )
+
+const zeroUUID4 = "00000000-0000-4000-a000-000000000000"
+
+var reUUID4 = regexp.MustCompile("^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$")
+
+func validUUID(s string) bool {
+	return reUUID4.MatchString(s)
+}
 
 func fmtAgo(t time.Time) string {
 	return durafmt.ParseShort(time.Since(t)).LimitFirstN(1).String()
@@ -167,6 +176,4 @@ func measurementNames(measurements map[string]cloud.AgentMeasurement) []string {
 	return names
 }
 
-func ptrUint64(v uint64) *uint64 {
-	return &v
-}
+func ptrUint64(v uint64) *uint64 { return &v }

@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 	"strings"
 	"text/tabwriter"
 
@@ -29,7 +28,7 @@ func newCmdGetMembers(config *config) *cobra.Command {
 
 			switch format {
 			case "table":
-				tw := tabwriter.NewWriter(os.Stdout, 0, 4, 1, ' ', 0)
+				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
 				if showIDs {
 					fmt.Fprintf(tw, "ID\t")
 				}
@@ -40,7 +39,7 @@ func newCmdGetMembers(config *config) *cobra.Command {
 				fmt.Fprintln(tw, "AGE")
 				for _, m := range mm {
 					if showIDs {
-						fmt.Fprintf(tw, "%s\t", m.ID)
+						fmt.Fprintf(tw, "%s\t", m.User.ID)
 					}
 					roles := make([]string, len(m.Roles))
 					for i, r := range m.Roles {
@@ -54,7 +53,7 @@ func newCmdGetMembers(config *config) *cobra.Command {
 				}
 				tw.Flush()
 			case "json":
-				err := json.NewEncoder(os.Stdout).Encode(mm)
+				err := json.NewEncoder(cmd.OutOrStdout()).Encode(mm)
 				if err != nil {
 					return fmt.Errorf("could not json encode your project members: %w", err)
 				}

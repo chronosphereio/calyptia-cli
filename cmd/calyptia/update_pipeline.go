@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"os"
 	"path/filepath"
 	"strings"
 	"text/tabwriter"
@@ -65,8 +64,6 @@ func newCmdUpdatePipeline(config *config) *cobra.Command {
 					return fmt.Errorf("coult not read file %q: %w", f, err)
 				}
 
-				fmt.Println("encrypting file", encryptFiles)
-
 				updatePipelineFiles = append(updatePipelineFiles, cloud.UpdatePipelineFile{
 					Name:      &name,
 					Contents:  &contents,
@@ -120,14 +117,14 @@ func newCmdUpdatePipeline(config *config) *cobra.Command {
 			if autoCreatePortsFromConfig && len(updated.AddedPorts) != 0 {
 				switch outputFormat {
 				case "table":
-					tw := tabwriter.NewWriter(os.Stdout, 0, 4, 1, ' ', 0)
+					tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
 					fmt.Fprintln(tw, "PROTOCOL\tFRONTEND-PORT\tBACKEND-PORT")
 					for _, p := range updated.AddedPorts {
 						fmt.Fprintf(tw, "%s\t%d\t%d\n", p.Protocol, p.FrontendPort, p.BackendPort)
 					}
 					tw.Flush()
 				case "json":
-					err := json.NewEncoder(os.Stdout).Encode(updated)
+					err := json.NewEncoder(cmd.OutOrStdout()).Encode(updated)
 					if err != nil {
 						return fmt.Errorf("could not json encode updated pipeline: %w", err)
 					}

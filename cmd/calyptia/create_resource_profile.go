@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
@@ -85,12 +84,12 @@ func newCmdCreateResourceProfile(config *config) *cobra.Command {
 
 			switch outputFormat {
 			case "table":
-				tw := tabwriter.NewWriter(os.Stdout, 0, 4, 1, ' ', 0)
+				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
 				fmt.Fprintln(tw, "ID\tAGE")
 				fmt.Fprintf(tw, "%s\t%s\n", rp.ID, fmtAgo(rp.CreatedAt))
 				tw.Flush()
 			case "json":
-				err := json.NewEncoder(os.Stdout).Encode(rp)
+				err := json.NewEncoder(cmd.OutOrStdout()).Encode(rp)
 				if err != nil {
 					return fmt.Errorf("could not json encode your new resource profile: %w", err)
 				}
