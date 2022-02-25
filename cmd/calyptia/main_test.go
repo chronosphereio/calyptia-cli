@@ -1,36 +1,52 @@
 package main
 
 import (
+	"context"
+	"errors"
 	"reflect"
+	"strings"
 	"testing"
-
-	cloud "github.com/calyptia/api/types"
 )
 
-func Test_aggregatorsKeys(t *testing.T) {
-	tt := []struct {
-		name  string
-		given []cloud.Aggregator
-		want  []string
-	}{
-		{
-			given: []cloud.Aggregator{{ID: "id-1", Name: "name-1"}, {ID: "id-2", Name: "name-2"}},
-			want:  []string{"name-1", "name-2"},
-		},
-		{
-			given: []cloud.Aggregator{{ID: "id-1", Name: "name"}, {ID: "id-2", Name: "name"}},
-			want:  []string{"id-1", "id-2"},
-		},
-		{
-			given: []cloud.Aggregator{{ID: "id-1", Name: "name"}, {ID: "id-2", Name: "name"}, {ID: "id-3", Name: "other-name"}},
-			want:  []string{"id-1", "id-2", "other-name"},
-		},
+func testConfig(mock *ClientMock) *config {
+	if mock == nil {
+		mock = &ClientMock{}
 	}
-	for _, tc := range tt {
-		t.Run(tc.name, func(t *testing.T) {
-			if got := aggregatorsKeys(tc.given); !reflect.DeepEqual(got, tc.want) {
-				t.Errorf("Aggregators.Keys(%+v) = %v, want %v", tc.given, got, tc.want)
+	return &config{
+		ctx:          context.Background(),
+		cloud:        mock,
+		projectID:    "",
+		projectToken: "",
+	}
+}
+
+func wantEq(t *testing.T, want, got interface{}) {
+	t.Helper()
+
+	if target, ok := want.(error); ok {
+		if err, ok := got.(error); ok {
+			if !errors.Is(err, target) {
+				t.Fatalf("want %v, got %v", target, err)
 			}
-		})
+			return
+		}
+	}
+
+	if !reflect.DeepEqual(want, got) {
+		t.Fatalf("want %+v, got %+v", want, got)
+	}
+}
+
+func wantNoEq(t *testing.T, want, got interface{}) {
+	t.Helper()
+
+	if reflect.DeepEqual(want, got) {
+		t.Fatalf("want %+v not equal to %+v", want, got)
+	}
+}
+
+func wantErrMsg(t *testing.T, want string, got error) {
+	if got == nil || !strings.Contains(got.Error(), want) {
+		t.Fatalf("want error message %q, got %v", want, got)
 	}
 }
