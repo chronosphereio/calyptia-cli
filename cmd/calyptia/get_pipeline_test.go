@@ -257,7 +257,7 @@ func Test_newCmdGetPipeline(t *testing.T) {
 		t.Run("include_endpoints", func(t *testing.T) {
 			got.Reset()
 
-			// FIXME: Must override --output-format
+			// Note: Must override --output-format
 			// and --show-ids options back to table.
 			cmd.SetArgs([]string{zeroUUID4, "--output-format=table", "--show-ids=false", "--include-endpoints"})
 
@@ -276,7 +276,7 @@ func Test_newCmdGetPipeline(t *testing.T) {
 		t.Run("include_config_history", func(t *testing.T) {
 			got.Reset()
 
-			// FIXME: Must override --output-format,
+			// Note: Must override --output-format,
 			// --show-ids and --include-endpoints options back to table.
 			cmd.SetArgs([]string{zeroUUID4, "--output-format=table", "--show-ids=false", "--include-endpoints=false", "--include-config-history"})
 
@@ -295,7 +295,7 @@ func Test_newCmdGetPipeline(t *testing.T) {
 		t.Run("include_secrets", func(t *testing.T) {
 			got.Reset()
 
-			// FIXME: Must override --output-format,
+			// Note: Must override --output-format,
 			// --show-ids, --include-endpoints and --include-config-history
 			// options back to table.
 			cmd.SetArgs([]string{zeroUUID4, "--output-format=table", "--show-ids=false", "--include-endpoints=false", "--include-config-history=false", "--include-secrets"})
@@ -315,7 +315,7 @@ func Test_newCmdGetPipeline(t *testing.T) {
 		t.Run("include_all", func(t *testing.T) {
 			got.Reset()
 
-			// FIXME: Must override --output-format,
+			// Note: Must override --output-format,
 			// --show-ids, --include-endpoints and --include-config-history
 			// options back to table.
 			cmd.SetArgs([]string{zeroUUID4, "--output-format=table", "--show-ids=true", "--include-endpoints=true", "--include-config-history=true", "--include-secrets=true"})

@@ -170,7 +170,7 @@ func Test_newCmdGetAgent(t *testing.T) {
 			wantEq(t, nil, err)
 
 			got.Reset()
-			// FIXME: Must override --only-config option back to false.
+			// Note: Must override --only-config option back to false.
 			cmd.SetArgs([]string{zeroUUID4, "--only-config=false", "--output-format=json"})
 
 			err = cmd.Execute()
