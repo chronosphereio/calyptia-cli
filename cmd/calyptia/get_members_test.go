@@ -14,7 +14,7 @@ import (
 func Test_newCmdGetMembers(t *testing.T) {
 	t.Run("empty", func(t *testing.T) {
 		got := &bytes.Buffer{}
-		cmd := newCmdGetMembers(testConfig(nil))
+		cmd := newCmdGetMembers(configWithMock(nil))
 		cmd.SetOutput(got)
 
 		err := cmd.Execute()
@@ -33,7 +33,7 @@ func Test_newCmdGetMembers(t *testing.T) {
 
 	t.Run("error", func(t *testing.T) {
 		want := errors.New("internal error")
-		cmd := newCmdGetMembers(testConfig(&ClientMock{
+		cmd := newCmdGetMembers(configWithMock(&ClientMock{
 			MembersFunc: func(ctx context.Context, projectID string, params types.MembersParams) ([]types.Membership, error) {
 				return nil, want
 			},
@@ -67,7 +67,7 @@ func Test_newCmdGetMembers(t *testing.T) {
 			},
 		}}
 		got := &bytes.Buffer{}
-		cmd := newCmdGetMembers(testConfig(&ClientMock{
+		cmd := newCmdGetMembers(configWithMock(&ClientMock{
 			MembersFunc: func(ctx context.Context, projectID string, params types.MembersParams) ([]types.Membership, error) {
 				return want, nil
 			},

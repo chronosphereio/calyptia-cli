@@ -14,7 +14,7 @@ import (
 func Test_newCmdGetAgents(t *testing.T) {
 	t.Run("empty", func(t *testing.T) {
 		got := &bytes.Buffer{}
-		cmd := newCmdGetAgents(testConfig(nil))
+		cmd := newCmdGetAgents(configWithMock(nil))
 		cmd.SetOut(got)
 
 		err := cmd.Execute()
@@ -33,7 +33,7 @@ func Test_newCmdGetAgents(t *testing.T) {
 
 	t.Run("error", func(t *testing.T) {
 		want := errors.New("internal error")
-		cmd := newCmdGetAgents(testConfig(&ClientMock{
+		cmd := newCmdGetAgents(configWithMock(&ClientMock{
 			AgentsFunc: func(ctx context.Context, projectID string, params types.AgentsParams) ([]types.Agent, error) {
 				return nil, want
 			},
@@ -63,7 +63,7 @@ func Test_newCmdGetAgents(t *testing.T) {
 			CreatedAt:          now.Add(time.Minute * -10),
 		}}
 		got := &bytes.Buffer{}
-		cmd := newCmdGetAgents(testConfig(&ClientMock{
+		cmd := newCmdGetAgents(configWithMock(&ClientMock{
 			AgentsFunc: func(ctx context.Context, projectID string, params types.AgentsParams) ([]types.Agent, error) {
 				wantNoEq(t, nil, params.Last)
 				wantEq(t, uint64(2), *params.Last)
@@ -96,7 +96,7 @@ func Test_newCmdGetAgents(t *testing.T) {
 
 func Test_newCmdGetAgent(t *testing.T) {
 	t.Run("no_arg", func(t *testing.T) {
-		cmd := newCmdGetAgent(testConfig(nil))
+		cmd := newCmdGetAgent(configWithMock(nil))
 		cmd.SilenceErrors = true
 		cmd.SilenceUsage = true
 
@@ -106,7 +106,7 @@ func Test_newCmdGetAgent(t *testing.T) {
 
 	t.Run("error", func(t *testing.T) {
 		want := errors.New("internal error")
-		cmd := newCmdGetAgent(testConfig(&ClientMock{
+		cmd := newCmdGetAgent(configWithMock(&ClientMock{
 			AgentFunc: func(ctx context.Context, agentID string) (types.Agent, error) {
 				return types.Agent{}, want
 			},
@@ -131,7 +131,7 @@ func Test_newCmdGetAgent(t *testing.T) {
 			CreatedAt:          now.Add(time.Minute * -5),
 		}
 		got := &bytes.Buffer{}
-		cmd := newCmdGetAgent(testConfig(&ClientMock{
+		cmd := newCmdGetAgent(configWithMock(&ClientMock{
 			AgentFunc: func(ctx context.Context, agentID string) (types.Agent, error) {
 				return want, nil
 			},

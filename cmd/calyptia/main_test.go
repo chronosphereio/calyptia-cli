@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func testConfig(mock *ClientMock) *config {
+func configWithMock(mock *ClientMock) *config {
 	if mock == nil {
 		mock = &ClientMock{}
 	}
