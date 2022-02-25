@@ -69,10 +69,13 @@ func Test_newCmdGetMembers(t *testing.T) {
 		got := &bytes.Buffer{}
 		cmd := newCmdGetMembers(configWithMock(&ClientMock{
 			MembersFunc: func(ctx context.Context, projectID string, params types.MembersParams) ([]types.Membership, error) {
+				wantNoEq(t, nil, params.Last)
+				wantEq(t, uint64(2), *params.Last)
 				return want, nil
 			},
 		}))
 		cmd.SetOutput(got)
+		cmd.SetArgs([]string{"--last", "2"})
 
 		err := cmd.Execute()
 		wantEq(t, nil, err)
