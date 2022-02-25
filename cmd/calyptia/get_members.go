@@ -39,7 +39,7 @@ func newCmdGetMembers(config *config) *cobra.Command {
 				fmt.Fprintln(tw, "AGE")
 				for _, m := range mm {
 					if showIDs {
-						fmt.Fprintf(tw, "%s\t", m.ID)
+						fmt.Fprintf(tw, "%s\t", m.User.ID)
 					}
 					roles := make([]string, len(m.Roles))
 					for i, r := range m.Roles {

@@ -20,17 +20,15 @@ func Test_newCmdGetAgents(t *testing.T) {
 		err := cmd.Execute()
 		wantEq(t, nil, err)
 		wantEq(t, "NAME TYPE VERSION STATUS AGE\n", got.String())
-	})
 
-	t.Run("empty_show_ids", func(t *testing.T) {
-		got := &bytes.Buffer{}
-		cmd := newCmdGetAgents(testConfig(nil))
-		cmd.SetArgs([]string{"--show-ids"})
-		cmd.SetOut(got)
+		t.Run("empty_show_ids", func(t *testing.T) {
+			got.Reset()
+			cmd.SetArgs([]string{"--show-ids"})
 
-		err := cmd.Execute()
-		wantEq(t, nil, err)
-		wantEq(t, "ID NAME TYPE VERSION STATUS AGE\n", got.String())
+			err := cmd.Execute()
+			wantEq(t, nil, err)
+			wantEq(t, "ID NAME TYPE VERSION STATUS AGE\n", got.String())
+		})
 	})
 
 	t.Run("error", func(t *testing.T) {
