@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"regexp"
 
 	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
@@ -27,11 +26,12 @@ func main() {
 }
 
 func newCmd(ctx context.Context) *cobra.Command {
+	client := &cloudclient.Client{
+		Client: http.DefaultClient,
+	}
 	config := &config{
-		ctx: ctx,
-		cloud: &cloudclient.Client{
-			Client: http.DefaultClient,
-		},
+		ctx:   ctx,
+		cloud: client,
 	}
 
 	token, err := savedToken()
@@ -51,7 +51,7 @@ func newCmd(ctx context.Context) *cobra.Command {
 			cobra.CheckErr(fmt.Errorf("invalid cloud url scheme %q", cloudURL.Scheme))
 		}
 
-		config.cloud.BaseURL = cloudURL.String()
+		client.BaseURL = cloudURL.String()
 
 		if token == "" {
 			return
@@ -62,7 +62,7 @@ func newCmd(ctx context.Context) *cobra.Command {
 			return
 		}
 
-		config.cloud.SetProjectToken(token)
+		client.SetProjectToken(token)
 		config.projectToken = token
 		config.projectID = projectID
 	})
@@ -93,7 +93,7 @@ func newCmd(ctx context.Context) *cobra.Command {
 
 type config struct {
 	ctx          context.Context
-	cloud        *cloudclient.Client
+	cloud        Client
 	projectToken string
 	projectID    string
 }
@@ -108,10 +108,4 @@ func env(key, fallback string) string {
 
 func (config *config) completeOutputFormat(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	return []string{"table", "json"}, cobra.ShellCompDirectiveNoFileComp
-}
-
-var reUUID4 = regexp.MustCompile("^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$")
-
-func validUUID(s string) bool {
-	return reUUID4.MatchString(s)
 }
