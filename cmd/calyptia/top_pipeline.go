@@ -13,7 +13,7 @@ import (
 	"golang.org/x/term"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cloud-cli/cmd/calyptia/bubles/table"
+	table "github.com/calyptia/go-bubble-table"
 )
 
 func newCmdTopPipeline(config *config) *cobra.Command {
@@ -38,8 +38,7 @@ func newCmdTopPipeline(config *config) *cobra.Command {
 }
 
 func NewPipelineModel(ctx context.Context, cloud Client, projectID, pipelineKey string, metricsStart, metricsInterval time.Duration) PipelineModel {
-	tbl := table.NewModel([]string{"PLUGIN", "INPUT-BYTES", "INPUT-RECORDS", "OUTPUT-BYTES", "OUTPUT-RECORDS"})
-	tbl.SetNavEnabled(true)
+	tbl := table.New([]string{"PLUGIN", "INPUT-BYTES", "INPUT-RECORDS", "OUTPUT-BYTES", "OUTPUT-RECORDS"}, 0, 0)
 	return PipelineModel{
 		projectID:       projectID,
 		pipelineKey:     pipelineKey,

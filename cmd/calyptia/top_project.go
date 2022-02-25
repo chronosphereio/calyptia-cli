@@ -17,7 +17,7 @@ import (
 	"golang.org/x/term"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cloud-cli/cmd/calyptia/bubles/table"
+	table "github.com/calyptia/go-bubble-table"
 )
 
 func newCmdTopProject(config *config) *cobra.Command {
@@ -40,9 +40,9 @@ func newCmdTopProject(config *config) *cobra.Command {
 }
 
 func NewProjectModel(ctx context.Context, cloud Client, projectID string, metricsStart, metricsInterval time.Duration, last uint64) ProjectModel {
-	projectTable := table.NewModel([]string{"PLUGIN", "INPUT-BYTES", "INPUT-RECORDS", "OUTPUT-BYTES", "OUTPUT-RECORDS"})
-	agentsTable := table.NewModel([]string{"AGENT", "TYPE", "VERSION", "INPUT-BYTES", "INPUT-RECORDS", "OUTPUT-BYTES", "OUTPUT-RECORDS"})
-	agentsTable.SetNavEnabled(true)
+	// TODO: disable project table nivigation.
+	projectTable := table.New([]string{"PLUGIN", "INPUT-BYTES", "INPUT-RECORDS", "OUTPUT-BYTES", "OUTPUT-RECORDS"}, 0, 0)
+	agentsTable := table.New([]string{"AGENT", "TYPE", "VERSION", "INPUT-BYTES", "INPUT-RECORDS", "OUTPUT-BYTES", "OUTPUT-RECORDS"}, 0, 0)
 	return ProjectModel{
 		projectID:       projectID,
 		metricsStart:    metricsStart,

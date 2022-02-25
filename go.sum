@@ -71,6 +71,8 @@ github.com/beorn7/perks v1.0.1/go.mod h1:G2ZrVWU2WbWT9wwq4/hrbKbnv/1ERSJQ0ibhJ6r
 github.com/bgentry/speakeasy v0.1.0/go.mod h1:+zsyZBPWlz7T6j88CTgSN5bM796AkVf0kBD4zp0CCIs=
 github.com/calyptia/api v0.0.3 h1:Y3Ovoloz6sQlTakCbahBqAvYHCW0WoO2B03NahhzHaQ=
 github.com/calyptia/api v0.0.3/go.mod h1:r+9CAGiQ9S7WsvOi6nBFcfg9XY5AAK8RV19STYKvG9U=
+github.com/calyptia/go-bubble-table v0.1.0 h1:mXpaaBlrHGH4K8v5PvM8YqBFT9jlysS1YOycU2u3gEQ=
+github.com/calyptia/go-bubble-table v0.1.0/go.mod h1:2nnweuFos+eEIIbgweXvZuX+ROOatsMwB3NHnX/vTC4=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
 github.com/census-instrumentation/opencensus-proto v0.3.0/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
 github.com/cespare/xxhash v1.1.0/go.mod h1:XrSqR1VqqWfGrhpAt58auRo0WTKS1nRRg3ghfAqPWnc=

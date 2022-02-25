@@ -15,7 +15,7 @@ import (
 	"golang.org/x/term"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cloud-cli/cmd/calyptia/bubles/table"
+	table "github.com/calyptia/go-bubble-table"
 )
 
 func newCmdTopAgent(config *config) *cobra.Command {
@@ -40,8 +40,7 @@ func newCmdTopAgent(config *config) *cobra.Command {
 }
 
 func NewAgentModel(ctx context.Context, cloud Client, projectID, agentKey string, metricsStart, metricsInterval time.Duration) AgentModel {
-	tbl := table.NewModel([]string{"PLUGIN", "INPUT-BYTES", "INPUT-RECORDS", "OUTPUT-BYTES", "OUTPUT-RECORDS"})
-	tbl.SetNavEnabled(true)
+	tbl := table.New([]string{"PLUGIN", "INPUT-BYTES", "INPUT-RECORDS", "OUTPUT-BYTES", "OUTPUT-RECORDS"}, 0, 0)
 	return AgentModel{
 		projectID:       projectID,
 		agentKey:        agentKey,
