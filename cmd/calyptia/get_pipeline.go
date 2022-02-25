@@ -96,7 +96,7 @@ func newCmdGetPipeline(config *config) *cobra.Command {
 			var ports []cloud.PipelinePort
 			var history []cloud.PipelineConfig
 			var secrets []cloud.PipelineSecret
-			if format == "table" && (includeEndpoints || includeConfigHistory) {
+			if format == "table" && (includeEndpoints || includeConfigHistory || includeSecrets) && !onlyConfig {
 				g, gctx := errgroup.WithContext(config.ctx)
 				g.Go(func() error {
 					var err error
@@ -174,15 +174,15 @@ func newCmdGetPipeline(config *config) *cobra.Command {
 					tw.Flush()
 				}
 				if includeEndpoints {
-					fmt.Fprintln(cmd.OutOrStdout(), "## Endpoints")
+					fmt.Fprintln(cmd.OutOrStdout(), "\n## Endpoints")
 					renderEndpointsTable(cmd.OutOrStdout(), ports, showIDs)
 				}
 				if includeConfigHistory {
-					fmt.Fprintln(cmd.OutOrStdout(), "## Config History")
+					fmt.Fprintln(cmd.OutOrStdout(), "\n## Configuration History")
 					renderPipelineConfigHistory(cmd.OutOrStdout(), history)
 				}
 				if includeSecrets {
-					fmt.Fprintln(cmd.OutOrStdout(), "## Secrets")
+					fmt.Fprintln(cmd.OutOrStdout(), "\n## Secrets")
 					renderPipelineSecrets(cmd.OutOrStdout(), secrets, showIDs)
 				}
 			case "json":
