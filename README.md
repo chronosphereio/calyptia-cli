@@ -4,6 +4,9 @@
 [![CI](https://github.com/calyptia/cloud-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/calyptia/cloud-cli/actions/workflows/ci.yml)
 [![Codecov](https://codecov.io/gh/calyptia/cloud-cli/branch/main/graph/badge.svg?token=TY36W7B87A)](https://codecov.io/gh/calyptia/cloud-cli)
 
+This CLI interacts with the [Calyptia Cloud](https://cloud.calyptia.com) service using the [API Client bindings](https://github.com/calyptia/api).
+Futher documentation on how to use the CLI can be found on [Calyptia Docs](https://docs.calyptia.com).
+
 ## Build instructions
 
 ---
@@ -16,6 +19,8 @@ go build ./cmd/calyptia
 ---
 
 ## Install
+
+You can get the latest release artifacts for the major operating systems at the [Releases](https://github.com/calyptia/cloud-cli/releases) page.
 
 Alternatively, you can install only the binary by running:
 
