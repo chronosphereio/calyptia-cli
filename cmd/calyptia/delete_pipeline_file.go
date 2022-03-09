@@ -46,7 +46,7 @@ func newCmdDeletePipelineFile(config *config) *cobra.Command {
 				return err
 			}
 
-			for _, f := range ff {
+			for _, f := range ff.Items {
 				if f.Name == name {
 					return config.cloud.DeletePipelineFile(config.ctx, f.ID)
 				}

@@ -36,8 +36,8 @@ func Test_newCmdGetAggregators(t *testing.T) {
 	t.Run("error", func(t *testing.T) {
 		want := errors.New("internal error")
 		cmd := newCmdGetAggregators(configWithMock(&ClientMock{
-			AggregatorsFunc: func(ctx context.Context, projectID string, params types.AggregatorsParams) ([]cloud.Aggregator, error) {
-				return nil, want
+			AggregatorsFunc: func(ctx context.Context, projectID string, params types.AggregatorsParams) (cloud.Aggregators, error) {
+				return cloud.Aggregators{}, want
 			},
 		}))
 		cmd.SilenceErrors = true
@@ -49,18 +49,20 @@ func Test_newCmdGetAggregators(t *testing.T) {
 
 	t.Run("ok", func(t *testing.T) {
 		now := time.Now().Truncate(time.Second)
-		want := []cloud.Aggregator{{
-			ID:        "id_1",
-			Name:      "name_1",
-			CreatedAt: now.Add(-time.Hour),
-		}, {
-			ID:        "id_2",
-			Name:      "name_2",
-			CreatedAt: now.Add(time.Minute * -10),
-		}}
+		want := cloud.Aggregators{
+			Items: []cloud.Aggregator{{
+				ID:        "id_1",
+				Name:      "name_1",
+				CreatedAt: now.Add(-time.Hour),
+			}, {
+				ID:        "id_2",
+				Name:      "name_2",
+				CreatedAt: now.Add(time.Minute * -10),
+			}},
+		}
 		got := &bytes.Buffer{}
 		cmd := newCmdGetAggregators(configWithMock(&ClientMock{
-			AggregatorsFunc: func(ctx context.Context, projectID string, params types.AggregatorsParams) ([]cloud.Aggregator, error) {
+			AggregatorsFunc: func(ctx context.Context, projectID string, params types.AggregatorsParams) (cloud.Aggregators, error) {
 				wantNoEq(t, nil, params.Last)
 				wantEq(t, uint64(2), *params.Last)
 				return want, nil
@@ -89,7 +91,7 @@ func Test_newCmdGetAggregators(t *testing.T) {
 		})
 
 		t.Run("json", func(t *testing.T) {
-			want, err := json.Marshal(want)
+			want, err := json.Marshal(want.Items)
 			wantEq(t, nil, err)
 
 			got.Reset()

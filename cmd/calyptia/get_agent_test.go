@@ -34,8 +34,8 @@ func Test_newCmdGetAgents(t *testing.T) {
 	t.Run("error", func(t *testing.T) {
 		want := errors.New("internal error")
 		cmd := newCmdGetAgents(configWithMock(&ClientMock{
-			AgentsFunc: func(ctx context.Context, projectID string, params types.AgentsParams) ([]types.Agent, error) {
-				return nil, want
+			AgentsFunc: func(ctx context.Context, projectID string, params types.AgentsParams) (types.Agents, error) {
+				return types.Agents{}, want
 			},
 		}))
 		cmd.SilenceErrors = true
@@ -47,24 +47,26 @@ func Test_newCmdGetAgents(t *testing.T) {
 
 	t.Run("ok", func(t *testing.T) {
 		now := time.Now().Truncate(time.Second)
-		want := []types.Agent{{
-			ID:                 "agent_id_1",
-			Name:               "name_1",
-			Type:               types.AgentTypeFluentBit,
-			Version:            "v1.8.6",
-			LastMetricsAddedAt: now.Add(time.Second * -1),
-			CreatedAt:          now.Add(time.Minute * -5),
-		}, {
-			ID:                 "agent_id_2",
-			Name:               "name_2",
-			Type:               types.AgentTypeFluentd,
-			Version:            "v1.0.0",
-			LastMetricsAddedAt: now.Add(time.Second * -30),
-			CreatedAt:          now.Add(time.Minute * -10),
-		}}
+		want := types.Agents{
+			Items: []types.Agent{{
+				ID:                 "agent_id_1",
+				Name:               "name_1",
+				Type:               types.AgentTypeFluentBit,
+				Version:            "v1.8.6",
+				LastMetricsAddedAt: now.Add(time.Second * -1),
+				CreatedAt:          now.Add(time.Minute * -5),
+			}, {
+				ID:                 "agent_id_2",
+				Name:               "name_2",
+				Type:               types.AgentTypeFluentd,
+				Version:            "v1.0.0",
+				LastMetricsAddedAt: now.Add(time.Second * -30),
+				CreatedAt:          now.Add(time.Minute * -10),
+			}},
+		}
 		got := &bytes.Buffer{}
 		cmd := newCmdGetAgents(configWithMock(&ClientMock{
-			AgentsFunc: func(ctx context.Context, projectID string, params types.AgentsParams) ([]types.Agent, error) {
+			AgentsFunc: func(ctx context.Context, projectID string, params types.AgentsParams) (types.Agents, error) {
 				wantNoEq(t, nil, params.Last)
 				wantEq(t, uint64(2), *params.Last)
 				return want, nil
@@ -81,7 +83,7 @@ func Test_newCmdGetAgents(t *testing.T) {
 			"agent_id_2 name_2 fluentd   v1.0.0  active 10 minutes\n", got.String())
 
 		t.Run("json", func(t *testing.T) {
-			want, err := json.Marshal(want)
+			want, err := json.Marshal(want.Items)
 			wantEq(t, nil, err)
 
 			got.Reset()

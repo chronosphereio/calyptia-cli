@@ -74,22 +74,22 @@ func newCmdDeleteAgents(config *config) *cobra.Command {
 
 			if inactive {
 				var onlyInactive []cloud.Agent
-				for _, a := range aa {
+				for _, a := range aa.Items {
 					inactive := a.LastMetricsAddedAt.IsZero() || a.LastMetricsAddedAt.Before(time.Now().Add(time.Minute*-5))
 					if inactive {
 						onlyInactive = append(onlyInactive, a)
 					}
 				}
-				aa = onlyInactive
+				aa.Items = onlyInactive
 			}
 
-			if len(aa) == 0 {
+			if len(aa.Items) == 0 {
 				fmt.Fprintln(cmd.OutOrStdout(), "No agents to delete")
 				return nil
 			}
 
 			if !confirmed {
-				fmt.Printf("You are about to delete:\n\n%s\n\nAre you sure you want to delete all of them? (yes/N) ", strings.Join(agentsKeys(aa), "\n"))
+				fmt.Printf("You are about to delete:\n\n%s\n\nAre you sure you want to delete all of them? (yes/N) ", strings.Join(agentsKeys(aa.Items), "\n"))
 				var answer string
 				_, err := fmt.Scanln(&answer)
 				if err != nil && err.Error() == "unexpected newline" {
@@ -107,7 +107,7 @@ func newCmdDeleteAgents(config *config) *cobra.Command {
 			}
 
 			g, gctx := errgroup.WithContext(config.ctx)
-			for _, a := range aa {
+			for _, a := range aa.Items {
 				a := a
 				g.Go(func() error {
 					err := config.cloud.DeleteAgent(gctx, a.ID)

@@ -49,7 +49,7 @@ func (config *config) completeSecretIDs(cmd *cobra.Command, args []string, toCom
 			}
 
 			mu.Lock()
-			secrets = append(secrets, ss...)
+			secrets = append(secrets, ss.Items...)
 			mu.Unlock()
 
 			return nil

@@ -38,7 +38,7 @@ func newCmdGetPipelineStatusHistory(config *config) *cobra.Command {
 					fmt.Fprintf(tw, "ID\t")
 				}
 				fmt.Fprintln(tw, "STATUS\tCONFIG-ID\tAGE")
-				for _, s := range ss {
+				for _, s := range ss.Items {
 					if showIDs {
 						fmt.Fprintf(tw, "%s\t", s.ID)
 					}
@@ -46,7 +46,7 @@ func newCmdGetPipelineStatusHistory(config *config) *cobra.Command {
 				}
 				tw.Flush()
 			case "json":
-				err := json.NewEncoder(cmd.OutOrStdout()).Encode(ss)
+				err := json.NewEncoder(cmd.OutOrStdout()).Encode(ss.Items)
 				if err != nil {
 					return fmt.Errorf("could not json encode your pipeline status history: %w", err)
 				}

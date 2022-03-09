@@ -37,7 +37,7 @@ func newCmdGetMembers(config *config) *cobra.Command {
 					fmt.Fprint(tw, "MEMBER-ID\t")
 				}
 				fmt.Fprintln(tw, "AGE")
-				for _, m := range mm {
+				for _, m := range mm.Items {
 					if showIDs {
 						fmt.Fprintf(tw, "%s\t", m.User.ID)
 					}
@@ -53,7 +53,7 @@ func newCmdGetMembers(config *config) *cobra.Command {
 				}
 				tw.Flush()
 			case "json":
-				err := json.NewEncoder(cmd.OutOrStdout()).Encode(mm)
+				err := json.NewEncoder(cmd.OutOrStdout()).Encode(mm.Items)
 				if err != nil {
 					return fmt.Errorf("could not json encode your project members: %w", err)
 				}

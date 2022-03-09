@@ -44,8 +44,8 @@ func Test_newCmdGetResourceProfiles(t *testing.T) {
 	t.Run("error", func(t *testing.T) {
 		want := errors.New("internal error")
 		cmd := newCmdGetResourceProfiles(configWithMock(&ClientMock{
-			ResourceProfilesFunc: func(ctx context.Context, aggregatorID string, params cloud.ResourceProfilesParams) ([]cloud.ResourceProfile, error) {
-				return nil, want
+			ResourceProfilesFunc: func(ctx context.Context, aggregatorID string, params cloud.ResourceProfilesParams) (cloud.ResourceProfiles, error) {
+				return cloud.ResourceProfiles{}, want
 			},
 		}))
 		cmd.SetArgs([]string{"--aggregator=" + zeroUUID4})
@@ -58,38 +58,40 @@ func Test_newCmdGetResourceProfiles(t *testing.T) {
 
 	t.Run("ok", func(t *testing.T) {
 		now := time.Now().Truncate(time.Second)
-		want := []cloud.ResourceProfile{{
-			ID:                     "resource_profile_id_1",
-			Name:                   "name_1",
-			StorageMaxChunksUp:     1,
-			StorageSyncFull:        true,
-			StorageBacklogMemLimit: "2Mib",
-			StorageVolumeSize:      "3Mib",
-			StorageMaxChunksPause:  true,
-			CPUBufferWorkers:       4,
-			CPULimit:               "5Mib",
-			CPURequest:             "6Mib",
-			MemoryLimit:            "7Mib",
-			MemoryRequest:          "8Mib",
-			CreatedAt:              now.Add(-time.Hour),
-		}, {
-			ID:                     "resource_profile_id_2",
-			Name:                   "name_2",
-			StorageMaxChunksUp:     8,
-			StorageSyncFull:        true,
-			StorageBacklogMemLimit: "7Mib",
-			StorageVolumeSize:      "6Mib",
-			StorageMaxChunksPause:  true,
-			CPUBufferWorkers:       5,
-			CPULimit:               "4Mib",
-			CPURequest:             "3Mib",
-			MemoryLimit:            "2Mib",
-			MemoryRequest:          "1Mib",
-			CreatedAt:              now.Add(time.Minute * -30),
-		}}
+		want := cloud.ResourceProfiles{
+			Items: []cloud.ResourceProfile{{
+				ID:                     "resource_profile_id_1",
+				Name:                   "name_1",
+				StorageMaxChunksUp:     1,
+				StorageSyncFull:        true,
+				StorageBacklogMemLimit: "2Mib",
+				StorageVolumeSize:      "3Mib",
+				StorageMaxChunksPause:  true,
+				CPUBufferWorkers:       4,
+				CPULimit:               "5Mib",
+				CPURequest:             "6Mib",
+				MemoryLimit:            "7Mib",
+				MemoryRequest:          "8Mib",
+				CreatedAt:              now.Add(-time.Hour),
+			}, {
+				ID:                     "resource_profile_id_2",
+				Name:                   "name_2",
+				StorageMaxChunksUp:     8,
+				StorageSyncFull:        true,
+				StorageBacklogMemLimit: "7Mib",
+				StorageVolumeSize:      "6Mib",
+				StorageMaxChunksPause:  true,
+				CPUBufferWorkers:       5,
+				CPULimit:               "4Mib",
+				CPURequest:             "3Mib",
+				MemoryLimit:            "2Mib",
+				MemoryRequest:          "1Mib",
+				CreatedAt:              now.Add(time.Minute * -30),
+			}},
+		}
 		got := &bytes.Buffer{}
 		cmd := newCmdGetResourceProfiles(configWithMock(&ClientMock{
-			ResourceProfilesFunc: func(ctx context.Context, aggregatorID string, params cloud.ResourceProfilesParams) ([]cloud.ResourceProfile, error) {
+			ResourceProfilesFunc: func(ctx context.Context, aggregatorID string, params cloud.ResourceProfilesParams) (cloud.ResourceProfiles, error) {
 				wantNoEq(t, nil, params.Last)
 				wantEq(t, uint64(2), *params.Last)
 				return want, nil
@@ -118,7 +120,7 @@ func Test_newCmdGetResourceProfiles(t *testing.T) {
 		})
 
 		t.Run("json", func(t *testing.T) {
-			want, err := json.Marshal(want)
+			want, err := json.Marshal(want.Items)
 			wantEq(t, nil, err)
 
 			got.Reset()
