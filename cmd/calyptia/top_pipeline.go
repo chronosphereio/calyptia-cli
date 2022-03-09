@@ -108,16 +108,16 @@ func (m PipelineModel) loadPipelineID() tea.Msg {
 		return GotPipelineError{err}
 	}
 
-	if len(aa) != 1 && !validUUID(m.pipelineKey) {
-		if len(aa) != 0 {
+	if len(aa.Items) != 1 && !validUUID(m.pipelineKey) {
+		if len(aa.Items) != 0 {
 			return GotPipelineError{fmt.Errorf("ambiguous pipeline name %q, use ID instead", m.pipelineKey)}
 		}
 
 		return GotPipelineError{fmt.Errorf("could not find pipeline %q", m.pipelineKey)}
 	}
 
-	if len(aa) == 1 {
-		return GotPipeline{aa[0]}
+	if len(aa.Items) == 1 {
+		return GotPipeline{aa.Items[0]}
 	}
 
 	return GotPipelineID{m.pipelineKey}

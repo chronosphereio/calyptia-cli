@@ -35,9 +35,9 @@ func newCmdGetPipelineSecrets(config *config) *cobra.Command {
 
 			switch format {
 			case "table":
-				renderPipelineSecrets(cmd.OutOrStdout(), ss, showIDs)
+				renderPipelineSecrets(cmd.OutOrStdout(), ss.Items, showIDs)
 			case "json":
-				err := json.NewEncoder(cmd.OutOrStdout()).Encode(ss)
+				err := json.NewEncoder(cmd.OutOrStdout()).Encode(ss.Items)
 				if err != nil {
 					return fmt.Errorf("could not json encode your pipeline secrets: %w", err)
 				}

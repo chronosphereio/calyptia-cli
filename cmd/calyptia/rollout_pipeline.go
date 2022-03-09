@@ -30,12 +30,12 @@ func newCmdRolloutPipeline(config *config) *cobra.Command {
 
 			var rawConfig string
 			if toConfigID != "" {
-				h, err := config.cloud.PipelineConfigHistory(config.ctx, pipelineID, cloud.PipelineConfigHistoryParams{})
+				hh, err := config.cloud.PipelineConfigHistory(config.ctx, pipelineID, cloud.PipelineConfigHistoryParams{})
 				if err != nil {
 					return err
 				}
 
-				for _, c := range h {
+				for _, c := range hh.Items {
 					if c.ID == toConfigID {
 						rawConfig = c.RawConfig
 						break
@@ -46,18 +46,18 @@ func newCmdRolloutPipeline(config *config) *cobra.Command {
 					return fmt.Errorf("could not find config %q", toConfigID)
 				}
 			} else if stepsBack > 0 {
-				h, err := config.cloud.PipelineConfigHistory(config.ctx, pipelineID, cloud.PipelineConfigHistoryParams{
+				hh, err := config.cloud.PipelineConfigHistory(config.ctx, pipelineID, cloud.PipelineConfigHistoryParams{
 					Last: &stepsBack,
 				})
 				if err != nil {
 					return err
 				}
 
-				if len(h) < int(stepsBack) {
+				if len(hh.Items) < int(stepsBack) {
 					return fmt.Errorf("not enough history to rollback %d steps", stepsBack)
 				}
 
-				rawConfig = h[stepsBack-1].RawConfig
+				rawConfig = hh.Items[stepsBack-1].RawConfig
 			} else {
 				return fmt.Errorf("no config specified")
 			}

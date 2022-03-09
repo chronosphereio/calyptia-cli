@@ -34,8 +34,8 @@ func Test_newCmdGetMembers(t *testing.T) {
 	t.Run("error", func(t *testing.T) {
 		want := errors.New("internal error")
 		cmd := newCmdGetMembers(configWithMock(&ClientMock{
-			MembersFunc: func(ctx context.Context, projectID string, params types.MembersParams) ([]types.Membership, error) {
-				return nil, want
+			MembersFunc: func(ctx context.Context, projectID string, params types.MembersParams) (types.Memberships, error) {
+				return types.Memberships{}, want
 			},
 		}))
 		cmd.SilenceErrors = true
@@ -47,28 +47,30 @@ func Test_newCmdGetMembers(t *testing.T) {
 
 	t.Run("ok", func(t *testing.T) {
 		now := time.Now().Truncate(time.Second)
-		want := []types.Membership{{
-			ID:        "member_id_1",
-			Roles:     []types.MembershipRole{types.MembershipRoleCreator},
-			CreatedAt: now.Add(time.Minute * -5),
-			User: &types.User{
-				ID:    "user_id_1",
-				Email: "email_1",
-				Name:  "name_1",
-			},
-		}, {
-			ID:        "member_id_2",
-			Roles:     []types.MembershipRole{types.MembershipRoleAdmin},
-			CreatedAt: now.Add(time.Minute * -2),
-			User: &types.User{
-				ID:    "user_id_2",
-				Email: "email_2",
-				Name:  "name_2",
-			},
-		}}
+		want := types.Memberships{
+			Items: []types.Membership{{
+				ID:        "member_id_1",
+				Roles:     []types.MembershipRole{types.MembershipRoleCreator},
+				CreatedAt: now.Add(time.Minute * -5),
+				User: &types.User{
+					ID:    "user_id_1",
+					Email: "email_1",
+					Name:  "name_1",
+				},
+			}, {
+				ID:        "member_id_2",
+				Roles:     []types.MembershipRole{types.MembershipRoleAdmin},
+				CreatedAt: now.Add(time.Minute * -2),
+				User: &types.User{
+					ID:    "user_id_2",
+					Email: "email_2",
+					Name:  "name_2",
+				},
+			}},
+		}
 		got := &bytes.Buffer{}
 		cmd := newCmdGetMembers(configWithMock(&ClientMock{
-			MembersFunc: func(ctx context.Context, projectID string, params types.MembersParams) ([]types.Membership, error) {
+			MembersFunc: func(ctx context.Context, projectID string, params types.MembersParams) (types.Memberships, error) {
 				wantNoEq(t, nil, params.Last)
 				wantEq(t, uint64(2), *params.Last)
 				return want, nil
@@ -97,7 +99,7 @@ func Test_newCmdGetMembers(t *testing.T) {
 		})
 
 		t.Run("json", func(t *testing.T) {
-			want, err := json.Marshal(want)
+			want, err := json.Marshal(want.Items)
 			wantEq(t, nil, err)
 
 			got.Reset()

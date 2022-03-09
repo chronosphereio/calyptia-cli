@@ -111,13 +111,14 @@ func (m ProjectModel) loadData(ctx context.Context, skipError bool) tea.Cmd {
 			return err
 		})
 		g.Go(func() error {
-			var err error
-			agents, err = m.cloud.Agents(gctx, m.projectID, cloud.AgentsParams{
+			aa, err := m.cloud.Agents(gctx, m.projectID, cloud.AgentsParams{
 				Last: &m.last,
 			})
 			if err != nil {
 				return err
 			}
+
+			agents = aa.Items
 
 			if len(agents) != 0 {
 				agentMetricsByAgentID = map[string]cloud.AgentMetrics{}

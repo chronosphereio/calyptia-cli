@@ -41,7 +41,7 @@ func newCmdGetPipelines(config *config) *cobra.Command {
 					fmt.Fprintf(tw, "ID\t")
 				}
 				fmt.Fprintln(tw, "NAME\tREPLICAS\tSTATUS\tAGE")
-				for _, p := range pp {
+				for _, p := range pp.Items {
 					if showIDs {
 						fmt.Fprintf(tw, "%s\t", p.ID)
 					}
@@ -49,7 +49,7 @@ func newCmdGetPipelines(config *config) *cobra.Command {
 				}
 				tw.Flush()
 			case "json":
-				err := json.NewEncoder(cmd.OutOrStdout()).Encode(pp)
+				err := json.NewEncoder(cmd.OutOrStdout()).Encode(pp.Items)
 				if err != nil {
 					return fmt.Errorf("could not json encode your pipelines: %w", err)
 				}
@@ -94,7 +94,7 @@ func newCmdGetPipeline(config *config) *cobra.Command {
 
 			var pip cloud.Pipeline
 			var ports []cloud.PipelinePort
-			var history []cloud.PipelineConfig
+			var configHistory []cloud.PipelineConfig
 			var secrets []cloud.PipelineSecret
 			if format == "table" && (includeEndpoints || includeConfigHistory || includeSecrets) && !onlyConfig {
 				g, gctx := errgroup.WithContext(config.ctx)
@@ -108,37 +108,39 @@ func newCmdGetPipeline(config *config) *cobra.Command {
 				})
 				if includeEndpoints {
 					g.Go(func() error {
-						var err error
-						ports, err = config.cloud.PipelinePorts(gctx, pipelineID, cloud.PipelinePortsParams{
+						pp, err := config.cloud.PipelinePorts(gctx, pipelineID, cloud.PipelinePortsParams{
 							Last: &lastEndpoints,
 						})
 						if err != nil {
 							return fmt.Errorf("could not fetch your pipeline endpoints: %w", err)
 						}
+
+						ports = pp.Items
 						return nil
 					})
 				}
 				if includeConfigHistory {
 					g.Go(func() error {
-						var err error
-						history, err = config.cloud.PipelineConfigHistory(gctx, pipelineID, cloud.PipelineConfigHistoryParams{
+						cc, err := config.cloud.PipelineConfigHistory(gctx, pipelineID, cloud.PipelineConfigHistoryParams{
 							Last: &lastConfigHistory,
 						})
 						if err != nil {
 							return fmt.Errorf("could not fetch your pipeline config history: %w", err)
 						}
+
+						configHistory = cc.Items
 						return nil
 					})
 				}
 				if includeSecrets {
 					g.Go(func() error {
-						var err error
-						secrets, err = config.cloud.PipelineSecrets(gctx, pipelineID, cloud.PipelineSecretsParams{
+						ss, err := config.cloud.PipelineSecrets(gctx, pipelineID, cloud.PipelineSecretsParams{
 							Last: &lastSecrets,
 						})
 						if err != nil {
 							return fmt.Errorf("could not fetch your pipeline secrets: %w", err)
 						}
+						secrets = ss.Items
 						return nil
 					})
 				}
@@ -179,7 +181,7 @@ func newCmdGetPipeline(config *config) *cobra.Command {
 				}
 				if includeConfigHistory {
 					fmt.Fprintln(cmd.OutOrStdout(), "\n## Configuration History")
-					renderPipelineConfigHistory(cmd.OutOrStdout(), history)
+					renderPipelineConfigHistory(cmd.OutOrStdout(), configHistory)
 				}
 				if includeSecrets {
 					fmt.Fprintln(cmd.OutOrStdout(), "\n## Secrets")
@@ -220,7 +222,7 @@ func (config *config) fetchAllPipelines() ([]cloud.Pipeline, error) {
 		return nil, fmt.Errorf("could not prefetch aggregators: %w", err)
 	}
 
-	if len(aa) == 0 {
+	if len(aa.Items) == 0 {
 		return nil, nil
 	}
 
@@ -228,7 +230,7 @@ func (config *config) fetchAllPipelines() ([]cloud.Pipeline, error) {
 	var mu sync.Mutex
 
 	g, gctx := errgroup.WithContext(config.ctx)
-	for _, a := range aa {
+	for _, a := range aa.Items {
 		a := a
 		g.Go(func() error {
 			got, err := config.cloud.Pipelines(gctx, a.ID, cloud.PipelinesParams{})
@@ -237,7 +239,7 @@ func (config *config) fetchAllPipelines() ([]cloud.Pipeline, error) {
 			}
 
 			mu.Lock()
-			pipelines = append(pipelines, got...)
+			pipelines = append(pipelines, got.Items...)
 			mu.Unlock()
 
 			return nil
@@ -315,16 +317,16 @@ func (config *config) loadPipelineID(pipelineKey string) (string, error) {
 		return "", err
 	}
 
-	if len(pp) != 1 && !validUUID(pipelineKey) {
-		if len(pp) != 0 {
+	if len(pp.Items) != 1 && !validUUID(pipelineKey) {
+		if len(pp.Items) != 0 {
 			return "", fmt.Errorf("ambiguous pipeline name %q, use ID instead", pipelineKey)
 		}
 
 		return "", fmt.Errorf("could not find pipeline %q", pipelineKey)
 	}
 
-	if len(pp) == 1 {
-		return pp[0].ID, nil
+	if len(pp.Items) == 1 {
+		return pp.Items[0].ID, nil
 	}
 
 	return pipelineKey, nil

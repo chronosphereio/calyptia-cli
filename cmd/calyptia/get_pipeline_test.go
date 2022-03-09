@@ -23,8 +23,8 @@ func Test_newCmdGetPipelines(t *testing.T) {
 	t.Run("error", func(t *testing.T) {
 		want := errors.New("internal error")
 		cmd := newCmdGetPipelines(configWithMock(&ClientMock{
-			PipelinesFunc: func(ctx context.Context, aggregatorID string, params types.PipelinesParams) ([]types.Pipeline, error) {
-				return nil, want
+			PipelinesFunc: func(ctx context.Context, aggregatorID string, params types.PipelinesParams) (types.Pipelines, error) {
+				return types.Pipelines{}, want
 			},
 		}))
 		cmd.SilenceErrors = true
@@ -36,26 +36,28 @@ func Test_newCmdGetPipelines(t *testing.T) {
 
 	t.Run("ok", func(t *testing.T) {
 		now := time.Now().Truncate(time.Second)
-		want := []types.Pipeline{{
-			ID:            "pipeline_id_1",
-			Name:          "name_1",
-			ReplicasCount: 4,
-			Status: types.PipelineStatus{
-				Status: types.PipelineStatusStarting,
-			},
-			CreatedAt: now.Add(time.Minute * -4),
-		}, {
-			ID:            "pipeline_id_2",
-			Name:          "name_2",
-			ReplicasCount: 5,
-			Status: types.PipelineStatus{
-				Status: types.PipelineStatusStarted,
-			},
-			CreatedAt: now.Add(time.Minute * -3),
-		}}
+		want := types.Pipelines{
+			Items: []types.Pipeline{{
+				ID:            "pipeline_id_1",
+				Name:          "name_1",
+				ReplicasCount: 4,
+				Status: types.PipelineStatus{
+					Status: types.PipelineStatusStarting,
+				},
+				CreatedAt: now.Add(time.Minute * -4),
+			}, {
+				ID:            "pipeline_id_2",
+				Name:          "name_2",
+				ReplicasCount: 5,
+				Status: types.PipelineStatus{
+					Status: types.PipelineStatusStarted,
+				},
+				CreatedAt: now.Add(time.Minute * -3),
+			}},
+		}
 		got := &bytes.Buffer{}
 		cmd := newCmdGetPipelines(configWithMock(&ClientMock{
-			PipelinesFunc: func(ctx context.Context, aggregatorID string, params types.PipelinesParams) ([]types.Pipeline, error) {
+			PipelinesFunc: func(ctx context.Context, aggregatorID string, params types.PipelinesParams) (types.Pipelines, error) {
 				wantNoEq(t, nil, params.Last)
 				wantEq(t, uint64(2), *params.Last)
 				return want, nil
@@ -86,7 +88,7 @@ func Test_newCmdGetPipelines(t *testing.T) {
 		t.Run("json", func(t *testing.T) {
 			got.Reset()
 
-			want, err := json.Marshal(want)
+			want, err := json.Marshal(want.Items)
 			wantEq(t, nil, err)
 
 			cmd.SetArgs([]string{"--aggregator=" + zeroUUID4, "--output-format=json"})
@@ -125,8 +127,8 @@ func Test_newCmdGetPipeline(t *testing.T) {
 		t.Run("ports", func(t *testing.T) {
 			want := errors.New("internal error")
 			cmd := newCmdGetPipeline(configWithMock(&ClientMock{
-				PipelinePortsFunc: func(ctx context.Context, pipelineID string, params types.PipelinePortsParams) ([]types.PipelinePort, error) {
-					return nil, want
+				PipelinePortsFunc: func(ctx context.Context, pipelineID string, params types.PipelinePortsParams) (types.PipelinePorts, error) {
+					return types.PipelinePorts{}, want
 				},
 			}))
 			cmd.SilenceErrors = true
@@ -139,8 +141,8 @@ func Test_newCmdGetPipeline(t *testing.T) {
 		t.Run("config_history", func(t *testing.T) {
 			want := errors.New("internal error")
 			cmd := newCmdGetPipeline(configWithMock(&ClientMock{
-				PipelineConfigHistoryFunc: func(ctx context.Context, pipelineID string, params types.PipelineConfigHistoryParams) ([]types.PipelineConfig, error) {
-					return nil, want
+				PipelineConfigHistoryFunc: func(ctx context.Context, pipelineID string, params types.PipelineConfigHistoryParams) (types.PipelineConfigHistory, error) {
+					return types.PipelineConfigHistory{}, want
 				},
 			}))
 			cmd.SilenceErrors = true
@@ -153,8 +155,8 @@ func Test_newCmdGetPipeline(t *testing.T) {
 		t.Run("secrets", func(t *testing.T) {
 			want := errors.New("internal error")
 			cmd := newCmdGetPipeline(configWithMock(&ClientMock{
-				PipelineSecretsFunc: func(ctx context.Context, pipelineID string, params types.PipelineSecretsParams) ([]types.PipelineSecret, error) {
-					return nil, want
+				PipelineSecretsFunc: func(ctx context.Context, pipelineID string, params types.PipelineSecretsParams) (types.PipelineSecrets, error) {
+					return types.PipelineSecrets{}, want
 				},
 			}))
 			cmd.SilenceErrors = true
@@ -182,42 +184,48 @@ func Test_newCmdGetPipeline(t *testing.T) {
 				wantEq(t, zeroUUID4, pipelineID)
 				return want, nil
 			},
-			PipelinePortsFunc: func(ctx context.Context, pipelineID string, params types.PipelinePortsParams) ([]types.PipelinePort, error) {
-				return []types.PipelinePort{{
-					ID:           "port_id_1",
-					Protocol:     "tcp",
-					FrontendPort: 80,
-					BackendPort:  81,
-					Endpoint:     "endpoint_1",
-					CreatedAt:    now.Add(-time.Minute),
-				}, {
-					ID:           "port_id_2",
-					Protocol:     "udp",
-					FrontendPort: 90,
-					BackendPort:  91,
-					Endpoint:     "endpoint_2",
-					CreatedAt:    now.Add(time.Minute * -2),
-				}}, nil
+			PipelinePortsFunc: func(ctx context.Context, pipelineID string, params types.PipelinePortsParams) (types.PipelinePorts, error) {
+				return types.PipelinePorts{
+					Items: []types.PipelinePort{{
+						ID:           "port_id_1",
+						Protocol:     "tcp",
+						FrontendPort: 80,
+						BackendPort:  81,
+						Endpoint:     "endpoint_1",
+						CreatedAt:    now.Add(-time.Minute),
+					}, {
+						ID:           "port_id_2",
+						Protocol:     "udp",
+						FrontendPort: 90,
+						BackendPort:  91,
+						Endpoint:     "endpoint_2",
+						CreatedAt:    now.Add(time.Minute * -2),
+					}},
+				}, nil
 			},
-			PipelineConfigHistoryFunc: func(ctx context.Context, pipelineID string, params types.PipelineConfigHistoryParams) ([]types.PipelineConfig, error) {
-				return []types.PipelineConfig{{
-					ID:        "config_id_1",
-					CreatedAt: now.Add(-time.Minute),
-				}, {
-					ID:        "config_id_2",
-					CreatedAt: now.Add(time.Minute * -2),
-				}}, nil
+			PipelineConfigHistoryFunc: func(ctx context.Context, pipelineID string, params types.PipelineConfigHistoryParams) (types.PipelineConfigHistory, error) {
+				return types.PipelineConfigHistory{
+					Items: []types.PipelineConfig{{
+						ID:        "config_id_1",
+						CreatedAt: now.Add(-time.Minute),
+					}, {
+						ID:        "config_id_2",
+						CreatedAt: now.Add(time.Minute * -2),
+					}},
+				}, nil
 			},
-			PipelineSecretsFunc: func(ctx context.Context, pipelineID string, params types.PipelineSecretsParams) ([]types.PipelineSecret, error) {
-				return []types.PipelineSecret{{
-					ID:        "secret_id_1",
-					Key:       "key_1",
-					CreatedAt: now.Add(-time.Minute),
-				}, {
-					ID:        "secret_id_2",
-					Key:       "key_2",
-					CreatedAt: now.Add(time.Minute * -2),
-				}}, nil
+			PipelineSecretsFunc: func(ctx context.Context, pipelineID string, params types.PipelineSecretsParams) (types.PipelineSecrets, error) {
+				return types.PipelineSecrets{
+					Items: []types.PipelineSecret{{
+						ID:        "secret_id_1",
+						Key:       "key_1",
+						CreatedAt: now.Add(-time.Minute),
+					}, {
+						ID:        "secret_id_2",
+						Key:       "key_2",
+						CreatedAt: now.Add(time.Minute * -2),
+					}},
+				}, nil
 			},
 		}))
 		cmd.SetOut(got)

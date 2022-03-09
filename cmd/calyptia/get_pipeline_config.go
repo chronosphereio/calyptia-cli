@@ -34,9 +34,9 @@ func newCmdGetPipelineConfigHistory(config *config) *cobra.Command {
 
 			switch format {
 			case "table":
-				renderPipelineConfigHistory(cmd.OutOrStdout(), cc)
+				renderPipelineConfigHistory(cmd.OutOrStdout(), cc.Items)
 			case "json":
-				err := json.NewEncoder(cmd.OutOrStdout()).Encode(cc)
+				err := json.NewEncoder(cmd.OutOrStdout()).Encode(cc.Items)
 				if err != nil {
 					return fmt.Errorf("could not json encode your pipeline config history: %w", err)
 				}

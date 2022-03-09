@@ -110,16 +110,16 @@ func (m AgentModel) loadAgentID() tea.Msg {
 		return GotAgentError{err}
 	}
 
-	if len(aa) != 1 && !validUUID(m.agentKey) {
-		if len(aa) != 0 {
+	if len(aa.Items) != 1 && !validUUID(m.agentKey) {
+		if len(aa.Items) != 0 {
 			return GotAgentError{fmt.Errorf("ambiguous agent name %q, use ID instead", m.agentKey)}
 		}
 
 		return GotAgentError{fmt.Errorf("could not find agent %q", m.agentKey)}
 	}
 
-	if len(aa) == 1 {
-		return GotAgent{aa[0]}
+	if len(aa.Items) == 1 {
+		return GotAgent{aa.Items[0]}
 	}
 
 	return GotAgentID{m.agentKey}

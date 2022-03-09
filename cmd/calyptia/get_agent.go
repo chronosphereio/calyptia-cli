@@ -35,7 +35,7 @@ func newCmdGetAgents(config *config) *cobra.Command {
 					fmt.Fprint(tw, "ID\t")
 				}
 				fmt.Fprintln(tw, "NAME\tTYPE\tVERSION\tSTATUS\tAGE")
-				for _, a := range aa {
+				for _, a := range aa.Items {
 					status := agentStatus(a.LastMetricsAddedAt, time.Minute*-5)
 					if showIDs {
 						fmt.Fprintf(tw, "%s\t", a.ID)
@@ -44,7 +44,7 @@ func newCmdGetAgents(config *config) *cobra.Command {
 				}
 				tw.Flush()
 			case "json":
-				err := json.NewEncoder(cmd.OutOrStdout()).Encode(aa)
+				err := json.NewEncoder(cmd.OutOrStdout()).Encode(aa.Items)
 				if err != nil {
 					return fmt.Errorf("could not json encode your agents: %w", err)
 				}
@@ -129,18 +129,16 @@ func newCmdGetAgent(config *config) *cobra.Command {
 }
 
 func (config *config) completeAgents(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	var aa []cloud.Agent
-	var err error
-	aa, err = config.cloud.Agents(config.ctx, config.projectID, cloud.AgentsParams{})
+	aa, err := config.cloud.Agents(config.ctx, config.projectID, cloud.AgentsParams{})
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveError
 	}
 
-	if len(aa) == 0 {
+	if len(aa.Items) == 0 {
 		return nil, cobra.ShellCompDirectiveNoFileComp
 	}
 
-	return agentsKeys(aa), cobra.ShellCompDirectiveNoFileComp
+	return agentsKeys(aa.Items), cobra.ShellCompDirectiveNoFileComp
 }
 
 // agentsKeys returns unique agent names first and then IDs.
@@ -184,15 +182,15 @@ func (config *config) loadAgentID(agentKey string) (string, error) {
 		return "", err
 	}
 
-	if len(aa) != 1 && !validUUID(agentKey) {
-		if len(aa) != 0 {
+	if len(aa.Items) != 1 && !validUUID(agentKey) {
+		if len(aa.Items) != 0 {
 			return "", fmt.Errorf("ambiguous agent name %q, use ID instead", agentKey)
 		}
 		return "", fmt.Errorf("could not find agent %q", agentKey)
 	}
 
-	if len(aa) == 1 {
-		return aa[0].ID, nil
+	if len(aa.Items) == 1 {
+		return aa.Items[0].ID, nil
 	}
 
 	return agentKey, nil

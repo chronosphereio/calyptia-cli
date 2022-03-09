@@ -34,9 +34,9 @@ func newCmdGetEndpoints(config *config) *cobra.Command {
 
 			switch format {
 			case "table":
-				renderEndpointsTable(cmd.OutOrStdout(), pp, showIDs)
+				renderEndpointsTable(cmd.OutOrStdout(), pp.Items, showIDs)
 			case "json":
-				err := json.NewEncoder(cmd.OutOrStdout()).Encode(pp)
+				err := json.NewEncoder(cmd.OutOrStdout()).Encode(pp.Items)
 				if err != nil {
 					return fmt.Errorf("could not json encode your pipeline endpoints: %w", err)
 				}

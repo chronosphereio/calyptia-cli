@@ -32,7 +32,7 @@ func newCmdGetAggregators(config *config) *cobra.Command {
 					fmt.Fprint(tw, "ID\t")
 				}
 				fmt.Fprintln(tw, "NAME\tAGE")
-				for _, a := range aa {
+				for _, a := range aa.Items {
 					if showIDs {
 						fmt.Fprintf(tw, "%s\t", a.ID)
 					}
@@ -40,7 +40,7 @@ func newCmdGetAggregators(config *config) *cobra.Command {
 				}
 				tw.Flush()
 			case "json":
-				err := json.NewEncoder(cmd.OutOrStdout()).Encode(aa)
+				err := json.NewEncoder(cmd.OutOrStdout()).Encode(aa.Items)
 				if err != nil {
 					return fmt.Errorf("could not json encode your aggregators: %w", err)
 				}
@@ -67,11 +67,11 @@ func (config *config) completeAggregators(cmd *cobra.Command, args []string, toC
 		return nil, cobra.ShellCompDirectiveError
 	}
 
-	if aa == nil {
+	if len(aa.Items) == 0 {
 		return nil, cobra.ShellCompDirectiveNoFileComp
 	}
 
-	return aggregatorsKeys(aa), cobra.ShellCompDirectiveNoFileComp
+	return aggregatorsKeys(aa.Items), cobra.ShellCompDirectiveNoFileComp
 }
 
 // aggregatorsKeys returns unique aggregator names first and then IDs.
@@ -116,16 +116,16 @@ func (config *config) loadAggregatorID(aggregatorKey string) (string, error) {
 		return "", err
 	}
 
-	if len(aa) != 1 && !validUUID(aggregatorKey) {
-		if len(aa) != 0 {
+	if len(aa.Items) != 1 && !validUUID(aggregatorKey) {
+		if len(aa.Items) != 0 {
 			return "", fmt.Errorf("ambiguous aggregator name %q, use ID instead", aggregatorKey)
 		}
 
 		return "", fmt.Errorf("could not find aggregator %q", aggregatorKey)
 	}
 
-	if len(aa) == 1 {
-		return aa[0].ID, nil
+	if len(aa.Items) == 1 {
+		return aa.Items[0].ID, nil
 	}
 
 	return aggregatorKey, nil

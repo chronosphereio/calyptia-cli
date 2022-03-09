@@ -35,9 +35,9 @@ func newCmdGetPipelineFiles(config *config) *cobra.Command {
 
 			switch format {
 			case "table":
-				renderPipelineFiles(cmd.OutOrStdout(), ff, showIDs)
+				renderPipelineFiles(cmd.OutOrStdout(), ff.Items, showIDs)
 			case "json":
-				err := json.NewEncoder(cmd.OutOrStdout()).Encode(ff)
+				err := json.NewEncoder(cmd.OutOrStdout()).Encode(ff.Items)
 				if err != nil {
 					return fmt.Errorf("could not json encode your pipeline files: %w", err)
 				}
@@ -84,7 +84,7 @@ func newCmdGetPipelineFile(config *config) *cobra.Command {
 
 			var file cloud.PipelineFile
 			var found bool
-			for _, f := range ff {
+			for _, f := range ff.Items {
 				if f.Name == name {
 					file = f
 					found = true

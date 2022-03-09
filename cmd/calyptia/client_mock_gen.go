@@ -5,9 +5,8 @@ package main
 
 import (
 	"context"
-	"sync"
-
 	cloud "github.com/calyptia/api/types"
+	"sync"
 )
 
 // Ensure, that ClientMock does implement Client.
@@ -23,19 +22,19 @@ var _ Client = &ClientMock{}
 // 			AgentFunc: func(ctx context.Context, agentID string) (cloud.Agent, error) {
 // 				panic("mock out the Agent method")
 // 			},
-// 			AgentConfigHistoryFunc: func(ctx context.Context, agentID string, params cloud.AgentConfigHistoryParams) ([]cloud.AgentConfig, error) {
+// 			AgentConfigHistoryFunc: func(ctx context.Context, agentID string, params cloud.AgentConfigHistoryParams) (cloud.AgentConfigHistory, error) {
 // 				panic("mock out the AgentConfigHistory method")
 // 			},
 // 			AgentMetricsFunc: func(ctx context.Context, agentID string, params cloud.MetricsParams) (cloud.AgentMetrics, error) {
 // 				panic("mock out the AgentMetrics method")
 // 			},
-// 			AgentsFunc: func(ctx context.Context, projectID string, params cloud.AgentsParams) ([]cloud.Agent, error) {
+// 			AgentsFunc: func(ctx context.Context, projectID string, params cloud.AgentsParams) (cloud.Agents, error) {
 // 				panic("mock out the Agents method")
 // 			},
 // 			AggregatorFunc: func(ctx context.Context, aggregatorID string) (cloud.Aggregator, error) {
 // 				panic("mock out the Aggregator method")
 // 			},
-// 			AggregatorsFunc: func(ctx context.Context, projectID string, params cloud.AggregatorsParams) ([]cloud.Aggregator, error) {
+// 			AggregatorsFunc: func(ctx context.Context, projectID string, params cloud.AggregatorsParams) (cloud.Aggregators, error) {
 // 				panic("mock out the Aggregators method")
 // 			},
 // 			CreateAggregatorFunc: func(ctx context.Context, payload cloud.CreateAggregator) (cloud.CreatedAggregator, error) {
@@ -83,19 +82,19 @@ var _ Client = &ClientMock{}
 // 			DeleteTokenFunc: func(ctx context.Context, tokenID string) error {
 // 				panic("mock out the DeleteToken method")
 // 			},
-// 			MembersFunc: func(ctx context.Context, projectID string, params cloud.MembersParams) ([]cloud.Membership, error) {
+// 			MembersFunc: func(ctx context.Context, projectID string, params cloud.MembersParams) (cloud.Memberships, error) {
 // 				panic("mock out the Members method")
 // 			},
 // 			PipelineFunc: func(ctx context.Context, pipelineID string) (cloud.Pipeline, error) {
 // 				panic("mock out the Pipeline method")
 // 			},
-// 			PipelineConfigHistoryFunc: func(ctx context.Context, pipelineID string, params cloud.PipelineConfigHistoryParams) ([]cloud.PipelineConfig, error) {
+// 			PipelineConfigHistoryFunc: func(ctx context.Context, pipelineID string, params cloud.PipelineConfigHistoryParams) (cloud.PipelineConfigHistory, error) {
 // 				panic("mock out the PipelineConfigHistory method")
 // 			},
 // 			PipelineFileFunc: func(ctx context.Context, fileID string) (cloud.PipelineFile, error) {
 // 				panic("mock out the PipelineFile method")
 // 			},
-// 			PipelineFilesFunc: func(ctx context.Context, pipelineID string, params cloud.PipelineFilesParams) ([]cloud.PipelineFile, error) {
+// 			PipelineFilesFunc: func(ctx context.Context, pipelineID string, params cloud.PipelineFilesParams) (cloud.PipelineFiles, error) {
 // 				panic("mock out the PipelineFiles method")
 // 			},
 // 			PipelineMetricsFunc: func(ctx context.Context, pipelineID string, params cloud.MetricsParams) (cloud.AgentMetrics, error) {
@@ -104,19 +103,19 @@ var _ Client = &ClientMock{}
 // 			PipelinePortFunc: func(ctx context.Context, portID string) (cloud.PipelinePort, error) {
 // 				panic("mock out the PipelinePort method")
 // 			},
-// 			PipelinePortsFunc: func(ctx context.Context, pipelineID string, params cloud.PipelinePortsParams) ([]cloud.PipelinePort, error) {
+// 			PipelinePortsFunc: func(ctx context.Context, pipelineID string, params cloud.PipelinePortsParams) (cloud.PipelinePorts, error) {
 // 				panic("mock out the PipelinePorts method")
 // 			},
 // 			PipelineSecretFunc: func(ctx context.Context, secretID string) (cloud.PipelineSecret, error) {
 // 				panic("mock out the PipelineSecret method")
 // 			},
-// 			PipelineSecretsFunc: func(ctx context.Context, pipelineID string, params cloud.PipelineSecretsParams) ([]cloud.PipelineSecret, error) {
+// 			PipelineSecretsFunc: func(ctx context.Context, pipelineID string, params cloud.PipelineSecretsParams) (cloud.PipelineSecrets, error) {
 // 				panic("mock out the PipelineSecrets method")
 // 			},
-// 			PipelineStatusHistoryFunc: func(ctx context.Context, pipelineID string, params cloud.PipelineStatusHistoryParams) ([]cloud.PipelineStatus, error) {
+// 			PipelineStatusHistoryFunc: func(ctx context.Context, pipelineID string, params cloud.PipelineStatusHistoryParams) (cloud.PipelineStatusHistory, error) {
 // 				panic("mock out the PipelineStatusHistory method")
 // 			},
-// 			PipelinesFunc: func(ctx context.Context, aggregatorID string, params cloud.PipelinesParams) ([]cloud.Pipeline, error) {
+// 			PipelinesFunc: func(ctx context.Context, aggregatorID string, params cloud.PipelinesParams) (cloud.Pipelines, error) {
 // 				panic("mock out the Pipelines method")
 // 			},
 // 			ProjectFunc: func(ctx context.Context, projectID string) (cloud.Project, error) {
@@ -125,7 +124,7 @@ var _ Client = &ClientMock{}
 // 			ProjectMetricsFunc: func(ctx context.Context, projectID string, params cloud.MetricsParams) (cloud.ProjectMetrics, error) {
 // 				panic("mock out the ProjectMetrics method")
 // 			},
-// 			ProjectPipelinesFunc: func(ctx context.Context, projectID string, params cloud.PipelinesParams) ([]cloud.Pipeline, error) {
+// 			ProjectPipelinesFunc: func(ctx context.Context, projectID string, params cloud.PipelinesParams) (cloud.Pipelines, error) {
 // 				panic("mock out the ProjectPipelines method")
 // 			},
 // 			RegisterAgentFunc: func(ctx context.Context, payload cloud.RegisterAgent) (cloud.RegisteredAgent, error) {
@@ -134,7 +133,7 @@ var _ Client = &ClientMock{}
 // 			ResourceProfileFunc: func(ctx context.Context, resourceProfileID string) (cloud.ResourceProfile, error) {
 // 				panic("mock out the ResourceProfile method")
 // 			},
-// 			ResourceProfilesFunc: func(ctx context.Context, aggregatorID string, params cloud.ResourceProfilesParams) ([]cloud.ResourceProfile, error) {
+// 			ResourceProfilesFunc: func(ctx context.Context, aggregatorID string, params cloud.ResourceProfilesParams) (cloud.ResourceProfiles, error) {
 // 				panic("mock out the ResourceProfiles method")
 // 			},
 // 			TokenFunc: func(ctx context.Context, tokenID string) (cloud.Token, error) {
@@ -181,19 +180,19 @@ type ClientMock struct {
 	AgentFunc func(ctx context.Context, agentID string) (cloud.Agent, error)
 
 	// AgentConfigHistoryFunc mocks the AgentConfigHistory method.
-	AgentConfigHistoryFunc func(ctx context.Context, agentID string, params cloud.AgentConfigHistoryParams) ([]cloud.AgentConfig, error)
+	AgentConfigHistoryFunc func(ctx context.Context, agentID string, params cloud.AgentConfigHistoryParams) (cloud.AgentConfigHistory, error)
 
 	// AgentMetricsFunc mocks the AgentMetrics method.
 	AgentMetricsFunc func(ctx context.Context, agentID string, params cloud.MetricsParams) (cloud.AgentMetrics, error)
 
 	// AgentsFunc mocks the Agents method.
-	AgentsFunc func(ctx context.Context, projectID string, params cloud.AgentsParams) ([]cloud.Agent, error)
+	AgentsFunc func(ctx context.Context, projectID string, params cloud.AgentsParams) (cloud.Agents, error)
 
 	// AggregatorFunc mocks the Aggregator method.
 	AggregatorFunc func(ctx context.Context, aggregatorID string) (cloud.Aggregator, error)
 
 	// AggregatorsFunc mocks the Aggregators method.
-	AggregatorsFunc func(ctx context.Context, projectID string, params cloud.AggregatorsParams) ([]cloud.Aggregator, error)
+	AggregatorsFunc func(ctx context.Context, projectID string, params cloud.AggregatorsParams) (cloud.Aggregators, error)
 
 	// CreateAggregatorFunc mocks the CreateAggregator method.
 	CreateAggregatorFunc func(ctx context.Context, payload cloud.CreateAggregator) (cloud.CreatedAggregator, error)
@@ -241,19 +240,19 @@ type ClientMock struct {
 	DeleteTokenFunc func(ctx context.Context, tokenID string) error
 
 	// MembersFunc mocks the Members method.
-	MembersFunc func(ctx context.Context, projectID string, params cloud.MembersParams) ([]cloud.Membership, error)
+	MembersFunc func(ctx context.Context, projectID string, params cloud.MembersParams) (cloud.Memberships, error)
 
 	// PipelineFunc mocks the Pipeline method.
 	PipelineFunc func(ctx context.Context, pipelineID string) (cloud.Pipeline, error)
 
 	// PipelineConfigHistoryFunc mocks the PipelineConfigHistory method.
-	PipelineConfigHistoryFunc func(ctx context.Context, pipelineID string, params cloud.PipelineConfigHistoryParams) ([]cloud.PipelineConfig, error)
+	PipelineConfigHistoryFunc func(ctx context.Context, pipelineID string, params cloud.PipelineConfigHistoryParams) (cloud.PipelineConfigHistory, error)
 
 	// PipelineFileFunc mocks the PipelineFile method.
 	PipelineFileFunc func(ctx context.Context, fileID string) (cloud.PipelineFile, error)
 
 	// PipelineFilesFunc mocks the PipelineFiles method.
-	PipelineFilesFunc func(ctx context.Context, pipelineID string, params cloud.PipelineFilesParams) ([]cloud.PipelineFile, error)
+	PipelineFilesFunc func(ctx context.Context, pipelineID string, params cloud.PipelineFilesParams) (cloud.PipelineFiles, error)
 
 	// PipelineMetricsFunc mocks the PipelineMetrics method.
 	PipelineMetricsFunc func(ctx context.Context, pipelineID string, params cloud.MetricsParams) (cloud.AgentMetrics, error)
@@ -262,19 +261,19 @@ type ClientMock struct {
 	PipelinePortFunc func(ctx context.Context, portID string) (cloud.PipelinePort, error)
 
 	// PipelinePortsFunc mocks the PipelinePorts method.
-	PipelinePortsFunc func(ctx context.Context, pipelineID string, params cloud.PipelinePortsParams) ([]cloud.PipelinePort, error)
+	PipelinePortsFunc func(ctx context.Context, pipelineID string, params cloud.PipelinePortsParams) (cloud.PipelinePorts, error)
 
 	// PipelineSecretFunc mocks the PipelineSecret method.
 	PipelineSecretFunc func(ctx context.Context, secretID string) (cloud.PipelineSecret, error)
 
 	// PipelineSecretsFunc mocks the PipelineSecrets method.
-	PipelineSecretsFunc func(ctx context.Context, pipelineID string, params cloud.PipelineSecretsParams) ([]cloud.PipelineSecret, error)
+	PipelineSecretsFunc func(ctx context.Context, pipelineID string, params cloud.PipelineSecretsParams) (cloud.PipelineSecrets, error)
 
 	// PipelineStatusHistoryFunc mocks the PipelineStatusHistory method.
-	PipelineStatusHistoryFunc func(ctx context.Context, pipelineID string, params cloud.PipelineStatusHistoryParams) ([]cloud.PipelineStatus, error)
+	PipelineStatusHistoryFunc func(ctx context.Context, pipelineID string, params cloud.PipelineStatusHistoryParams) (cloud.PipelineStatusHistory, error)
 
 	// PipelinesFunc mocks the Pipelines method.
-	PipelinesFunc func(ctx context.Context, aggregatorID string, params cloud.PipelinesParams) ([]cloud.Pipeline, error)
+	PipelinesFunc func(ctx context.Context, aggregatorID string, params cloud.PipelinesParams) (cloud.Pipelines, error)
 
 	// ProjectFunc mocks the Project method.
 	ProjectFunc func(ctx context.Context, projectID string) (cloud.Project, error)
@@ -283,7 +282,7 @@ type ClientMock struct {
 	ProjectMetricsFunc func(ctx context.Context, projectID string, params cloud.MetricsParams) (cloud.ProjectMetrics, error)
 
 	// ProjectPipelinesFunc mocks the ProjectPipelines method.
-	ProjectPipelinesFunc func(ctx context.Context, projectID string, params cloud.PipelinesParams) ([]cloud.Pipeline, error)
+	ProjectPipelinesFunc func(ctx context.Context, projectID string, params cloud.PipelinesParams) (cloud.Pipelines, error)
 
 	// RegisterAgentFunc mocks the RegisterAgent method.
 	RegisterAgentFunc func(ctx context.Context, payload cloud.RegisterAgent) (cloud.RegisteredAgent, error)
@@ -292,7 +291,7 @@ type ClientMock struct {
 	ResourceProfileFunc func(ctx context.Context, resourceProfileID string) (cloud.ResourceProfile, error)
 
 	// ResourceProfilesFunc mocks the ResourceProfiles method.
-	ResourceProfilesFunc func(ctx context.Context, aggregatorID string, params cloud.ResourceProfilesParams) ([]cloud.ResourceProfile, error)
+	ResourceProfilesFunc func(ctx context.Context, aggregatorID string, params cloud.ResourceProfilesParams) (cloud.ResourceProfiles, error)
 
 	// TokenFunc mocks the Token method.
 	TokenFunc func(ctx context.Context, tokenID string) (cloud.Token, error)
@@ -834,7 +833,7 @@ func (mock *ClientMock) AgentCalls() []struct {
 }
 
 // AgentConfigHistory calls AgentConfigHistoryFunc.
-func (mock *ClientMock) AgentConfigHistory(ctx context.Context, agentID string, params cloud.AgentConfigHistoryParams) ([]cloud.AgentConfig, error) {
+func (mock *ClientMock) AgentConfigHistory(ctx context.Context, agentID string, params cloud.AgentConfigHistoryParams) (cloud.AgentConfigHistory, error) {
 	callInfo := struct {
 		Ctx     context.Context
 		AgentID string
@@ -849,10 +848,10 @@ func (mock *ClientMock) AgentConfigHistory(ctx context.Context, agentID string, 
 	mock.lockAgentConfigHistory.Unlock()
 	if mock.AgentConfigHistoryFunc == nil {
 		var (
-			agentConfigsOut []cloud.AgentConfig
-			errOut          error
+			agentConfigHistoryOut cloud.AgentConfigHistory
+			errOut                error
 		)
-		return agentConfigsOut, errOut
+		return agentConfigHistoryOut, errOut
 	}
 	return mock.AgentConfigHistoryFunc(ctx, agentID, params)
 }
@@ -920,7 +919,7 @@ func (mock *ClientMock) AgentMetricsCalls() []struct {
 }
 
 // Agents calls AgentsFunc.
-func (mock *ClientMock) Agents(ctx context.Context, projectID string, params cloud.AgentsParams) ([]cloud.Agent, error) {
+func (mock *ClientMock) Agents(ctx context.Context, projectID string, params cloud.AgentsParams) (cloud.Agents, error) {
 	callInfo := struct {
 		Ctx       context.Context
 		ProjectID string
@@ -935,7 +934,7 @@ func (mock *ClientMock) Agents(ctx context.Context, projectID string, params clo
 	mock.lockAgents.Unlock()
 	if mock.AgentsFunc == nil {
 		var (
-			agentsOut []cloud.Agent
+			agentsOut cloud.Agents
 			errOut    error
 		)
 		return agentsOut, errOut
@@ -1002,7 +1001,7 @@ func (mock *ClientMock) AggregatorCalls() []struct {
 }
 
 // Aggregators calls AggregatorsFunc.
-func (mock *ClientMock) Aggregators(ctx context.Context, projectID string, params cloud.AggregatorsParams) ([]cloud.Aggregator, error) {
+func (mock *ClientMock) Aggregators(ctx context.Context, projectID string, params cloud.AggregatorsParams) (cloud.Aggregators, error) {
 	callInfo := struct {
 		Ctx       context.Context
 		ProjectID string
@@ -1017,7 +1016,7 @@ func (mock *ClientMock) Aggregators(ctx context.Context, projectID string, param
 	mock.lockAggregators.Unlock()
 	if mock.AggregatorsFunc == nil {
 		var (
-			aggregatorsOut []cloud.Aggregator
+			aggregatorsOut cloud.Aggregators
 			errOut         error
 		)
 		return aggregatorsOut, errOut
@@ -1645,7 +1644,7 @@ func (mock *ClientMock) DeleteTokenCalls() []struct {
 }
 
 // Members calls MembersFunc.
-func (mock *ClientMock) Members(ctx context.Context, projectID string, params cloud.MembersParams) ([]cloud.Membership, error) {
+func (mock *ClientMock) Members(ctx context.Context, projectID string, params cloud.MembersParams) (cloud.Memberships, error) {
 	callInfo := struct {
 		Ctx       context.Context
 		ProjectID string
@@ -1660,7 +1659,7 @@ func (mock *ClientMock) Members(ctx context.Context, projectID string, params cl
 	mock.lockMembers.Unlock()
 	if mock.MembersFunc == nil {
 		var (
-			membershipsOut []cloud.Membership
+			membershipsOut cloud.Memberships
 			errOut         error
 		)
 		return membershipsOut, errOut
@@ -1727,7 +1726,7 @@ func (mock *ClientMock) PipelineCalls() []struct {
 }
 
 // PipelineConfigHistory calls PipelineConfigHistoryFunc.
-func (mock *ClientMock) PipelineConfigHistory(ctx context.Context, pipelineID string, params cloud.PipelineConfigHistoryParams) ([]cloud.PipelineConfig, error) {
+func (mock *ClientMock) PipelineConfigHistory(ctx context.Context, pipelineID string, params cloud.PipelineConfigHistoryParams) (cloud.PipelineConfigHistory, error) {
 	callInfo := struct {
 		Ctx        context.Context
 		PipelineID string
@@ -1742,10 +1741,10 @@ func (mock *ClientMock) PipelineConfigHistory(ctx context.Context, pipelineID st
 	mock.lockPipelineConfigHistory.Unlock()
 	if mock.PipelineConfigHistoryFunc == nil {
 		var (
-			pipelineConfigsOut []cloud.PipelineConfig
-			errOut             error
+			pipelineConfigHistoryOut cloud.PipelineConfigHistory
+			errOut                   error
 		)
-		return pipelineConfigsOut, errOut
+		return pipelineConfigHistoryOut, errOut
 	}
 	return mock.PipelineConfigHistoryFunc(ctx, pipelineID, params)
 }
@@ -1809,7 +1808,7 @@ func (mock *ClientMock) PipelineFileCalls() []struct {
 }
 
 // PipelineFiles calls PipelineFilesFunc.
-func (mock *ClientMock) PipelineFiles(ctx context.Context, pipelineID string, params cloud.PipelineFilesParams) ([]cloud.PipelineFile, error) {
+func (mock *ClientMock) PipelineFiles(ctx context.Context, pipelineID string, params cloud.PipelineFilesParams) (cloud.PipelineFiles, error) {
 	callInfo := struct {
 		Ctx        context.Context
 		PipelineID string
@@ -1824,7 +1823,7 @@ func (mock *ClientMock) PipelineFiles(ctx context.Context, pipelineID string, pa
 	mock.lockPipelineFiles.Unlock()
 	if mock.PipelineFilesFunc == nil {
 		var (
-			pipelineFilesOut []cloud.PipelineFile
+			pipelineFilesOut cloud.PipelineFiles
 			errOut           error
 		)
 		return pipelineFilesOut, errOut
@@ -1934,7 +1933,7 @@ func (mock *ClientMock) PipelinePortCalls() []struct {
 }
 
 // PipelinePorts calls PipelinePortsFunc.
-func (mock *ClientMock) PipelinePorts(ctx context.Context, pipelineID string, params cloud.PipelinePortsParams) ([]cloud.PipelinePort, error) {
+func (mock *ClientMock) PipelinePorts(ctx context.Context, pipelineID string, params cloud.PipelinePortsParams) (cloud.PipelinePorts, error) {
 	callInfo := struct {
 		Ctx        context.Context
 		PipelineID string
@@ -1949,7 +1948,7 @@ func (mock *ClientMock) PipelinePorts(ctx context.Context, pipelineID string, pa
 	mock.lockPipelinePorts.Unlock()
 	if mock.PipelinePortsFunc == nil {
 		var (
-			pipelinePortsOut []cloud.PipelinePort
+			pipelinePortsOut cloud.PipelinePorts
 			errOut           error
 		)
 		return pipelinePortsOut, errOut
@@ -2016,7 +2015,7 @@ func (mock *ClientMock) PipelineSecretCalls() []struct {
 }
 
 // PipelineSecrets calls PipelineSecretsFunc.
-func (mock *ClientMock) PipelineSecrets(ctx context.Context, pipelineID string, params cloud.PipelineSecretsParams) ([]cloud.PipelineSecret, error) {
+func (mock *ClientMock) PipelineSecrets(ctx context.Context, pipelineID string, params cloud.PipelineSecretsParams) (cloud.PipelineSecrets, error) {
 	callInfo := struct {
 		Ctx        context.Context
 		PipelineID string
@@ -2031,7 +2030,7 @@ func (mock *ClientMock) PipelineSecrets(ctx context.Context, pipelineID string, 
 	mock.lockPipelineSecrets.Unlock()
 	if mock.PipelineSecretsFunc == nil {
 		var (
-			pipelineSecretsOut []cloud.PipelineSecret
+			pipelineSecretsOut cloud.PipelineSecrets
 			errOut             error
 		)
 		return pipelineSecretsOut, errOut
@@ -2059,7 +2058,7 @@ func (mock *ClientMock) PipelineSecretsCalls() []struct {
 }
 
 // PipelineStatusHistory calls PipelineStatusHistoryFunc.
-func (mock *ClientMock) PipelineStatusHistory(ctx context.Context, pipelineID string, params cloud.PipelineStatusHistoryParams) ([]cloud.PipelineStatus, error) {
+func (mock *ClientMock) PipelineStatusHistory(ctx context.Context, pipelineID string, params cloud.PipelineStatusHistoryParams) (cloud.PipelineStatusHistory, error) {
 	callInfo := struct {
 		Ctx        context.Context
 		PipelineID string
@@ -2074,10 +2073,10 @@ func (mock *ClientMock) PipelineStatusHistory(ctx context.Context, pipelineID st
 	mock.lockPipelineStatusHistory.Unlock()
 	if mock.PipelineStatusHistoryFunc == nil {
 		var (
-			pipelineStatussOut []cloud.PipelineStatus
-			errOut             error
+			pipelineStatusHistoryOut cloud.PipelineStatusHistory
+			errOut                   error
 		)
-		return pipelineStatussOut, errOut
+		return pipelineStatusHistoryOut, errOut
 	}
 	return mock.PipelineStatusHistoryFunc(ctx, pipelineID, params)
 }
@@ -2102,7 +2101,7 @@ func (mock *ClientMock) PipelineStatusHistoryCalls() []struct {
 }
 
 // Pipelines calls PipelinesFunc.
-func (mock *ClientMock) Pipelines(ctx context.Context, aggregatorID string, params cloud.PipelinesParams) ([]cloud.Pipeline, error) {
+func (mock *ClientMock) Pipelines(ctx context.Context, aggregatorID string, params cloud.PipelinesParams) (cloud.Pipelines, error) {
 	callInfo := struct {
 		Ctx          context.Context
 		AggregatorID string
@@ -2117,7 +2116,7 @@ func (mock *ClientMock) Pipelines(ctx context.Context, aggregatorID string, para
 	mock.lockPipelines.Unlock()
 	if mock.PipelinesFunc == nil {
 		var (
-			pipelinesOut []cloud.Pipeline
+			pipelinesOut cloud.Pipelines
 			errOut       error
 		)
 		return pipelinesOut, errOut
@@ -2227,7 +2226,7 @@ func (mock *ClientMock) ProjectMetricsCalls() []struct {
 }
 
 // ProjectPipelines calls ProjectPipelinesFunc.
-func (mock *ClientMock) ProjectPipelines(ctx context.Context, projectID string, params cloud.PipelinesParams) ([]cloud.Pipeline, error) {
+func (mock *ClientMock) ProjectPipelines(ctx context.Context, projectID string, params cloud.PipelinesParams) (cloud.Pipelines, error) {
 	callInfo := struct {
 		Ctx       context.Context
 		ProjectID string
@@ -2242,7 +2241,7 @@ func (mock *ClientMock) ProjectPipelines(ctx context.Context, projectID string, 
 	mock.lockProjectPipelines.Unlock()
 	if mock.ProjectPipelinesFunc == nil {
 		var (
-			pipelinesOut []cloud.Pipeline
+			pipelinesOut cloud.Pipelines
 			errOut       error
 		)
 		return pipelinesOut, errOut
@@ -2348,7 +2347,7 @@ func (mock *ClientMock) ResourceProfileCalls() []struct {
 }
 
 // ResourceProfiles calls ResourceProfilesFunc.
-func (mock *ClientMock) ResourceProfiles(ctx context.Context, aggregatorID string, params cloud.ResourceProfilesParams) ([]cloud.ResourceProfile, error) {
+func (mock *ClientMock) ResourceProfiles(ctx context.Context, aggregatorID string, params cloud.ResourceProfilesParams) (cloud.ResourceProfiles, error) {
 	callInfo := struct {
 		Ctx          context.Context
 		AggregatorID string
@@ -2363,7 +2362,7 @@ func (mock *ClientMock) ResourceProfiles(ctx context.Context, aggregatorID strin
 	mock.lockResourceProfiles.Unlock()
 	if mock.ResourceProfilesFunc == nil {
 		var (
-			resourceProfilesOut []cloud.ResourceProfile
+			resourceProfilesOut cloud.ResourceProfiles
 			errOut              error
 		)
 		return resourceProfilesOut, errOut
