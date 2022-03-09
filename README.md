@@ -64,24 +64,24 @@ calyptia get members --token TOKEN
 Calyptia Cloud CLI
 
 Usage:
-calyptia [command]
+  calyptia [command]
 
 Available Commands:
-completion  Generate the autocompletion script for the specified shell
-config      Configure Calyptia CLI
-create      Create aggregators, pipelines, etc.
-delete      Delete aggregators, pipelines, etc.
-get         Display one or many resources
-help        Help about any command
-rollout     Rollout resources to previous versions
-top         Display metrics
-update      Update aggregators, pipelines, etc.
+  completion  Generate the autocompletion script for the specified shell
+  config      Configure Calyptia CLI
+  create      Create aggregators, pipelines, etc.
+  delete      Delete aggregators, pipelines, etc.
+  get         Display one or many resources
+  help        Help about any command
+  rollout     Rollout resources to previous versions
+  top         Display metrics
+  update      Update aggregators, pipelines, etc.
 
 Flags:
---cloud-url string   Calyptia Cloud URL (default "https://cloud-api.calyptia.com")
--h, --help               help for calyptia
---token string       Calyptia Cloud Project token (default "eyJUb2tlbklEIjoiYWUzNWIzYjQtMWQzZS00NDc0LTgxOTItMWZiNWVhYmUxNTcyIiwiUHJvamVjdElEIjoiM2FlZTlhMmMtMDQwNi00NDkxLTgzNmMtMzYxZjk1ZmU2MTMzIn0.zHxzlUAKo8nl6s4_yyN17HjYNWOfBnlenv2niXywzYh98VJofKtHr3pnEizjO6U2")
+      --cloud-url string   Calyptia Cloud URL (default "https://cloud-api.calyptia.com")
+  -h, --help               help for calyptia
+      --token string       Calyptia Cloud Project token (default "eyJUb2tlbklEIjoiOWI5ODIwNzUtYzY4MC00MzdiLWE4YjMtYjU5NjNkMzE4OTUyIiwiUHJvamVjdElEIjoiMDkwZDFhYTEtZGU5Ni00NDZjLTk1NDQtMGUwMGNiNmRkMzkzIn0.JPD_g6oDQdmO_sPlshUJdNefpHT7AMDUjSRjg0x0E61U8-Frh2_ZOCTP93O5UBC9")
+  -v, --version            version for calyptia
 
 Use "calyptia [command] --help" for more information about a command.
-
 ```
