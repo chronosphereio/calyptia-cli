@@ -51,7 +51,7 @@ func newCmdCreateResourceProfile(config *config) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			rawSpec, err := readFile(specFile)
 			if err != nil {
-				return fmt.Errorf("could not read config file: %w", err)
+				return fmt.Errorf("could not read spec file: %w", err)
 			}
 
 			var spec ResourceProfileSpec
