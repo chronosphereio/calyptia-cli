@@ -48,6 +48,8 @@ github.com/bits-and-blooms/bitset v1.2.0/go.mod h1:gIdJ4wp64HaoK2YrL1Q5/N7Y16edY
 github.com/brianvoe/gofakeit/v6 v6.14.5/go.mod h1:Ow6qC71xtwm79anlwKRlWZW6zVq9D2XHE4QSSMP/rU8=
 github.com/calyptia/api v0.0.8 h1:RgQfbXwYBAXZSooBh1t1fRbU9YKjTe/XKvBwrOmejp4=
 github.com/calyptia/api v0.0.8/go.mod h1:0X9nEJTnNAOie0qbkSFdLweq7KiEUpztAElgmw7jCdM=
+github.com/calyptia/api v0.0.9 h1:FATp1lqnqJpV0xZX2tNp6j08E8lj1ETpQ7K54wg34+M=
+github.com/calyptia/api v0.0.9/go.mod h1:UF4UqBZkVl12CEUIJFBZirR9AkvQe9ydwDL3RS17x40=
 github.com/calyptia/go-bubble-table v0.1.0 h1:mXpaaBlrHGH4K8v5PvM8YqBFT9jlysS1YOycU2u3gEQ=
 github.com/calyptia/go-bubble-table v0.1.0/go.mod h1:2nnweuFos+eEIIbgweXvZuX+ROOatsMwB3NHnX/vTC4=
 github.com/cenkalti/backoff/v4 v4.1.2 h1:6Yo7N8UP2K6LWZnW94DLVSSrbobcWdVzAYOisuDPIFo=
