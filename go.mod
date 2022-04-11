@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	code.cloudfoundry.org/bytefmt v0.0.0-20211005130812-5bb3c17173e5
-	github.com/calyptia/api v0.0.9
+	github.com/calyptia/api v0.0.10
 	github.com/calyptia/go-bubble-table v0.1.0
 	github.com/charmbracelet/bubbletea v0.20.0
 	github.com/charmbracelet/lipgloss v0.5.0
