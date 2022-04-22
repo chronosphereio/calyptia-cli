@@ -6,8 +6,8 @@ github.com/Nvveen/Gotty v0.0.0-20120604004816-cd527374f1e5 h1:TngWCqHvy9oXAN6lEV
 github.com/alessio/shellescape v1.4.1 h1:V7yhSDDn8LP4lc4jS8pFkt0zCnzVJlG5JXy9BVKJUX0=
 github.com/alessio/shellescape v1.4.1/go.mod h1:PZAiSCk0LJaZkiCSkPv8qIobYglO3FPpyFjDCtHLS30=
 github.com/atotto/clipboard v0.1.4/go.mod h1:ZY9tmq7sm5xIbd9bOK4onWV4S6X0u6GY7Vn0Yu86PYI=
-github.com/calyptia/api v0.0.9 h1:FATp1lqnqJpV0xZX2tNp6j08E8lj1ETpQ7K54wg34+M=
-github.com/calyptia/api v0.0.9/go.mod h1:UF4UqBZkVl12CEUIJFBZirR9AkvQe9ydwDL3RS17x40=
+github.com/calyptia/api v0.0.10 h1:kD/L4DeULS7UgKlpVBmSULkILCcA1Z00KYPoXPor8NI=
+github.com/calyptia/api v0.0.10/go.mod h1:UF4UqBZkVl12CEUIJFBZirR9AkvQe9ydwDL3RS17x40=
 github.com/calyptia/go-bubble-table v0.1.0 h1:mXpaaBlrHGH4K8v5PvM8YqBFT9jlysS1YOycU2u3gEQ=
 github.com/calyptia/go-bubble-table v0.1.0/go.mod h1:2nnweuFos+eEIIbgweXvZuX+ROOatsMwB3NHnX/vTC4=
 github.com/cenkalti/backoff/v4 v4.1.2 h1:6Yo7N8UP2K6LWZnW94DLVSSrbobcWdVzAYOisuDPIFo=
