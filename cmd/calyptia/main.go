@@ -33,7 +33,7 @@ func newCmd(ctx context.Context) *cobra.Command {
 
 	ring, err := keyring.Open(keyring.Config{
 		ServiceName: serviceName,
-		FileDir:     ".calyptia",
+		FileDir:     "~/.calyptia",
 	})
 	if err != nil {
 		cobra.CheckErr(fmt.Errorf("could not setup storage: %w", err))
