@@ -100,7 +100,7 @@ func newCmdGetPipeline(config *config) *cobra.Command {
 				g, gctx := errgroup.WithContext(config.ctx)
 				g.Go(func() error {
 					var err error
-					pip, err = config.cloud.Pipeline(config.ctx, pipelineID)
+					pip, err = config.cloud.Pipeline(config.ctx, pipelineID, cloud.PipelineParams{})
 					if err != nil {
 						return fmt.Errorf("could not fetch your pipeline: %w", err)
 					}
@@ -150,7 +150,7 @@ func newCmdGetPipeline(config *config) *cobra.Command {
 				}
 			} else {
 				var err error
-				pip, err = config.cloud.Pipeline(config.ctx, pipelineID)
+				pip, err = config.cloud.Pipeline(config.ctx, pipelineID, cloud.PipelineParams{})
 				if err != nil {
 					return fmt.Errorf("could not fetch your pipeline: %w", err)
 				}

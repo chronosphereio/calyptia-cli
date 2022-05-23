@@ -85,7 +85,7 @@ var _ Client = &ClientMock{}
 // 			MembersFunc: func(ctx context.Context, projectID string, params cloud.MembersParams) (cloud.Memberships, error) {
 // 				panic("mock out the Members method")
 // 			},
-// 			PipelineFunc: func(ctx context.Context, pipelineID string) (cloud.Pipeline, error) {
+// 			PipelineFunc: func(ctx context.Context, pipelineID string, params cloud.PipelineParams) (cloud.Pipeline, error) {
 // 				panic("mock out the Pipeline method")
 // 			},
 // 			PipelineConfigHistoryFunc: func(ctx context.Context, pipelineID string, params cloud.PipelineConfigHistoryParams) (cloud.PipelineConfigHistory, error) {
@@ -243,7 +243,7 @@ type ClientMock struct {
 	MembersFunc func(ctx context.Context, projectID string, params cloud.MembersParams) (cloud.Memberships, error)
 
 	// PipelineFunc mocks the Pipeline method.
-	PipelineFunc func(ctx context.Context, pipelineID string) (cloud.Pipeline, error)
+	PipelineFunc func(ctx context.Context, pipelineID string, params cloud.PipelineParams) (cloud.Pipeline, error)
 
 	// PipelineConfigHistoryFunc mocks the PipelineConfigHistory method.
 	PipelineConfigHistoryFunc func(ctx context.Context, pipelineID string, params cloud.PipelineConfigHistoryParams) (cloud.PipelineConfigHistory, error)
@@ -510,6 +510,8 @@ type ClientMock struct {
 			Ctx context.Context
 			// PipelineID is the pipelineID argument value.
 			PipelineID string
+			// Params is the params argument value.
+			Params cloud.PipelineParams
 		}
 		// PipelineConfigHistory holds details about calls to the PipelineConfigHistory method.
 		PipelineConfigHistory []struct {
@@ -1687,13 +1689,15 @@ func (mock *ClientMock) MembersCalls() []struct {
 }
 
 // Pipeline calls PipelineFunc.
-func (mock *ClientMock) Pipeline(ctx context.Context, pipelineID string) (cloud.Pipeline, error) {
+func (mock *ClientMock) Pipeline(ctx context.Context, pipelineID string, params cloud.PipelineParams) (cloud.Pipeline, error) {
 	callInfo := struct {
 		Ctx        context.Context
 		PipelineID string
+		Params     cloud.PipelineParams
 	}{
 		Ctx:        ctx,
 		PipelineID: pipelineID,
+		Params:     params,
 	}
 	mock.lockPipeline.Lock()
 	mock.calls.Pipeline = append(mock.calls.Pipeline, callInfo)
@@ -1705,7 +1709,7 @@ func (mock *ClientMock) Pipeline(ctx context.Context, pipelineID string) (cloud.
 		)
 		return pipelineOut, errOut
 	}
-	return mock.PipelineFunc(ctx, pipelineID)
+	return mock.PipelineFunc(ctx, pipelineID, params)
 }
 
 // PipelineCalls gets all the calls that were made to Pipeline.
@@ -1714,10 +1718,12 @@ func (mock *ClientMock) Pipeline(ctx context.Context, pipelineID string) (cloud.
 func (mock *ClientMock) PipelineCalls() []struct {
 	Ctx        context.Context
 	PipelineID string
+	Params     cloud.PipelineParams
 } {
 	var calls []struct {
 		Ctx        context.Context
 		PipelineID string
+		Params     cloud.PipelineParams
 	}
 	mock.lockPipeline.RLock()
 	calls = mock.calls.Pipeline
