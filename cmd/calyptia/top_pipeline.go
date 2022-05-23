@@ -162,7 +162,7 @@ func (m PipelineModel) loadData(ctx context.Context, withPipeline, skipError boo
 		g, gctx := errgroup.WithContext(ctx)
 		g.Go(func() error {
 			var err error
-			pipeline, err = m.cloud.Pipeline(gctx, m.pipelineID)
+			pipeline, err = m.cloud.Pipeline(gctx, m.pipelineID, cloud.PipelineParams{})
 			return err
 		})
 		g.Go(func() error {

@@ -113,7 +113,7 @@ func Test_newCmdGetPipeline(t *testing.T) {
 		t.Run("pipeline", func(t *testing.T) {
 			want := errors.New("internal error")
 			cmd := newCmdGetPipeline(configWithMock(&ClientMock{
-				PipelineFunc: func(ctx context.Context, pipelineID string) (types.Pipeline, error) {
+				PipelineFunc: func(ctx context.Context, pipelineID string, params types.PipelineParams) (types.Pipeline, error) {
 					return types.Pipeline{}, want
 				},
 			}))
@@ -180,7 +180,7 @@ func Test_newCmdGetPipeline(t *testing.T) {
 		}
 		got := &bytes.Buffer{}
 		cmd := newCmdGetPipeline(configWithMock(&ClientMock{
-			PipelineFunc: func(ctx context.Context, pipelineID string) (types.Pipeline, error) {
+			PipelineFunc: func(ctx context.Context, pipelineID string, params types.PipelineParams) (types.Pipeline, error) {
 				wantEq(t, zeroUUID4, pipelineID)
 				return want, nil
 			},
