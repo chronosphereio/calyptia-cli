@@ -41,7 +41,7 @@ type Client interface {
 	CreatePipeline(ctx context.Context, aggregatorID string, payload types.CreatePipeline) (types.CreatedPipeline, error)
 	Pipelines(ctx context.Context, aggregatorID string, params types.PipelinesParams) (types.Pipelines, error)
 	ProjectPipelines(ctx context.Context, projectID string, params types.PipelinesParams) (types.Pipelines, error)
-	Pipeline(ctx context.Context, pipelineID string) (types.Pipeline, error)
+	Pipeline(ctx context.Context, pipelineID string, params types.PipelineParams) (types.Pipeline, error)
 	UpdatePipeline(ctx context.Context, pipelineID string, opts types.UpdatePipeline) (types.UpdatedPipeline, error)
 	DeletePipeline(ctx context.Context, pipelineID string) error
 
