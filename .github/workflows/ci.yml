@@ -30,6 +30,7 @@ jobs:
         with:
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
+          create_credentials_file: true
           credentials_file_path: /tmp/gcloud.json
         continue-on-error: true
 
