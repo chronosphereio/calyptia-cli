@@ -1,4 +1,5 @@
 /calyptia
+gha-creds-*.json
 
 # Created by https://www.toptal.com/developers/gitignore/api/go,linux,macos,windows,visualstudiocode,vim,emacs,dotenv
 # Edit at https://www.toptal.com/developers/gitignore?templates=go,linux,macos,windows,visualstudiocode,vim,emacs,dotenv
