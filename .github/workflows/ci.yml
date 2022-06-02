@@ -25,13 +25,16 @@ jobs:
         with:
           go-version: 1.18
 
-      - name: Setup google credentials
-        uses: google-github-actions/setup-gcloud@v0
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v0
         with:
-          service_account_key: ${{ secrets.GCP_SA_KEY }}
-          export_default_credentials: true
-          credentials_file_path: /tmp/gcloud.json
-        continue-on-error: true
+          # TODOL Switch to Workload Identity Federation method.
+          # https://github.com/google-github-actions/auth#authenticating-via-workload-identity-federation
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          export_environment_variables: true
+          # This will export GOOGLE_APPLICATION_CREDENTIALS
+          # for GoReleaser to push the blobs to Google Storage.
+          create_credentials_file: true
 
       - name: Release
         uses: goreleaser/goreleaser-action@v3
