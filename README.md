@@ -2,7 +2,7 @@
 # Calyptia Cloud CLI
 
 [![CI](https://github.com/calyptia/cloud-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/calyptia/cloud-cli/actions/workflows/ci.yml)
-[![Codecov](https://codecov.io/gh/calyptia/cloud-cli/branch/main/graph/badge.svg?token=TY36W7B87A)](https://codecov.io/gh/calyptia/cloud-cli)
+[![Codecov](https://codecov.io/gh/calyptia/cli/branch/main/graph/badge.svg?token=TY36W7B87A)](https://codecov.io/gh/calyptia/cli)
 
 This CLI interacts with the [Calyptia Cloud](https://cloud.calyptia.com) service
 using the [API Client](https://github.com/calyptia/api).
