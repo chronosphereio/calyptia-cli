@@ -12,7 +12,7 @@ func newCmdUpdateAggregator(config *config) *cobra.Command {
 	var newName string
 
 	cmd := &cobra.Command{
-		Use:               "core_instance CORE_INSTANCE",
+		Use:               "instance INSTANCE",
 		Aliases:           []string{"aggregator"},
 		Short:             "Update a single core instance by ID or name",
 		Args:              cobra.ExactArgs(1),
