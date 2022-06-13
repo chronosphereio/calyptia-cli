@@ -37,29 +37,30 @@ func newCmdCreateAggregator(config *config) *cobra.Command {
 			}
 
 			ctx := context.Background()
+			namespace := apiv1.NamespaceDefault
 
-			clusterRole, err := config.createClusterRole(ctx, clientset)
+			clusterRole, err := config.createClusterRole(ctx, clientset, namespace)
 			if err != nil {
 				return err
 			}
 
 			fmt.Printf("create cluster role result: %+v\n", clusterRole.Name)
 
-			serviceAccount, err := config.createServiceAccount(ctx, clientset)
+			serviceAccount, err := config.createServiceAccount(ctx, clientset, namespace)
 			if err != nil {
 				return err
 			}
 
 			fmt.Printf("create service account result: %+v\n", serviceAccount.Name)
 
-			binding, err := config.createClusterRoleBinding(ctx, clientset)
+			binding, err := config.createClusterRoleBinding(ctx, clientset, namespace)
 			if err != nil {
 				return err
 			}
 
 			fmt.Printf("create cluster role binding result: %+v\n", binding.Name)
 
-			deploy, err := config.createDeployment(ctx, clientset)
+			deploy, err := config.createDeployment(ctx, clientset, namespace)
 			if err != nil {
 				return err
 			}
@@ -73,10 +74,11 @@ func newCmdCreateAggregator(config *config) *cobra.Command {
 	return cmd
 }
 
-func (config *config) createClusterRole(ctx context.Context, clientset *kubernetes.Clientset) (*rbacv1.ClusterRole, error) {
-	clusterRole := &rbacv1.ClusterRole{
+func (config *config) createClusterRole(ctx context.Context, clientset *kubernetes.Clientset, namespace string) (*rbacv1.ClusterRole, error) {
+	return clientset.RbacV1().ClusterRoles().Create(ctx, &rbacv1.ClusterRole{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: "demo-cluster-role",
+			Namespace: namespace,
+			Name:      "demo-cluster-role",
 			Labels: map[string]string{
 				"app": "demo",
 			},
@@ -106,14 +108,14 @@ func (config *config) createClusterRole(ctx context.Context, clientset *kubernet
 				},
 			},
 		},
-	}
-	return clientset.RbacV1().ClusterRoles().Create(ctx, clusterRole, metav1.CreateOptions{})
+	}, metav1.CreateOptions{})
 }
 
-func (config *config) createServiceAccount(ctx context.Context, clientset *kubernetes.Clientset) (*apiv1.ServiceAccount, error) {
-	serviceAccount := &apiv1.ServiceAccount{
+func (config *config) createServiceAccount(ctx context.Context, clientset *kubernetes.Clientset, namespace string) (*apiv1.ServiceAccount, error) {
+	return clientset.CoreV1().ServiceAccounts(namespace).Create(ctx, &apiv1.ServiceAccount{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: "demo-service-account",
+			Namespace: namespace,
+			Name:      "demo-service-account",
 			Labels: map[string]string{
 				"app": "demo",
 			},
@@ -121,14 +123,14 @@ func (config *config) createServiceAccount(ctx context.Context, clientset *kuber
 				// TODO
 			},
 		},
-	}
-	return clientset.CoreV1().ServiceAccounts("default").Create(ctx, serviceAccount, metav1.CreateOptions{})
+	}, metav1.CreateOptions{})
 }
 
-func (config *config) createClusterRoleBinding(ctx context.Context, clientset *kubernetes.Clientset) (*rbacv1.ClusterRoleBinding, error) {
-	clusterRoleBinding := &rbacv1.ClusterRoleBinding{
+func (config *config) createClusterRoleBinding(ctx context.Context, clientset *kubernetes.Clientset, namespace string) (*rbacv1.ClusterRoleBinding, error) {
+	return clientset.RbacV1().ClusterRoleBindings().Create(ctx, &rbacv1.ClusterRoleBinding{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: "demo-cluster-role-binding",
+			Namespace: namespace,
+			Name:      "demo-cluster-role-binding",
 			Labels: map[string]string{
 				"app": "demo",
 			},
@@ -142,17 +144,20 @@ func (config *config) createClusterRoleBinding(ctx context.Context, clientset *k
 			{
 				Kind:      "ServiceAccount",
 				Name:      "demo-service-account",
-				Namespace: "default",
+				Namespace: namespace,
 			},
 		},
-	}
-	return clientset.RbacV1().ClusterRoleBindings().Create(ctx, clusterRoleBinding, metav1.CreateOptions{})
+	}, metav1.CreateOptions{})
 }
 
-func (config *config) createDeployment(ctx context.Context, clientset *kubernetes.Clientset) (*appsv1.Deployment, error) {
-	deployment := &appsv1.Deployment{
+func (config *config) createDeployment(ctx context.Context, clientset *kubernetes.Clientset, namespace string) (*appsv1.Deployment, error) {
+	return clientset.AppsV1().Deployments(namespace).Create(ctx, &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: "demo-deployment",
+			Namespace: namespace,
+			Name:      "demo-deployment",
+			Labels: map[string]string{
+				"app": "demo",
+			},
 		},
 		Spec: appsv1.DeploymentSpec{
 			Replicas: ptr(int32(1)),
@@ -182,7 +187,7 @@ func (config *config) createDeployment(ctx context.Context, clientset *kubernete
 								},
 								{
 									Name:  "AGGREGATOR_FLUENTBIT_CLOUD_URL",
-									Value: "https://cloud-api-dev.calyptia.com",
+									Value: config.baseURL,
 								},
 							},
 						},
@@ -190,8 +195,7 @@ func (config *config) createDeployment(ctx context.Context, clientset *kubernete
 				},
 			},
 		},
-	}
-	return clientset.AppsV1().Deployments(apiv1.NamespaceDefault).Create(ctx, deployment, metav1.CreateOptions{})
+	}, metav1.CreateOptions{})
 }
 
 func ptr[T any](p T) *T {

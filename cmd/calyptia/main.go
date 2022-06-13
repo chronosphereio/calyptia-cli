@@ -52,6 +52,7 @@ func newCmd(ctx context.Context) *cobra.Command {
 		}
 
 		client.BaseURL = cloudURL.String()
+		config.baseURL = client.BaseURL
 
 		if token == "" {
 			return
@@ -93,6 +94,7 @@ func newCmd(ctx context.Context) *cobra.Command {
 
 type config struct {
 	ctx          context.Context
+	baseURL      string
 	cloud        Client
 	projectToken string
 	projectID    string
