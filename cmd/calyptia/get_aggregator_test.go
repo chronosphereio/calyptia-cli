@@ -9,7 +9,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/calyptia/api/types"
 	cloud "github.com/calyptia/api/types"
 )
 
@@ -36,7 +35,7 @@ func Test_newCmdGetAggregators(t *testing.T) {
 	t.Run("error", func(t *testing.T) {
 		want := errors.New("internal error")
 		cmd := newCmdGetAggregators(configWithMock(&ClientMock{
-			AggregatorsFunc: func(ctx context.Context, projectID string, params types.AggregatorsParams) (cloud.Aggregators, error) {
+			AggregatorsFunc: func(ctx context.Context, projectID string, params cloud.AggregatorsParams) (cloud.Aggregators, error) {
 				return cloud.Aggregators{}, want
 			},
 		}))
@@ -62,7 +61,7 @@ func Test_newCmdGetAggregators(t *testing.T) {
 		}
 		got := &bytes.Buffer{}
 		cmd := newCmdGetAggregators(configWithMock(&ClientMock{
-			AggregatorsFunc: func(ctx context.Context, projectID string, params types.AggregatorsParams) (cloud.Aggregators, error) {
+			AggregatorsFunc: func(ctx context.Context, projectID string, params cloud.AggregatorsParams) (cloud.Aggregators, error) {
 				wantNoEq(t, nil, params.Last)
 				wantEq(t, uint64(2), *params.Last)
 				return want, nil
