@@ -119,9 +119,6 @@ func (config *config) createServiceAccount(ctx context.Context, clientset *kuber
 			Labels: map[string]string{
 				"app": "demo",
 			},
-			Annotations: map[string]string{
-				// TODO
-			},
 		},
 	}, metav1.CreateOptions{})
 }
