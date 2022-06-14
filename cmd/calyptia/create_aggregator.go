@@ -62,32 +62,39 @@ func newCmdCreateAggregator(config *config) *cobra.Command {
 				}
 			}
 
-			if err := config.ensureNamespace(ctx, clientset, namespace); err != nil {
+			k8sClient := &k8sClient{
+				Clientset:    clientset,
+				projectID:    config.projectID,
+				projectToken: config.projectToken,
+				cloudBaseURL: config.baseURL,
+			}
+
+			if err := k8sClient.ensureNamespace(ctx, namespace); err != nil {
 				return err
 			}
 
-			clusterRole, err := config.createClusterRole(ctx, clientset, namespace, aggregatorName)
+			clusterRole, err := k8sClient.createClusterRole(ctx, namespace, aggregatorName)
 			if err != nil {
 				return err
 			}
 
 			fmt.Printf("cluster role: %q\n", clusterRole.Name)
 
-			serviceAccount, err := config.createServiceAccount(ctx, clientset, namespace, aggregatorName)
+			serviceAccount, err := k8sClient.createServiceAccount(ctx, namespace, aggregatorName)
 			if err != nil {
 				return err
 			}
 
 			fmt.Printf("service account: %q\n", serviceAccount.Name)
 
-			binding, err := config.createClusterRoleBinding(ctx, clientset, namespace, aggregatorName)
+			binding, err := k8sClient.createClusterRoleBinding(ctx, namespace, aggregatorName)
 			if err != nil {
 				return err
 			}
 
 			fmt.Printf("cluster role binding: %q\n", binding.Name)
 
-			deploy, err := config.createDeployment(ctx, clientset, namespace, aggregatorName)
+			deploy, err := k8sClient.createDeployment(ctx, namespace, aggregatorName)
 			if err != nil {
 				return err
 			}
@@ -105,8 +112,15 @@ func newCmdCreateAggregator(config *config) *cobra.Command {
 	return cmd
 }
 
-func (config *config) ensureNamespace(ctx context.Context, clientset *kubernetes.Clientset, namespace string) error {
-	exists, err := config.namespaceExists(ctx, clientset, namespace)
+type k8sClient struct {
+	*kubernetes.Clientset
+	projectID    string
+	projectToken string
+	cloudBaseURL string
+}
+
+func (client *k8sClient) ensureNamespace(ctx context.Context, namespace string) error {
+	exists, err := client.namespaceExists(ctx, namespace)
 	if err != nil {
 		return err
 	}
@@ -115,12 +129,12 @@ func (config *config) ensureNamespace(ctx context.Context, clientset *kubernetes
 		return nil
 	}
 
-	_, err = config.createNamespace(ctx, clientset, namespace)
+	_, err = client.createNamespace(ctx, namespace)
 	return err
 }
 
-func (config *config) namespaceExists(ctx context.Context, clientset *kubernetes.Clientset, namespace string) (bool, error) {
-	_, err := clientset.CoreV1().Namespaces().Get(ctx, namespace, metav1.GetOptions{})
+func (client *k8sClient) namespaceExists(ctx context.Context, namespace string) (bool, error) {
+	_, err := client.CoreV1().Namespaces().Get(ctx, namespace, metav1.GetOptions{})
 	if k8serrors.IsNotFound(err) {
 		return false, nil
 	}
@@ -132,8 +146,8 @@ func (config *config) namespaceExists(ctx context.Context, clientset *kubernetes
 	return true, nil
 }
 
-func (config *config) createNamespace(ctx context.Context, clientset *kubernetes.Clientset, namespace string) (*apiv1.Namespace, error) {
-	return clientset.CoreV1().Namespaces().Create(ctx, &apiv1.Namespace{
+func (client *k8sClient) createNamespace(ctx context.Context, namespace string) (*apiv1.Namespace, error) {
+	return client.CoreV1().Namespaces().Create(ctx, &apiv1.Namespace{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:   namespace,
 			Labels: map[string]string{
@@ -143,13 +157,13 @@ func (config *config) createNamespace(ctx context.Context, clientset *kubernetes
 	}, metav1.CreateOptions{})
 }
 
-func (config *config) createClusterRole(ctx context.Context, clientset *kubernetes.Clientset, namespace, aggregatorName string) (*rbacv1.ClusterRole, error) {
-	return clientset.RbacV1().ClusterRoles().Create(ctx, &rbacv1.ClusterRole{
+func (client *k8sClient) createClusterRole(ctx context.Context, namespace, aggregatorName string) (*rbacv1.ClusterRole, error) {
+	return client.RbacV1().ClusterRoles().Create(ctx, &rbacv1.ClusterRole{
 		ObjectMeta: metav1.ObjectMeta{
 			Namespace: namespace,
 			Name:      aggregatorName + "-cluster-role",
 			Labels: map[string]string{
-				"calyptia_project_id":      config.projectID,
+				"calyptia_project_id":      client.projectID,
 				"calyptia_aggregator_name": aggregatorName,
 			},
 		},
@@ -181,26 +195,26 @@ func (config *config) createClusterRole(ctx context.Context, clientset *kubernet
 	}, metav1.CreateOptions{})
 }
 
-func (config *config) createServiceAccount(ctx context.Context, clientset *kubernetes.Clientset, namespace, aggregatorName string) (*apiv1.ServiceAccount, error) {
-	return clientset.CoreV1().ServiceAccounts(namespace).Create(ctx, &apiv1.ServiceAccount{
+func (client *k8sClient) createServiceAccount(ctx context.Context, namespace, aggregatorName string) (*apiv1.ServiceAccount, error) {
+	return client.CoreV1().ServiceAccounts(namespace).Create(ctx, &apiv1.ServiceAccount{
 		ObjectMeta: metav1.ObjectMeta{
 			Namespace: namespace,
 			Name:      aggregatorName + "-service-account",
 			Labels: map[string]string{
-				"calyptia_project_id":      config.projectID,
+				"calyptia_project_id":      client.projectID,
 				"calyptia_aggregator_name": aggregatorName,
 			},
 		},
 	}, metav1.CreateOptions{})
 }
 
-func (config *config) createClusterRoleBinding(ctx context.Context, clientset *kubernetes.Clientset, namespace, aggregatorName string) (*rbacv1.ClusterRoleBinding, error) {
-	return clientset.RbacV1().ClusterRoleBindings().Create(ctx, &rbacv1.ClusterRoleBinding{
+func (client *k8sClient) createClusterRoleBinding(ctx context.Context, namespace, aggregatorName string) (*rbacv1.ClusterRoleBinding, error) {
+	return client.RbacV1().ClusterRoleBindings().Create(ctx, &rbacv1.ClusterRoleBinding{
 		ObjectMeta: metav1.ObjectMeta{
 			Namespace: namespace,
 			Name:      aggregatorName + "-cluster-role-binding",
 			Labels: map[string]string{
-				"calyptia_project_id":      config.projectID,
+				"calyptia_project_id":      client.projectID,
 				"calyptia_aggregator_name": aggregatorName,
 			},
 		},
@@ -219,13 +233,13 @@ func (config *config) createClusterRoleBinding(ctx context.Context, clientset *k
 	}, metav1.CreateOptions{})
 }
 
-func (config *config) createDeployment(ctx context.Context, clientset *kubernetes.Clientset, namespace, aggregatorName string) (*appsv1.Deployment, error) {
-	return clientset.AppsV1().Deployments(namespace).Create(ctx, &appsv1.Deployment{
+func (client *k8sClient) createDeployment(ctx context.Context, namespace, aggregatorName string) (*appsv1.Deployment, error) {
+	return client.AppsV1().Deployments(namespace).Create(ctx, &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Namespace: namespace,
 			Name:      aggregatorName + "-deployment",
 			Labels: map[string]string{
-				"calyptia_project_id":      config.projectID,
+				"calyptia_project_id":      client.projectID,
 				"calyptia_aggregator_name": aggregatorName,
 			},
 		},
@@ -233,14 +247,14 @@ func (config *config) createDeployment(ctx context.Context, clientset *kubernete
 			Replicas: ptr(int32(1)),
 			Selector: &metav1.LabelSelector{
 				MatchLabels: map[string]string{
-					"calyptia_project_id":      config.projectID,
+					"calyptia_project_id":      client.projectID,
 					"calyptia_aggregator_name": aggregatorName,
 				},
 			},
 			Template: apiv1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
 					Labels: map[string]string{
-						"calyptia_project_id":      config.projectID,
+						"calyptia_project_id":      client.projectID,
 						"calyptia_aggregator_name": aggregatorName,
 					},
 				},
@@ -259,11 +273,11 @@ func (config *config) createDeployment(ctx context.Context, clientset *kubernete
 								},
 								{
 									Name:  "PROJECT_TOKEN",
-									Value: config.projectToken,
+									Value: client.projectToken,
 								},
 								{
 									Name:  "AGGREGATOR_FLUENTBIT_CLOUD_URL",
-									Value: config.baseURL,
+									Value: client.cloudBaseURL,
 								},
 							},
 						},
