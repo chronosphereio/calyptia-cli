@@ -37,7 +37,7 @@ func newCmdCreateAggregatorOnK8s(config *config) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:   "kubernetes",
-		Short: "Setup a new core instance on kubernetes",
+		Short: "Setup a new core instance on Kubernetes",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
 			kubeClientConfig, err := kubeConfig.ClientConfig()
