@@ -36,8 +36,9 @@ func newCmdCreateAggregatorOnK8s(config *config) *cobra.Command {
 	configOverrides := &clientcmd.ConfigOverrides{}
 
 	cmd := &cobra.Command{
-		Use:   "kubernetes",
-		Short: "Setup a new core instance on Kubernetes",
+		Use:     "kubernetes",
+		Aliases: []string{"kube", "k8s"},
+		Short:   "Setup a new core instance on Kubernetes",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
 			kubeClientConfig, err := kubeConfig.ClientConfig()
@@ -123,8 +124,9 @@ func newCmdCreateAggregatorOnK8s(config *config) *cobra.Command {
 
 func newCmdCreateAggregatorOnAWS(config *config) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "aws",
-		Short: "Setup a new core instance on Amazon EC2 (TODO)",
+		Use:     "aws",
+		Aliases: []string{"ec2", "amazon"},
+		Short:   "Setup a new core instance on Amazon EC2 (TODO)",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return errors.New("not implemented")
 		},
@@ -134,8 +136,9 @@ func newCmdCreateAggregatorOnAWS(config *config) *cobra.Command {
 
 func newCmdCreateAggregatorOnGCP(config *config) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "gcp",
-		Short: "Setup a new core instance on Google Compute Engine (TODO)",
+		Use:     "gcp",
+		Aliases: []string{"google", "gce"},
+		Short:   "Setup a new core instance on Google Compute Engine (TODO)",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return errors.New("not implemented")
 		},
