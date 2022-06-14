@@ -12,8 +12,9 @@ func newCmdUpdateAggregator(config *config) *cobra.Command {
 	var newName string
 
 	cmd := &cobra.Command{
-		Use:               "aggregator AGGREGATOR",
-		Short:             "Update a single aggregator by ID or name",
+		Use:               "instance INSTANCE",
+		Aliases:           []string{"aggregator"},
+		Short:             "Update a single core instance by ID or name",
 		Args:              cobra.ExactArgs(1),
 		ValidArgsFunction: config.completeAggregators,
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -36,7 +37,7 @@ func newCmdUpdateAggregator(config *config) *cobra.Command {
 				Name: &newName,
 			})
 			if err != nil {
-				return fmt.Errorf("could not update aggregator: %w", err)
+				return fmt.Errorf("could not update core instance: %w", err)
 			}
 
 			return nil
@@ -44,7 +45,7 @@ func newCmdUpdateAggregator(config *config) *cobra.Command {
 	}
 
 	fs := cmd.Flags()
-	fs.StringVar(&newName, "new-name", "", "New aggregator name")
+	fs.StringVar(&newName, "new-name", "", "New core instance name")
 
 	_ = cmd.MarkFlagRequired("new-name")
 

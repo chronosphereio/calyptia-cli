@@ -15,14 +15,15 @@ func newCmdGetAggregators(config *config) *cobra.Command {
 	var format string
 	var showIDs bool
 	cmd := &cobra.Command{
-		Use:   "aggregators",
-		Short: "Display latest aggregators from a project",
+		Use:     "instances",
+		Aliases: []string{"aggregators"},
+		Short:   "Display latest core instances from a project",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			aa, err := config.cloud.Aggregators(config.ctx, config.projectID, cloud.AggregatorsParams{
 				Last: &last,
 			})
 			if err != nil {
-				return fmt.Errorf("could not fetch your aggregators: %w", err)
+				return fmt.Errorf("could not fetch your core instances: %w", err)
 			}
 
 			switch format {
@@ -42,7 +43,7 @@ func newCmdGetAggregators(config *config) *cobra.Command {
 			case "json":
 				err := json.NewEncoder(cmd.OutOrStdout()).Encode(aa.Items)
 				if err != nil {
-					return fmt.Errorf("could not json encode your aggregators: %w", err)
+					return fmt.Errorf("could not json encode your core instances: %w", err)
 				}
 			default:
 				return fmt.Errorf("unknown output format %q", format)
@@ -52,9 +53,9 @@ func newCmdGetAggregators(config *config) *cobra.Command {
 	}
 
 	fs := cmd.Flags()
-	fs.Uint64VarP(&last, "last", "l", 0, "Last `N` aggregators. 0 means no limit")
+	fs.Uint64VarP(&last, "last", "l", 0, "Last `N` core instances. 0 means no limit")
 	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
-	fs.BoolVar(&showIDs, "show-ids", false, "Include aggregator IDs in table output")
+	fs.BoolVar(&showIDs, "show-ids", false, "Include core instance IDs in table output")
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
 
@@ -118,10 +119,10 @@ func (config *config) loadAggregatorID(aggregatorKey string) (string, error) {
 
 	if len(aa.Items) != 1 && !validUUID(aggregatorKey) {
 		if len(aa.Items) != 0 {
-			return "", fmt.Errorf("ambiguous aggregator name %q, use ID instead", aggregatorKey)
+			return "", fmt.Errorf("ambiguous core instance name %q, use ID instead", aggregatorKey)
 		}
 
-		return "", fmt.Errorf("could not find aggregator %q", aggregatorKey)
+		return "", fmt.Errorf("could not find core instance %q", aggregatorKey)
 	}
 
 	if len(aa.Items) == 1 {
