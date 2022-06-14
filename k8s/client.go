@@ -198,3 +198,34 @@ func (client *Client) CreateDeployment(
 		},
 	}, metav1.CreateOptions{})
 }
+
+func (client *Client) DeleteDeploymentByLabel(ctx context.Context, label, ns string) error {
+	foreground := metav1.DeletePropagationForeground
+	return client.AppsV1().Deployments(ns).DeleteCollection(ctx, metav1.DeleteOptions{
+		PropagationPolicy: &foreground,
+	}, metav1.ListOptions{LabelSelector: label})
+}
+
+func (client *Client) DeleteClusterRoleByLabel(ctx context.Context, label string) error {
+	return client.RbacV1().ClusterRoles().DeleteCollection(ctx, metav1.DeleteOptions{}, metav1.ListOptions{LabelSelector: label})
+}
+
+func (client *Client) DeleteServiceAccountByLabel(ctx context.Context, label, ns string) error {
+	return client.CoreV1().ServiceAccounts(ns).DeleteCollection(ctx, metav1.DeleteOptions{}, metav1.ListOptions{LabelSelector: label})
+}
+
+func (client *Client) DeleteRoleBindingByLabel(ctx context.Context, label string) error {
+	return client.RbacV1().ClusterRoleBindings().DeleteCollection(ctx, metav1.DeleteOptions{}, metav1.ListOptions{LabelSelector: label})
+}
+
+func (client *Client) DeleteServiceByName(ctx context.Context, name, ns string) error {
+	return client.CoreV1().Services(ns).Delete(ctx, name, metav1.DeleteOptions{})
+}
+
+func (client *Client) DeleteSecretByLabel(ctx context.Context, label, ns string) error {
+	return client.CoreV1().Secrets(ns).DeleteCollection(ctx, metav1.DeleteOptions{}, metav1.ListOptions{LabelSelector: label})
+}
+
+func (client *Client) FindServicesByLabel(ctx context.Context, label, ns string) (*apiv1.ServiceList, error) {
+	return client.CoreV1().Services(ns).List(ctx, metav1.ListOptions{LabelSelector: label})
+}
