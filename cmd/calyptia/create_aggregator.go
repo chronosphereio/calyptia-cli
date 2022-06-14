@@ -15,10 +15,10 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 )
 
-func newCmdCreateAggregator(config *config) *cobra.Command {
+func newCmdCreateCoreInstance(config *config) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "aggregator",
-		Short: "Create a new aggregator",
+		Use:   "instance",
+		Short: "Create a new Core instance",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			home, err := os.UserHomeDir()
 			if err != nil {
