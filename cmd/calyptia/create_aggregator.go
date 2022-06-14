@@ -37,30 +37,41 @@ func newCmdCreateCoreInstance(config *config) *cobra.Command {
 			}
 
 			ctx := context.Background()
-			namespace := apiv1.NamespaceDefault
+			//namespace := apiv1.NamespaceDefault
+			customNamespace := apiv1.Namespace{
+				TypeMeta: metav1.TypeMeta{
+					Kind: "Namespace",
+				},
+				ObjectMeta: metav1.ObjectMeta{
+					Name:   "CalyptiaCoreNamespace",
+					Labels: map[string]string{"app": "core"},
+				},
+			}
+			//create a custom namespace to make it easier to delete later
+			corenamespace, err := clientset.CoreV1().Namespaces().Create(ctx, &customNamespace, metav1.CreateOptions{})
 
-			clusterRole, err := config.createClusterRole(ctx, clientset, namespace)
+			clusterRole, err := config.createClusterRole(ctx, clientset, corenamespace.Name)
 			if err != nil {
 				return err
 			}
 
 			fmt.Printf("create cluster role result: %+v\n", clusterRole.Name)
 
-			serviceAccount, err := config.createServiceAccount(ctx, clientset, namespace)
+			serviceAccount, err := config.createServiceAccount(ctx, clientset, corenamespace.Name)
 			if err != nil {
 				return err
 			}
 
 			fmt.Printf("create service account result: %+v\n", serviceAccount.Name)
 
-			binding, err := config.createClusterRoleBinding(ctx, clientset, namespace)
+			binding, err := config.createClusterRoleBinding(ctx, clientset, corenamespace.Name)
 			if err != nil {
 				return err
 			}
 
 			fmt.Printf("create cluster role binding result: %+v\n", binding.Name)
 
-			deploy, err := config.createDeployment(ctx, clientset, namespace)
+			deploy, err := config.createDeployment(ctx, clientset, corenamespace.Name)
 			if err != nil {
 				return err
 			}
