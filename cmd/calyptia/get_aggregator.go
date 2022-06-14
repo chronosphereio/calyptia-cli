@@ -15,8 +15,8 @@ func newCmdGetAggregators(config *config) *cobra.Command {
 	var format string
 	var showIDs bool
 	cmd := &cobra.Command{
-		Use:     "instances",
-		Aliases: []string{"aggregators"},
+		Use:     "core_instances",
+		Aliases: []string{"instances", "aggregators"},
 		Short:   "Display latest core instances from a project",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			aa, err := config.cloud.Aggregators(config.ctx, config.projectID, cloud.AggregatorsParams{
