@@ -11,6 +11,7 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	apiv1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
+	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
@@ -61,6 +62,10 @@ func newCmdCreateAggregator(config *config) *cobra.Command {
 				}
 			}
 
+			if err := config.ensureNamespace(ctx, clientset, namespace); err != nil {
+				return err
+			}
+
 			clusterRole, err := config.createClusterRole(ctx, clientset, namespace, aggregatorName)
 			if err != nil {
 				return err
@@ -98,6 +103,44 @@ func newCmdCreateAggregator(config *config) *cobra.Command {
 	fs.StringVar(&namespace, "namespace", apiv1.NamespaceDefault, "Namespace")
 
 	return cmd
+}
+
+func (config *config) ensureNamespace(ctx context.Context, clientset *kubernetes.Clientset, namespace string) error {
+	exists, err := config.namespaceExists(ctx, clientset, namespace)
+	if err != nil {
+		return err
+	}
+
+	if exists {
+		return nil
+	}
+
+	_, err = config.createNamespace(ctx, clientset, namespace)
+	return err
+}
+
+func (config *config) namespaceExists(ctx context.Context, clientset *kubernetes.Clientset, namespace string) (bool, error) {
+	_, err := clientset.CoreV1().Namespaces().Get(ctx, namespace, metav1.GetOptions{})
+	if k8serrors.IsNotFound(err) {
+		return false, nil
+	}
+
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+func (config *config) createNamespace(ctx context.Context, clientset *kubernetes.Clientset, namespace string) (*apiv1.Namespace, error) {
+	return clientset.CoreV1().Namespaces().Create(ctx, &apiv1.Namespace{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:   namespace,
+			Labels: map[string]string{
+				// TODO: decide what to do
+			},
+		},
+	}, metav1.CreateOptions{})
 }
 
 func (config *config) createClusterRole(ctx context.Context, clientset *kubernetes.Clientset, namespace, aggregatorName string) (*rbacv1.ClusterRole, error) {
