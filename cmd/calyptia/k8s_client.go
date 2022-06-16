@@ -4,17 +4,18 @@ import (
 	"context"
 	"fmt"
 
-	cloud "github.com/calyptia/api/types"
 	appsv1 "k8s.io/api/apps/v1"
 	apiv1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
+
+	cloud "github.com/calyptia/api/types"
 )
 
 type k8sClient struct {
-	*kubernetes.Clientset
+	kubernetes.Interface
 	namespace    string
 	projectID    string
 	projectToken string

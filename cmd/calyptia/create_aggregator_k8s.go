@@ -3,15 +3,19 @@ package main
 import (
 	"context"
 	"fmt"
+	"regexp"
 
-	cloud "github.com/calyptia/api/types"
 	"github.com/spf13/cobra"
 	apiv1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
+
+	cloud "github.com/calyptia/api/types"
 )
 
-func newCmdCreateAggregatorOnK8s(config *config) *cobra.Command {
+var reHostnameRFC1123 = regexp.MustCompile(`^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$`)
+
+func newCmdCreateAggregatorOnK8s(config *config, testClientSet kubernetes.Interface) *cobra.Command {
 	var aggregatorName string
 	var noHealthCheckPipeline bool
 	var environmentID string
@@ -25,18 +29,27 @@ func newCmdCreateAggregatorOnK8s(config *config) *cobra.Command {
 		Aliases: []string{"kube", "k8s"},
 		Short:   "Setup a new core instance on Kubernetes",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
-			kubeClientConfig, err := kubeConfig.ClientConfig()
-			if err != nil {
-				return err
-			}
+			var clientset kubernetes.Interface
+			if testClientSet != nil {
+				clientset = testClientSet
+			} else {
+				kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
+				kubeClientConfig, err := kubeConfig.ClientConfig()
+				if err != nil {
+					return err
+				}
 
-			clientset, err := kubernetes.NewForConfig(kubeClientConfig)
-			if err != nil {
-				return err
+				clientset, err = kubernetes.NewForConfig(kubeClientConfig)
+				if err != nil {
+					return err
+				}
 			}
 
 			ctx := context.Background()
+
+			if aggregatorName != "" && !validHostnameRFC1123(aggregatorName) {
+				return fmt.Errorf("invalid aggregator name %q, it must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character", aggregatorName)
+			}
 
 			created, err := config.cloud.CreateAggregator(ctx, cloud.CreateAggregator{
 				Name:                   aggregatorName,
@@ -54,7 +67,7 @@ func newCmdCreateAggregatorOnK8s(config *config) *cobra.Command {
 			}
 
 			k8sClient := &k8sClient{
-				Clientset:    clientset,
+				Interface:    clientset,
 				namespace:    configOverrides.Context.Namespace,
 				projectID:    config.projectID,
 				projectToken: config.projectToken,
@@ -107,4 +120,8 @@ func newCmdCreateAggregatorOnK8s(config *config) *cobra.Command {
 	_ = cmd.RegisterFlagCompletionFunc("environment-id", config.completeEnvironmentIDs)
 
 	return cmd
+}
+
+func validHostnameRFC1123(s string) bool {
+	return reHostnameRFC1123.MatchString(s)
 }

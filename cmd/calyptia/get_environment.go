@@ -1,8 +1,9 @@
 package main
 
 import (
-	cloud "github.com/calyptia/api/types"
 	"github.com/spf13/cobra"
+
+	cloud "github.com/calyptia/api/types"
 )
 
 func (config *config) completeEnvironmentIDs(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

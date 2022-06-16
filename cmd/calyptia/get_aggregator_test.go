@@ -20,7 +20,7 @@ func Test_newCmdGetAggregators(t *testing.T) {
 
 		err := cmd.Execute()
 		wantEq(t, nil, err)
-		wantEq(t, "NAME AGE\n", got.String())
+		wantEq(t, "NAME VERSION ENVIRONMENT PIPELINES TAGS AGE\n", got.String())
 
 		t.Run("with_ids", func(t *testing.T) {
 			got.Reset()
@@ -28,7 +28,7 @@ func Test_newCmdGetAggregators(t *testing.T) {
 
 			err := cmd.Execute()
 			wantEq(t, nil, err)
-			wantEq(t, "ID NAME AGE\n", got.String())
+			wantEq(t, "ID NAME VERSION ENVIRONMENT PIPELINES TAGS AGE\n", got.String())
 		})
 	})
 
@@ -50,13 +50,21 @@ func Test_newCmdGetAggregators(t *testing.T) {
 		now := time.Now().Truncate(time.Second)
 		want := cloud.Aggregators{
 			Items: []cloud.Aggregator{{
-				ID:        "id_1",
-				Name:      "name_1",
-				CreatedAt: now.Add(-time.Hour),
+				ID:              "id_1",
+				Name:            "name_1",
+				Version:         "0.2.3",
+				EnvironmentName: "default",
+				Tags:            []string{"one", "two"},
+				PipelinesCount:  1,
+				CreatedAt:       now.Add(-time.Hour),
 			}, {
-				ID:        "id_2",
-				Name:      "name_2",
-				CreatedAt: now.Add(time.Minute * -10),
+				ID:              "id_2",
+				Name:            "name_2",
+				Version:         "0.2.3",
+				EnvironmentName: "default",
+				PipelinesCount:  2,
+				Tags:            []string{"three", "four"},
+				CreatedAt:       now.Add(time.Minute * -10),
 			}},
 		}
 		got := &bytes.Buffer{}
@@ -73,9 +81,9 @@ func Test_newCmdGetAggregators(t *testing.T) {
 		err := cmd.Execute()
 		wantEq(t, nil, err)
 		wantEq(t, ""+
-			"NAME   AGE\n"+
-			"name_1 1 hour\n"+
-			"name_2 10 minutes\n", got.String())
+			"NAME   VERSION ENVIRONMENT PIPELINES TAGS       AGE\n"+
+			"name_1 0.2.3   default     1         one,two    1 hour\n"+
+			"name_2 0.2.3   default     2         three,four 10 minutes\n", got.String())
 
 		t.Run("with_ids", func(t *testing.T) {
 			got.Reset()
@@ -84,9 +92,9 @@ func Test_newCmdGetAggregators(t *testing.T) {
 			err := cmd.Execute()
 			wantEq(t, nil, err)
 			wantEq(t, ""+
-				"ID   NAME   AGE\n"+
-				"id_1 name_1 1 hour\n"+
-				"id_2 name_2 10 minutes\n", got.String())
+				"ID   NAME   VERSION ENVIRONMENT PIPELINES TAGS       AGE\n"+
+				"id_1 name_1 0.2.3   default     1         one,two    1 hour\n"+
+				"id_2 name_2 0.2.3   default     2         three,four 10 minutes\n", got.String())
 		})
 
 		t.Run("json", func(t *testing.T) {
