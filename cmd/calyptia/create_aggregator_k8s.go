@@ -29,22 +29,6 @@ func newCmdCreateAggregatorOnK8s(config *config, testClientSet kubernetes.Interf
 		Aliases: []string{"kube", "k8s"},
 		Short:   "Setup a new core instance on Kubernetes",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			var clientset kubernetes.Interface
-			if testClientSet != nil {
-				clientset = testClientSet
-			} else {
-				kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
-				kubeClientConfig, err := kubeConfig.ClientConfig()
-				if err != nil {
-					return err
-				}
-
-				clientset, err = kubernetes.NewForConfig(kubeClientConfig)
-				if err != nil {
-					return err
-				}
-			}
-
 			ctx := context.Background()
 
 			if aggregatorName != "" && !validHostnameRFC1123(aggregatorName) {
@@ -64,6 +48,22 @@ func newCmdCreateAggregatorOnK8s(config *config, testClientSet kubernetes.Interf
 
 			if configOverrides.Context.Namespace == "" {
 				configOverrides.Context.Namespace = apiv1.NamespaceDefault
+			}
+
+			var clientset kubernetes.Interface
+			if testClientSet != nil {
+				clientset = testClientSet
+			} else {
+				kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
+				kubeClientConfig, err := kubeConfig.ClientConfig()
+				if err != nil {
+					return err
+				}
+
+				clientset, err = kubernetes.NewForConfig(kubeClientConfig)
+				if err != nil {
+					return err
+				}
 			}
 
 			k8sClient := &k8sClient{
