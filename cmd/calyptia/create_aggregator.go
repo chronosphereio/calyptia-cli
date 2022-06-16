@@ -227,9 +227,8 @@ func (client *k8sClient) createClusterRole(ctx context.Context, agg cloud.Create
 		ObjectMeta: metav1.ObjectMeta{
 			Name: agg.Name + "-cluster-role",
 			Labels: map[string]string{
-				"calyptia_project_id":      client.projectID,
-				"calyptia_aggregator_id":   agg.ID,
-				"calyptia_aggregator_name": agg.Name,
+				"calyptia_project_id":    client.projectID,
+				"calyptia_aggregator_id": agg.ID,
 			},
 		},
 		Rules: []rbacv1.PolicyRule{
@@ -265,9 +264,8 @@ func (client *k8sClient) createServiceAccount(ctx context.Context, agg cloud.Cre
 		ObjectMeta: metav1.ObjectMeta{
 			Name: agg.Name + "-service-account",
 			Labels: map[string]string{
-				"calyptia_project_id":      client.projectID,
-				"calyptia_aggregator_id":   agg.ID,
-				"calyptia_aggregator_name": agg.Name,
+				"calyptia_project_id":    client.projectID,
+				"calyptia_aggregator_id": agg.ID,
 			},
 		},
 	}, metav1.CreateOptions{})
@@ -283,9 +281,8 @@ func (client *k8sClient) createClusterRoleBinding(
 		ObjectMeta: metav1.ObjectMeta{
 			Name: agg.Name + "-cluster-role-binding",
 			Labels: map[string]string{
-				"calyptia_project_id":      client.projectID,
-				"calyptia_aggregator_id":   agg.ID,
-				"calyptia_aggregator_name": agg.Name,
+				"calyptia_project_id":    client.projectID,
+				"calyptia_aggregator_id": agg.ID,
 			},
 		},
 		RoleRef: rbacv1.RoleRef{
@@ -309,9 +306,8 @@ func (client *k8sClient) createDeployment(
 	serviceAccount *apiv1.ServiceAccount,
 ) (*appsv1.Deployment, error) {
 	labels := map[string]string{
-		"calyptia_project_id":      client.projectID,
-		"calyptia_aggregator_id":   agg.ID,
-		"calyptia_aggregator_name": agg.Name,
+		"calyptia_project_id":    client.projectID,
+		"calyptia_aggregator_id": agg.ID,
 	}
 	return client.AppsV1().Deployments(client.namespace).Create(ctx, &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
