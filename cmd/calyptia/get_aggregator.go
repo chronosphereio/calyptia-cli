@@ -112,7 +112,7 @@ func aggregatorsKeys(aa []cloud.Aggregator) []string {
 func (config *config) loadAggregatorID(aggregatorKey string) (string, error) {
 	aa, err := config.cloud.Aggregators(config.ctx, config.projectID, cloud.AggregatorsParams{
 		Name: &aggregatorKey,
-		Last: ptrUint64(2),
+		Last: ptr(uint64(2)),
 	})
 	if err != nil {
 		return "", err
