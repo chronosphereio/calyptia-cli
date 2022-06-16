@@ -18,6 +18,8 @@ type Client interface {
 	UpdateToken(ctx context.Context, tokenID string, opts types.UpdateToken) error
 	DeleteToken(ctx context.Context, tokenID string) error
 
+	Environments(ctx context.Context, projectID string, params types.EnvironmentsParams) (types.Environments, error)
+
 	RegisterAgent(ctx context.Context, payload types.RegisterAgent) (types.RegisteredAgent, error)
 	Agents(ctx context.Context, projectID string, params types.AgentsParams) (types.Agents, error)
 	Agent(ctx context.Context, agentID string) (types.Agent, error)

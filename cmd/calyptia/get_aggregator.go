@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
@@ -32,12 +33,12 @@ func newCmdGetAggregators(config *config) *cobra.Command {
 				if showIDs {
 					fmt.Fprint(tw, "ID\t")
 				}
-				fmt.Fprintln(tw, "NAME\tAGE")
+				fmt.Fprintln(tw, "NAME\tVERSION\tENVIRONMENT\tPIPELINES\tTAGS\tAGE")
 				for _, a := range aa.Items {
 					if showIDs {
 						fmt.Fprintf(tw, "%s\t", a.ID)
 					}
-					fmt.Fprintf(tw, "%s\t%s\n", a.Name, fmtAgo(a.CreatedAt))
+					fmt.Fprintf(tw, "%s\t%s\t%s\t%d\t%s\t%s\n", a.Name, a.Version, a.EnvironmentName, a.PipelinesCount, strings.Join(a.Tags, ","), fmtAgo(a.CreatedAt))
 				}
 				tw.Flush()
 			case "json":
@@ -130,5 +131,4 @@ func (config *config) loadAggregatorID(aggregatorKey string) (string, error) {
 	}
 
 	return aggregatorKey, nil
-
 }

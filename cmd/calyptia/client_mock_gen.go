@@ -82,6 +82,9 @@ var _ Client = &ClientMock{}
 // 			DeleteTokenFunc: func(ctx context.Context, tokenID string) error {
 // 				panic("mock out the DeleteToken method")
 // 			},
+// 			EnvironmentsFunc: func(ctx context.Context, projectID string, params cloud.EnvironmentsParams) (cloud.Environments, error) {
+// 				panic("mock out the Environments method")
+// 			},
 // 			MembersFunc: func(ctx context.Context, projectID string, params cloud.MembersParams) (cloud.Memberships, error) {
 // 				panic("mock out the Members method")
 // 			},
@@ -238,6 +241,9 @@ type ClientMock struct {
 
 	// DeleteTokenFunc mocks the DeleteToken method.
 	DeleteTokenFunc func(ctx context.Context, tokenID string) error
+
+	// EnvironmentsFunc mocks the Environments method.
+	EnvironmentsFunc func(ctx context.Context, projectID string, params cloud.EnvironmentsParams) (cloud.Environments, error)
 
 	// MembersFunc mocks the Members method.
 	MembersFunc func(ctx context.Context, projectID string, params cloud.MembersParams) (cloud.Memberships, error)
@@ -494,6 +500,15 @@ type ClientMock struct {
 			Ctx context.Context
 			// TokenID is the tokenID argument value.
 			TokenID string
+		}
+		// Environments holds details about calls to the Environments method.
+		Environments []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ProjectID is the projectID argument value.
+			ProjectID string
+			// Params is the params argument value.
+			Params cloud.EnvironmentsParams
 		}
 		// Members holds details about calls to the Members method.
 		Members []struct {
@@ -764,6 +779,7 @@ type ClientMock struct {
 	lockDeletePipelineSecret  sync.RWMutex
 	lockDeleteResourceProfile sync.RWMutex
 	lockDeleteToken           sync.RWMutex
+	lockEnvironments          sync.RWMutex
 	lockMembers               sync.RWMutex
 	lockPipeline              sync.RWMutex
 	lockPipelineConfigHistory sync.RWMutex
@@ -1642,6 +1658,49 @@ func (mock *ClientMock) DeleteTokenCalls() []struct {
 	mock.lockDeleteToken.RLock()
 	calls = mock.calls.DeleteToken
 	mock.lockDeleteToken.RUnlock()
+	return calls
+}
+
+// Environments calls EnvironmentsFunc.
+func (mock *ClientMock) Environments(ctx context.Context, projectID string, params cloud.EnvironmentsParams) (cloud.Environments, error) {
+	callInfo := struct {
+		Ctx       context.Context
+		ProjectID string
+		Params    cloud.EnvironmentsParams
+	}{
+		Ctx:       ctx,
+		ProjectID: projectID,
+		Params:    params,
+	}
+	mock.lockEnvironments.Lock()
+	mock.calls.Environments = append(mock.calls.Environments, callInfo)
+	mock.lockEnvironments.Unlock()
+	if mock.EnvironmentsFunc == nil {
+		var (
+			environmentsOut cloud.Environments
+			errOut          error
+		)
+		return environmentsOut, errOut
+	}
+	return mock.EnvironmentsFunc(ctx, projectID, params)
+}
+
+// EnvironmentsCalls gets all the calls that were made to Environments.
+// Check the length with:
+//     len(mockedClient.EnvironmentsCalls())
+func (mock *ClientMock) EnvironmentsCalls() []struct {
+	Ctx       context.Context
+	ProjectID string
+	Params    cloud.EnvironmentsParams
+} {
+	var calls []struct {
+		Ctx       context.Context
+		ProjectID string
+		Params    cloud.EnvironmentsParams
+	}
+	mock.lockEnvironments.RLock()
+	calls = mock.calls.Environments
+	mock.lockEnvironments.RUnlock()
 	return calls
 }
 
