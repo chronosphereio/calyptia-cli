@@ -14,6 +14,11 @@ import (
 	cloud "github.com/calyptia/api/types"
 )
 
+const (
+	labelProjectID    = "calyptia_project_id"
+	labelAggregatorID = "calyptia_aggregator_id"
+)
+
 type k8sClient struct {
 	kubernetes.Interface
 	namespace    string
@@ -64,11 +69,8 @@ func (client *k8sClient) createOwnNamespace(ctx context.Context) (*apiv1.Namespa
 func (client *k8sClient) createClusterRole(ctx context.Context, agg cloud.CreatedAggregator) (*rbacv1.ClusterRole, error) {
 	return client.RbacV1().ClusterRoles().Create(ctx, &rbacv1.ClusterRole{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: agg.Name + "-cluster-role",
-			Labels: map[string]string{
-				"calyptia_project_id":    client.projectID,
-				"calyptia_aggregator_id": agg.ID,
-			},
+			Name:   agg.Name + "-cluster-role",
+			Labels: makeK8sLabels(client.projectID, agg.ID),
 		},
 		Rules: []rbacv1.PolicyRule{
 			{
@@ -101,11 +103,8 @@ func (client *k8sClient) createClusterRole(ctx context.Context, agg cloud.Create
 func (client *k8sClient) createServiceAccount(ctx context.Context, agg cloud.CreatedAggregator) (*apiv1.ServiceAccount, error) {
 	return client.CoreV1().ServiceAccounts(client.namespace).Create(ctx, &apiv1.ServiceAccount{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: agg.Name + "-service-account",
-			Labels: map[string]string{
-				"calyptia_project_id":    client.projectID,
-				"calyptia_aggregator_id": agg.ID,
-			},
+			Name:   agg.Name + "-service-account",
+			Labels: makeK8sLabels(client.projectID, agg.ID),
 		},
 	}, metav1.CreateOptions{})
 }
@@ -118,11 +117,8 @@ func (client *k8sClient) createClusterRoleBinding(
 ) (*rbacv1.ClusterRoleBinding, error) {
 	return client.RbacV1().ClusterRoleBindings().Create(ctx, &rbacv1.ClusterRoleBinding{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: agg.Name + "-cluster-role-binding",
-			Labels: map[string]string{
-				"calyptia_project_id":    client.projectID,
-				"calyptia_aggregator_id": agg.ID,
-			},
+			Name:   agg.Name + "-cluster-role-binding",
+			Labels: makeK8sLabels(client.projectID, agg.ID),
 		},
 		RoleRef: rbacv1.RoleRef{
 			APIGroup: rbacv1.GroupName,
@@ -144,10 +140,7 @@ func (client *k8sClient) createDeployment(
 	agg cloud.CreatedAggregator,
 	serviceAccount *apiv1.ServiceAccount,
 ) (*appsv1.Deployment, error) {
-	labels := map[string]string{
-		"calyptia_project_id":    client.projectID,
-		"calyptia_aggregator_id": agg.ID,
-	}
+	labels := makeK8sLabels(client.projectID, agg.ID)
 	return client.AppsV1().Deployments(client.namespace).Create(ctx, &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:   agg.Name + "-deployment",
@@ -191,4 +184,11 @@ func (client *k8sClient) createDeployment(
 			},
 		},
 	}, metav1.CreateOptions{})
+}
+
+func makeK8sLabels(projectID, aggregatorID string) map[string]string {
+	return map[string]string{
+		labelProjectID:    projectID,
+		labelAggregatorID: aggregatorID,
+	}
 }
