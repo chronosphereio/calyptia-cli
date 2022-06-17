@@ -38,7 +38,6 @@ func newCmdCreateAggregatorOnK8s(config *config, testClientSet kubernetes.Interf
 			created, err := config.cloud.CreateAggregator(ctx, cloud.CreateAggregator{
 				Name:                   aggregatorName,
 				AddHealthCheckPipeline: !noHealthCheckPipeline,
-				Version:                "", // TODO
 				EnvironmentID:          environmentID,
 				Tags:                   tags,
 			})
