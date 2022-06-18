@@ -13,17 +13,6 @@ import (
 )
 
 func Test_newCmdCreateAggregatorOnK8s(t *testing.T) {
-	t.Run("invalid_name", func(t *testing.T) {
-		cmd := newCmdCreateAggregatorOnK8s(nil, nil)
-		cmd.SetOutput(io.Discard)
-		cmd.SetArgs([]string{
-			"--name", "@nope@",
-		})
-
-		err := cmd.Execute()
-		wantErrMsg(t, `invalid aggregator name "@nope@", it must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character`, err)
-	})
-
 	t.Run("error", func(t *testing.T) {
 		cmd := newCmdCreateAggregatorOnK8s(configWithMock(&ClientMock{
 			CreateAggregatorFunc: func(ctx context.Context, payload types.CreateAggregator) (types.CreatedAggregator, error) {

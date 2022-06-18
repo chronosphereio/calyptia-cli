@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"regexp"
 
 	"github.com/spf13/cobra"
 	apiv1 "k8s.io/api/core/v1"
@@ -12,8 +11,6 @@ import (
 
 	cloud "github.com/calyptia/api/types"
 )
-
-var reHostnameRFC1123 = regexp.MustCompile(`^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$`)
 
 func newCmdCreateAggregatorOnK8s(config *config, testClientSet kubernetes.Interface) *cobra.Command {
 	var aggregatorName string
@@ -30,10 +27,6 @@ func newCmdCreateAggregatorOnK8s(config *config, testClientSet kubernetes.Interf
 		Short:   "Setup a new core instance on Kubernetes",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.Background()
-
-			if aggregatorName != "" && !validHostnameRFC1123(aggregatorName) {
-				return fmt.Errorf("invalid aggregator name %q, it must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character", aggregatorName)
-			}
 
 			var environmentID string
 			if environmentKey != "" {
@@ -128,8 +121,4 @@ func newCmdCreateAggregatorOnK8s(config *config, testClientSet kubernetes.Interf
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
 
 	return cmd
-}
-
-func validHostnameRFC1123(s string) bool {
-	return reHostnameRFC1123.MatchString(s)
 }
