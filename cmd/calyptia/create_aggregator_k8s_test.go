@@ -39,9 +39,9 @@ func Test_newCmdCreateAggregatorOnK8s(t *testing.T) {
 
 		err := cmd.Execute()
 		wantEq(t, nil, err)
-		wantEq(t, "cluster role: \"want-aggregator-name-cluster-role\"\n"+
-			"service account: \"want-aggregator-name-service-account\"\n"+
-			"cluster role binding: \"want-aggregator-name-cluster-role-binding\"\n"+
-			"deployment: \"want-aggregator-name-deployment\"\n", got.String())
+		wantEq(t, "cluster_role=\"want-aggregator-name-cluster-role\"\n"+
+			"service_account=\"want-aggregator-name-service-account\"\n"+
+			"cluster_role_binding=\"want-aggregator-name-cluster-role-binding\"\n"+
+			"deployment=\"want-aggregator-name-deployment\"\n", got.String())
 	})
 }
