@@ -14,6 +14,14 @@ import (
 	cloud "github.com/calyptia/api/types"
 )
 
+// https://kubernetes.io/docs/concepts/overview/working-with-objects/common-labels/
+const (
+	labelVersion   = "app.kubernetes.io/version"
+	labelPartOf    = "app.kubernetes.io/part-of"
+	labelManagedBy = "app.kubernetes.io/managed-by"
+	labelCreatedBy = "app.kubernetes.io/created-by"
+)
+
 const (
 	labelProjectID    = "calyptia_project_id"
 	labelAggregatorID = "calyptia_aggregator_id"
@@ -22,9 +30,9 @@ const (
 type k8sClient struct {
 	kubernetes.Interface
 	namespace    string
-	projectID    string
 	projectToken string
 	cloudBaseURL string
+	labelsFunc   func() map[string]string
 }
 
 func (client *k8sClient) ensureOwnNamespace(ctx context.Context) error {
@@ -70,7 +78,7 @@ func (client *k8sClient) createClusterRole(ctx context.Context, agg cloud.Create
 	return client.RbacV1().ClusterRoles().Create(ctx, &rbacv1.ClusterRole{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:   agg.Name + "-cluster-role",
-			Labels: makeK8sLabels(client.projectID, agg.ID),
+			Labels: client.labelsFunc(),
 		},
 		Rules: []rbacv1.PolicyRule{
 			{
@@ -104,7 +112,7 @@ func (client *k8sClient) createServiceAccount(ctx context.Context, agg cloud.Cre
 	return client.CoreV1().ServiceAccounts(client.namespace).Create(ctx, &apiv1.ServiceAccount{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:   agg.Name + "-service-account",
-			Labels: makeK8sLabels(client.projectID, agg.ID),
+			Labels: client.labelsFunc(),
 		},
 	}, metav1.CreateOptions{})
 }
@@ -118,7 +126,7 @@ func (client *k8sClient) createClusterRoleBinding(
 	return client.RbacV1().ClusterRoleBindings().Create(ctx, &rbacv1.ClusterRoleBinding{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:   agg.Name + "-cluster-role-binding",
-			Labels: makeK8sLabels(client.projectID, agg.ID),
+			Labels: client.labelsFunc(),
 		},
 		RoleRef: rbacv1.RoleRef{
 			APIGroup: rbacv1.GroupName,
@@ -140,7 +148,7 @@ func (client *k8sClient) createDeployment(
 	agg cloud.CreatedAggregator,
 	serviceAccount *apiv1.ServiceAccount,
 ) (*appsv1.Deployment, error) {
-	labels := makeK8sLabels(client.projectID, agg.ID)
+	labels := client.labelsFunc()
 	return client.AppsV1().Deployments(client.namespace).Create(ctx, &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:   agg.Name + "-deployment",
@@ -184,11 +192,4 @@ func (client *k8sClient) createDeployment(
 			},
 		},
 	}, metav1.CreateOptions{})
-}
-
-func makeK8sLabels(projectID, aggregatorID string) map[string]string {
-	return map[string]string{
-		labelProjectID:    projectID,
-		labelAggregatorID: aggregatorID,
-	}
 }

@@ -65,14 +65,24 @@ func newCmdCreateAggregatorOnK8s(config *config, testClientSet kubernetes.Interf
 				if err != nil {
 					return err
 				}
+
 			}
 
 			k8sClient := &k8sClient{
 				Interface:    clientset,
 				namespace:    configOverrides.Context.Namespace,
-				projectID:    config.projectID,
 				projectToken: config.projectToken,
 				cloudBaseURL: config.baseURL,
+				labelsFunc: func() map[string]string {
+					return map[string]string{
+						labelVersion:      version,
+						labelPartOf:       "calyptia",
+						labelManagedBy:    "calyptia-cli",
+						labelCreatedBy:    "calyptia-cli",
+						labelProjectID:    config.projectID,
+						labelAggregatorID: created.ID,
+					}
+				},
 			}
 
 			if err := k8sClient.ensureOwnNamespace(ctx); err != nil {
@@ -84,28 +94,28 @@ func newCmdCreateAggregatorOnK8s(config *config, testClientSet kubernetes.Interf
 				return fmt.Errorf("could not create kubernetes cluster role: %w", err)
 			}
 
-			fmt.Fprintf(cmd.OutOrStdout(), "cluster role: %q\n", clusterRole.Name)
+			fmt.Fprintf(cmd.OutOrStdout(), "cluster_role=%q\n", clusterRole.Name)
 
 			serviceAccount, err := k8sClient.createServiceAccount(ctx, created)
 			if err != nil {
 				return fmt.Errorf("could not create kubernetes service account: %w", err)
 			}
 
-			fmt.Fprintf(cmd.OutOrStdout(), "service account: %q\n", serviceAccount.Name)
+			fmt.Fprintf(cmd.OutOrStdout(), "service_account=%q\n", serviceAccount.Name)
 
 			binding, err := k8sClient.createClusterRoleBinding(ctx, created, clusterRole, serviceAccount)
 			if err != nil {
 				return fmt.Errorf("could not create kubernetes cluster role binding: %w", err)
 			}
 
-			fmt.Fprintf(cmd.OutOrStdout(), "cluster role binding: %q\n", binding.Name)
+			fmt.Fprintf(cmd.OutOrStdout(), "cluster_role_binding=%q\n", binding.Name)
 
 			deploy, err := k8sClient.createDeployment(ctx, created, serviceAccount)
 			if err != nil {
 				return fmt.Errorf("could not create kubernetes deployment: %w", err)
 			}
 
-			fmt.Fprintf(cmd.OutOrStdout(), "deployment: %q\n", deploy.Name)
+			fmt.Fprintf(cmd.OutOrStdout(), "deployment=%q\n", deploy.Name)
 
 			return nil
 		},
