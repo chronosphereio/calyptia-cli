@@ -28,7 +28,7 @@ jobs:
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v0
         with:
-          # TODOL Switch to Workload Identity Federation method.
+          # TODO: Switch to Workload Identity Federation method.
           # https://github.com/google-github-actions/auth#authenticating-via-workload-identity-federation
           credentials_json: ${{ secrets.GCP_SA_KEY }}
           export_environment_variables: true

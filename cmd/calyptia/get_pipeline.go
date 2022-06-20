@@ -311,7 +311,7 @@ func pipelinesKeys(aa []cloud.Pipeline) []string {
 func (config *config) loadPipelineID(pipelineKey string) (string, error) {
 	pp, err := config.cloud.ProjectPipelines(config.ctx, config.projectID, cloud.PipelinesParams{
 		Name: &pipelineKey,
-		Last: ptrUint64(2),
+		Last: ptr(uint64(2)),
 	})
 	if err != nil {
 		return "", err

@@ -176,7 +176,7 @@ func (config *config) loadAgentID(agentKey string) (string, error) {
 	var err error
 	aa, err := config.cloud.Agents(config.ctx, config.projectID, cloud.AgentsParams{
 		Name: &agentKey,
-		Last: ptrUint64(2),
+		Last: ptr(uint64(2)),
 	})
 	if err != nil {
 		return "", err

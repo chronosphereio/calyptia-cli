@@ -180,4 +180,4 @@ func measurementNames(measurements map[string]cloud.AgentMeasurement) []string {
 	return names
 }
 
-func ptrUint64(v uint64) *uint64 { return &v }
+func ptr[T any](p T) *T { return &p }
