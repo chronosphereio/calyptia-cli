@@ -27,6 +27,8 @@ const (
 	labelAggregatorID = "calyptia_aggregator_id"
 )
 
+const coreDockerImage = "ghcr.io/calyptia/core"
+
 type k8sClient struct {
 	kubernetes.Interface
 	namespace    string
@@ -169,7 +171,7 @@ func (client *k8sClient) createDeployment(
 					Containers: []apiv1.Container{
 						{
 							Name:            agg.Name,
-							Image:           "ghcr.io/calyptia/core",
+							Image:           coreDockerImage,
 							ImagePullPolicy: apiv1.PullAlways,
 							Args:            []string{"-debug=true"},
 							Env: []apiv1.EnvVar{
