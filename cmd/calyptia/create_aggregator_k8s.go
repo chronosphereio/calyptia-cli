@@ -12,6 +12,11 @@ import (
 	cloud "github.com/calyptia/api/types"
 )
 
+const (
+	//nolint: gosec // this is not a secret leak, it's just a format declaration.
+	secretNameFormat = "%s-private-rsa.key"
+)
+
 func newCmdCreateAggregatorOnK8s(config *config, testClientSet kubernetes.Interface) *cobra.Command {
 	var aggregatorName string
 	var noHealthCheckPipeline bool
@@ -51,9 +56,9 @@ func newCmdCreateAggregatorOnK8s(config *config, testClientSet kubernetes.Interf
 				configOverrides.Context.Namespace = apiv1.NamespaceDefault
 			}
 
-			var clientset kubernetes.Interface
+			var clientSet kubernetes.Interface
 			if testClientSet != nil {
-				clientset = testClientSet
+				clientSet = testClientSet
 			} else {
 				kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
 				kubeClientConfig, err := kubeConfig.ClientConfig()
@@ -61,7 +66,7 @@ func newCmdCreateAggregatorOnK8s(config *config, testClientSet kubernetes.Interf
 					return err
 				}
 
-				clientset, err = kubernetes.NewForConfig(kubeClientConfig)
+				clientSet, err = kubernetes.NewForConfig(kubeClientConfig)
 				if err != nil {
 					return err
 				}
@@ -69,7 +74,7 @@ func newCmdCreateAggregatorOnK8s(config *config, testClientSet kubernetes.Interf
 			}
 
 			k8sClient := &k8sClient{
-				Interface:    clientset,
+				Interface:    clientSet,
 				namespace:    configOverrides.Context.Namespace,
 				projectToken: config.projectToken,
 				cloudBaseURL: config.baseURL,
@@ -88,6 +93,13 @@ func newCmdCreateAggregatorOnK8s(config *config, testClientSet kubernetes.Interf
 			if err := k8sClient.ensureOwnNamespace(ctx); err != nil {
 				return fmt.Errorf("could not ensure kubernetes namespace exists: %w", err)
 			}
+
+			secret, err := k8sClient.createSecret(ctx, fmt.Sprintf(secretNameFormat, created.Name), created.PrivateRSAKey)
+			if err != nil {
+				return fmt.Errorf("could not create kubernetes secret from private key: %w", err)
+			}
+
+			fmt.Fprintf(cmd.OutOrStdout(), "secret=%q\n", secret.Name)
 
 			clusterRole, err := k8sClient.createClusterRole(ctx, created)
 			if err != nil {
