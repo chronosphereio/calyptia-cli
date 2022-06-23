@@ -82,7 +82,8 @@ func (client *k8sClient) createSecret(ctx context.Context, name string, value []
 				Kind: "Secret",
 			},
 			ObjectMeta: metav1.ObjectMeta{
-				Name: name,
+				Name:   name,
+				Labels: client.labelsFunc(),
 			},
 			Data: map[string][]byte{
 				name: value,
