@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/calyptia/cli/pkg/k8s"
 
 	"github.com/spf13/cobra"
 	apiv1 "k8s.io/api/core/v1"
@@ -73,56 +74,56 @@ func newCmdCreateAggregatorOnK8s(config *config, testClientSet kubernetes.Interf
 
 			}
 
-			k8sClient := &k8sClient{
+			k8sClient := &k8s.Client{
 				Interface:    clientSet,
-				namespace:    configOverrides.Context.Namespace,
-				projectToken: config.projectToken,
-				cloudBaseURL: config.baseURL,
-				labelsFunc: func() map[string]string {
+				Namespace:    configOverrides.Context.Namespace,
+				ProjectToken: config.projectToken,
+				CloudBaseURL: config.baseURL,
+				LabelsFunc: func() map[string]string {
 					return map[string]string{
-						labelVersion:      version,
-						labelPartOf:       "calyptia",
-						labelManagedBy:    "calyptia-cli",
-						labelCreatedBy:    "calyptia-cli",
-						labelProjectID:    config.projectID,
-						labelAggregatorID: created.ID,
+						k8s.LabelVersion:      version,
+						k8s.LabelPartOf:       "calyptia",
+						k8s.LabelManagedBy:    "calyptia-cli",
+						k8s.LabelCreatedBy:    "calyptia-cli",
+						k8s.LabelProjectID:    config.projectID,
+						k8s.LabelAggregatorID: created.ID,
 					}
 				},
 			}
 
-			if err := k8sClient.ensureOwnNamespace(ctx); err != nil {
+			if err := k8sClient.EnsureOwnNamespace(ctx); err != nil {
 				return fmt.Errorf("could not ensure kubernetes namespace exists: %w", err)
 			}
 
-			secret, err := k8sClient.createSecret(ctx, fmt.Sprintf(secretNameFormat, created.Name), created.PrivateRSAKey)
+			secret, err := k8sClient.CreateSecret(ctx, fmt.Sprintf(secretNameFormat, created.Name), created.PrivateRSAKey)
 			if err != nil {
 				return fmt.Errorf("could not create kubernetes secret from private key: %w", err)
 			}
 
 			fmt.Fprintf(cmd.OutOrStdout(), "secret=%q\n", secret.Name)
 
-			clusterRole, err := k8sClient.createClusterRole(ctx, created)
+			clusterRole, err := k8sClient.CreateClusterRole(ctx, created)
 			if err != nil {
 				return fmt.Errorf("could not create kubernetes cluster role: %w", err)
 			}
 
 			fmt.Fprintf(cmd.OutOrStdout(), "cluster_role=%q\n", clusterRole.Name)
 
-			serviceAccount, err := k8sClient.createServiceAccount(ctx, created)
+			serviceAccount, err := k8sClient.CreateServiceAccount(ctx, created)
 			if err != nil {
 				return fmt.Errorf("could not create kubernetes service account: %w", err)
 			}
 
 			fmt.Fprintf(cmd.OutOrStdout(), "service_account=%q\n", serviceAccount.Name)
 
-			binding, err := k8sClient.createClusterRoleBinding(ctx, created, clusterRole, serviceAccount)
+			binding, err := k8sClient.CreateClusterRoleBinding(ctx, created, clusterRole, serviceAccount)
 			if err != nil {
 				return fmt.Errorf("could not create kubernetes cluster role binding: %w", err)
 			}
 
 			fmt.Fprintf(cmd.OutOrStdout(), "cluster_role_binding=%q\n", binding.Name)
 
-			deploy, err := k8sClient.createDeployment(ctx, created, serviceAccount)
+			deploy, err := k8sClient.CreateDeployment(ctx, created, serviceAccount)
 			if err != nil {
 				return fmt.Errorf("could not create kubernetes deployment: %w", err)
 			}
