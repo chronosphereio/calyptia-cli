@@ -78,9 +78,6 @@ func (client *k8sClient) createOwnNamespace(ctx context.Context) (*apiv1.Namespa
 func (client *k8sClient) createSecret(ctx context.Context, name string, value []byte) (*apiv1.Secret, error) {
 	return client.CoreV1().Secrets(client.namespace).Create(ctx,
 		&apiv1.Secret{
-			TypeMeta: metav1.TypeMeta{
-				Kind: "Secret",
-			},
 			ObjectMeta: metav1.ObjectMeta{
 				Name:   name,
 				Labels: client.labelsFunc(),
