@@ -3,6 +3,7 @@ package k8s
 import (
 	"context"
 	"fmt"
+
 	appsv1 "k8s.io/api/apps/v1"
 	apiv1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
@@ -66,17 +67,15 @@ func (client *Client) createOwnNamespace(ctx context.Context) (*apiv1.Namespace,
 }
 
 func (client *Client) CreateSecret(ctx context.Context, name string, value []byte) (*apiv1.Secret, error) {
-	return client.CoreV1().Secrets(client.Namespace).Create(ctx,
-		&apiv1.Secret{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:   name,
-				Labels: client.LabelsFunc(),
-			},
-			Data: map[string][]byte{
-				name: value,
-			},
+	return client.CoreV1().Secrets(client.Namespace).Create(ctx, &apiv1.Secret{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:   name,
+			Labels: client.LabelsFunc(),
 		},
-		metav1.CreateOptions{})
+		Data: map[string][]byte{
+			name: value,
+		},
+	}, metav1.CreateOptions{})
 }
 
 func (client *Client) CreateClusterRole(ctx context.Context, agg cloud.CreatedAggregator) (*rbacv1.ClusterRole, error) {
