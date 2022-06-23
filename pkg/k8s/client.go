@@ -1,4 +1,4 @@
-package main
+package k8s
 
 import (
 	"context"
@@ -13,30 +13,20 @@ import (
 	cloud "github.com/calyptia/api/types"
 )
 
-// https://kubernetes.io/docs/concepts/overview/working-with-objects/common-labels/
-const (
-	labelVersion   = "app.kubernetes.io/version"
-	labelPartOf    = "app.kubernetes.io/part-of"
-	labelManagedBy = "app.kubernetes.io/managed-by"
-	labelCreatedBy = "app.kubernetes.io/created-by"
+var (
+	deploymentReplicas           int32 = 1
+	automountServiceAccountToken       = true
 )
 
-const (
-	labelProjectID    = "calyptia_project_id"
-	labelAggregatorID = "calyptia_aggregator_id"
-)
-
-const coreDockerImage = "ghcr.io/calyptia/core"
-
-type k8sClient struct {
+type Client struct {
 	kubernetes.Interface
-	namespace    string
-	projectToken string
-	cloudBaseURL string
-	labelsFunc   func() map[string]string
+	Namespace    string
+	ProjectToken string
+	CloudBaseURL string
+	LabelsFunc   func() map[string]string
 }
 
-func (client *k8sClient) ensureOwnNamespace(ctx context.Context) error {
+func (client *Client) EnsureOwnNamespace(ctx context.Context) error {
 	exists, err := client.ownNamespaceExists(ctx)
 	if err != nil {
 		return fmt.Errorf("exists: %w", err)
@@ -54,8 +44,8 @@ func (client *k8sClient) ensureOwnNamespace(ctx context.Context) error {
 	return nil
 }
 
-func (client *k8sClient) ownNamespaceExists(ctx context.Context) (bool, error) {
-	_, err := client.CoreV1().Namespaces().Get(ctx, client.namespace, metav1.GetOptions{})
+func (client *Client) ownNamespaceExists(ctx context.Context) (bool, error) {
+	_, err := client.CoreV1().Namespaces().Get(ctx, client.Namespace, metav1.GetOptions{})
 	if k8serrors.IsNotFound(err) {
 		return false, nil
 	}
@@ -67,20 +57,20 @@ func (client *k8sClient) ownNamespaceExists(ctx context.Context) (bool, error) {
 	return true, nil
 }
 
-func (client *k8sClient) createOwnNamespace(ctx context.Context) (*apiv1.Namespace, error) {
+func (client *Client) createOwnNamespace(ctx context.Context) (*apiv1.Namespace, error) {
 	return client.CoreV1().Namespaces().Create(ctx, &apiv1.Namespace{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: client.namespace,
+			Name: client.Namespace,
 		},
 	}, metav1.CreateOptions{})
 }
 
-func (client *k8sClient) createSecret(ctx context.Context, name string, value []byte) (*apiv1.Secret, error) {
-	return client.CoreV1().Secrets(client.namespace).Create(ctx,
+func (client *Client) CreateSecret(ctx context.Context, name string, value []byte) (*apiv1.Secret, error) {
+	return client.CoreV1().Secrets(client.Namespace).Create(ctx,
 		&apiv1.Secret{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:   name,
-				Labels: client.labelsFunc(),
+				Labels: client.LabelsFunc(),
 			},
 			Data: map[string][]byte{
 				name: value,
@@ -89,11 +79,11 @@ func (client *k8sClient) createSecret(ctx context.Context, name string, value []
 		metav1.CreateOptions{})
 }
 
-func (client *k8sClient) createClusterRole(ctx context.Context, agg cloud.CreatedAggregator) (*rbacv1.ClusterRole, error) {
+func (client *Client) CreateClusterRole(ctx context.Context, agg cloud.CreatedAggregator) (*rbacv1.ClusterRole, error) {
 	return client.RbacV1().ClusterRoles().Create(ctx, &rbacv1.ClusterRole{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:   agg.Name + "-cluster-role",
-			Labels: client.labelsFunc(),
+			Labels: client.LabelsFunc(),
 		},
 		Rules: []rbacv1.PolicyRule{
 			{
@@ -123,16 +113,16 @@ func (client *k8sClient) createClusterRole(ctx context.Context, agg cloud.Create
 	}, metav1.CreateOptions{})
 }
 
-func (client *k8sClient) createServiceAccount(ctx context.Context, agg cloud.CreatedAggregator) (*apiv1.ServiceAccount, error) {
-	return client.CoreV1().ServiceAccounts(client.namespace).Create(ctx, &apiv1.ServiceAccount{
+func (client *Client) CreateServiceAccount(ctx context.Context, agg cloud.CreatedAggregator) (*apiv1.ServiceAccount, error) {
+	return client.CoreV1().ServiceAccounts(client.Namespace).Create(ctx, &apiv1.ServiceAccount{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:   agg.Name + "-service-account",
-			Labels: client.labelsFunc(),
+			Labels: client.LabelsFunc(),
 		},
 	}, metav1.CreateOptions{})
 }
 
-func (client *k8sClient) createClusterRoleBinding(
+func (client *Client) CreateClusterRoleBinding(
 	ctx context.Context,
 	agg cloud.CreatedAggregator,
 	clusterRole *rbacv1.ClusterRole,
@@ -141,7 +131,7 @@ func (client *k8sClient) createClusterRoleBinding(
 	return client.RbacV1().ClusterRoleBindings().Create(ctx, &rbacv1.ClusterRoleBinding{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:   agg.Name + "-cluster-role-binding",
-			Labels: client.labelsFunc(),
+			Labels: client.LabelsFunc(),
 		},
 		RoleRef: rbacv1.RoleRef{
 			APIGroup: rbacv1.GroupName,
@@ -151,26 +141,27 @@ func (client *k8sClient) createClusterRoleBinding(
 		Subjects: []rbacv1.Subject{
 			{
 				Kind:      "ServiceAccount",
-				Namespace: client.namespace,
+				Namespace: client.Namespace,
 				Name:      serviceAccount.Name,
 			},
 		},
 	}, metav1.CreateOptions{})
 }
 
-func (client *k8sClient) createDeployment(
+func (client *Client) CreateDeployment(
 	ctx context.Context,
+	image string,
 	agg cloud.CreatedAggregator,
 	serviceAccount *apiv1.ServiceAccount,
 ) (*appsv1.Deployment, error) {
-	labels := client.labelsFunc()
-	return client.AppsV1().Deployments(client.namespace).Create(ctx, &appsv1.Deployment{
+	labels := client.LabelsFunc()
+	return client.AppsV1().Deployments(client.Namespace).Create(ctx, &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:   agg.Name + "-deployment",
 			Labels: labels,
 		},
 		Spec: appsv1.DeploymentSpec{
-			Replicas: ptr(int32(1)),
+			Replicas: &deploymentReplicas,
 			Selector: &metav1.LabelSelector{
 				MatchLabels: labels,
 			},
@@ -180,11 +171,11 @@ func (client *k8sClient) createDeployment(
 				},
 				Spec: apiv1.PodSpec{
 					ServiceAccountName:           serviceAccount.Name,
-					AutomountServiceAccountToken: ptr(true),
+					AutomountServiceAccountToken: &automountServiceAccountToken,
 					Containers: []apiv1.Container{
 						{
 							Name:            agg.Name,
-							Image:           coreDockerImage,
+							Image:           image,
 							ImagePullPolicy: apiv1.PullAlways,
 							Args:            []string{"-debug=true"},
 							Env: []apiv1.EnvVar{
@@ -194,11 +185,11 @@ func (client *k8sClient) createDeployment(
 								},
 								{
 									Name:  "PROJECT_TOKEN",
-									Value: client.projectToken,
+									Value: client.ProjectToken,
 								},
 								{
 									Name:  "AGGREGATOR_FLUENTBIT_CLOUD_URL",
-									Value: client.cloudBaseURL,
+									Value: client.CloudBaseURL,
 								},
 							},
 						},
