@@ -13,10 +13,6 @@ import (
 	cloud "github.com/calyptia/api/types"
 )
 
-const (
-	coreDockerImage = "ghcr.io/calyptia/core"
-)
-
 var (
 	deploymentReplicas           int32 = 1
 	automountServiceAccountToken       = true
@@ -154,6 +150,7 @@ func (client *Client) CreateClusterRoleBinding(
 
 func (client *Client) CreateDeployment(
 	ctx context.Context,
+	image string,
 	agg cloud.CreatedAggregator,
 	serviceAccount *apiv1.ServiceAccount,
 ) (*appsv1.Deployment, error) {
@@ -178,7 +175,7 @@ func (client *Client) CreateDeployment(
 					Containers: []apiv1.Container{
 						{
 							Name:            agg.Name,
-							Image:           coreDockerImage,
+							Image:           image,
 							ImagePullPolicy: apiv1.PullAlways,
 							Args:            []string{"-debug=true"},
 							Env: []apiv1.EnvVar{
