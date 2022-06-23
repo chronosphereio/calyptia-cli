@@ -1,4 +1,4 @@
-module github.com/calyptia/cloud-cli
+module github.com/calyptia/cli
 
 go 1.18
 
