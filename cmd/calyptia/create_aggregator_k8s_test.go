@@ -19,7 +19,8 @@ func Test_newCmdCreateAggregatorOnK8s(t *testing.T) {
 				return types.CreatedAggregator{}, errors.New("internal server error")
 			},
 		}), nil)
-		cmd.SetOutput(io.Discard)
+
+		cmd.SetOut(io.Discard)
 
 		err := cmd.Execute()
 		wantErrMsg(t, `could not create core instance at calyptia cloud: internal server error`, err)
@@ -35,11 +36,12 @@ func Test_newCmdCreateAggregatorOnK8s(t *testing.T) {
 				}, nil
 			},
 		}), fake.NewSimpleClientset())
-		cmd.SetOutput(got)
+		cmd.SetOut(got)
 
 		err := cmd.Execute()
 		wantEq(t, nil, err)
-		wantEq(t, "cluster_role=\"want-aggregator-name-cluster-role\"\n"+
+		wantEq(t, "secret=\"want-aggregator-name-private-rsa.key\"\n"+
+			"cluster_role=\"want-aggregator-name-cluster-role\"\n"+
 			"service_account=\"want-aggregator-name-service-account\"\n"+
 			"cluster_role_binding=\"want-aggregator-name-cluster-role-binding\"\n"+
 			"deployment=\"want-aggregator-name-deployment\"\n", got.String())
