@@ -9,6 +9,9 @@ const (
 )
 
 const (
-	LabelProjectID    = "calyptia_project_id"
-	LabelAggregatorID = "calyptia_aggregator_id"
+	LabelProjectID      = "calyptia_project_id"
+	LabelAggregatorID   = "calyptia_aggregator_id"
+	LabelAggregatorName = "calyptia_aggregator_name"
+	LabelPipelineID     = "calyptia_pipeline_id"
+	LabelPipelineName   = "calyptia_pipeline_name"
 )
