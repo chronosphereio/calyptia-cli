@@ -14,7 +14,7 @@ import (
 
 func Test_newCmdCreateAggregatorOnK8s(t *testing.T) {
 	t.Run("error", func(t *testing.T) {
-		cmd := newCmdCreateAggregatorOnK8s(configWithMock(&ClientMock{
+		cmd := newCmdCreateCoreInstanceOnK8s(configWithMock(&ClientMock{
 			CreateAggregatorFunc: func(ctx context.Context, payload types.CreateAggregator) (types.CreatedAggregator, error) {
 				return types.CreatedAggregator{}, errors.New("internal server error")
 			},
@@ -28,7 +28,7 @@ func Test_newCmdCreateAggregatorOnK8s(t *testing.T) {
 
 	t.Run("ok", func(t *testing.T) {
 		got := &bytes.Buffer{}
-		cmd := newCmdCreateAggregatorOnK8s(configWithMock(&ClientMock{
+		cmd := newCmdCreateCoreInstanceOnK8s(configWithMock(&ClientMock{
 			CreateAggregatorFunc: func(ctx context.Context, payload types.CreateAggregator) (types.CreatedAggregator, error) {
 				return types.CreatedAggregator{
 					ID:   "want-aggregator-id",
