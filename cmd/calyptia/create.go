@@ -9,7 +9,7 @@ func newCmdCreate(config *config) *cobra.Command {
 	}
 
 	cmd.AddCommand(
-		newCmdCreateAggregator(config),
+		newCmdCreateCoreInstance(config),
 		newCmdCreatePipeline(config),
 		newCmdCreateResourceProfile(config),
 		newCmdCreatePipelineFile(config),

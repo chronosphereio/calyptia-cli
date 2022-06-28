@@ -6,11 +6,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func newCmdCreateAggregatorOnAWS(config *config) *cobra.Command {
+func newCmdCreateCoreInstanceOnGCP(config *config) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "aws",
-		Aliases: []string{"ec2", "amazon"},
-		Short:   "Setup a new core instance on Amazon EC2 (TODO)",
+		Use:     "gcp",
+		Aliases: []string{"google", "gce"},
+		Short:   "Setup a new core instance on Google Compute Engine (TODO)",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return errors.New("not implemented")
 		},
