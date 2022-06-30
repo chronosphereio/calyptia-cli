@@ -6,8 +6,9 @@ import (
 
 func newCmdCreateAggregator(config *config) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "core_instance",
-		Short: "Setup a new core instance on either Kubernetes, Amazon EC2 (TODO), or Google Compute Engine (TODO)",
+		Use:     "core_instance",
+		Aliases: []string{"instance", "aggregator"},
+		Short:   "Setup a new core instance on either Kubernetes, Amazon EC2 (TODO), or Google Compute Engine (TODO)",
 	}
 	cmd.AddCommand(newCmdCreateAggregatorOnK8s(config, nil))
 	cmd.AddCommand(newCmdCreateAggregatorOnAWS(config))
