@@ -10,7 +10,7 @@ const (
 
 const (
 	LabelProjectID      = "calyptia_project_id"
-	LabelAggregatorID   = "aggregatorID"
+	LabelAggregatorID   = "calyptia_aggregator_id"
 	LabelAggregatorName = "calyptia_aggregator_name"
 	LabelPipelineID     = "calyptia_pipeline_id"
 	LabelPipelineName   = "calyptia_pipeline_name"

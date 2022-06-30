@@ -76,7 +76,7 @@ func newCmdDeleteCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 			}
 
 			label := fmt.Sprintf("%s=%s", k8s.LabelAggregatorID, agg.ID)
-			err = listDeletions(ctx, k8sClient, cmd, label)
+			err = listDeletionsByLabel(ctx, k8sClient, cmd, label)
 			if err != nil {
 				return err
 			}
@@ -160,7 +160,7 @@ func newCmdDeleteCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 			if err != nil {
 				return err
 			}
-			cmd.Printf("%q was deleted successfully on cloud\n", agg.Name)
+			cmd.Printf("calyptia-core instance %q was successfully deleted\n", agg.Name)
 			return nil
 		},
 	}
@@ -172,7 +172,7 @@ func newCmdDeleteCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 	return cmd
 }
 
-func listDeletions(ctx context.Context, k8sClient *k8s.Client, cmd *cobra.Command, label string) error {
+func listDeletionsByLabel(ctx context.Context, k8sClient *k8s.Client, cmd *cobra.Command, label string) error {
 	namespaces, err := k8sClient.CoreV1().Namespaces().List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return err
@@ -210,14 +210,18 @@ func listDeletions(ctx context.Context, k8sClient *k8s.Client, cmd *cobra.Comman
 }
 
 func listSecrets(ctx context.Context, k8sClient *k8s.Client, cmd *cobra.Command, label string, ns string) error {
-	roleBindings, err := k8sClient.CoreV1().Secrets(ns).List(ctx, metav1.ListOptions{
+	secrets, err := k8sClient.CoreV1().Secrets(ns).List(ctx, metav1.ListOptions{
 		LabelSelector: label,
 	})
 	if err != nil {
 		return err
 	}
-	for _, item := range roleBindings.Items {
-		cmd.Printf("%s\n", item.Name)
+	if len(secrets.Items) == 0 {
+		return nil
+	}
+	fmt.Fprintf(cmd.OutOrStdout(), "Secrets:\n")
+	for _, item := range secrets.Items {
+		fmt.Fprintf(cmd.OutOrStdout(), "%s - %s\n", ns, item.Name)
 	}
 	return nil
 }
@@ -229,6 +233,10 @@ func listRoleBindings(ctx context.Context, k8sClient *k8s.Client, cmd *cobra.Com
 	if err != nil {
 		return err
 	}
+	if len(roleBindings.Items) == 0 {
+		return nil
+	}
+	fmt.Fprintf(cmd.OutOrStdout(), "Role bindings:\n")
 	for _, item := range roleBindings.Items {
 		cmd.Printf("%s\n", item.Name)
 	}
@@ -242,8 +250,12 @@ func listServiceAccounts(ctx context.Context, k8sClient *k8s.Client, cmd *cobra.
 	if err != nil {
 		return err
 	}
+	if len(serviceAccounts.Items) == 0 {
+		return nil
+	}
+	fmt.Fprintf(cmd.OutOrStdout(), "Service accounts:\n")
 	for _, item := range serviceAccounts.Items {
-		cmd.Printf("%s\n", item.Name)
+		fmt.Fprintf(cmd.OutOrStdout(), "%s - %s\n", ns, item.Name)
 	}
 	return nil
 }
@@ -255,6 +267,10 @@ func listClusterRoles(ctx context.Context, k8sClient *k8s.Client, cmd *cobra.Com
 	if err != nil {
 		return err
 	}
+	if len(clusterRoles.Items) == 0 {
+		return nil
+	}
+	fmt.Fprintf(cmd.OutOrStdout(), "Cluster roles:\n")
 	for _, item := range clusterRoles.Items {
 		cmd.Printf("%s\n", item.Name)
 	}
@@ -268,8 +284,12 @@ func listServices(ctx context.Context, k8sClient *k8s.Client, cmd *cobra.Command
 	if err != nil {
 		return err
 	}
+	if len(services.Items) == 0 {
+		return nil
+	}
+	fmt.Fprintf(cmd.OutOrStdout(), "Services:\n")
 	for _, item := range services.Items {
-		cmd.Printf("%s\n", item.Name)
+		fmt.Fprintf(cmd.OutOrStdout(), "%s - %s\n", ns, item.Name)
 	}
 	return nil
 }
@@ -281,8 +301,12 @@ func listDeployments(ctx context.Context, k8sClient *k8s.Client, cmd *cobra.Comm
 	if err != nil {
 		return err
 	}
+	if len(deployments.Items) == 0 {
+		return nil
+	}
+	fmt.Fprintf(cmd.OutOrStdout(), "Deployments:\n")
 	for _, item := range deployments.Items {
-		cmd.Printf("%s\n", item.Name)
+		fmt.Fprintf(cmd.OutOrStdout(), "%s - %s\n", ns, item.Name)
 	}
 	return nil
 }
