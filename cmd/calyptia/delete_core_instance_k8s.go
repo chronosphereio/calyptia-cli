@@ -17,6 +17,11 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 )
 
+const (
+	itemToDeleteFormat    = "	- namespace: %s, name: %s\n"
+	clusterLevelNamespace = "cluster"
+)
+
 func newCmdDeleteCoreInstanceK8s(config *config, testClientSet kubernetes.Interface) *cobra.Command {
 	isNonInteractiveMode := os.Stdin == nil || !term.IsTerminal(int(os.Stdin.Fd()))
 
@@ -81,7 +86,7 @@ func newCmdDeleteCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 				return err
 			}
 
-			cmd.Println("You confirm the deletion of those resources? [Y/n]")
+			cmd.Println("\nYou confirm the deletion of those resources? [Y/n]")
 
 			if !confirmDelete && !isNonInteractiveMode {
 				confirmDelete = ask(cmd.InOrStdin(), cmd.ErrOrStderr())
@@ -221,7 +226,7 @@ func listSecrets(ctx context.Context, k8sClient *k8s.Client, cmd *cobra.Command,
 	}
 	fmt.Fprintf(cmd.OutOrStdout(), "Secrets:\n")
 	for _, item := range secrets.Items {
-		fmt.Fprintf(cmd.OutOrStdout(), "%s - %s\n", ns, item.Name)
+		fmt.Fprintf(cmd.OutOrStdout(), fmt.Sprintf(itemToDeleteFormat, ns, item.Name))
 	}
 	return nil
 }
@@ -238,7 +243,7 @@ func listRoleBindings(ctx context.Context, k8sClient *k8s.Client, cmd *cobra.Com
 	}
 	fmt.Fprintf(cmd.OutOrStdout(), "Role bindings:\n")
 	for _, item := range roleBindings.Items {
-		cmd.Printf("%s\n", item.Name)
+		fmt.Fprintf(cmd.OutOrStdout(), fmt.Sprintf(itemToDeleteFormat, clusterLevelNamespace, item.Name))
 	}
 	return nil
 }
@@ -255,7 +260,7 @@ func listServiceAccounts(ctx context.Context, k8sClient *k8s.Client, cmd *cobra.
 	}
 	fmt.Fprintf(cmd.OutOrStdout(), "Service accounts:\n")
 	for _, item := range serviceAccounts.Items {
-		fmt.Fprintf(cmd.OutOrStdout(), "%s - %s\n", ns, item.Name)
+		fmt.Fprintf(cmd.OutOrStdout(), fmt.Sprintf(itemToDeleteFormat, ns, item.Name))
 	}
 	return nil
 }
@@ -272,7 +277,7 @@ func listClusterRoles(ctx context.Context, k8sClient *k8s.Client, cmd *cobra.Com
 	}
 	fmt.Fprintf(cmd.OutOrStdout(), "Cluster roles:\n")
 	for _, item := range clusterRoles.Items {
-		cmd.Printf("%s\n", item.Name)
+		cmd.Print(fmt.Sprintf(itemToDeleteFormat, clusterLevelNamespace, item.Name))
 	}
 	return nil
 }
@@ -289,7 +294,7 @@ func listServices(ctx context.Context, k8sClient *k8s.Client, cmd *cobra.Command
 	}
 	fmt.Fprintf(cmd.OutOrStdout(), "Services:\n")
 	for _, item := range services.Items {
-		fmt.Fprintf(cmd.OutOrStdout(), "%s - %s\n", ns, item.Name)
+		fmt.Fprintf(cmd.OutOrStdout(), fmt.Sprintf(itemToDeleteFormat, ns, item.Name))
 	}
 	return nil
 }
@@ -306,7 +311,7 @@ func listDeployments(ctx context.Context, k8sClient *k8s.Client, cmd *cobra.Comm
 	}
 	fmt.Fprintf(cmd.OutOrStdout(), "Deployments:\n")
 	for _, item := range deployments.Items {
-		fmt.Fprintf(cmd.OutOrStdout(), "%s - %s\n", ns, item.Name)
+		fmt.Fprintf(cmd.OutOrStdout(), fmt.Sprintf(itemToDeleteFormat, ns, item.Name))
 	}
 	return nil
 }
