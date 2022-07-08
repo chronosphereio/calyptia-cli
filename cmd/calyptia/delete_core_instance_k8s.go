@@ -86,9 +86,8 @@ func newCmdDeleteCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 				return err
 			}
 
-			cmd.Println("\nYou confirm the deletion of those resources? [Y/n]")
-
 			if !confirmDelete && !isNonInteractiveMode {
+				cmd.Println("\nYou confirm the deletion of those resources? [Y/n]")
 				confirmDelete = ask(cmd.InOrStdin(), cmd.ErrOrStderr())
 			}
 
