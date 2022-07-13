@@ -13,7 +13,7 @@ import (
 	"net/http"
 )
 
-const calyptiaCoreVersions = "https://raw.githubusercontent.com/calyptia/core-images-index/main/container.index.json"
+const calyptiaCoreImageIndexURL = "https://raw.githubusercontent.com/calyptia/core-images-index/main/container.index.json"
 
 func newCmdUpdateCoreInstanceK8s(config *config, testClientSet kubernetes.Interface) *cobra.Command {
 	var newVersion, newName string
@@ -29,9 +29,15 @@ func newCmdUpdateCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 			ctx := context.Background()
 			aggregatorKey := args[0]
 
-			err := VerifyCoreVersion(newVersion)
-			if err != nil {
-				return err
+			if newVersion != "" {
+				tags, err := getCoreImageTags()
+				if err != nil {
+					return err
+				}
+				err = VerifyCoreVersion(newVersion, tags)
+				if err != nil {
+					return err
+				}
 			}
 
 			aggregatorID, err := config.loadAggregatorID(aggregatorKey)
@@ -105,26 +111,18 @@ func newCmdUpdateCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 	return cmd
 }
 
-func VerifyCoreVersion(newVersion string) error {
-	if newVersion == "" {
-		return nil
-	}
-	availableVersions, err := getAvailableVersions()
-	if err != nil {
-		return err
-	}
-	if !contains(availableVersions, newVersion) {
+func VerifyCoreVersion(newVersion string, coreVersions []string) error {
+	if !contains(coreVersions, newVersion) {
 		return fmt.Errorf("version %s is not available", newVersion)
 	}
-
 	return nil
 }
 
-func getAvailableVersions() ([]string, error) {
+func getCoreImageTags() ([]string, error) {
 	var availableVersions []string
-	get, err := http.Get(calyptiaCoreVersions)
+	get, err := http.Get(calyptiaCoreImageIndexURL)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("could not get available core versions: %w", err)
 	}
 	defer get.Body.Close()
 	err = json.NewDecoder(get.Body).Decode(&availableVersions)

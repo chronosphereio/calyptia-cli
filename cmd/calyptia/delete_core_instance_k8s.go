@@ -175,7 +175,6 @@ func newCmdDeleteCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 	}
 	fs := cmd.Flags()
 	fs.BoolVar(&skipError, "skip-error", false, "Skip errors during delete process")
-
 	fs.BoolVar(&confirmDelete, "yes", isNonInteractiveMode, "Confirm deletion")
 	clientcmd.BindOverrideFlags(configOverrides, fs, clientcmd.RecommendedConfigOverrideFlags("kube-"))
 	return cmd
