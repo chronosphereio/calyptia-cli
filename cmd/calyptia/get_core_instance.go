@@ -15,6 +15,8 @@ func newCmdGetAggregators(config *config) *cobra.Command {
 	var last uint64
 	var format string
 	var showIDs bool
+	var showMetadata bool
+
 	cmd := &cobra.Command{
 		Use:     "core_instances",
 		Aliases: []string{"instances", "aggregators"},
@@ -33,12 +35,23 @@ func newCmdGetAggregators(config *config) *cobra.Command {
 				if showIDs {
 					fmt.Fprint(tw, "ID\t")
 				}
-				fmt.Fprintln(tw, "NAME\tVERSION\tENVIRONMENT\tPIPELINES\tTAGS\tSTATUS\tAGE")
+				fmt.Fprint(tw, "NAME\tVERSION\tENVIRONMENT\tPIPELINES\tTAGS\tSTATUS\tAGE")
+				if showMetadata {
+					fmt.Fprintln(tw, "\tMETADATA")
+				} else {
+					fmt.Fprintln(tw, "")
+				}
 				for _, a := range aa.Items {
 					if showIDs {
 						fmt.Fprintf(tw, "%s\t", a.ID)
 					}
-					fmt.Fprintf(tw, "%s\t%s\t%s\t%d\t%s\t%s\t%s\n", a.Name, a.Version, a.EnvironmentName, a.PipelinesCount, strings.Join(a.Tags, ","), a.Status, fmtAgo(a.CreatedAt))
+					fmt.Fprintf(tw, "%s\t%s\t%s\t%d\t%s\t%s\t%s", a.Name, a.Version, a.EnvironmentName, a.PipelinesCount, strings.Join(a.Tags, ","), a.Status, fmtAgo(a.CreatedAt))
+					if showMetadata && a.Metadata != nil {
+						filterOutEmptyMetadata(a.Metadata)
+						fmt.Fprintf(tw, "\t%s\n", *a.Metadata)
+					} else {
+						fmt.Fprintln(tw, "")
+					}
 				}
 				tw.Flush()
 			case "json":
@@ -57,6 +70,7 @@ func newCmdGetAggregators(config *config) *cobra.Command {
 	fs.Uint64VarP(&last, "last", "l", 0, "Last `N` core instances. 0 means no limit")
 	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include core instance IDs in table output")
+	fs.BoolVar(&showMetadata, "show-metadata", false, "Include core instance metadata in table output")
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
 
