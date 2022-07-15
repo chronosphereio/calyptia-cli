@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"math"
 	"regexp"
@@ -181,3 +182,37 @@ func measurementNames(measurements map[string]cloud.AgentMeasurement) []string {
 }
 
 func ptr[T any](p T) *T { return &p }
+
+func filterOutEmptyMetadata(in *json.RawMessage) {
+	var o map[string]any
+	err := json.Unmarshal(*in, &o)
+	if err != nil {
+		return
+	}
+	for k, v := range o {
+		switch v.(type) {
+		case float64, int:
+			v, ok := v.(float64)
+			if !ok {
+				continue
+			}
+			if v <= 0 {
+				delete(o, k)
+			}
+		default:
+			v, ok := v.(string)
+			if !ok {
+				continue
+			}
+			if v == "" {
+				delete(o, k)
+			}
+		}
+	}
+	b, err := json.Marshal(o)
+	if err != nil {
+		return
+	}
+	c := json.RawMessage(b)
+	*in = c
+}

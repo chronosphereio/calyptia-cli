@@ -6,7 +6,7 @@ replace github.com/calyptia/cli/k8s => ./k8s
 
 require (
 	code.cloudfoundry.org/bytefmt v0.0.0-20211005130812-5bb3c17173e5
-	github.com/calyptia/api v0.3.7
+	github.com/calyptia/api v0.3.9
 	github.com/calyptia/cli/k8s v0.0.0-00010101000000-000000000000
 	github.com/calyptia/go-bubble-table v0.2.1
 	github.com/charmbracelet/bubbletea v0.22.0
