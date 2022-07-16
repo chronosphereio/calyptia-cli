@@ -40,104 +40,105 @@ jobs:
           flags: ${{ runner.os }}
           token: ${{ secrets.CODECOV_TOKEN }}
 
-#  cloud-e2e:
-#    name: Run calyptia/cloud-e2e tests
-#    needs:
-#      - unit-tests
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        k8s-release: [ 'v1.23.5', 'v1.22.7', 'v1.21.10' ]
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Checkout
-#        uses: actions/checkout@v3
-#
-#      - name: CHeckoout cloud-e2e
-#        uses: actions/checkout@v3
-#        with:
-#          repository: calyptia/cloud-e2e
-#          token: ${{ secrets.CI_PAT }}
-#          ref: 'main'
-#          path: cloud-e2e
-#
-#      - name: Log in to the Container registry
-#        uses: docker/login-action@v2
-#        with:
-#          registry: ghcr.io
-#          username: ${{ secrets.CI_USERNAME }}
-#          password: ${{ secrets.CI_PAT }}
-#
-#      - name: Extract image metadata
-#        id: meta-github-image
-#        uses: docker/metadata-action@v4
-#        with:
-#          images: ghcr.io/${{ github.repository }}
-#          tags: |
-#            type=ref,event=pr
-#            type=raw,value=main,enable=${{ endsWith(github.ref, github.event.repository.default_branch) }}
-#            type=raw,value=latest,enable=${{ startsWith(github.ref, 'refs/tags/v') }}
-#
-#      - name: Build and load docker image
-#        uses: docker/build-push-action@v3
-#        with:
-#          context: .
-#          target: production
-#          platforms: linux/amd64
-#          load: true
-#          tags: ${{ steps.meta-github-image.outputs.tags }}
-#          labels: ${{ steps.meta-github-image.outputs.labels }}
-#
-#      - id: image-tag
-#        run: |
-#          echo "::set-output name=TAG::$(
-#            echo $FULL_TAG | cut -d ":" -f2
-#          )"
-#        env:
-#          FULL_TAG: ${{ steps.meta-github-image.outputs.tags }}
-#
-#      - name: Create k8s Kind Cluster
-#        uses: helm/kind-action@v1.3.0
-#        with:
-#          node_image: kindest/node:${{ matrix.k8s-release }}
-#          cluster_name: kind
-#
-#      - name: Install dependencies
-#        run: |
-#          sudo apt update
-#          sudo apt install -y httpie jq
-#        shell: bash
-#
-#      - name: Setup BATS
-#        uses: mig4/setup-bats@v1
-#        with:
-#          bats-version: 1.7.0
-#
-#      - name: Load required images in the kind cluster
-#        run: |
-#          docker pull $CALYPTIA_CLOUD_IMAGE:$CALYPTIA_CLOUD_IMAGE_TAG
-#          kind load docker-image $CALYPTIA_CLOUD_IMAGE:$CALYPTIA_CLOUD_IMAGE_TAG
-#          docker pull $CALYPTIA_CORE_IMAGE:$CALYPTIA_CORE_IMAGE_TAG
-#          kind load docker-image $CALYPTIA_CORE_IMAGE:$CALYPTIA_CORE_IMAGE_TAG
-#        env:
-#          CALYPTIA_CLOUD_IMAGE: ghcr.io/calyptia/cloud/all-in-one
-#          CALYPTIA_CLOUD_IMAGE_TAG: main
-#          CALYPTIA_CORE_IMAGE: ghcr.io/calyptia/core
-#          CALYPTIA_CORE_IMAGE_TAG: main
-#
-#      - name: Run bats tests
-#        run: |
-#          ./run-bats.sh
-#        shell: bash
-#        timeout-minutes: 10
-#        env:
-#          CALYPTIA_CLOUD_IMAGE: ghcr.io/calyptia/cloud/all-in-one
-#          CALYPTIA_CLOUD_IMAGE_TAG: main
-#          CALYPTIA_CORE_IMAGE: ghcr.io/calyptia/core
-#          CALYPTIA_CORE_IMAGE_TAG: main
-#          CALYPTIA_CLI_IMAGE: ghcr.io/calyptia/cli
-#          CALYPTIA_CLI_IMAGE_TAG: ${{ steps.image-tag.outputs.TAG }}
-#        working-directory: cloud-e2e
+  cloud-e2e:
+    name: Run calyptia/cloud-e2e tests
+    needs:
+      - unit-tests
+    strategy:
+      fail-fast: true
+      matrix:
+        k8s-release: [ 'v1.23.5', 'v1.22.7', 'v1.21.10' ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: CHeckoout cloud-e2e
+        uses: actions/checkout@v3
+        with:
+          repository: calyptia/cloud-e2e
+          token: ${{ secrets.CI_PAT }}
+          ref: 'main'
+          path: cloud-e2e
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.CI_USERNAME }}
+          password: ${{ secrets.CI_PAT }}
+
+      - name: Extract image metadata
+        id: meta-github-image
+        uses: docker/metadata-action@v4
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=ref,event=pr
+            type=raw,value=main,enable=${{ endsWith(github.ref, github.event.repository.default_branch) }}
+            type=raw,value=latest,enable=${{ startsWith(github.ref, 'refs/tags/v') }}
+
+      - name: Build and load docker image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          target: production
+          platforms: linux/amd64
+          load: true
+          tags: ${{ steps.meta-github-image.outputs.tags }}
+          labels: ${{ steps.meta-github-image.outputs.labels }}
+
+      - id: image-tag
+        run: |
+          echo "::set-output name=TAG::$(
+            echo $FULL_TAG | cut -d ":" -f2
+          )"
+        env:
+          FULL_TAG: ${{ steps.meta-github-image.outputs.tags }}
+
+      - name: Create k8s Kind Cluster
+        uses: helm/kind-action@v1.3.0
+        with:
+          node_image: kindest/node:${{ matrix.k8s-release }}
+          cluster_name: kind
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y httpie jq
+        shell: bash
+
+      - name: Setup BATS
+        uses: mig4/setup-bats@v1
+        with:
+          bats-version: 1.7.0
+
+      - name: Load required images in the kind cluster
+        run: |
+          docker pull $CALYPTIA_CLOUD_IMAGE:$CALYPTIA_CLOUD_IMAGE_TAG
+          kind load docker-image $CALYPTIA_CLOUD_IMAGE:$CALYPTIA_CLOUD_IMAGE_TAG
+          
+          docker pull $CALYPTIA_CORE_IMAGE:$CALYPTIA_CORE_IMAGE_TAG
+          kind load docker-image $CALYPTIA_CORE_IMAGE:$CALYPTIA_CORE_IMAGE_TAG
+        env:
+          CALYPTIA_CLOUD_IMAGE: ghcr.io/calyptia/cloud/all-in-one
+          CALYPTIA_CLOUD_IMAGE_TAG: main
+          CALYPTIA_CORE_IMAGE: ghcr.io/calyptia/core
+          CALYPTIA_CORE_IMAGE_TAG: main
+
+      - name: Run bats tests
+        run: |
+          ./run-bats.sh
+        shell: bash
+        timeout-minutes: 25
+        env:
+          CALYPTIA_CLOUD_IMAGE: ghcr.io/calyptia/cloud/all-in-one
+          CALYPTIA_CLOUD_IMAGE_TAG: main
+          CALYPTIA_CORE_IMAGE: ghcr.io/calyptia/core
+          CALYPTIA_CORE_IMAGE_TAG: main
+          CALYPTIA_CLI_IMAGE: ghcr.io/calyptia/cli
+          CALYPTIA_CLI_IMAGE_TAG: ${{ steps.image-tag.outputs.TAG }}
+        working-directory: cloud-e2e
 
   release:
     name: Release the artefacts
@@ -145,7 +146,7 @@ jobs:
       contents: write
       packages: write
     needs:
-      - unit-tests
+      - cloud-e2e
     if: ${{ github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
