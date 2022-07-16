@@ -3,7 +3,6 @@ package k8s
 import (
 	"context"
 	"fmt"
-
 	appsv1 "k8s.io/api/apps/v1"
 	apiv1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
@@ -228,4 +227,22 @@ func (client *Client) DeleteSecretByLabel(ctx context.Context, label, ns string)
 
 func (client *Client) FindServicesByLabel(ctx context.Context, label, ns string) (*apiv1.ServiceList, error) {
 	return client.CoreV1().Services(ns).List(ctx, metav1.ListOptions{LabelSelector: label})
+}
+
+func (client *Client) UpdateDeployment(ctx context.Context, name, image, version string) error {
+	deployment, err := client.FindDeploymentByName(ctx, name)
+	if err != nil {
+		return err
+	}
+	deployment.Spec.Template.Spec.Containers[0].Image = fmt.Sprintf("%s:%s", image, version)
+	_, err = client.AppsV1().Deployments(client.Namespace).Update(ctx, deployment, metav1.UpdateOptions{})
+	return err
+}
+
+func (client *Client) FindDeploymentByName(ctx context.Context, name string) (*appsv1.Deployment, error) {
+	deployment, err := client.AppsV1().Deployments(client.Namespace).Get(ctx, name, metav1.GetOptions{})
+	if err != nil {
+		return nil, err
+	}
+	return deployment, nil
 }
