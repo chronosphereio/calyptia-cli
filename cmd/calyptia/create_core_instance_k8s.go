@@ -4,12 +4,13 @@ import (
 	"context"
 	"fmt"
 
-	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/k8s"
 	"github.com/spf13/cobra"
 	apiv1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
+
+	cloud "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/k8s"
 )
 
 const (

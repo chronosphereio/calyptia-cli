@@ -8,10 +8,11 @@ import (
 	"text/template"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
-	awsConfig "github.com/aws/aws-sdk-go-v2/config"
+	awsconfig "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
-	"github.com/aws/aws-sdk-go-v2/service/ec2/types"
-	cloud "github.com/calyptia/api/types"
+	awstypes "github.com/aws/aws-sdk-go-v2/service/ec2/types"
+
+	"github.com/calyptia/api/types"
 	"github.com/calyptia/core-images-index/go-index"
 )
 
@@ -52,7 +53,7 @@ type (
 	}
 
 	CreatedInstance struct {
-		cloud.MetadataAWS
+		types.MetadataAWS
 	}
 )
 
@@ -61,25 +62,25 @@ func (i *CreatedInstance) String() string {
 }
 
 func New(ctx context.Context, region, credentials, profileFile, profileName string) (*DefaultClient, error) {
-	var opts []func(options *awsConfig.LoadOptions) error
+	var opts []func(options *awsconfig.LoadOptions) error
 
 	if region != "" {
-		opts = append(opts, awsConfig.WithRegion(region))
+		opts = append(opts, awsconfig.WithRegion(region))
 	}
 
 	if credentials != "" {
-		opts = append(opts, awsConfig.WithSharedCredentialsFiles([]string{credentials}))
+		opts = append(opts, awsconfig.WithSharedCredentialsFiles([]string{credentials}))
 	}
 
 	if profileFile != "" {
-		opts = append(opts, awsConfig.WithSharedConfigFiles([]string{profileFile}))
+		opts = append(opts, awsconfig.WithSharedConfigFiles([]string{profileFile}))
 	}
 
 	if profileName != "" {
-		opts = append(opts, awsConfig.WithSharedConfigProfile(profileName))
+		opts = append(opts, awsconfig.WithSharedConfigProfile(profileName))
 	}
 
-	cfg, err := awsConfig.LoadDefaultConfig(ctx, opts...)
+	cfg, err := awsconfig.LoadDefaultConfig(ctx, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -129,7 +130,7 @@ func (c *DefaultClient) EnsureSubnet(ctx context.Context, subNetID string) (stri
 	// find the default subnet
 	if subNetID == "" {
 		describeSubnetInput = ec2.DescribeSubnetsInput{
-			Filters: []types.Filter{
+			Filters: []awstypes.Filter{
 				{
 					Name:   aws.String("defaultForAz"),
 					Values: []string{"true"},
@@ -138,7 +139,7 @@ func (c *DefaultClient) EnsureSubnet(ctx context.Context, subNetID string) (stri
 		}
 	} else {
 		describeSubnetInput = ec2.DescribeSubnetsInput{
-			Filters: []types.Filter{
+			Filters: []awstypes.Filter{
 				{
 					Name:   aws.String("subnet-id"),
 					Values: []string{subNetID},
@@ -162,12 +163,12 @@ func (c *DefaultClient) EnsureSubnet(ctx context.Context, subNetID string) (stri
 func (c *DefaultClient) EnsureSecurityGroupIngressRules(ctx context.Context, securityGroupID string) error {
 	authorizeSecurityGroupIngress := &ec2.AuthorizeSecurityGroupIngressInput{
 		GroupId: aws.String(securityGroupID),
-		IpPermissions: []types.IpPermission{
+		IpPermissions: []awstypes.IpPermission{
 			{
 				FromPort: aws.Int32(0),
 				// -1 means udp and tcp.
 				IpProtocol: aws.String("-1"),
-				IpRanges: []types.IpRange{
+				IpRanges: []awstypes.IpRange{
 					{
 						CidrIp:      aws.String("0.0.0.0/0"),
 						Description: aws.String("allow all tcp/udp traffic to this calyptia-core instance"),
@@ -210,10 +211,10 @@ func (c *DefaultClient) EnsureSecurityGroup(ctx context.Context, securityGroupNa
 }
 
 func (c *DefaultClient) EnsureInstanceType(ctx context.Context, instanceTypeName string) (string, error) {
-	var out types.InstanceType
+	var out awstypes.InstanceType
 
 	describeInstanceTypeInput := &ec2.DescribeInstanceTypesInput{
-		InstanceTypes: []types.InstanceType{types.InstanceType(instanceTypeName)},
+		InstanceTypes: []awstypes.InstanceType{awstypes.InstanceType(instanceTypeName)},
 	}
 
 	instanceTypes, err := c.client.DescribeInstanceTypes(ctx, describeInstanceTypeInput)
@@ -257,7 +258,7 @@ func (c *DefaultClient) CreateInstance(ctx context.Context, in *CreateInstancePa
 		MaxCount:         aws.Int32(1),
 		MinCount:         aws.Int32(1),
 		ImageId:          aws.String(in.ImageID),
-		InstanceType:     types.InstanceType(in.InstanceType),
+		InstanceType:     awstypes.InstanceType(in.InstanceType),
 		UserData:         aws.String(in.UserData),
 		SecurityGroupIds: []string{in.SecurityGroupID},
 		SubnetId:         aws.String(in.SubnetID),
@@ -294,7 +295,9 @@ func (c *DefaultClient) EnsureKeyPair(ctx context.Context, keyPairName string) (
 			return "", err
 		}
 		return *keyPairs.KeyPairs[0].KeyName, nil
-	} else if err != nil {
+	}
+
+	if err != nil {
 		return "", err
 	}
 
