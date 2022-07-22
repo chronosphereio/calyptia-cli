@@ -13,7 +13,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/ec2/types"
 	cloud "github.com/calyptia/api/types"
 	"github.com/calyptia/core-images-index/go-index"
-	"github.com/pkg/errors"
 )
 
 const (
@@ -93,27 +92,27 @@ func New(ctx context.Context, region, credentials, profileFile, profileName stri
 func (c *DefaultClient) FindMatchingAMI(ctx context.Context, version string) (string, error) {
 	containerIndex, err := index.NewContainer()
 	if err != nil {
-		return "", errors.Wrap(err, "could not initialize container image index")
+		return "", err
 	}
 
 	if version != "" {
 		coreImageTag, err := containerIndex.Match(ctx, version)
 		if err != nil {
-			return "", errors.Wrap(err, "no matching version found")
+			return "", err
 		}
 		version = coreImageTag
 	} else {
 		// If no specific core instance version has been provided, use the latest published image.
 		latest, err := containerIndex.Last(ctx)
 		if err != nil {
-			return "", errors.Wrap(err, "could not get latest AMI from AWS index")
+			return "", err
 		}
 		version = latest
 	}
 
 	awsIndex, err := index.NewAWS()
 	if err != nil {
-		return "", errors.Wrap(err, "could not initialize AWS image index")
+		return "", err
 	}
 
 	imageID, err := awsIndex.Match(ctx, version)
@@ -154,7 +153,7 @@ func (c *DefaultClient) EnsureSubnet(ctx context.Context, subNetID string) (stri
 	}
 
 	if len(subNets.Subnets) == 0 {
-		return "", fmt.Errorf("not found subnet")
+		return "", ErrSubnetNotFound
 	}
 
 	return *subNets.Subnets[0].VpcId, nil

@@ -69,7 +69,7 @@ func newCmdCreateCoreInstanceOnAWS(config *config, client awsClient.Client) *cob
 
 			imageID, err := client.FindMatchingAMI(ctx, coreInstanceVersion)
 			if err != nil {
-				return errors.Wrap(err, "could not find a matching AMI")
+				return errors.Wrap(err, "could not find a matching AMI for version: "+coreInstanceVersion)
 			}
 
 			keyPairName, err := client.EnsureKeyPair(ctx, keyName)
