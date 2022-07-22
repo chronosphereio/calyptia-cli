@@ -4,12 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
+
 	"github.com/calyptia/api/types"
 	awsClient "github.com/calyptia/cli/aws"
 	"github.com/pkg/errors"
 	"github.com/sethvargo/go-retry"
 	"github.com/spf13/cobra"
-	"time"
 )
 
 const (
@@ -175,7 +176,7 @@ func newCmdCreateCoreInstanceOnAWS(config *config, client awsClient.Client) *cob
 	fs.StringVar(&securityGroupName, "security-group", awsClient.DefaultSecurityGroupName, "AWS Security group name to use.")
 	fs.StringVar(&subnetID, "subnet-id", "", "AWS subnet name to use.If you don't specify a subnet ID, we choose a default subnet from your default VPC for you. If you don't have a default VPC, you MUST specify a subnet.")
 
-	//TODO: pass the environment name to the virtual machines.
+	// TODO: pass the environment name to the virtual machines.
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
 
 	return cmd

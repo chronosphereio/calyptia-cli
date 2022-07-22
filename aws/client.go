@@ -5,6 +5,8 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"text/template"
+
 	"github.com/aws/aws-sdk-go-v2/aws"
 	awsConfig "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
@@ -12,7 +14,6 @@ import (
 	cloud "github.com/calyptia/api/types"
 	"github.com/calyptia/core-images-index/go-index"
 	"github.com/pkg/errors"
-	"text/template"
 )
 
 const (
@@ -87,7 +88,6 @@ func New(ctx context.Context, region, credentials, profileFile, profileName stri
 	return &DefaultClient{
 		client: ec2.NewFromConfig(cfg),
 	}, nil
-
 }
 
 func (c *DefaultClient) FindMatchingAMI(ctx context.Context, version string) (string, error) {
@@ -123,10 +123,11 @@ func (c *DefaultClient) FindMatchingAMI(ctx context.Context, version string) (st
 
 	return imageID, nil
 }
+
 func (c *DefaultClient) EnsureSubnet(ctx context.Context, subNetID string) (string, error) {
 	var describeSubnetInput ec2.DescribeSubnetsInput
 
-	//find the default subnet
+	// find the default subnet
 	if subNetID == "" {
 		describeSubnetInput = ec2.DescribeSubnetsInput{
 			Filters: []types.Filter{

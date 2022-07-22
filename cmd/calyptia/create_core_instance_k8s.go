@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+
 	cloud "github.com/calyptia/api/types"
 	"github.com/calyptia/cli/k8s"
 	"github.com/spf13/cobra"
@@ -34,7 +35,7 @@ func newCmdCreateCoreInstanceOnK8s(config *config, testClientSet kubernetes.Inte
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.Background()
 
-			var coreDockerImage = coreDockerImage
+			coreDockerImage := coreDockerImage
 			if coreInstanceVersion != "" {
 				tags, err := getCoreImageTags()
 				if err != nil {

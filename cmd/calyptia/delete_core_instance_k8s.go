@@ -313,7 +313,6 @@ func listDeployments(ctx context.Context, k8sClient *k8s.Client, cmd *cobra.Comm
 	deployments, err := k8sClient.AppsV1().Deployments(ns).List(ctx, metav1.ListOptions{
 		LabelSelector: label,
 	})
-
 	if err != nil {
 		return err, 0
 	}
