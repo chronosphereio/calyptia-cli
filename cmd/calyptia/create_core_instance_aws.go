@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"time"
 
-	"errors"
 	"github.com/sethvargo/go-retry"
+
+	"errors"
+
 	"github.com/spf13/cobra"
 
 	"github.com/calyptia/api/types"
@@ -105,6 +107,7 @@ func newCmdCreateCoreInstanceOnAWS(config *config, client awsclient.Client, poll
 			}
 
 			params := &awsclient.CreateInstanceParams{
+				Region:            region,
 				CoreVersion:       coreInstanceVersion,
 				CoreInstanceName:  coreInstanceName,
 				KeyPairName:       keyPairName,
@@ -142,7 +145,7 @@ func newCmdCreateCoreInstanceOnAWS(config *config, client awsclient.Client, poll
 				return fmt.Errorf("calyptia core instance could not reach ready status: %w", err)
 			}
 
-			fmt.Fprintf(cmd.OutOrStdout(), "Calyptia core instance is ready to use.")
+			fmt.Fprintf(cmd.OutOrStdout(), "Calyptia core instance is ready to use.\n")
 			return nil
 		},
 	}

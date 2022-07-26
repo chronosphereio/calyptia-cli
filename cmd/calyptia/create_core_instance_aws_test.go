@@ -3,10 +3,11 @@ package main
 import (
 	"bytes"
 	"context"
-	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/aws"
 	"io"
 	"testing"
+
+	"github.com/calyptia/api/types"
+	"github.com/calyptia/cli/aws"
 )
 
 func Test_newCmdCreateCoreInstanceOnAWS(t *testing.T) {
@@ -40,7 +41,7 @@ func Test_newCmdCreateCoreInstanceOnAWS(t *testing.T) {
 		wantEq(t, nil, err)
 		wantEq(t, "Creating calyptia core instance on AWS\n"+
 			"calyptia core instance running on AWS as: instance-id: "+instanceParams.EC2InstanceID+", instance-type: "+instanceParams.EC2InstanceType+", privateIPv4: "+instanceParams.PrivateIPv4+"\n"+
-			"Calyptia core instance is ready to use.", got.String())
+			"Calyptia core instance is ready to use.\n", got.String())
 	})
 
 	t.Run("AWS error", func(t *testing.T) {
