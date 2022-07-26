@@ -24,18 +24,17 @@ const (
 CALYPTIA_CLOUD_PROJECT_TOKEN={{.ProjectToken}}
 CALYPTIA_CLOUD_AGGREGATOR_NAME={{.CoreInstanceName}}
 `
-	DefaultRegionName       = "us-east-1"
-	DefaultInstanceTypeName = "t2.micro"
-
 	instanceUpCheckTimeout = 10 * time.Minute
 	instanceUpCheckBackOff = 5 * time.Second
+
+	DefaultRegionName       = "us-east-1"
+	DefaultInstanceTypeName = "t2.micro"
+	coreInstanceTag         = "core-instance-name"
+	securityGroupNameFormat = "%s-security-group"
+	keyPairNameFormat       = "%s-key-pair"
 )
 
 var (
-	defaultCoreInstanceTag  = "core-instance-name"
-	securityGroupNameFormat = "%s-security-group"
-	keyPairNameFormat       = "%s-key-pair"
-
 	instanceUpCheckMaxDuration = func() retry.Backoff {
 		return retry.WithMaxDuration(instanceUpCheckTimeout, retry.NewConstant(instanceUpCheckBackOff))
 	}
@@ -132,7 +131,7 @@ func (c *DefaultClient) getTags(resourceType awstypes.ResourceType) []awstypes.T
 			ResourceType: resourceType,
 			Tags: []awstypes.Tag{
 				{
-					Key:   aws.String(defaultCoreInstanceTag),
+					Key:   aws.String(coreInstanceTag),
 					Value: aws.String(c.prefix),
 				},
 			},
