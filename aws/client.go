@@ -32,13 +32,9 @@ CALYPTIA_CLOUD_AGGREGATOR_NAME={{.CoreInstanceName}}
 )
 
 var (
-	defaultSecurityGroupName = "calyptia-core"
-	defaultCoreInstanceTag   = "core-instance-name"
-	defaultKeyPairName       = defaultSecurityGroupName
-
+	defaultCoreInstanceTag  = "core-instance-name"
 	securityGroupNameFormat = "%s-security-group"
 	keyPairNameFormat       = "%s-key-pair"
-	elasticIPAddressFormat  = "%s-elastic-ip"
 
 	awsInstanceUpCheckMaxDuration = func() retry.Backoff {
 		return retry.WithMaxDuration(awsInstanceUpCheckTimeout, retry.NewConstant(awsInstanceUpCheckBackOff))
