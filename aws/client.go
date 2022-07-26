@@ -27,8 +27,8 @@ CALYPTIA_CLOUD_AGGREGATOR_NAME={{.CoreInstanceName}}
 	DefaultRegionName       = "us-east-1"
 	DefaultInstanceTypeName = "t2.micro"
 
-	awsInstanceUpCheckTimeout = 10 * time.Minute
-	awsInstanceUpCheckBackOff = 5 * time.Second
+	instanceUpCheckTimeout = 10 * time.Minute
+	instanceUpCheckBackOff = 5 * time.Second
 )
 
 var (
@@ -36,8 +36,8 @@ var (
 	securityGroupNameFormat = "%s-security-group"
 	keyPairNameFormat       = "%s-key-pair"
 
-	awsInstanceUpCheckMaxDuration = func() retry.Backoff {
-		return retry.WithMaxDuration(awsInstanceUpCheckTimeout, retry.NewConstant(awsInstanceUpCheckBackOff))
+	instanceUpCheckMaxDuration = func() retry.Backoff {
+		return retry.WithMaxDuration(instanceUpCheckTimeout, retry.NewConstant(instanceUpCheckBackOff))
 	}
 )
 
@@ -475,7 +475,7 @@ func (c *DefaultClient) CreateInstance(ctx context.Context, params *CreateInstan
 	// await for the instance to reach available status, cannot be associated with an
 	// IPv4 address if the instance is not ready.
 	if params.PublicIPAddress != nil {
-		err = retry.Do(ctx, awsInstanceUpCheckMaxDuration(), func(ctx context.Context) error {
+		err = retry.Do(ctx, instanceUpCheckMaxDuration(), func(ctx context.Context) error {
 			state, err := c.InstanceState(ctx, *instance.InstanceId)
 			if err != nil {
 				return retry.RetryableError(err)
