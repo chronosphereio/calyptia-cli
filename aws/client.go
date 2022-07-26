@@ -6,6 +6,9 @@ import (
 	"encoding/base64"
 	"fmt"
 	"text/template"
+	"time"
+
+	"github.com/sethvargo/go-retry"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	awsconfig "github.com/aws/aws-sdk-go-v2/config"
@@ -21,12 +24,29 @@ const (
 CALYPTIA_CLOUD_PROJECT_TOKEN={{.ProjectToken}}
 CALYPTIA_CLOUD_AGGREGATOR_NAME={{.CoreInstanceName}}
 `
-	DefaultRegionName        = "us-east-1"
-	DefaultInstanceTypeName  = "t2.micro"
-	DefaultSecurityGroupName = "calyptia-core"
+	DefaultRegionName       = "us-east-1"
+	DefaultInstanceTypeName = "t2.micro"
+
+	awsInstanceUpCheckTimeout = 10 * time.Minute
+	awsInstanceUpCheckBackOff = 5 * time.Second
+)
+
+var (
+	defaultSecurityGroupName = "calyptia-core"
+	defaultCoreInstanceTag   = "core-instance-name"
+	defaultKeyPairName       = defaultSecurityGroupName
+
+	securityGroupNameFormat = "%s-security-group"
+	keyPairNameFormat       = "%s-key-pair"
+	elasticIPAddressFormat  = "%s-elastic-ip"
+
+	awsInstanceUpCheckMaxDuration = func() retry.Backoff {
+		return retry.WithMaxDuration(awsInstanceUpCheckTimeout, retry.NewConstant(awsInstanceUpCheckBackOff))
+	}
 )
 
 type (
+	//go:generate moq -out client_mock.go . Client
 	Client interface {
 		EnsureKeyPair(ctx context.Context, keyPairName string) (string, error)
 		FindMatchingAMI(ctx context.Context, version string) (string, error)
@@ -34,34 +54,52 @@ type (
 		EnsureSubnet(ctx context.Context, subNetID string) (string, error)
 		EnsureSecurityGroup(ctx context.Context, securityGroupName, vpcID string) (string, error)
 		EnsureSecurityGroupIngressRules(ctx context.Context, securityGroupID string) error
+		EnsureAndAssociateElasticIPv4Address(ctx context.Context, instanceID, elasticIPv4AddressPool, elasticIPv4Address string) (string, error)
 		CreateUserdata(ctx context.Context, in *CreateUserDataParams) (string, error)
 		CreateInstance(ctx context.Context, in *CreateInstanceParams) (CreatedInstance, error)
+		InstanceState(ctx context.Context, instanceID string) (string, error)
+		DeleteKeyPair(ctx context.Context, keyPairName string) error
+		DeleteSecurityGroup(ctx context.Context, securityGroupName string) error
+		DeleteInstance(ctx context.Context, instanceID string) error
 	}
 
 	DefaultClient struct {
 		Client
 		client *ec2.Client
+		prefix string
+	}
+
+	CreateUserDataParams struct {
+		ProjectToken     string
+		CoreInstanceName string
+	}
+
+	ElasticIPAddressParams struct {
+		Pool, Address string
 	}
 
 	CreateInstanceParams struct {
-		ImageID         string
-		InstanceType    string
-		UserData        string
-		SecurityGroupID string
-		SubnetID        string
-		KeyPairName     string
+		CoreInstanceName,
+		CoreVersion,
+		KeyPairName,
+		SecurityGroupName,
+		InstanceType,
+		SubnetID string
+		UserData        *CreateUserDataParams
+		PublicIPAddress *ElasticIPAddressParams
 	}
 
 	CreatedInstance struct {
+		CoreInstanceName string `json:"-"`
 		types.MetadataAWS
 	}
 )
 
 func (i *CreatedInstance) String() string {
-	return fmt.Sprintf("instance-id: %s, instance-type: %s, privateIpv4: %s", i.EC2InstanceID, i.EC2InstanceType, i.PrivateIP)
+	return fmt.Sprintf("instance-id: %s, instance-type: %s, privateIPv4: %s", i.EC2InstanceID, i.EC2InstanceType, i.PrivateIPv4)
 }
 
-func New(ctx context.Context, region, credentials, profileFile, profileName string) (*DefaultClient, error) {
+func New(ctx context.Context, prefix, region, credentials, profileFile, profileName string) (*DefaultClient, error) {
 	var opts []func(options *awsconfig.LoadOptions) error
 
 	if region != "" {
@@ -87,7 +125,36 @@ func New(ctx context.Context, region, credentials, profileFile, profileName stri
 
 	return &DefaultClient{
 		client: ec2.NewFromConfig(cfg),
+		prefix: prefix,
 	}, nil
+}
+
+func (c *DefaultClient) getTags(resourceType awstypes.ResourceType) []awstypes.TagSpecification {
+	return []awstypes.TagSpecification{
+		{
+			ResourceType: resourceType,
+			Tags: []awstypes.Tag{
+				{
+					Key:   aws.String(defaultCoreInstanceTag),
+					Value: aws.String(c.prefix),
+				},
+			},
+		},
+	}
+}
+
+func (c *DefaultClient) InstanceState(ctx context.Context, instanceID string) (string, error) {
+	describeInstanceStatus := &ec2.DescribeInstanceStatusInput{
+		IncludeAllInstances: aws.Bool(true),
+		InstanceIds:         []string{instanceID},
+	}
+
+	instanceStatus, err := c.client.DescribeInstanceStatus(ctx, describeInstanceStatus)
+	if err != nil {
+		return "", err
+	}
+
+	return string(instanceStatus.InstanceStatuses[0].InstanceState.Name), nil
 }
 
 func (c *DefaultClient) FindMatchingAMI(ctx context.Context, version string) (string, error) {
@@ -122,6 +189,36 @@ func (c *DefaultClient) FindMatchingAMI(ctx context.Context, version string) (st
 	}
 
 	return imageID, nil
+}
+
+func (c *DefaultClient) EnsureAndAssociateElasticIPv4Address(ctx context.Context, instanceID, elasticIPv4AddressPool, elasticIPv4Address string) (string, error) {
+	var allocateAddressInput ec2.AllocateAddressInput
+
+	if elasticIPv4Address != "" {
+		allocateAddressInput.Address = &elasticIPv4Address
+	}
+
+	if elasticIPv4AddressPool != "" {
+		allocateAddressInput.CustomerOwnedIpv4Pool = &elasticIPv4AddressPool
+	}
+
+	ipv4Allocation, err := c.client.AllocateAddress(ctx, &allocateAddressInput)
+	if err != nil {
+		return "", err
+	}
+
+	associateAddressInput := &ec2.AssociateAddressInput{
+		AllocationId:       ipv4Allocation.AllocationId,
+		AllowReassociation: aws.Bool(true),
+		InstanceId:         aws.String(instanceID),
+	}
+
+	_, err = c.client.AssociateAddress(ctx, associateAddressInput)
+	if err != nil {
+		return "", err
+	}
+
+	return *ipv4Allocation.PublicIp, nil
 }
 
 func (c *DefaultClient) EnsureSubnet(ctx context.Context, subNetID string) (string, error) {
@@ -179,13 +276,17 @@ func (c *DefaultClient) EnsureSecurityGroupIngressRules(ctx context.Context, sec
 		},
 	}
 	_, err := c.client.AuthorizeSecurityGroupIngress(ctx, authorizeSecurityGroupIngress)
-	if !errorIsAlreadyExists(err) {
+	if err != nil && !errorIsAlreadyExists(err) {
 		return err
 	}
 	return nil
 }
 
 func (c *DefaultClient) EnsureSecurityGroup(ctx context.Context, securityGroupName, vpcID string) (string, error) {
+	if securityGroupName == "" {
+		securityGroupName = fmt.Sprintf(securityGroupNameFormat, c.prefix)
+	}
+
 	describeSecurityGroupsInput := &ec2.DescribeSecurityGroupsInput{
 		GroupNames: []string{securityGroupName},
 	}
@@ -199,15 +300,80 @@ func (c *DefaultClient) EnsureSecurityGroup(ctx context.Context, securityGroupNa
 		return *securityGroups.SecurityGroups[0].GroupId, nil
 	}
 	createSecurityGroupInput := &ec2.CreateSecurityGroupInput{
-		Description: aws.String(securityGroupName),
-		GroupName:   aws.String(securityGroupName),
-		VpcId:       aws.String(vpcID),
+		Description:       aws.String(securityGroupName),
+		GroupName:         aws.String(securityGroupName),
+		VpcId:             aws.String(vpcID),
+		TagSpecifications: c.getTags(awstypes.ResourceTypeSecurityGroup),
 	}
 	securityGroup, err := c.client.CreateSecurityGroup(ctx, createSecurityGroupInput)
 	if err != nil {
 		return "", err
 	}
 	return *securityGroup.GroupId, nil
+}
+
+func (c *DefaultClient) DeleteInstance(ctx context.Context, instanceID string) error {
+	terminateInstancesInput := &ec2.TerminateInstancesInput{
+		InstanceIds: []string{instanceID},
+	}
+	_, err := c.client.TerminateInstances(ctx, terminateInstancesInput)
+	return err
+}
+
+func (c *DefaultClient) DeleteSecurityGroup(ctx context.Context, securityGroupName string) error {
+	if securityGroupName == "" {
+		securityGroupName = fmt.Sprintf(securityGroupNameFormat, c.prefix)
+	}
+
+	deleteSecurityGroupInput := &ec2.DeleteSecurityGroupInput{
+		GroupName: aws.String(securityGroupName),
+	}
+
+	_, err := c.client.DeleteSecurityGroup(ctx, deleteSecurityGroupInput)
+	return err
+}
+
+func (c *DefaultClient) DeleteKeyPair(ctx context.Context, keyPairName string) error {
+	if keyPairName == "" {
+		keyPairName = fmt.Sprintf(keyPairNameFormat, c.prefix)
+	}
+
+	deleteKeyPairInput := &ec2.DeleteKeyPairInput{
+		KeyName: aws.String(keyPairName),
+	}
+
+	_, err := c.client.DeleteKeyPair(ctx, deleteKeyPairInput)
+	return err
+}
+
+func (c *DefaultClient) EnsureKeyPair(ctx context.Context, keyPairName string) (string, error) {
+	if keyPairName == "" {
+		keyPairName = fmt.Sprintf(keyPairNameFormat, c.prefix)
+	}
+
+	createKeyPairInput := &ec2.CreateKeyPairInput{
+		KeyName:           aws.String(keyPairName),
+		TagSpecifications: c.getTags(awstypes.ResourceTypeKeyPair),
+	}
+
+	createKeyPair, err := c.client.CreateKeyPair(ctx, createKeyPairInput)
+	if err != nil && errorIsAlreadyExists(err) {
+		describeKeyPairInput := &ec2.DescribeKeyPairsInput{
+			KeyNames: []string{keyPairName},
+		}
+
+		keyPairs, err := c.client.DescribeKeyPairs(ctx, describeKeyPairInput)
+		if err != nil {
+			return "", err
+		}
+		return *keyPairs.KeyPairs[0].KeyName, nil
+	}
+
+	if err != nil {
+		return "", err
+	}
+
+	return *createKeyPair.KeyName, nil
 }
 
 func (c *DefaultClient) EnsureInstanceType(ctx context.Context, instanceTypeName string) (string, error) {
@@ -230,12 +396,7 @@ func (c *DefaultClient) EnsureInstanceType(ctx context.Context, instanceTypeName
 	return string(out), nil
 }
 
-type CreateUserDataParams struct {
-	ProjectToken     string
-	CoreInstanceName string
-}
-
-func (c *DefaultClient) CreateUserdata(_ context.Context, in *CreateUserDataParams) (string, error) {
+func (c DefaultClient) CreateUserdata(_ context.Context, in *CreateUserDataParams) (string, error) {
 	var out bytes.Buffer
 
 	t, err := template.New("userdata").Parse(userDataTemplate)
@@ -251,21 +412,59 @@ func (c *DefaultClient) CreateUserdata(_ context.Context, in *CreateUserDataPara
 	return base64.StdEncoding.EncodeToString(out.Bytes()), nil
 }
 
-func (c *DefaultClient) CreateInstance(ctx context.Context, in *CreateInstanceParams) (CreatedInstance, error) {
+func (c *DefaultClient) CreateInstance(ctx context.Context, params *CreateInstanceParams) (CreatedInstance, error) {
 	var out CreatedInstance
 
-	runInstanceInput := &ec2.RunInstancesInput{
-		MaxCount:         aws.Int32(1),
-		MinCount:         aws.Int32(1),
-		ImageId:          aws.String(in.ImageID),
-		InstanceType:     awstypes.InstanceType(in.InstanceType),
-		UserData:         aws.String(in.UserData),
-		SecurityGroupIds: []string{in.SecurityGroupID},
-		SubnetId:         aws.String(in.SubnetID),
-		KeyName:          aws.String(in.KeyPairName),
+	imageID, err := c.FindMatchingAMI(ctx, params.CoreVersion)
+	if err != nil {
+		return out, fmt.Errorf("could not find a matching AMI for version %s: %w", params.CoreVersion, err)
 	}
 
-	instances, err := c.client.RunInstances(ctx, runInstanceInput)
+	keyPairName, err := c.EnsureKeyPair(ctx, params.KeyPairName)
+	if err != nil {
+		return out, fmt.Errorf("could not find a suitable key pair for a key: %w", err)
+	}
+
+	instanceType, err := c.EnsureInstanceType(ctx, params.InstanceType)
+	if err != nil {
+		return out, fmt.Errorf("could not find a suitable instance type: %w", err)
+	}
+
+	vpcID, err := c.EnsureSubnet(ctx, params.SubnetID)
+	if err != nil {
+		return out, fmt.Errorf("could not find a suitable subnet: %w", err)
+	}
+
+	securityGroupID, err := c.EnsureSecurityGroup(ctx, params.SecurityGroupName, vpcID)
+	if err != nil {
+		return out, fmt.Errorf("could not find a suitable security group: %w", err)
+	}
+
+	err = c.EnsureSecurityGroupIngressRules(ctx, securityGroupID)
+	if err != nil {
+		return out, fmt.Errorf("could not apply ingress security rules: %w", err)
+	}
+
+	params.UserData.CoreInstanceName = params.CoreInstanceName
+
+	userData, err := c.CreateUserdata(ctx, params.UserData)
+	if err != nil {
+		return out, fmt.Errorf("could not generate instance user data: %w", err)
+	}
+
+	runInstancesInput := &ec2.RunInstancesInput{
+		MaxCount:          aws.Int32(1),
+		MinCount:          aws.Int32(1),
+		ImageId:           aws.String(imageID),
+		InstanceType:      awstypes.InstanceType(instanceType),
+		UserData:          aws.String(userData),
+		SecurityGroupIds:  []string{securityGroupID},
+		SubnetId:          aws.String(params.SubnetID),
+		KeyName:           aws.String(keyPairName),
+		TagSpecifications: c.getTags(awstypes.ResourceTypeInstance),
+	}
+
+	instances, err := c.client.RunInstances(ctx, runInstancesInput)
 	if err != nil {
 		return out, err
 	}
@@ -275,31 +474,35 @@ func (c *DefaultClient) CreateInstance(ctx context.Context, in *CreateInstancePa
 	out.EC2InstanceType = string(instance.InstanceType)
 	out.AMIID = *instance.ImageId
 	out.Hostname = *instance.PublicDnsName
-	out.PrivateIP = *instance.PrivateIpAddress
-	return out, nil
-}
+	out.PrivateIPv4 = *instance.PrivateIpAddress
 
-func (c *DefaultClient) EnsureKeyPair(ctx context.Context, keyPairName string) (string, error) {
-	createKeyPairInput := &ec2.CreateKeyPairInput{
-		KeyName: aws.String(keyPairName),
-	}
+	// await for the instance to reach available status, cannot be associated with an
+	// IPv4 address if the instance is not ready.
+	if params.PublicIPAddress != nil {
+		err = retry.Do(ctx, awsInstanceUpCheckMaxDuration(), func(ctx context.Context) error {
+			state, err := c.InstanceState(ctx, *instance.InstanceId)
+			if err != nil {
+				return retry.RetryableError(err)
+			}
 
-	createKeyPair, err := c.client.CreateKeyPair(ctx, createKeyPairInput)
-	if err != nil && errorIsAlreadyExists(err) {
-		describeKeyPairInput := &ec2.DescribeKeyPairsInput{
-			KeyNames: []string{keyPairName},
-		}
+			if state != string(awstypes.InstanceStateNameRunning) {
+				return retry.RetryableError(fmt.Errorf("instance not in running state"))
+			}
 
-		keyPairs, err := c.client.DescribeKeyPairs(ctx, describeKeyPairInput)
+			return nil
+		})
+
 		if err != nil {
-			return "", err
+			return out, err
 		}
-		return *keyPairs.KeyPairs[0].KeyName, nil
+		publicIPv4Address, err := c.EnsureAndAssociateElasticIPv4Address(ctx, out.EC2InstanceID,
+			params.PublicIPAddress.Pool, params.PublicIPAddress.Address)
+		if err != nil {
+			return out, fmt.Errorf("could not associate public ipv4 address: %w", err)
+		}
+		out.PublicIPv4 = publicIPv4Address
 	}
 
-	if err != nil {
-		return "", err
-	}
-
-	return *createKeyPair.KeyName, nil
+	out.CoreInstanceName = params.CoreInstanceName
+	return out, err
 }

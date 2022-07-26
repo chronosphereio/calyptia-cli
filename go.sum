@@ -87,6 +87,8 @@ github.com/aws/smithy-go v1.12.0/go.mod h1:Tg+OJXh4MB2R/uN61Ko2f6hTZwB/ZYGOtib8J
 github.com/buger/jsonparser v1.1.1/go.mod h1:6RYKKt7H4d4+iWqouImQ9R2FZql3VbhNgx27UK13J/0=
 github.com/calyptia/api v0.3.9 h1:UVWTyNUAuFs8BX5f4aLahocuhniObUCcmZAzgg+k+mg=
 github.com/calyptia/api v0.3.9/go.mod h1:tMRIWoW2NIqylo8pYEoOFgRW1axmEE9Yd6SXBEdSHLQ=
+github.com/calyptia/api v0.4.0 h1:W3Jsa+Yso75HnX9tctjNGRWBZInn4cXb1gw1jmEtFNc=
+github.com/calyptia/api v0.4.0/go.mod h1:tMRIWoW2NIqylo8pYEoOFgRW1axmEE9Yd6SXBEdSHLQ=
 github.com/calyptia/cli/k8s v0.0.0-20220716151659-d687bbfd5c34 h1:/bSlTudRbMUOrZUVSHfuuwxqnUIPy0zfCf3eGkOE3Ho=
 github.com/calyptia/cli/k8s v0.0.0-20220716151659-d687bbfd5c34/go.mod h1:L4pfI8wwBPD0+hTtbmVoM/Lo2+fMg5IcfXgH+7IofnY=
 github.com/calyptia/core-images-index/go-index v0.0.0-20220722132200-d14099bc5c01 h1:yhrSznCjYo3St+IHFhq8REL0WPF/tHTdXdSelSN59Dc=

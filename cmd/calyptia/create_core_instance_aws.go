@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"time"
 
@@ -27,21 +26,54 @@ var (
 	}
 )
 
-func newCmdCreateCoreInstanceOnAWS(config *config, client awsclient.Client) *cobra.Command {
+type (
+	//go:generate moq -out core_instance_poller_mock.go . CoreInstancePoller
+	CoreInstancePoller interface {
+		Ready(ctx context.Context, name string) error
+	}
+
+	DefaultCoreInstancePoller struct {
+		CoreInstancePoller
+		config *config
+	}
+)
+
+func (c *DefaultCoreInstancePoller) Ready(ctx context.Context, name string) error {
+	return retry.Do(ctx, coreInstanceUpCheckMaxDuration(), func(ctx context.Context) error {
+		instances, err := c.config.cloud.Aggregators(ctx, c.config.projectID, types.AggregatorsParams{
+			Name: &name,
+		})
+
+		if err != nil || len(instances.Items) == 0 {
+			return retry.RetryableError(err)
+		}
+
+		instance := instances.Items[0]
+		if instance.Status != types.AggregatorStatusRunning {
+			return retry.RetryableError(errCoreInstanceNotRunning)
+		}
+		return nil
+	})
+}
+
+func newCmdCreateCoreInstanceOnAWS(config *config, client awsclient.Client, poller CoreInstancePoller) *cobra.Command {
 	var (
-		tags                  []string
-		noHealthCheckPipeline bool
-		coreInstanceVersion   string
-		coreInstanceName      string
-		environmentKey        string
-		credentials           string
-		profileFile           string
-		profileName           string
-		region                string
-		subnetID              string
-		keyName               string
-		instanceTypeName      string
-		securityGroupName     string
+		tags                   []string
+		noHealthCheckPipeline  bool
+		noElasticIPv4Address   bool
+		coreInstanceVersion    string
+		coreInstanceName       string
+		environmentKey         string
+		credentials            string
+		profileFile            string
+		profileName            string
+		region                 string
+		subnetID               string
+		keyPairName            string
+		instanceTypeName       string
+		securityGroupName      string
+		elasticIPv4Address     string
+		elasticIPv4AddressPool string
 	)
 
 	cmd := &cobra.Command{
@@ -49,13 +81,15 @@ func newCmdCreateCoreInstanceOnAWS(config *config, client awsclient.Client) *cob
 		Aliases: []string{"ec2", "amazon"},
 		Short:   "Setup a new core instance on Amazon EC2",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			var err error
-			var params awsclient.CreateInstanceParams
+			var (
+				awsInstance awsclient.CreatedInstance
+				err         error
+			)
 
 			ctx := context.Background()
 
 			if client == nil {
-				client, err = awsclient.New(ctx, region, credentials, profileFile, profileName)
+				client, err = awsclient.New(ctx, coreInstanceName, region, credentials, profileFile, profileName)
 				if err != nil {
 					return fmt.Errorf("could not initialize client: %w", err)
 				}
@@ -70,95 +104,45 @@ func newCmdCreateCoreInstanceOnAWS(config *config, client awsclient.Client) *cob
 				return fmt.Errorf("core instance named \"%s\" already exists, choose a different name", coreInstanceName)
 			}
 
-			fmt.Fprintln(cmd.OutOrStdout(), "Booting calyptia core instance on AWS")
-
-			imageID, err := client.FindMatchingAMI(ctx, coreInstanceVersion)
-			if err != nil {
-				return fmt.Errorf("could not find a matching AMI for version %s: %w", coreInstanceVersion, err)
+			params := &awsclient.CreateInstanceParams{
+				CoreVersion:       coreInstanceVersion,
+				CoreInstanceName:  coreInstanceName,
+				KeyPairName:       keyPairName,
+				SecurityGroupName: securityGroupName,
+				InstanceType:      instanceTypeName,
+				SubnetID:          subnetID,
+				UserData: &awsclient.CreateUserDataParams{
+					ProjectToken: config.projectToken,
+				},
 			}
 
-			keyPairName, err := client.EnsureKeyPair(ctx, keyName)
-			if err != nil {
-				return fmt.Errorf("could not find a suitable key pair for a key: %w", err)
-			}
-
-			instanceType, err := client.EnsureInstanceType(ctx, instanceTypeName)
-			if err != nil {
-				return fmt.Errorf("could not find a suitable instance type: %w", err)
-			}
-
-			vpcID, err := client.EnsureSubnet(ctx, subnetID)
-			if err != nil {
-				return fmt.Errorf("could not find a suitable subnet: %w", err)
-			}
-
-			params.SubnetID = subnetID
-
-			securityGroupID, err := client.EnsureSecurityGroup(ctx, securityGroupName, vpcID)
-			if err != nil {
-				return fmt.Errorf("could not find a suitable security group: %w", err)
-			}
-
-			err = client.EnsureSecurityGroupIngressRules(ctx, securityGroupID)
-			if err != nil {
-				return fmt.Errorf("could not apply ingress security rules: %w", err)
-			}
-
-			userData, err := client.CreateUserdata(ctx, &awsclient.CreateUserDataParams{
-				ProjectToken:     config.projectToken,
-				CoreInstanceName: coreInstanceName,
-			})
-			if err != nil {
-				return fmt.Errorf("could not generate instance user data: %w", err)
-			}
-
-			params.ImageID = imageID
-			params.InstanceType = instanceType
-			params.UserData = userData
-			params.SecurityGroupID = securityGroupID
-			params.KeyPairName = keyPairName
-
-			createdInstance, err := client.CreateInstance(ctx, &params)
-			if err != nil {
-				return fmt.Errorf("could not create instance: %w", err)
-			}
-
-			fmt.Fprintf(cmd.OutOrStdout(), "Booted calyptia core instance on AWS as: %s\n", createdInstance.String())
-
-			var instance *types.Aggregator
-
-			err = retry.Do(ctx, coreInstanceUpCheckMaxDuration(), func(ctx context.Context) error {
-				instance, err = getCoreInstanceByName(ctx, config, coreInstanceName)
-				if err != nil {
-					fmt.Fprintf(cmd.OutOrStdout(), "calyptia core instance: \"%s\" not dialed home yet...\n", coreInstanceName)
-					return retry.RetryableError(err)
+			if !noElasticIPv4Address {
+				params.PublicIPAddress = &awsclient.ElasticIPAddressParams{
+					Pool:    elasticIPv4AddressPool,
+					Address: elasticIPv4Address,
 				}
-				if instance.Status != types.AggregatorStatusRunning {
-					fmt.Fprintf(cmd.OutOrStdout(), "calyptia core instance: \"%s\" not yet running, status: %s\n", coreInstanceName, instance.Status)
-					return retry.RetryableError(errCoreInstanceNotRunning)
+			}
+
+			fmt.Fprintln(cmd.OutOrStdout(), "Creating calyptia core instance on AWS")
+			awsInstance, err = client.CreateInstance(ctx, params)
+			if err != nil {
+				return fmt.Errorf("could not create AWS instance: %w", err)
+			}
+
+			fmt.Fprintf(cmd.OutOrStdout(), "calyptia core instance running on AWS as: %s\n", awsInstance.String())
+
+			if poller == nil {
+				poller = &DefaultCoreInstancePoller{
+					config: config,
 				}
-				return nil
-			})
-
-			if err != nil {
-				return fmt.Errorf("core instance didn't reach running status: %w", err)
 			}
 
-			metadata, err := json.Marshal(createdInstance)
+			err = poller.Ready(ctx, coreInstanceName)
 			if err != nil {
-				return fmt.Errorf("could not encode core instance metadata: %w", err)
+				return fmt.Errorf("calyptia core instance could not reach ready status: %w", err)
 			}
 
-			awsMetadata := json.RawMessage(metadata)
-			err = config.cloud.UpdateAggregator(ctx, instance.ID, types.UpdateAggregator{
-				Metadata: &awsMetadata,
-			})
-
-			if err != nil {
-				return fmt.Errorf("could not update core instance metadata on cloud API: %w", err)
-			}
-
-			fmt.Fprintf(cmd.OutOrStdout(), "Calyptia core instance: %s, is ready. Happy logs, metrics and traces on AWS :-)\n", instance.Name)
+			fmt.Fprintf(cmd.OutOrStdout(), "Calyptia core instance is ready to use.")
 			return nil
 		},
 	}
@@ -172,12 +156,16 @@ func newCmdCreateCoreInstanceOnAWS(config *config, client awsclient.Client) *cob
 	fs.StringVar(&credentials, "credentials", "", "Path to the AWS credentials file. If not specified the default credential loader will be used.")
 	fs.StringVar(&profileFile, "profile-file", "", "Path to the AWS profile file. If not specified the default credential loader will be used.")
 	fs.StringVar(&profileName, "profile", "", "Name of the AWS profile to use, if not specified, the default profileFile will be used.")
+
 	// Set of parameters that map into https://docs.aws.amazon.com/sdk-for-go/api/service/ec2/#RunInstancesInput
-	fs.StringVar(&keyName, "key", awsclient.DefaultSecurityGroupName, "AWS Key to use for SSH into the core instance.")
+	fs.StringVar(&keyPairName, "key-pair", "", "AWS Key pair to use for SSH into the core instance.")
 	fs.StringVar(&region, "region", awsclient.DefaultRegionName, "AWS region name to use in the instance.")
 	fs.StringVar(&instanceTypeName, "instance-type", awsclient.DefaultInstanceTypeName, "AWS Instance type to use (see https://aws.amazon.com/es/ec2/instance-types/) for details.")
-	fs.StringVar(&securityGroupName, "security-group", awsclient.DefaultSecurityGroupName, "AWS Security group name to use.")
+	fs.StringVar(&securityGroupName, "security-group", "", "AWS Security group name to use.")
 	fs.StringVar(&subnetID, "subnet-id", "", "AWS subnet name to use.If you don't specify a subnet ID, we choose a default subnet from your default VPC for you. If you don't have a default VPC, you MUST specify a subnet.")
+	fs.BoolVar(&noElasticIPv4Address, "no-elastic-ip", false, "Don't allocate a floating ip address for the instance.")
+	fs.StringVar(&elasticIPv4Address, "elastic-ip", "", "IPv4 formatted address of an existing elastic ip address allocation to associate to this instance. If not provided, a new one will be allocated for the created VM.")
+	fs.StringVar(&elasticIPv4AddressPool, "elastic-ip-address-pool", "", "IP address pool to allocate the elastic ip address from.")
 
 	// TODO: pass the environment name to the virtual machines.
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
