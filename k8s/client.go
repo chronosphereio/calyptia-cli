@@ -230,14 +230,25 @@ func (client *Client) FindServicesByLabel(ctx context.Context, label, ns string)
 	return client.CoreV1().Services(ns).List(ctx, metav1.ListOptions{LabelSelector: label})
 }
 
-func (client *Client) UpdateDeployment(ctx context.Context, name, image, version string) error {
-	deployment, err := client.FindDeploymentByName(ctx, name)
+func (client *Client) UpdateDeploymentByLabel(ctx context.Context, label, image, version string) error {
+	deploymentList, err := client.FindDeploymentByLabel(ctx, label)
 	if err != nil {
 		return err
 	}
+	if len(deploymentList.Items) == 0 {
+		return fmt.Errorf("no deployment found with label %s", label)
+	}
+	deployment := deploymentList.Items[0]
+	if len(deployment.Spec.Template.Spec.Containers) == 0 {
+		return fmt.Errorf("no container found in deployment %s", deployment.Name)
+	}
 	deployment.Spec.Template.Spec.Containers[0].Image = fmt.Sprintf("%s:%s", image, version)
-	_, err = client.AppsV1().Deployments(client.Namespace).Update(ctx, deployment, metav1.UpdateOptions{})
-	return err
+	_, err = client.AppsV1().Deployments(client.Namespace).Update(ctx, &deployment, metav1.UpdateOptions{})
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (client *Client) FindDeploymentByName(ctx context.Context, name string) (*appsv1.Deployment, error) {
@@ -246,4 +257,8 @@ func (client *Client) FindDeploymentByName(ctx context.Context, name string) (*a
 		return nil, err
 	}
 	return deployment, nil
+}
+
+func (client *Client) FindDeploymentByLabel(ctx context.Context, label string) (*appsv1.DeploymentList, error) {
+	return client.AppsV1().Deployments(client.Namespace).List(ctx, metav1.ListOptions{LabelSelector: label})
 }

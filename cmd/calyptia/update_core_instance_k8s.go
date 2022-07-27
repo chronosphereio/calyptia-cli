@@ -93,10 +93,9 @@ func newCmdUpdateCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 			if err := k8sClient.EnsureOwnNamespace(ctx); err != nil {
 				return fmt.Errorf("could not ensure kubernetes namespace exists: %w", err)
 			}
-
-			deploymentName := agg.Name + "-deployment"
-			if err := k8sClient.UpdateDeployment(ctx, deploymentName, coreDockerImage, newVersion); err != nil {
-				return fmt.Errorf("could not update deployment %s: %w", deploymentName, err)
+			label := fmt.Sprintf("%s=%s,!%s", k8s.LabelAggregatorID, agg.ID, k8s.LabelPipelineID)
+			if err := k8sClient.UpdateDeploymentByLabel(ctx, label, coreDockerImage, newVersion); err != nil {
+				return fmt.Errorf("could not update kubernetes deployment: %w", err)
 			}
 
 			if err != nil {
