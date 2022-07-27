@@ -225,14 +225,14 @@ func (c *DefaultClient) EnsureSubnet(ctx context.Context, subNetID string) (stri
 	var describeSubnetInput ec2.DescribeSubnetsInput
 
 	// find the default subnet
-        describeSubnetInput = ec2.DescribeSubnetsInput{
-	        Filters: []awstypes.Filter{
-		        {
-			        Name:   aws.String("subnet-id"),
-			        Values: []string{subNetID},
-		        },
-	        },
-        }
+	describeSubnetInput = ec2.DescribeSubnetsInput{
+		Filters: []awstypes.Filter{
+			{
+				Name:   aws.String("subnet-id"),
+				Values: []string{subNetID},
+			},
+		},
+	}
 	if subNetID == "" {
 		describeSubnetInput = ec2.DescribeSubnetsInput{
 			Filters: []awstypes.Filter{
@@ -242,7 +242,7 @@ func (c *DefaultClient) EnsureSubnet(ctx context.Context, subNetID string) (stri
 				},
 			},
 		}
-	} 	
+	}
 
 	subNets, err := c.client.DescribeSubnets(ctx, &describeSubnetInput)
 	if err != nil {
@@ -474,39 +474,43 @@ func (c *DefaultClient) CreateInstance(ctx context.Context, params *CreateInstan
 	}
 
 	instance := instances.Instances[0]
+
 	out.EC2InstanceID = *instance.InstanceId
 	out.EC2InstanceType = string(instance.InstanceType)
 	out.AMIID = *instance.ImageId
 	out.Hostname = *instance.PublicDnsName
 	out.PrivateIPv4 = *instance.PrivateIpAddress
+	out.CoreInstanceName = params.CoreInstanceName
+
+	if params.PublicIPAddress == nil {
+		return out, nil
+	}
 
 	// await for the instance to reach available status, cannot be associated with an
 	// IPv4 address if the instance is not ready.
-	if params.PublicIPAddress == nil {
-		out.CoreInstanceName = params.CoreInstanceName
-	        return out, err
-	}
-err = retry.Do(ctx, instanceUpCheckMaxDuration(), func(ctx context.Context) error {
-	state, err := c.InstanceState(ctx, *instance.InstanceId)
+	err = retry.Do(ctx, instanceUpCheckMaxDuration(), func(ctx context.Context) error {
+		state, err := c.InstanceState(ctx, *instance.InstanceId)
+		if err != nil {
+			return retry.RetryableError(err)
+		}
+
+		if state != string(awstypes.InstanceStateNameRunning) {
+			return retry.RetryableError(fmt.Errorf("instance not in running state"))
+		}
+
+		return nil
+	})
+
 	if err != nil {
-		return retry.RetryableError(err)
+		return out, err
 	}
 
-	if state != string(awstypes.InstanceStateNameRunning) {
-		return retry.RetryableError(fmt.Errorf("instance not in running state"))
+	publicIPv4Address, err := c.EnsureAndAssociateElasticIPv4Address(ctx, out.EC2InstanceID,
+		params.PublicIPAddress.Pool, params.PublicIPAddress.Address)
+
+	if err != nil {
+		return out, fmt.Errorf("could not associate public ipv4 address: %w", err)
 	}
-
-	return nil
-})
-
-if err != nil {
-	return out, err
-}
-
-publicIPv4Address, err := c.EnsureAndAssociateElasticIPv4Address(ctx, out.EC2InstanceID,
-	params.PublicIPAddress.Pool, params.PublicIPAddress.Address)
-if err != nil {
-	return out, fmt.Errorf("could not associate public ipv4 address: %w", err)
-}
-out.PublicIPv4 = publicIPv4Address
+	out.PublicIPv4 = publicIPv4Address
+	return out, nil
 }
