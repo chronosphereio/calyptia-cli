@@ -31,8 +31,8 @@ func Test_newCmdCreateCoreInstanceOnAWS(t *testing.T) {
 					return instanceParams, nil
 				},
 			}, &CoreInstancePollerMock{
-				ReadyFunc: func(ctx context.Context, name string) error {
-					return nil
+				ReadyFunc: func(ctx context.Context, name string) (string, error) {
+					return "", nil
 				},
 			})
 
@@ -40,7 +40,7 @@ func Test_newCmdCreateCoreInstanceOnAWS(t *testing.T) {
 		err := cmd.Execute()
 		wantEq(t, nil, err)
 		wantEq(t, "Creating calyptia core instance on AWS\n"+
-			"calyptia core instance running on AWS as: instance-id: "+instanceParams.EC2InstanceID+", instance-type: "+instanceParams.EC2InstanceType+", privateIPv4: "+instanceParams.PrivateIPv4+"\n"+
+			"calyptia core instance running on AWS instance-id: "+instanceParams.EC2InstanceID+", instance-type: "+instanceParams.EC2InstanceType+", privateIPv4: "+instanceParams.PrivateIPv4+"\n"+
 			"Calyptia core instance is ready to use.\n", got.String())
 	})
 
@@ -52,8 +52,8 @@ func Test_newCmdCreateCoreInstanceOnAWS(t *testing.T) {
 					return aws.CreatedInstance{}, aws.ErrSubnetNotFound
 				},
 			}, &CoreInstancePollerMock{
-				ReadyFunc: func(ctx context.Context, name string) error {
-					return nil
+				ReadyFunc: func(ctx context.Context, name string) (string, error) {
+					return "", nil
 				},
 			})
 
@@ -70,13 +70,13 @@ func Test_newCmdCreateCoreInstanceOnAWS(t *testing.T) {
 					return aws.CreatedInstance{}, nil
 				},
 			}, &CoreInstancePollerMock{
-				ReadyFunc: func(ctx context.Context, name string) error {
-					return errCoreInstanceNotRunning
+				ReadyFunc: func(ctx context.Context, name string) (string, error) {
+					return "", errCoreInstanceNotRunning
 				},
 			})
 
 		cmd.SetOut(io.Discard)
 		err := cmd.Execute()
-		wantErrMsg(t, `calyptia core instance could not reach ready status: core instance not in running status`, err)
+		wantErrMsg(t, `calyptia core instance not ready: core instance not in running status`, err)
 	})
 }

@@ -194,6 +194,8 @@ func (c *DefaultClient) FindMatchingAMI(ctx context.Context, region, version str
 func (c *DefaultClient) EnsureAndAssociateElasticIPv4Address(ctx context.Context, instanceID, elasticIPv4AddressPool, elasticIPv4Address string) (string, error) {
 	var allocateAddressInput ec2.AllocateAddressInput
 
+	allocateAddressInput.TagSpecifications = c.getTags(awstypes.ResourceTypeElasticIp)
+
 	if elasticIPv4Address != "" {
 		allocateAddressInput.Address = &elasticIPv4Address
 	}
@@ -483,6 +485,9 @@ func (c *DefaultClient) CreateInstance(ctx context.Context, params *CreateInstan
 	out.CoreInstanceName = params.CoreInstanceName
 
 	if params.PublicIPAddress == nil {
+		if instance.PublicIpAddress != nil {
+			out.PublicIPv4 = *instance.PublicIpAddress
+		}
 		return out, nil
 	}
 
@@ -505,12 +510,12 @@ func (c *DefaultClient) CreateInstance(ctx context.Context, params *CreateInstan
 		return out, err
 	}
 
-	publicIPv4Address, err := c.EnsureAndAssociateElasticIPv4Address(ctx, out.EC2InstanceID,
+	elasticIpv4Address, err := c.EnsureAndAssociateElasticIPv4Address(ctx, out.EC2InstanceID,
 		params.PublicIPAddress.Pool, params.PublicIPAddress.Address)
 
 	if err != nil {
 		return out, fmt.Errorf("could not associate public ipv4 address: %w", err)
 	}
-	out.PublicIPv4 = publicIPv4Address
+	out.PublicIPv4 = elasticIpv4Address
 	return out, nil
 }

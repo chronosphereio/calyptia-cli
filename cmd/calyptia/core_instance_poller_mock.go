@@ -18,7 +18,7 @@ var _ CoreInstancePoller = &CoreInstancePollerMock{}
 //
 // 		// make and configure a mocked CoreInstancePoller
 // 		mockedCoreInstancePoller := &CoreInstancePollerMock{
-// 			ReadyFunc: func(ctx context.Context, name string) error {
+// 			ReadyFunc: func(ctx context.Context, name string) (string, error) {
 // 				panic("mock out the Ready method")
 // 			},
 // 		}
@@ -29,7 +29,7 @@ var _ CoreInstancePoller = &CoreInstancePollerMock{}
 // 	}
 type CoreInstancePollerMock struct {
 	// ReadyFunc mocks the Ready method.
-	ReadyFunc func(ctx context.Context, name string) error
+	ReadyFunc func(ctx context.Context, name string) (string, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -45,7 +45,7 @@ type CoreInstancePollerMock struct {
 }
 
 // Ready calls ReadyFunc.
-func (mock *CoreInstancePollerMock) Ready(ctx context.Context, name string) error {
+func (mock *CoreInstancePollerMock) Ready(ctx context.Context, name string) (string, error) {
 	if mock.ReadyFunc == nil {
 		panic("CoreInstancePollerMock.ReadyFunc: method is nil but CoreInstancePoller.Ready was just called")
 	}

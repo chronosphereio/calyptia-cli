@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -31,7 +32,7 @@ var (
 type (
 	//go:generate moq -out core_instance_poller_mock.go . CoreInstancePoller
 	CoreInstancePoller interface {
-		Ready(ctx context.Context, name string) error
+		Ready(ctx context.Context, name string) (string, error)
 	}
 
 	DefaultCoreInstancePoller struct {
@@ -40,22 +41,34 @@ type (
 	}
 )
 
-func (c *DefaultCoreInstancePoller) Ready(ctx context.Context, name string) error {
-	return retry.Do(ctx, coreInstanceUpCheckMaxDuration(), func(ctx context.Context) error {
+func (c *DefaultCoreInstancePoller) Ready(ctx context.Context, name string) (string, error) {
+	var instance types.Aggregator
+
+	err := retry.Do(ctx, coreInstanceUpCheckMaxDuration(), func(ctx context.Context) error {
 		instances, err := c.config.cloud.Aggregators(ctx, c.config.projectID, types.AggregatorsParams{
 			Name: &name,
 		})
 
-		if err != nil || len(instances.Items) == 0 {
+		if err != nil {
 			return retry.RetryableError(err)
 		}
 
-		instance := instances.Items[0]
+		if len(instances.Items) == 0 {
+			return retry.RetryableError(errCoreInstanceNotFound)
+		}
+
+		instance = instances.Items[0]
 		if instance.Status != types.AggregatorStatusRunning {
 			return retry.RetryableError(errCoreInstanceNotRunning)
 		}
 		return nil
 	})
+
+	if err != nil {
+		return "", err
+	}
+
+	return instance.ID, nil
 }
 
 func newCmdCreateCoreInstanceOnAWS(config *config, client awsclient.Client, poller CoreInstancePoller) *cobra.Command {
@@ -97,6 +110,12 @@ func newCmdCreateCoreInstanceOnAWS(config *config, client awsclient.Client, poll
 				}
 			}
 
+			if poller == nil {
+				poller = &DefaultCoreInstancePoller{
+					config: config,
+				}
+			}
+
 			exists, err := coreInstanceNameExists(ctx, config, coreInstanceName)
 			if err != nil && !errors.Is(err, errCoreInstanceNotFound) {
 				return fmt.Errorf("could not get core instance details from cloud API: %w", err)
@@ -132,17 +151,23 @@ func newCmdCreateCoreInstanceOnAWS(config *config, client awsclient.Client, poll
 				return fmt.Errorf("could not create AWS instance: %w", err)
 			}
 
-			fmt.Fprintf(cmd.OutOrStdout(), "calyptia core instance running on AWS as: %s\n", awsInstance.String())
-
-			if poller == nil {
-				poller = &DefaultCoreInstancePoller{
-					config: config,
-				}
+			fmt.Fprintf(cmd.OutOrStdout(), "calyptia core instance running on AWS %s\n", awsInstance.String())
+			coreInstanceID, err := poller.Ready(ctx, coreInstanceName)
+			if err != nil {
+				return fmt.Errorf("calyptia core instance not ready: %w", err)
 			}
 
-			err = poller.Ready(ctx, coreInstanceName)
+			metadata, err := json.Marshal(awsInstance)
 			if err != nil {
-				return fmt.Errorf("calyptia core instance could not reach ready status: %w", err)
+				return fmt.Errorf("could not encode metadata: %w", err)
+			}
+
+			err = config.cloud.UpdateAggregator(ctx, coreInstanceID, types.UpdateAggregator{
+				Metadata: (*json.RawMessage)(&metadata),
+			})
+
+			if err != nil {
+				return fmt.Errorf("could not update metadata for core instance: %w", err)
 			}
 
 			fmt.Fprintf(cmd.OutOrStdout(), "Calyptia core instance is ready to use.\n")
