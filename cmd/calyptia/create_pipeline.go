@@ -11,7 +11,6 @@ import (
 	"text/tabwriter"
 
 	"github.com/joho/godotenv"
-	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v2"
 
@@ -102,7 +101,7 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 			})
 			if err != nil {
 				if e, ok := err.(*cloud.Error); ok && e.Detail != nil {
-					return errors.Errorf("could not create pipeline: %s: %s", err, *e.Detail)
+					return fmt.Errorf("could not create pipeline: %s: %s", err, *e.Detail)
 				}
 
 				return fmt.Errorf("could not create pipeline: %w", err)
@@ -188,7 +187,7 @@ func parseCreatePipelineSecret(file, format string) ([]cloud.CreatePipelineSecre
 		case ".yaml", ".yml":
 			format = "yaml"
 		default:
-			return nil, errors.Errorf("could not determine secrets format: %q", file)
+			return nil, fmt.Errorf("could not determine secrets format: %q", file)
 		}
 	}
 
