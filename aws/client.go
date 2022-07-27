@@ -473,32 +473,31 @@ func (c *DefaultClient) CreateInstance(ctx context.Context, params *CreateInstan
 
 	// await for the instance to reach available status, cannot be associated with an
 	// IPv4 address if the instance is not ready.
-	if params.PublicIPAddress != nil {
-		err = retry.Do(ctx, instanceUpCheckMaxDuration(), func(ctx context.Context) error {
-			state, err := c.InstanceState(ctx, *instance.InstanceId)
-			if err != nil {
-				return retry.RetryableError(err)
-			}
-
-			if state != string(awstypes.InstanceStateNameRunning) {
-				return retry.RetryableError(fmt.Errorf("instance not in running state"))
-			}
-
-			return nil
-		})
-
-		if err != nil {
-			return out, err
-		}
-
-		publicIPv4Address, err := c.EnsureAndAssociateElasticIPv4Address(ctx, out.EC2InstanceID,
-			params.PublicIPAddress.Pool, params.PublicIPAddress.Address)
-		if err != nil {
-			return out, fmt.Errorf("could not associate public ipv4 address: %w", err)
-		}
-		out.PublicIPv4 = publicIPv4Address
+	if params.PublicIPAddress == nil {
+		out.CoreInstanceName = params.CoreInstanceName
+	        return out, err
+	}
+err = retry.Do(ctx, instanceUpCheckMaxDuration(), func(ctx context.Context) error {
+	state, err := c.InstanceState(ctx, *instance.InstanceId)
+	if err != nil {
+		return retry.RetryableError(err)
 	}
 
-	out.CoreInstanceName = params.CoreInstanceName
+	if state != string(awstypes.InstanceStateNameRunning) {
+		return retry.RetryableError(fmt.Errorf("instance not in running state"))
+	}
+
+	return nil
+})
+
+if err != nil {
 	return out, err
+}
+
+publicIPv4Address, err := c.EnsureAndAssociateElasticIPv4Address(ctx, out.EC2InstanceID,
+	params.PublicIPAddress.Pool, params.PublicIPAddress.Address)
+if err != nil {
+	return out, fmt.Errorf("could not associate public ipv4 address: %w", err)
+}
+out.PublicIPv4 = publicIPv4Address
 }
