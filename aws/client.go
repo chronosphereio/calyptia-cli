@@ -221,6 +221,14 @@ func (c *DefaultClient) EnsureSubnet(ctx context.Context, subNetID string) (stri
 	var describeSubnetInput ec2.DescribeSubnetsInput
 
 	// find the default subnet
+        describeSubnetInput = ec2.DescribeSubnetsInput{
+	        Filters: []awstypes.Filter{
+		        {
+			        Name:   aws.String("subnet-id"),
+			        Values: []string{subNetID},
+		        },
+	        },
+        }
 	if subNetID == "" {
 		describeSubnetInput = ec2.DescribeSubnetsInput{
 			Filters: []awstypes.Filter{
@@ -230,16 +238,7 @@ func (c *DefaultClient) EnsureSubnet(ctx context.Context, subNetID string) (stri
 				},
 			},
 		}
-	} else {
-		describeSubnetInput = ec2.DescribeSubnetsInput{
-			Filters: []awstypes.Filter{
-				{
-					Name:   aws.String("subnet-id"),
-					Values: []string{subNetID},
-				},
-			},
-		}
-	}
+	} 	
 
 	subNets, err := c.client.DescribeSubnets(ctx, &describeSubnetInput)
 	if err != nil {
