@@ -6,8 +6,9 @@ import (
 )
 
 var (
-	ErrSubnetNotFound        = fmt.Errorf("subnet not found")
-	ErrElasticIPAddressInUse = fmt.Errorf("elastic ip address is already in use")
+	ErrSubnetNotFound         = fmt.Errorf("subnet not found")
+	ErrInstanceStatusNotFound = fmt.Errorf("instance status not found")
+	ErrKeyPairNotFound        = fmt.Errorf("key pair not found")
 )
 
 func errorIsAlreadyExists(err error) bool {

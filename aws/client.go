@@ -50,7 +50,7 @@ type (
 		EnsureSecurityGroup(ctx context.Context, securityGroupName, vpcID string) (string, error)
 		EnsureSecurityGroupIngressRules(ctx context.Context, securityGroupID string) error
 		EnsureAndAssociateElasticIPv4Address(ctx context.Context, instanceID, elasticIPv4AddressPool, elasticIPv4Address string) (string, error)
-		CreateUserdata(ctx context.Context, in *CreateUserDataParams) (string, error)
+		CreateUserdata(in *CreateUserDataParams) (string, error)
 		CreateInstance(ctx context.Context, in *CreateInstanceParams) (CreatedInstance, error)
 		InstanceState(ctx context.Context, instanceID string) (string, error)
 		DeleteKeyPair(ctx context.Context, keyPairName string) error
@@ -148,6 +148,10 @@ func (c *DefaultClient) InstanceState(ctx context.Context, instanceID string) (s
 	instanceStatus, err := c.client.DescribeInstanceStatus(ctx, describeInstanceStatus)
 	if err != nil {
 		return "", err
+	}
+
+	if len(instanceStatus.InstanceStatuses) == 0 {
+		return "", ErrInstanceStatusNotFound
 	}
 
 	return string(instanceStatus.InstanceStatuses[0].InstanceState.Name), nil
@@ -361,6 +365,11 @@ func (c *DefaultClient) EnsureKeyPair(ctx context.Context, keyPairName string) (
 		if err != nil {
 			return "", err
 		}
+
+		if len(keyPairs.KeyPairs) == 0 {
+			return "", ErrKeyPairNotFound
+		}
+
 		return *keyPairs.KeyPairs[0].KeyName, nil
 	}
 
@@ -391,7 +400,7 @@ func (c *DefaultClient) EnsureInstanceType(ctx context.Context, instanceTypeName
 	return string(out), nil
 }
 
-func (c DefaultClient) CreateUserdata(_ context.Context, in *CreateUserDataParams) (string, error) {
+func (c DefaultClient) CreateUserdata(in *CreateUserDataParams) (string, error) {
 	var out bytes.Buffer
 
 	t, err := template.New("userdata").Parse(userDataTemplate)
@@ -442,7 +451,7 @@ func (c *DefaultClient) CreateInstance(ctx context.Context, params *CreateInstan
 
 	params.UserData.CoreInstanceName = params.CoreInstanceName
 
-	userData, err := c.CreateUserdata(ctx, params.UserData)
+	userData, err := c.CreateUserdata(params.UserData)
 	if err != nil {
 		return out, fmt.Errorf("could not generate instance user data: %w", err)
 	}

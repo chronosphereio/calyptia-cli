@@ -21,7 +21,7 @@ var _ Client = &ClientMock{}
 // 			CreateInstanceFunc: func(ctx context.Context, in *CreateInstanceParams) (CreatedInstance, error) {
 // 				panic("mock out the CreateInstance method")
 // 			},
-// 			CreateUserdataFunc: func(ctx context.Context, in *CreateUserDataParams) (string, error) {
+// 			CreateUserdataFunc: func(in *CreateUserDataParams) (string, error) {
 // 				panic("mock out the CreateUserdata method")
 // 			},
 // 			DeleteInstanceFunc: func(ctx context.Context, instanceID string) error {
@@ -68,7 +68,7 @@ type ClientMock struct {
 	CreateInstanceFunc func(ctx context.Context, in *CreateInstanceParams) (CreatedInstance, error)
 
 	// CreateUserdataFunc mocks the CreateUserdata method.
-	CreateUserdataFunc func(ctx context.Context, in *CreateUserDataParams) (string, error)
+	CreateUserdataFunc func(in *CreateUserDataParams) (string, error)
 
 	// DeleteInstanceFunc mocks the DeleteInstance method.
 	DeleteInstanceFunc func(ctx context.Context, instanceID string) error
@@ -114,8 +114,6 @@ type ClientMock struct {
 		}
 		// CreateUserdata holds details about calls to the CreateUserdata method.
 		CreateUserdata []struct {
-			// Ctx is the ctx argument value.
-			Ctx context.Context
 			// In is the in argument value.
 			In *CreateUserDataParams
 		}
@@ -256,33 +254,29 @@ func (mock *ClientMock) CreateInstanceCalls() []struct {
 }
 
 // CreateUserdata calls CreateUserdataFunc.
-func (mock *ClientMock) CreateUserdata(ctx context.Context, in *CreateUserDataParams) (string, error) {
+func (mock *ClientMock) CreateUserdata(in *CreateUserDataParams) (string, error) {
 	if mock.CreateUserdataFunc == nil {
 		panic("ClientMock.CreateUserdataFunc: method is nil but Client.CreateUserdata was just called")
 	}
 	callInfo := struct {
-		Ctx context.Context
-		In  *CreateUserDataParams
+		In *CreateUserDataParams
 	}{
-		Ctx: ctx,
-		In:  in,
+		In: in,
 	}
 	mock.lockCreateUserdata.Lock()
 	mock.calls.CreateUserdata = append(mock.calls.CreateUserdata, callInfo)
 	mock.lockCreateUserdata.Unlock()
-	return mock.CreateUserdataFunc(ctx, in)
+	return mock.CreateUserdataFunc(in)
 }
 
 // CreateUserdataCalls gets all the calls that were made to CreateUserdata.
 // Check the length with:
 //     len(mockedClient.CreateUserdataCalls())
 func (mock *ClientMock) CreateUserdataCalls() []struct {
-	Ctx context.Context
-	In  *CreateUserDataParams
+	In *CreateUserDataParams
 } {
 	var calls []struct {
-		Ctx context.Context
-		In  *CreateUserDataParams
+		In *CreateUserDataParams
 	}
 	mock.lockCreateUserdata.RLock()
 	calls = mock.calls.CreateUserdata
