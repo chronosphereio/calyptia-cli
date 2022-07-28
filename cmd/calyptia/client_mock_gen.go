@@ -67,6 +67,9 @@ var _ Client = &ClientMock{}
 // 			DeleteAggregatorFunc: func(ctx context.Context, aggregatorID string) error {
 // 				panic("mock out the DeleteAggregator method")
 // 			},
+// 			DeleteEnvironmentFunc: func(ctx context.Context, environmentID string) error {
+// 				panic("mock out the DeleteEnvironment method")
+// 			},
 // 			DeletePipelineFunc: func(ctx context.Context, pipelineID string) error {
 // 				panic("mock out the DeletePipeline method")
 // 			},
@@ -229,6 +232,9 @@ type ClientMock struct {
 
 	// DeleteAggregatorFunc mocks the DeleteAggregator method.
 	DeleteAggregatorFunc func(ctx context.Context, aggregatorID string) error
+
+	// DeleteEnvironmentFunc mocks the DeleteEnvironment method.
+	DeleteEnvironmentFunc func(ctx context.Context, environmentID string) error
 
 	// DeletePipelineFunc mocks the DeletePipeline method.
 	DeletePipelineFunc func(ctx context.Context, pipelineID string) error
@@ -473,6 +479,13 @@ type ClientMock struct {
 			Ctx context.Context
 			// AggregatorID is the aggregatorID argument value.
 			AggregatorID string
+		}
+		// DeleteEnvironment holds details about calls to the DeleteEnvironment method.
+		DeleteEnvironment []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// EnvironmentID is the environmentID argument value.
+			EnvironmentID string
 		}
 		// DeletePipeline holds details about calls to the DeletePipeline method.
 		DeletePipeline []struct {
@@ -789,6 +802,7 @@ type ClientMock struct {
 	lockCreateResourceProfile sync.RWMutex
 	lockDeleteAgent           sync.RWMutex
 	lockDeleteAggregator      sync.RWMutex
+	lockDeleteEnvironment     sync.RWMutex
 	lockDeletePipeline        sync.RWMutex
 	lockDeletePipelineFile    sync.RWMutex
 	lockDeletePipelinePort    sync.RWMutex
@@ -1489,6 +1503,44 @@ func (mock *ClientMock) DeleteAggregatorCalls() []struct {
 	mock.lockDeleteAggregator.RLock()
 	calls = mock.calls.DeleteAggregator
 	mock.lockDeleteAggregator.RUnlock()
+	return calls
+}
+
+// DeleteEnvironment calls DeleteEnvironmentFunc.
+func (mock *ClientMock) DeleteEnvironment(ctx context.Context, environmentID string) error {
+	callInfo := struct {
+		Ctx           context.Context
+		EnvironmentID string
+	}{
+		Ctx:           ctx,
+		EnvironmentID: environmentID,
+	}
+	mock.lockDeleteEnvironment.Lock()
+	mock.calls.DeleteEnvironment = append(mock.calls.DeleteEnvironment, callInfo)
+	mock.lockDeleteEnvironment.Unlock()
+	if mock.DeleteEnvironmentFunc == nil {
+		var (
+			errOut error
+		)
+		return errOut
+	}
+	return mock.DeleteEnvironmentFunc(ctx, environmentID)
+}
+
+// DeleteEnvironmentCalls gets all the calls that were made to DeleteEnvironment.
+// Check the length with:
+//     len(mockedClient.DeleteEnvironmentCalls())
+func (mock *ClientMock) DeleteEnvironmentCalls() []struct {
+	Ctx           context.Context
+	EnvironmentID string
+} {
+	var calls []struct {
+		Ctx           context.Context
+		EnvironmentID string
+	}
+	mock.lockDeleteEnvironment.RLock()
+	calls = mock.calls.DeleteEnvironment
+	mock.lockDeleteEnvironment.RUnlock()
 	return calls
 }
 

@@ -76,4 +76,5 @@ type Client interface {
 	PipelineMetrics(ctx context.Context, pipelineID string, params types.MetricsParams) (types.AgentMetrics, error)
 
 	CreateEnvironment(ctx context.Context, projectID string, payload types.CreateEnvironment) (types.CreatedEnvironment, error)
+	DeleteEnvironment(ctx context.Context, environmentID string) error
 }
