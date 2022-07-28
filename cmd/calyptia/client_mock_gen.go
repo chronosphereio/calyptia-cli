@@ -154,6 +154,9 @@ var _ Client = &ClientMock{}
 // 			UpdateAggregatorFunc: func(ctx context.Context, aggregatorID string, payload cloud.UpdateAggregator) error {
 // 				panic("mock out the UpdateAggregator method")
 // 			},
+// 			UpdateEnvironmentFunc: func(ctx context.Context, environmentID string, payload cloud.UpdateEnvironment) error {
+// 				panic("mock out the UpdateEnvironment method")
+// 			},
 // 			UpdatePipelineFunc: func(ctx context.Context, pipelineID string, opts cloud.UpdatePipeline) (cloud.UpdatedPipeline, error) {
 // 				panic("mock out the UpdatePipeline method")
 // 			},
@@ -319,6 +322,9 @@ type ClientMock struct {
 
 	// UpdateAggregatorFunc mocks the UpdateAggregator method.
 	UpdateAggregatorFunc func(ctx context.Context, aggregatorID string, payload cloud.UpdateAggregator) error
+
+	// UpdateEnvironmentFunc mocks the UpdateEnvironment method.
+	UpdateEnvironmentFunc func(ctx context.Context, environmentID string, payload cloud.UpdateEnvironment) error
 
 	// UpdatePipelineFunc mocks the UpdatePipeline method.
 	UpdatePipelineFunc func(ctx context.Context, pipelineID string, opts cloud.UpdatePipeline) (cloud.UpdatedPipeline, error)
@@ -713,6 +719,15 @@ type ClientMock struct {
 			// Payload is the payload argument value.
 			Payload cloud.UpdateAggregator
 		}
+		// UpdateEnvironment holds details about calls to the UpdateEnvironment method.
+		UpdateEnvironment []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// EnvironmentID is the environmentID argument value.
+			EnvironmentID string
+			// Payload is the payload argument value.
+			Payload cloud.UpdateEnvironment
+		}
 		// UpdatePipeline holds details about calls to the UpdatePipeline method.
 		UpdatePipeline []struct {
 			// Ctx is the ctx argument value.
@@ -831,6 +846,7 @@ type ClientMock struct {
 	lockToken                 sync.RWMutex
 	lockUpdateAgent           sync.RWMutex
 	lockUpdateAggregator      sync.RWMutex
+	lockUpdateEnvironment     sync.RWMutex
 	lockUpdatePipeline        sync.RWMutex
 	lockUpdatePipelineFile    sync.RWMutex
 	lockUpdatePipelinePort    sync.RWMutex
@@ -2685,6 +2701,48 @@ func (mock *ClientMock) UpdateAggregatorCalls() []struct {
 	mock.lockUpdateAggregator.RLock()
 	calls = mock.calls.UpdateAggregator
 	mock.lockUpdateAggregator.RUnlock()
+	return calls
+}
+
+// UpdateEnvironment calls UpdateEnvironmentFunc.
+func (mock *ClientMock) UpdateEnvironment(ctx context.Context, environmentID string, payload cloud.UpdateEnvironment) error {
+	callInfo := struct {
+		Ctx           context.Context
+		EnvironmentID string
+		Payload       cloud.UpdateEnvironment
+	}{
+		Ctx:           ctx,
+		EnvironmentID: environmentID,
+		Payload:       payload,
+	}
+	mock.lockUpdateEnvironment.Lock()
+	mock.calls.UpdateEnvironment = append(mock.calls.UpdateEnvironment, callInfo)
+	mock.lockUpdateEnvironment.Unlock()
+	if mock.UpdateEnvironmentFunc == nil {
+		var (
+			errOut error
+		)
+		return errOut
+	}
+	return mock.UpdateEnvironmentFunc(ctx, environmentID, payload)
+}
+
+// UpdateEnvironmentCalls gets all the calls that were made to UpdateEnvironment.
+// Check the length with:
+//     len(mockedClient.UpdateEnvironmentCalls())
+func (mock *ClientMock) UpdateEnvironmentCalls() []struct {
+	Ctx           context.Context
+	EnvironmentID string
+	Payload       cloud.UpdateEnvironment
+} {
+	var calls []struct {
+		Ctx           context.Context
+		EnvironmentID string
+		Payload       cloud.UpdateEnvironment
+	}
+	mock.lockUpdateEnvironment.RLock()
+	calls = mock.calls.UpdateEnvironment
+	mock.lockUpdateEnvironment.RUnlock()
 	return calls
 }
 

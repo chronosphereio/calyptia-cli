@@ -77,4 +77,5 @@ type Client interface {
 
 	CreateEnvironment(ctx context.Context, projectID string, payload types.CreateEnvironment) (types.CreatedEnvironment, error)
 	DeleteEnvironment(ctx context.Context, environmentID string) error
+	UpdateEnvironment(ctx context.Context, environmentID string, payload types.UpdateEnvironment) error
 }
