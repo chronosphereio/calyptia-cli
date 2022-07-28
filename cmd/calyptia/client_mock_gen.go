@@ -5,9 +5,8 @@ package main
 
 import (
 	"context"
-	"sync"
-
 	cloud "github.com/calyptia/api/types"
+	"sync"
 )
 
 // Ensure, that ClientMock does implement Client.
@@ -40,6 +39,9 @@ var _ Client = &ClientMock{}
 // 			},
 // 			CreateAggregatorFunc: func(ctx context.Context, payload cloud.CreateAggregator) (cloud.CreatedAggregator, error) {
 // 				panic("mock out the CreateAggregator method")
+// 			},
+// 			CreateEnvironmentFunc: func(ctx context.Context, projectID string, payload cloud.CreateEnvironment) (cloud.CreatedEnvironment, error) {
+// 				panic("mock out the CreateEnvironment method")
 // 			},
 // 			CreateInvitationFunc: func(ctx context.Context, projectID string, payload cloud.CreateInvitation) error {
 // 				panic("mock out the CreateInvitation method")
@@ -200,6 +202,9 @@ type ClientMock struct {
 
 	// CreateAggregatorFunc mocks the CreateAggregator method.
 	CreateAggregatorFunc func(ctx context.Context, payload cloud.CreateAggregator) (cloud.CreatedAggregator, error)
+
+	// CreateEnvironmentFunc mocks the CreateEnvironment method.
+	CreateEnvironmentFunc func(ctx context.Context, projectID string, payload cloud.CreateEnvironment) (cloud.CreatedEnvironment, error)
 
 	// CreateInvitationFunc mocks the CreateInvitation method.
 	CreateInvitationFunc func(ctx context.Context, projectID string, payload cloud.CreateInvitation) error
@@ -391,6 +396,15 @@ type ClientMock struct {
 			Ctx context.Context
 			// Payload is the payload argument value.
 			Payload cloud.CreateAggregator
+		}
+		// CreateEnvironment holds details about calls to the CreateEnvironment method.
+		CreateEnvironment []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ProjectID is the projectID argument value.
+			ProjectID string
+			// Payload is the payload argument value.
+			Payload cloud.CreateEnvironment
 		}
 		// CreateInvitation holds details about calls to the CreateInvitation method.
 		CreateInvitation []struct {
@@ -766,6 +780,7 @@ type ClientMock struct {
 	lockAggregator            sync.RWMutex
 	lockAggregators           sync.RWMutex
 	lockCreateAggregator      sync.RWMutex
+	lockCreateEnvironment     sync.RWMutex
 	lockCreateInvitation      sync.RWMutex
 	lockCreatePipeline        sync.RWMutex
 	lockCreatePipelineFile    sync.RWMutex
@@ -1101,6 +1116,49 @@ func (mock *ClientMock) CreateAggregatorCalls() []struct {
 	return calls
 }
 
+// CreateEnvironment calls CreateEnvironmentFunc.
+func (mock *ClientMock) CreateEnvironment(ctx context.Context, projectID string, payload cloud.CreateEnvironment) (cloud.CreatedEnvironment, error) {
+	callInfo := struct {
+		Ctx       context.Context
+		ProjectID string
+		Payload   cloud.CreateEnvironment
+	}{
+		Ctx:       ctx,
+		ProjectID: projectID,
+		Payload:   payload,
+	}
+	mock.lockCreateEnvironment.Lock()
+	mock.calls.CreateEnvironment = append(mock.calls.CreateEnvironment, callInfo)
+	mock.lockCreateEnvironment.Unlock()
+	if mock.CreateEnvironmentFunc == nil {
+		var (
+			createdEnvironmentOut cloud.CreatedEnvironment
+			errOut                error
+		)
+		return createdEnvironmentOut, errOut
+	}
+	return mock.CreateEnvironmentFunc(ctx, projectID, payload)
+}
+
+// CreateEnvironmentCalls gets all the calls that were made to CreateEnvironment.
+// Check the length with:
+//     len(mockedClient.CreateEnvironmentCalls())
+func (mock *ClientMock) CreateEnvironmentCalls() []struct {
+	Ctx       context.Context
+	ProjectID string
+	Payload   cloud.CreateEnvironment
+} {
+	var calls []struct {
+		Ctx       context.Context
+		ProjectID string
+		Payload   cloud.CreateEnvironment
+	}
+	mock.lockCreateEnvironment.RLock()
+	calls = mock.calls.CreateEnvironment
+	mock.lockCreateEnvironment.RUnlock()
+	return calls
+}
+
 // CreateInvitation calls CreateInvitationFunc.
 func (mock *ClientMock) CreateInvitation(ctx context.Context, projectID string, payload cloud.CreateInvitation) error {
 	callInfo := struct {
@@ -1116,7 +1174,9 @@ func (mock *ClientMock) CreateInvitation(ctx context.Context, projectID string, 
 	mock.calls.CreateInvitation = append(mock.calls.CreateInvitation, callInfo)
 	mock.lockCreateInvitation.Unlock()
 	if mock.CreateInvitationFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.CreateInvitationFunc(ctx, projectID, payload)
@@ -1369,7 +1429,9 @@ func (mock *ClientMock) DeleteAgent(ctx context.Context, agentID string) error {
 	mock.calls.DeleteAgent = append(mock.calls.DeleteAgent, callInfo)
 	mock.lockDeleteAgent.Unlock()
 	if mock.DeleteAgentFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.DeleteAgentFunc(ctx, agentID)
@@ -1405,7 +1467,9 @@ func (mock *ClientMock) DeleteAggregator(ctx context.Context, aggregatorID strin
 	mock.calls.DeleteAggregator = append(mock.calls.DeleteAggregator, callInfo)
 	mock.lockDeleteAggregator.Unlock()
 	if mock.DeleteAggregatorFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.DeleteAggregatorFunc(ctx, aggregatorID)
@@ -1441,7 +1505,9 @@ func (mock *ClientMock) DeletePipeline(ctx context.Context, pipelineID string) e
 	mock.calls.DeletePipeline = append(mock.calls.DeletePipeline, callInfo)
 	mock.lockDeletePipeline.Unlock()
 	if mock.DeletePipelineFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.DeletePipelineFunc(ctx, pipelineID)
@@ -1477,7 +1543,9 @@ func (mock *ClientMock) DeletePipelineFile(ctx context.Context, fileID string) e
 	mock.calls.DeletePipelineFile = append(mock.calls.DeletePipelineFile, callInfo)
 	mock.lockDeletePipelineFile.Unlock()
 	if mock.DeletePipelineFileFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.DeletePipelineFileFunc(ctx, fileID)
@@ -1513,7 +1581,9 @@ func (mock *ClientMock) DeletePipelinePort(ctx context.Context, portID string) e
 	mock.calls.DeletePipelinePort = append(mock.calls.DeletePipelinePort, callInfo)
 	mock.lockDeletePipelinePort.Unlock()
 	if mock.DeletePipelinePortFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.DeletePipelinePortFunc(ctx, portID)
@@ -1549,7 +1619,9 @@ func (mock *ClientMock) DeletePipelineSecret(ctx context.Context, secretID strin
 	mock.calls.DeletePipelineSecret = append(mock.calls.DeletePipelineSecret, callInfo)
 	mock.lockDeletePipelineSecret.Unlock()
 	if mock.DeletePipelineSecretFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.DeletePipelineSecretFunc(ctx, secretID)
@@ -1585,7 +1657,9 @@ func (mock *ClientMock) DeleteResourceProfile(ctx context.Context, resourceProfi
 	mock.calls.DeleteResourceProfile = append(mock.calls.DeleteResourceProfile, callInfo)
 	mock.lockDeleteResourceProfile.Unlock()
 	if mock.DeleteResourceProfileFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.DeleteResourceProfileFunc(ctx, resourceProfileID)
@@ -1621,7 +1695,9 @@ func (mock *ClientMock) DeleteToken(ctx context.Context, tokenID string) error {
 	mock.calls.DeleteToken = append(mock.calls.DeleteToken, callInfo)
 	mock.lockDeleteToken.Unlock()
 	if mock.DeleteTokenFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.DeleteTokenFunc(ctx, tokenID)
@@ -2491,7 +2567,9 @@ func (mock *ClientMock) UpdateAgent(ctx context.Context, agentID string, payload
 	mock.calls.UpdateAgent = append(mock.calls.UpdateAgent, callInfo)
 	mock.lockUpdateAgent.Unlock()
 	if mock.UpdateAgentFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.UpdateAgentFunc(ctx, agentID, payload)
@@ -2531,7 +2609,9 @@ func (mock *ClientMock) UpdateAggregator(ctx context.Context, aggregatorID strin
 	mock.calls.UpdateAggregator = append(mock.calls.UpdateAggregator, callInfo)
 	mock.lockUpdateAggregator.Unlock()
 	if mock.UpdateAggregatorFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.UpdateAggregatorFunc(ctx, aggregatorID, payload)
@@ -2614,7 +2694,9 @@ func (mock *ClientMock) UpdatePipelineFile(ctx context.Context, fileID string, o
 	mock.calls.UpdatePipelineFile = append(mock.calls.UpdatePipelineFile, callInfo)
 	mock.lockUpdatePipelineFile.Unlock()
 	if mock.UpdatePipelineFileFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.UpdatePipelineFileFunc(ctx, fileID, opts)
@@ -2654,7 +2736,9 @@ func (mock *ClientMock) UpdatePipelinePort(ctx context.Context, portID string, o
 	mock.calls.UpdatePipelinePort = append(mock.calls.UpdatePipelinePort, callInfo)
 	mock.lockUpdatePipelinePort.Unlock()
 	if mock.UpdatePipelinePortFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.UpdatePipelinePortFunc(ctx, portID, opts)
@@ -2694,7 +2778,9 @@ func (mock *ClientMock) UpdatePipelineSecret(ctx context.Context, secretID strin
 	mock.calls.UpdatePipelineSecret = append(mock.calls.UpdatePipelineSecret, callInfo)
 	mock.lockUpdatePipelineSecret.Unlock()
 	if mock.UpdatePipelineSecretFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.UpdatePipelineSecretFunc(ctx, secretID, opts)
@@ -2734,7 +2820,9 @@ func (mock *ClientMock) UpdateProject(ctx context.Context, projectID string, opt
 	mock.calls.UpdateProject = append(mock.calls.UpdateProject, callInfo)
 	mock.lockUpdateProject.Unlock()
 	if mock.UpdateProjectFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.UpdateProjectFunc(ctx, projectID, opts)
@@ -2774,7 +2862,9 @@ func (mock *ClientMock) UpdateResourceProfile(ctx context.Context, resourceProfi
 	mock.calls.UpdateResourceProfile = append(mock.calls.UpdateResourceProfile, callInfo)
 	mock.lockUpdateResourceProfile.Unlock()
 	if mock.UpdateResourceProfileFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.UpdateResourceProfileFunc(ctx, resourceProfileID, opts)
@@ -2814,7 +2904,9 @@ func (mock *ClientMock) UpdateToken(ctx context.Context, tokenID string, opts cl
 	mock.calls.UpdateToken = append(mock.calls.UpdateToken, callInfo)
 	mock.lockUpdateToken.Unlock()
 	if mock.UpdateTokenFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.UpdateTokenFunc(ctx, tokenID, opts)
