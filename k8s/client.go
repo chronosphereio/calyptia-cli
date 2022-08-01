@@ -14,6 +14,16 @@ import (
 	cloud "github.com/calyptia/api/types"
 )
 
+type objectType string
+
+const (
+	deploymentObjectType         objectType = "deployment"
+	clusterRoleObjectType        objectType = "cluster-role"
+	clusterRoleBindingObjectType objectType = "cluster-role-binding"
+	secretObjectType             objectType = "secret"
+	serviceAccountObjectType     objectType = "service-account"
+)
+
 var (
 	deploymentReplicas           int32 = 1
 	automountServiceAccountToken       = true
@@ -25,6 +35,13 @@ type Client struct {
 	ProjectToken string
 	CloudBaseURL string
 	LabelsFunc   func() map[string]string
+}
+
+func (client *Client) getObjectMeta(agg cloud.CreatedAggregator, objectType objectType) metav1.ObjectMeta {
+	return metav1.ObjectMeta{
+		Name:   fmt.Sprintf("%s-%s-%s", agg.Name, agg.EnvironmentName, objectType),
+		Labels: client.LabelsFunc(),
+	}
 }
 
 func (client *Client) EnsureOwnNamespace(ctx context.Context) error {
@@ -66,24 +83,19 @@ func (client *Client) createOwnNamespace(ctx context.Context) (*apiv1.Namespace,
 	}, metav1.CreateOptions{})
 }
 
-func (client *Client) CreateSecret(ctx context.Context, name string, value []byte) (*apiv1.Secret, error) {
+func (client *Client) CreateSecret(ctx context.Context, agg cloud.CreatedAggregator) (*apiv1.Secret, error) {
+	metadata := client.getObjectMeta(agg, secretObjectType)
 	return client.CoreV1().Secrets(client.Namespace).Create(ctx, &apiv1.Secret{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:   name,
-			Labels: client.LabelsFunc(),
-		},
+		ObjectMeta: metadata,
 		Data: map[string][]byte{
-			name: value,
+			metadata.Name: agg.PrivateRSAKey,
 		},
 	}, metav1.CreateOptions{})
 }
 
 func (client *Client) CreateClusterRole(ctx context.Context, agg cloud.CreatedAggregator) (*rbacv1.ClusterRole, error) {
 	return client.RbacV1().ClusterRoles().Create(ctx, &rbacv1.ClusterRole{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:   agg.Name + "-cluster-role",
-			Labels: client.LabelsFunc(),
-		},
+		ObjectMeta: client.getObjectMeta(agg, clusterRoleObjectType),
 		Rules: []rbacv1.PolicyRule{
 			{
 				APIGroups: []string{"", "apps"},
@@ -114,10 +126,7 @@ func (client *Client) CreateClusterRole(ctx context.Context, agg cloud.CreatedAg
 
 func (client *Client) CreateServiceAccount(ctx context.Context, agg cloud.CreatedAggregator) (*apiv1.ServiceAccount, error) {
 	return client.CoreV1().ServiceAccounts(client.Namespace).Create(ctx, &apiv1.ServiceAccount{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:   agg.Name + "-service-account",
-			Labels: client.LabelsFunc(),
-		},
+		ObjectMeta: client.getObjectMeta(agg, serviceAccountObjectType),
 	}, metav1.CreateOptions{})
 }
 
@@ -128,10 +137,7 @@ func (client *Client) CreateClusterRoleBinding(
 	serviceAccount *apiv1.ServiceAccount,
 ) (*rbacv1.ClusterRoleBinding, error) {
 	return client.RbacV1().ClusterRoleBindings().Create(ctx, &rbacv1.ClusterRoleBinding{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:   agg.Name + "-cluster-role-binding",
-			Labels: client.LabelsFunc(),
-		},
+		ObjectMeta: client.getObjectMeta(agg, clusterRoleBindingObjectType),
 		RoleRef: rbacv1.RoleRef{
 			APIGroup: rbacv1.GroupName,
 			Kind:     "ClusterRole",
@@ -154,11 +160,9 @@ func (client *Client) CreateDeployment(
 	serviceAccount *apiv1.ServiceAccount,
 ) (*appsv1.Deployment, error) {
 	labels := client.LabelsFunc()
+
 	return client.AppsV1().Deployments(client.Namespace).Create(ctx, &appsv1.Deployment{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:   agg.Name + "-deployment",
-			Labels: labels,
-		},
+		ObjectMeta: client.getObjectMeta(agg, deploymentObjectType),
 		Spec: appsv1.DeploymentSpec{
 			Replicas: &deploymentReplicas,
 			Selector: &metav1.LabelSelector{

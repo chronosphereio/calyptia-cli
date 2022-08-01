@@ -63,17 +63,10 @@ func (config *config) loadEnvironmentID(environmentKey string) (string, error) {
 		return "", err
 	}
 
-	if len(aa.Items) != 1 && !validUUID(environmentKey) {
-		if len(aa.Items) != 0 {
-			return "", fmt.Errorf("ambiguous core instance name %q, use ID instead", environmentKey)
-		}
+	if len(aa.Items) == 0 {
+		return "", fmt.Errorf("could not find environment %q", environmentKey)
 
-		return "", fmt.Errorf("could not find core instance %q", environmentKey)
 	}
 
-	if len(aa.Items) == 1 {
-		return aa.Items[0].ID, nil
-	}
-
-	return environmentKey, nil
+	return aa.Items[0].ID, nil
 }

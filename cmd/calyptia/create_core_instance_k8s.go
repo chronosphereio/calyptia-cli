@@ -15,8 +15,7 @@ import (
 
 const (
 	//nolint: gosec // this is not a secret leak, it's just a format declaration.
-	secretNameFormat = "%s-private-rsa.key"
-	coreDockerImage  = "ghcr.io/calyptia/core"
+	coreDockerImage = "ghcr.io/calyptia/core"
 )
 
 func newCmdCreateCoreInstanceOnK8s(config *config, testClientSet kubernetes.Interface) *cobra.Command {
@@ -110,7 +109,7 @@ func newCmdCreateCoreInstanceOnK8s(config *config, testClientSet kubernetes.Inte
 				return fmt.Errorf("could not ensure kubernetes namespace exists: %w", err)
 			}
 
-			secret, err := k8sClient.CreateSecret(ctx, fmt.Sprintf(secretNameFormat, created.Name), created.PrivateRSAKey)
+			secret, err := k8sClient.CreateSecret(ctx, created)
 			if err != nil {
 				return fmt.Errorf("could not create kubernetes secret from private key: %w", err)
 			}

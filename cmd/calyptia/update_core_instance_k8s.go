@@ -18,7 +18,7 @@ import (
 const calyptiaCoreImageIndexURL = "https://raw.githubusercontent.com/calyptia/core-images-index/main/container.index.json"
 
 func newCmdUpdateCoreInstanceK8s(config *config, testClientSet kubernetes.Interface) *cobra.Command {
-	var newVersion, newName string
+	var newVersion, newName, environmentKey string
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	configOverrides := &clientcmd.ConfigOverrides{}
 	cmd := &cobra.Command{
@@ -41,8 +41,15 @@ func newCmdUpdateCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 					return err
 				}
 			}
-
-			aggregatorID, err := config.loadAggregatorID(aggregatorKey)
+			var environmentID string
+			if environmentKey != "" {
+				var err error
+				environmentID, err = config.loadEnvironmentID(environmentKey)
+				if err != nil {
+					return err
+				}
+			}
+			aggregatorID, err := config.loadAggregatorID(aggregatorKey, environmentID)
 			if aggregatorKey == newName {
 				return fmt.Errorf("cannot update core instance with the same name")
 			}
@@ -108,6 +115,9 @@ func newCmdUpdateCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 	fs := cmd.Flags()
 	fs.StringVar(&newVersion, "version", "", "New version of the calyptia-core instance")
 	fs.StringVar(&newName, "name", "", "New core instance name")
+	fs.StringVar(&environmentKey, "environment", "", "Calyptia environment name or ID")
+
+	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
 	clientcmd.BindOverrideFlags(configOverrides, fs, clientcmd.RecommendedConfigOverrideFlags("kube-"))
 	return cmd
 }

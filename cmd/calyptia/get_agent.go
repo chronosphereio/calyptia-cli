@@ -17,12 +17,23 @@ func newCmdGetAgents(config *config) *cobra.Command {
 	var last uint64
 	var format string
 	var showIDs bool
+	var environmentKey string
+
 	cmd := &cobra.Command{
 		Use:   "agents",
 		Short: "Display latest agents from a project",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			var environmentID string
+			if environmentKey != "" {
+				var err error
+				environmentID, err = config.loadEnvironmentID(environmentKey)
+				if err != nil {
+					return err
+				}
+			}
 			aa, err := config.cloud.Agents(config.ctx, config.projectID, cloud.AgentsParams{
-				Last: &last,
+				Last:          &last,
+				EnvironmentID: &environmentID,
 			})
 			if err != nil {
 				return fmt.Errorf("could not fetch your agents: %w", err)
@@ -59,7 +70,9 @@ func newCmdGetAgents(config *config) *cobra.Command {
 	fs.Uint64VarP(&last, "last", "l", 0, "Last `N` agents. 0 means no limit")
 	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include agent IDs in table output")
+	fs.StringVar(&environmentKey, "environment", "", "Calyptia environment name or ID")
 
+	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
 
 	return cmd
@@ -69,6 +82,7 @@ func newCmdGetAgent(config *config) *cobra.Command {
 	var format string
 	var showIDs bool
 	var onlyConfig bool
+	var environmentKey string
 
 	cmd := &cobra.Command{
 		Use:               "agent AGENT",
@@ -76,8 +90,17 @@ func newCmdGetAgent(config *config) *cobra.Command {
 		Args:              cobra.ExactArgs(1),
 		ValidArgsFunction: config.completeAgents,
 		RunE: func(cmd *cobra.Command, args []string) error {
+			var environmentID string
+			if environmentKey != "" {
+				var err error
+				environmentID, err = config.loadEnvironmentID(environmentKey)
+				if err != nil {
+					return err
+				}
+			}
+
 			agentKey := args[0]
-			agentID, err := config.loadAgentID(agentKey)
+			agentID, err := config.loadAgentID(agentKey, environmentID)
 			if err != nil {
 				return err
 			}
@@ -122,7 +145,9 @@ func newCmdGetAgent(config *config) *cobra.Command {
 	fs.BoolVar(&onlyConfig, "only-config", false, "Only show the agent configuration")
 	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include agent IDs in table output")
+	fs.StringVar(&environmentKey, "environment", "", "Calyptia environment name or ID")
 
+	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
 
 	return cmd
@@ -172,12 +197,19 @@ func agentsKeys(aa []cloud.Agent) []string {
 	return out
 }
 
-func (config *config) loadAgentID(agentKey string) (string, error) {
+func (config *config) loadAgentID(agentKey string, environmentID string) (string, error) {
 	var err error
-	aa, err := config.cloud.Agents(config.ctx, config.projectID, cloud.AgentsParams{
-		Name: &agentKey,
-		Last: ptr(uint64(2)),
-	})
+
+	var params cloud.AgentsParams
+
+	params.Last = ptr(uint64(2))
+	params.Name = &agentKey
+
+	if environmentID != "" {
+		params.EnvironmentID = &environmentID
+	}
+
+	aa, err := config.cloud.Agents(config.ctx, config.projectID, params)
 	if err != nil {
 		return "", err
 	}

@@ -31,8 +31,9 @@ func Test_newCmdCreateAggregatorOnK8s(t *testing.T) {
 		cmd := newCmdCreateCoreInstanceOnK8s(configWithMock(&ClientMock{
 			CreateAggregatorFunc: func(ctx context.Context, payload types.CreateAggregator) (types.CreatedAggregator, error) {
 				return types.CreatedAggregator{
-					ID:   "want-aggregator-id",
-					Name: "want-aggregator-name",
+					ID:              "want-aggregator-id",
+					Name:            "want-aggregator-name",
+					EnvironmentName: "default",
 				}, nil
 			},
 		}), fake.NewSimpleClientset())
@@ -40,10 +41,10 @@ func Test_newCmdCreateAggregatorOnK8s(t *testing.T) {
 
 		err := cmd.Execute()
 		wantEq(t, nil, err)
-		wantEq(t, "secret=\"want-aggregator-name-private-rsa.key\"\n"+
-			"cluster_role=\"want-aggregator-name-cluster-role\"\n"+
-			"service_account=\"want-aggregator-name-service-account\"\n"+
-			"cluster_role_binding=\"want-aggregator-name-cluster-role-binding\"\n"+
-			"deployment=\"want-aggregator-name-deployment\"\n", got.String())
+		wantEq(t, "secret=\"want-aggregator-name-default-secret\"\n"+
+			"cluster_role=\"want-aggregator-name-default-cluster-role\"\n"+
+			"service_account=\"want-aggregator-name-default-service-account\"\n"+
+			"cluster_role_binding=\"want-aggregator-name-default-cluster-role-binding\"\n"+
+			"deployment=\"want-aggregator-name-default-deployment\"\n", got.String())
 	})
 }

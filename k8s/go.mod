@@ -3,7 +3,7 @@ module github.com/calyptia/cli/k8s
 go 1.18
 
 require (
-	github.com/calyptia/api v0.4.0
+	github.com/calyptia/api v0.4.3
 	k8s.io/api v0.24.3
 	k8s.io/apimachinery v0.24.3
 	k8s.io/client-go v0.24.3
