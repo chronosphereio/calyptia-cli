@@ -13,6 +13,7 @@ func newCmdCreate(config *config) *cobra.Command {
 		newCmdCreatePipeline(config),
 		newCmdCreateResourceProfile(config),
 		newCmdCreatePipelineFile(config),
+		newCmdCreateEnvironment(config),
 	)
 
 	return cmd
