@@ -31,6 +31,7 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 	var outputFormat string
 	var metadataPairs []string
 	var metadataFile string
+	var environment string
 
 	cmd := &cobra.Command{
 		Use:   "pipeline",
@@ -84,7 +85,16 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 				})
 			}
 
-			aggregatorID, err := config.loadAggregatorID(aggregatorKey)
+			var environmentID string
+			if environment != "" {
+				var err error
+				environmentID, err = config.loadEnvironmentID(environment)
+				if err != nil {
+					return err
+				}
+			}
+
+			aggregatorID, err := config.loadAggregatorID(aggregatorKey, environmentID)
 			if err != nil {
 				return err
 			}
@@ -139,7 +149,9 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 	fs.StringSliceVar(&metadataPairs, "metadata", nil, "Metadata to attach to the pipeline in the form of key:value. You could instead use a file with the --metadata-file option")
 	fs.StringVar(&metadataFile, "metadata-file", "", "Metadata JSON file to attach to the pipeline intead of passing multiple --metadata flags")
 	fs.StringVar(&outputFormat, "output-format", "table", "Output format. Allowed: table, json")
+	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 
+	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
 	_ = cmd.RegisterFlagCompletionFunc("aggregator", config.completeAggregators)
 	_ = cmd.RegisterFlagCompletionFunc("secrets-format", func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
 		return []string{"auto", "env", "json", "yaml"}, cobra.ShellCompDirectiveNoFileComp

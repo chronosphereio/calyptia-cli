@@ -10,6 +10,7 @@ import (
 
 func newCmdUpdateAgent(config *config) *cobra.Command {
 	var newName string
+	var environment string
 
 	cmd := &cobra.Command{
 		Use:               "agent AGENT",
@@ -26,8 +27,16 @@ func newCmdUpdateAgent(config *config) *cobra.Command {
 			if agentKey == newName {
 				return nil
 			}
+			var environmentID string
+			if environment != "" {
+				var err error
+				environmentID, err = config.loadEnvironmentID(environment)
+				if err != nil {
+					return err
+				}
+			}
 
-			agentID, err := config.loadAgentID(agentKey)
+			agentID, err := config.loadAgentID(agentKey, environmentID)
 			if err != nil {
 				return err
 			}
@@ -45,7 +54,9 @@ func newCmdUpdateAgent(config *config) *cobra.Command {
 
 	fs := cmd.Flags()
 	fs.StringVar(&newName, "new-name", "", "New agent name")
+	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 
+	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
 	_ = cmd.MarkFlagRequired("new-name")
 
 	return cmd

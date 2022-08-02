@@ -53,8 +53,8 @@ github.com/antihax/optional v1.0.0/go.mod h1:uupD/76wgC+ih3iEmQUL+0Ugr19nfwCT1kd
 github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5/go.mod h1:wHh0iHkYZB8zMSxRWpUBQtwG5a7fFgvEO+odwuTv2gs=
 github.com/asaskevich/govalidator v0.0.0-20190424111038-f61b66f89f4a/go.mod h1:lB+ZfQJz7igIIfQNfa7Ml4HSf2uFQQRzpGGRXenZAgY=
 github.com/buger/jsonparser v1.1.1/go.mod h1:6RYKKt7H4d4+iWqouImQ9R2FZql3VbhNgx27UK13J/0=
-github.com/calyptia/api v0.4.0 h1:W3Jsa+Yso75HnX9tctjNGRWBZInn4cXb1gw1jmEtFNc=
-github.com/calyptia/api v0.4.0/go.mod h1:tMRIWoW2NIqylo8pYEoOFgRW1axmEE9Yd6SXBEdSHLQ=
+github.com/calyptia/api v0.4.3 h1:C2SlNFDS3a4a7lJd7wf2OI9WJJsi1VjYeLYabcMkR64=
+github.com/calyptia/api v0.4.3/go.mod h1:tMRIWoW2NIqylo8pYEoOFgRW1axmEE9Yd6SXBEdSHLQ=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
 github.com/cespare/xxhash v1.1.0/go.mod h1:XrSqR1VqqWfGrhpAt58auRo0WTKS1nRRg3ghfAqPWnc=
 github.com/chzyer/logex v1.1.10/go.mod h1:+Ywpsq7O8HXn0nuIou7OrIPyXbp3wmkHB+jjWRnGsAI=

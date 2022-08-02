@@ -8,7 +8,11 @@ import (
 )
 
 func newCmdDeleteAggregator(config *config) *cobra.Command {
-	var confirmed bool
+	var (
+		confirmed   bool
+		environment string
+	)
+
 	cmd := &cobra.Command{
 		Use:               "aggregator AGGREGATOR",
 		Short:             "Delete a single aggregator by ID or name",
@@ -34,7 +38,16 @@ func newCmdDeleteAggregator(config *config) *cobra.Command {
 				}
 			}
 
-			aggregatorID, err := config.loadAggregatorID(aggregatorKey)
+			var environmentID string
+			if environment != "" {
+				var err error
+				environmentID, err = config.loadEnvironmentID(environment)
+				if err != nil {
+					return err
+				}
+			}
+
+			aggregatorID, err := config.loadAggregatorID(aggregatorKey, environmentID)
 			if err != nil {
 				return err
 			}
@@ -50,6 +63,8 @@ func newCmdDeleteAggregator(config *config) *cobra.Command {
 
 	fs := cmd.Flags()
 	fs.BoolVarP(&confirmed, "yes", "y", false, "Confirm deletion")
+	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
+	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
 
 	return cmd
 }

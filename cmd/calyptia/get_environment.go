@@ -18,62 +18,31 @@ func (config *config) completeEnvironments(cmd *cobra.Command, args []string, to
 		return nil, cobra.ShellCompDirectiveNoFileComp
 	}
 
-	return environmentsKeys(aa.Items), cobra.ShellCompDirectiveNoFileComp
+	return environmentNames(aa.Items), cobra.ShellCompDirectiveNoFileComp
 }
 
-// environmentsKeys returns unique environment names first and then IDs.
-func environmentsKeys(aa []cloud.Environment) []string {
-	namesCount := map[string]int{}
-	for _, a := range aa {
-		if _, ok := namesCount[a.Name]; ok {
-			namesCount[a.Name] += 1
-			continue
-		}
-
-		namesCount[a.Name] = 1
-	}
-
+// environmentNames returns unique environment names that belongs to a project.
+func environmentNames(aa []cloud.Environment) []string {
 	var out []string
-
 	for _, a := range aa {
-		var nameIsUnique bool
-		for name, count := range namesCount {
-			if a.Name == name && count == 1 {
-				nameIsUnique = true
-				break
-			}
-		}
-		if nameIsUnique {
-			out = append(out, a.Name)
-			continue
-		}
-
-		out = append(out, a.ID)
+		out = append(out, a.Name)
 	}
-
 	return out
 }
 
-func (config *config) loadEnvironmentID(environmentKey string) (string, error) {
+func (config *config) loadEnvironmentID(environmentName string) (string, error) {
 	aa, err := config.cloud.Environments(config.ctx, config.projectID, cloud.EnvironmentsParams{
-		Name: &environmentKey,
-		Last: ptr(uint64(2)),
+		Name: &environmentName,
+		Last: ptr(uint64(1)),
 	})
 	if err != nil {
 		return "", err
 	}
 
-	if len(aa.Items) != 1 && !validUUID(environmentKey) {
-		if len(aa.Items) != 0 {
-			return "", fmt.Errorf("ambiguous core instance name %q, use ID instead", environmentKey)
-		}
+	if len(aa.Items) == 0 {
+		return "", fmt.Errorf("could not find environment %q", environmentName)
 
-		return "", fmt.Errorf("could not find core instance %q", environmentKey)
 	}
 
-	if len(aa.Items) == 1 {
-		return aa.Items[0].ID, nil
-	}
-
-	return environmentKey, nil
+	return aa.Items[0].ID, nil
 }

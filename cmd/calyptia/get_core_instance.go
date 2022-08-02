@@ -16,15 +16,29 @@ func newCmdGetAggregators(config *config) *cobra.Command {
 	var format string
 	var showIDs bool
 	var showMetadata bool
+	var environment string
 
 	cmd := &cobra.Command{
 		Use:     "core_instances",
 		Aliases: []string{"instances", "aggregators"},
 		Short:   "Display latest core instances from a project",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			aa, err := config.cloud.Aggregators(config.ctx, config.projectID, cloud.AggregatorsParams{
-				Last: &last,
-			})
+			var environmentID string
+			if environment != "" {
+				var err error
+				environmentID, err = config.loadEnvironmentID(environment)
+				if err != nil {
+					return err
+				}
+			}
+			var params cloud.AggregatorsParams
+
+			params.Last = &last
+			if environmentID != "" {
+				params.EnvironmentID = &environmentID
+			}
+
+			aa, err := config.cloud.Aggregators(config.ctx, config.projectID, params)
 			if err != nil {
 				return fmt.Errorf("could not fetch your core instances: %w", err)
 			}
@@ -71,7 +85,9 @@ func newCmdGetAggregators(config *config) *cobra.Command {
 	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include core instance IDs in table output")
 	fs.BoolVar(&showMetadata, "show-metadata", false, "Include core instance metadata in table output")
+	fs.StringVar(&environment, "environment", "", "Calyptia environment name.")
 
+	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
 
 	return cmd
@@ -123,11 +139,17 @@ func aggregatorsKeys(aa []cloud.Aggregator) []string {
 	return out
 }
 
-func (config *config) loadAggregatorID(aggregatorKey string) (string, error) {
-	aa, err := config.cloud.Aggregators(config.ctx, config.projectID, cloud.AggregatorsParams{
+func (config *config) loadAggregatorID(aggregatorKey string, environmentID string) (string, error) {
+	params := cloud.AggregatorsParams{
 		Name: &aggregatorKey,
 		Last: ptr(uint64(2)),
-	})
+	}
+
+	if environmentID != "" {
+		params.EnvironmentID = &environmentID
+	}
+
+	aa, err := config.cloud.Aggregators(config.ctx, config.projectID, params)
 	if err != nil {
 		return "", err
 	}

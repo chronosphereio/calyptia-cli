@@ -17,13 +17,28 @@ func newCmdGetAgents(config *config) *cobra.Command {
 	var last uint64
 	var format string
 	var showIDs bool
+	var environment string
+
 	cmd := &cobra.Command{
 		Use:   "agents",
 		Short: "Display latest agents from a project",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			aa, err := config.cloud.Agents(config.ctx, config.projectID, cloud.AgentsParams{
-				Last: &last,
-			})
+			var environmentID string
+			if environment != "" {
+				var err error
+				environmentID, err = config.loadEnvironmentID(environment)
+				if err != nil {
+					return err
+				}
+			}
+			var params cloud.AgentsParams
+
+			params.Last = &last
+			if environmentID != "" {
+				params.EnvironmentID = &environmentID
+			}
+
+			aa, err := config.cloud.Agents(config.ctx, config.projectID, params)
 			if err != nil {
 				return fmt.Errorf("could not fetch your agents: %w", err)
 			}
@@ -34,19 +49,19 @@ func newCmdGetAgents(config *config) *cobra.Command {
 				if showIDs {
 					fmt.Fprint(tw, "ID\t")
 				}
-				fmt.Fprintln(tw, "NAME\tTYPE\tVERSION\tSTATUS\tAGE")
+				fmt.Fprintln(tw, "NAME\tTYPE\tENVIRONMENT\tVERSION\tSTATUS\tAGE")
 				for _, a := range aa.Items {
 					status := agentStatus(a.LastMetricsAddedAt, time.Minute*-5)
 					if showIDs {
 						fmt.Fprintf(tw, "%s\t", a.ID)
 					}
-					fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\n", a.Name, a.Type, a.Version, status, fmtAgo(a.CreatedAt))
+					fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\t%s\n", a.Name, a.Type, a.EnvironmentName, a.Version, status, fmtAgo(a.CreatedAt))
 				}
 				tw.Flush()
 			case "json":
 				err := json.NewEncoder(cmd.OutOrStdout()).Encode(aa.Items)
 				if err != nil {
-					return fmt.Errorf("could not json encode your agents: %w", err)
+					return fmt.Errorf("could not json encode agents: %w", err)
 				}
 			default:
 				return fmt.Errorf("unknown output format %q", format)
@@ -59,7 +74,9 @@ func newCmdGetAgents(config *config) *cobra.Command {
 	fs.Uint64VarP(&last, "last", "l", 0, "Last `N` agents. 0 means no limit")
 	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include agent IDs in table output")
+	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 
+	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
 
 	return cmd
@@ -69,6 +86,7 @@ func newCmdGetAgent(config *config) *cobra.Command {
 	var format string
 	var showIDs bool
 	var onlyConfig bool
+	var environment string
 
 	cmd := &cobra.Command{
 		Use:               "agent AGENT",
@@ -76,8 +94,17 @@ func newCmdGetAgent(config *config) *cobra.Command {
 		Args:              cobra.ExactArgs(1),
 		ValidArgsFunction: config.completeAgents,
 		RunE: func(cmd *cobra.Command, args []string) error {
+			var environmentID string
+			if environment != "" {
+				var err error
+				environmentID, err = config.loadEnvironmentID(environment)
+				if err != nil {
+					return err
+				}
+			}
+
 			agentKey := args[0]
-			agentID, err := config.loadAgentID(agentKey)
+			agentID, err := config.loadAgentID(agentKey, environmentID)
 			if err != nil {
 				return err
 			}
@@ -122,7 +149,9 @@ func newCmdGetAgent(config *config) *cobra.Command {
 	fs.BoolVar(&onlyConfig, "only-config", false, "Only show the agent configuration")
 	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include agent IDs in table output")
+	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 
+	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
 
 	return cmd
@@ -172,12 +201,19 @@ func agentsKeys(aa []cloud.Agent) []string {
 	return out
 }
 
-func (config *config) loadAgentID(agentKey string) (string, error) {
+func (config *config) loadAgentID(agentKey string, environmentID string) (string, error) {
 	var err error
-	aa, err := config.cloud.Agents(config.ctx, config.projectID, cloud.AgentsParams{
-		Name: &agentKey,
-		Last: ptr(uint64(2)),
-	})
+
+	var params cloud.AgentsParams
+
+	params.Last = ptr(uint64(2))
+	params.Name = &agentKey
+
+	if environmentID != "" {
+		params.EnvironmentID = &environmentID
+	}
+
+	aa, err := config.cloud.Agents(config.ctx, config.projectID, params)
 	if err != nil {
 		return "", err
 	}

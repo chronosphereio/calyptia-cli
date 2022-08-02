@@ -15,11 +15,22 @@ func newCmdGetResourceProfiles(config *config) *cobra.Command {
 	var last uint64
 	var format string
 	var showIDs bool
+	var environment string
+
 	cmd := &cobra.Command{
 		Use:   "resource_profiles",
 		Short: "Display latest resource profiles from an aggregator",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			aggregatorID, err := config.loadAggregatorID(aggregatorKey)
+			var environmentID string
+			if environment != "" {
+				var err error
+				environmentID, err = config.loadEnvironmentID(environment)
+				if err != nil {
+					return err
+				}
+			}
+
+			aggregatorID, err := config.loadAggregatorID(aggregatorKey, environmentID)
 			if err != nil {
 				return err
 			}
@@ -62,7 +73,9 @@ func newCmdGetResourceProfiles(config *config) *cobra.Command {
 	fs.Uint64VarP(&last, "last", "l", 0, "Last `N` pipelines. 0 means no limit")
 	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include resource profile IDs in table output")
+	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 
+	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("aggregator", config.completeAggregators)
 
