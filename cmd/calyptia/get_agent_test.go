@@ -19,7 +19,7 @@ func Test_newCmdGetAgents(t *testing.T) {
 
 		err := cmd.Execute()
 		wantEq(t, nil, err)
-		wantEq(t, "NAME TYPE VERSION STATUS AGE\n", got.String())
+		wantEq(t, "NAME TYPE ENVIRONMENT VERSION STATUS AGE\n", got.String())
 
 		t.Run("empty_show_ids", func(t *testing.T) {
 			got.Reset()
@@ -27,7 +27,7 @@ func Test_newCmdGetAgents(t *testing.T) {
 
 			err := cmd.Execute()
 			wantEq(t, nil, err)
-			wantEq(t, "ID NAME TYPE VERSION STATUS AGE\n", got.String())
+			wantEq(t, "ID NAME TYPE ENVIRONMENT VERSION STATUS AGE\n", got.String())
 		})
 	})
 
@@ -55,6 +55,7 @@ func Test_newCmdGetAgents(t *testing.T) {
 				Version:            "v1.8.6",
 				LastMetricsAddedAt: now.Add(time.Second * -1),
 				CreatedAt:          now.Add(time.Minute * -5),
+				EnvironmentName:    "default",
 			}, {
 				ID:                 "agent_id_2",
 				Name:               "name_2",
@@ -62,6 +63,7 @@ func Test_newCmdGetAgents(t *testing.T) {
 				Version:            "v1.0.0",
 				LastMetricsAddedAt: now.Add(time.Second * -30),
 				CreatedAt:          now.Add(time.Minute * -10),
+				EnvironmentName:    "default",
 			}},
 		}
 		got := &bytes.Buffer{}
@@ -78,9 +80,9 @@ func Test_newCmdGetAgents(t *testing.T) {
 		err := cmd.Execute()
 		wantEq(t, nil, err)
 		wantEq(t, ""+
-			"ID         NAME   TYPE      VERSION STATUS AGE\n"+
-			"agent_id_1 name_1 fluentbit v1.8.6  active 5 minutes\n"+
-			"agent_id_2 name_2 fluentd   v1.0.0  active 10 minutes\n", got.String())
+			"ID         NAME   TYPE      ENVIRONMENT VERSION STATUS AGE\n"+
+			"agent_id_1 name_1 fluentbit default     v1.8.6  active 5 minutes\n"+
+			"agent_id_2 name_2 fluentd   default     v1.0.0  active 10 minutes\n", got.String())
 
 		t.Run("json", func(t *testing.T) {
 			want, err := json.Marshal(want.Items)

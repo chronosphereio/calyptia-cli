@@ -31,10 +31,14 @@ func newCmdGetAgents(config *config) *cobra.Command {
 					return err
 				}
 			}
-			aa, err := config.cloud.Agents(config.ctx, config.projectID, cloud.AgentsParams{
-				Last:          &last,
-				EnvironmentID: &environmentID,
-			})
+			var params cloud.AgentsParams
+
+			params.Last = &last
+			if environmentID != "" {
+				params.EnvironmentID = &environmentID
+			}
+
+			aa, err := config.cloud.Agents(config.ctx, config.projectID, params)
 			if err != nil {
 				return fmt.Errorf("could not fetch your agents: %w", err)
 			}
@@ -45,19 +49,19 @@ func newCmdGetAgents(config *config) *cobra.Command {
 				if showIDs {
 					fmt.Fprint(tw, "ID\t")
 				}
-				fmt.Fprintln(tw, "NAME\tTYPE\tVERSION\tSTATUS\tAGE")
+				fmt.Fprintln(tw, "NAME\tTYPE\tENVIRONMENT\tVERSION\tSTATUS\tAGE")
 				for _, a := range aa.Items {
 					status := agentStatus(a.LastMetricsAddedAt, time.Minute*-5)
 					if showIDs {
 						fmt.Fprintf(tw, "%s\t", a.ID)
 					}
-					fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\n", a.Name, a.Type, a.Version, status, fmtAgo(a.CreatedAt))
+					fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\t%s\n", a.Name, a.Type, a.EnvironmentName, a.Version, status, fmtAgo(a.CreatedAt))
 				}
 				tw.Flush()
 			case "json":
 				err := json.NewEncoder(cmd.OutOrStdout()).Encode(aa.Items)
 				if err != nil {
-					return fmt.Errorf("could not json encode your agents: %w", err)
+					return fmt.Errorf("could not json encode agents: %w", err)
 				}
 			default:
 				return fmt.Errorf("unknown output format %q", format)
