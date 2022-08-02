@@ -27,7 +27,7 @@ func newCmdDeleteCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 	isNonInteractiveMode := os.Stdin == nil || !term.IsTerminal(int(os.Stdin.Fd()))
 
 	var skipError, confirmDelete bool
-	var environmentKey string
+	var environment string
 
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	configOverrides := &clientcmd.ConfigOverrides{}
@@ -40,9 +40,9 @@ func newCmdDeleteCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.Background()
 			var environmentID string
-			if environmentKey != "" {
+			if environment != "" {
 				var err error
-				environmentID, err = config.loadEnvironmentID(environmentKey)
+				environmentID, err = config.loadEnvironmentID(environment)
 				if err != nil {
 					return err
 				}
@@ -187,7 +187,7 @@ func newCmdDeleteCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 	fs := cmd.Flags()
 	fs.BoolVar(&skipError, "skip-error", false, "Skip errors during delete process")
 	fs.BoolVar(&confirmDelete, "yes", isNonInteractiveMode, "Confirm deletion")
-	fs.StringVar(&environmentKey, "environment", "", "Calyptia environment name or ID")
+	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 
 	clientcmd.BindOverrideFlags(configOverrides, fs, clientcmd.RecommendedConfigOverrideFlags("kube-"))
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)

@@ -9,8 +9,8 @@ import (
 
 func newCmdDeleteAggregator(config *config) *cobra.Command {
 	var (
-		confirmed      bool
-		environmentKey string
+		confirmed   bool
+		environment string
 	)
 
 	cmd := &cobra.Command{
@@ -39,9 +39,9 @@ func newCmdDeleteAggregator(config *config) *cobra.Command {
 			}
 
 			var environmentID string
-			if environmentKey != "" {
+			if environment != "" {
 				var err error
-				environmentID, err = config.loadEnvironmentID(environmentKey)
+				environmentID, err = config.loadEnvironmentID(environment)
 				if err != nil {
 					return err
 				}
@@ -63,7 +63,7 @@ func newCmdDeleteAggregator(config *config) *cobra.Command {
 
 	fs := cmd.Flags()
 	fs.BoolVarP(&confirmed, "yes", "y", false, "Confirm deletion")
-	fs.StringVar(&environmentKey, "environment", "", "Calyptia environment name or ID")
+	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
 
 	return cmd

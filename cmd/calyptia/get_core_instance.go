@@ -16,7 +16,7 @@ func newCmdGetAggregators(config *config) *cobra.Command {
 	var format string
 	var showIDs bool
 	var showMetadata bool
-	var environmentKey string
+	var environment string
 
 	cmd := &cobra.Command{
 		Use:     "core_instances",
@@ -24,9 +24,9 @@ func newCmdGetAggregators(config *config) *cobra.Command {
 		Short:   "Display latest core instances from a project",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var environmentID string
-			if environmentKey != "" {
+			if environment != "" {
 				var err error
-				environmentID, err = config.loadEnvironmentID(environmentKey)
+				environmentID, err = config.loadEnvironmentID(environment)
 				if err != nil {
 					return err
 				}
@@ -85,7 +85,7 @@ func newCmdGetAggregators(config *config) *cobra.Command {
 	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include core instance IDs in table output")
 	fs.BoolVar(&showMetadata, "show-metadata", false, "Include core instance metadata in table output")
-	fs.StringVar(&environmentKey, "environment", "", "Calyptia environment name or ID")
+	fs.StringVar(&environment, "environment", "", "Calyptia environment name.")
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)

@@ -17,16 +17,16 @@ func newCmdGetAgents(config *config) *cobra.Command {
 	var last uint64
 	var format string
 	var showIDs bool
-	var environmentKey string
+	var environment string
 
 	cmd := &cobra.Command{
 		Use:   "agents",
 		Short: "Display latest agents from a project",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var environmentID string
-			if environmentKey != "" {
+			if environment != "" {
 				var err error
-				environmentID, err = config.loadEnvironmentID(environmentKey)
+				environmentID, err = config.loadEnvironmentID(environment)
 				if err != nil {
 					return err
 				}
@@ -70,7 +70,7 @@ func newCmdGetAgents(config *config) *cobra.Command {
 	fs.Uint64VarP(&last, "last", "l", 0, "Last `N` agents. 0 means no limit")
 	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include agent IDs in table output")
-	fs.StringVar(&environmentKey, "environment", "", "Calyptia environment name or ID")
+	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
@@ -82,7 +82,7 @@ func newCmdGetAgent(config *config) *cobra.Command {
 	var format string
 	var showIDs bool
 	var onlyConfig bool
-	var environmentKey string
+	var environment string
 
 	cmd := &cobra.Command{
 		Use:               "agent AGENT",
@@ -91,9 +91,9 @@ func newCmdGetAgent(config *config) *cobra.Command {
 		ValidArgsFunction: config.completeAgents,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var environmentID string
-			if environmentKey != "" {
+			if environment != "" {
 				var err error
-				environmentID, err = config.loadEnvironmentID(environmentKey)
+				environmentID, err = config.loadEnvironmentID(environment)
 				if err != nil {
 					return err
 				}
@@ -145,7 +145,7 @@ func newCmdGetAgent(config *config) *cobra.Command {
 	fs.BoolVar(&onlyConfig, "only-config", false, "Only show the agent configuration")
 	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include agent IDs in table output")
-	fs.StringVar(&environmentKey, "environment", "", "Calyptia environment name or ID")
+	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)

@@ -54,17 +54,17 @@ func environmentsKeys(aa []cloud.Environment) []string {
 	return out
 }
 
-func (config *config) loadEnvironmentID(environmentKey string) (string, error) {
+func (config *config) loadEnvironmentID(environmentName string) (string, error) {
 	aa, err := config.cloud.Environments(config.ctx, config.projectID, cloud.EnvironmentsParams{
-		Name: &environmentKey,
-		Last: ptr(uint64(2)),
+		Name: &environmentName,
+		Last: ptr(uint64(1)),
 	})
 	if err != nil {
 		return "", err
 	}
 
 	if len(aa.Items) == 0 {
-		return "", fmt.Errorf("could not find environment %q", environmentKey)
+		return "", fmt.Errorf("could not find environment %q", environmentName)
 
 	}
 

@@ -45,7 +45,7 @@ func newCmdCreateResourceProfile(config *config) *cobra.Command {
 	var name string
 	var specFile string
 	var outputFormat string
-	var environmentKey string
+	var environment string
 
 	cmd := &cobra.Command{
 		Use:   "resource_profile",
@@ -63,9 +63,9 @@ func newCmdCreateResourceProfile(config *config) *cobra.Command {
 			}
 
 			var environmentID string
-			if environmentKey != "" {
+			if environment != "" {
 				var err error
-				environmentID, err = config.loadEnvironmentID(environmentKey)
+				environmentID, err = config.loadEnvironmentID(environment)
 				if err != nil {
 					return err
 				}
@@ -116,7 +116,7 @@ func newCmdCreateResourceProfile(config *config) *cobra.Command {
 	fs.StringVar(&name, "name", "", "Resource profile name")
 	fs.StringVar(&specFile, "spec", "", "Take spec from JSON file. Example:\n"+resourceProfileSpecExample)
 	fs.StringVar(&outputFormat, "output-format", "table", "Output format. Allowed: table, json")
-	fs.StringVar(&environmentKey, "environment", "", "Calyptia environment name or ID")
+	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
 	_ = cmd.RegisterFlagCompletionFunc("aggregator", config.completeAggregators)
