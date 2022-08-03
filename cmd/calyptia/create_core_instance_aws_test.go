@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"io"
 	"testing"
 
@@ -25,13 +26,17 @@ func Test_newCmdCreateCoreInstanceOnAWS(t *testing.T) {
 		}
 
 		cmd := newCmdCreateCoreInstanceOnAWS(
-			configWithMock(&ClientMock{}),
+			configWithMock(&ClientMock{
+				EnvironmentsFunc: func(ctx context.Context, projectID string, params types.EnvironmentsParams) (types.Environments, error) {
+					return types.Environments{Items: []types.Environment{{Name: "default"}}}, nil
+				},
+			}),
 			&aws.ClientMock{
 				CreateInstanceFunc: func(ctx context.Context, in *aws.CreateInstanceParams) (aws.CreatedInstance, error) {
 					return instanceParams, nil
 				},
 			}, &CoreInstancePollerMock{
-				ReadyFunc: func(ctx context.Context, name string) (string, error) {
+				ReadyFunc: func(ctx context.Context, env, name string) (string, error) {
 					return "", nil
 				},
 			})
@@ -44,15 +49,55 @@ func Test_newCmdCreateCoreInstanceOnAWS(t *testing.T) {
 			"Calyptia core instance is ready to use.\n", got.String())
 	})
 
+	t.Run("error without env", func(t *testing.T) {
+		got := bytes.Buffer{}
+
+		instanceParams := aws.CreatedInstance{
+			CoreInstanceName: "core-test",
+			MetadataAWS: types.MetadataAWS{
+				PrivateIPv4:     "192.168.0.1",
+				PublicIPv4:      "",
+				EC2InstanceID:   "i-0xdeadbeef",
+				EC2InstanceType: aws.DefaultInstanceTypeName,
+			},
+		}
+
+		cmd := newCmdCreateCoreInstanceOnAWS(
+			configWithMock(
+				&ClientMock{
+					EnvironmentsFunc: func(ctx context.Context, projectID string, params types.EnvironmentsParams) (types.Environments, error) {
+						return types.Environments{}, fmt.Errorf("not found env")
+					},
+				},
+			),
+			&aws.ClientMock{
+				CreateInstanceFunc: func(ctx context.Context, in *aws.CreateInstanceParams) (aws.CreatedInstance, error) {
+					return instanceParams, nil
+				},
+			}, &CoreInstancePollerMock{
+				ReadyFunc: func(ctx context.Context, env, name string) (string, error) {
+					return "", nil
+				},
+			})
+
+		cmd.SetOut(&got)
+		err := cmd.Execute()
+		wantNoEq(t, nil, err)
+	})
+
 	t.Run("AWS error", func(t *testing.T) {
 		cmd := newCmdCreateCoreInstanceOnAWS(
-			configWithMock(&ClientMock{}),
+			configWithMock(&ClientMock{
+				EnvironmentsFunc: func(ctx context.Context, projectID string, params types.EnvironmentsParams) (types.Environments, error) {
+					return types.Environments{Items: []types.Environment{{Name: "default"}}}, nil
+				},
+			}),
 			&aws.ClientMock{
 				CreateInstanceFunc: func(ctx context.Context, in *aws.CreateInstanceParams) (aws.CreatedInstance, error) {
 					return aws.CreatedInstance{}, aws.ErrSubnetNotFound
 				},
 			}, &CoreInstancePollerMock{
-				ReadyFunc: func(ctx context.Context, name string) (string, error) {
+				ReadyFunc: func(ctx context.Context, env, name string) (string, error) {
 					return "", nil
 				},
 			})
@@ -64,13 +109,17 @@ func Test_newCmdCreateCoreInstanceOnAWS(t *testing.T) {
 
 	t.Run("calyptia cloud error", func(t *testing.T) {
 		cmd := newCmdCreateCoreInstanceOnAWS(
-			configWithMock(&ClientMock{}),
+			configWithMock(&ClientMock{
+				EnvironmentsFunc: func(ctx context.Context, projectID string, params types.EnvironmentsParams) (types.Environments, error) {
+					return types.Environments{Items: []types.Environment{{Name: "default"}}}, nil
+				},
+			}),
 			&aws.ClientMock{
 				CreateInstanceFunc: func(ctx context.Context, in *aws.CreateInstanceParams) (aws.CreatedInstance, error) {
 					return aws.CreatedInstance{}, nil
 				},
 			}, &CoreInstancePollerMock{
-				ReadyFunc: func(ctx context.Context, name string) (string, error) {
+				ReadyFunc: func(ctx context.Context, env, name string) (string, error) {
 					return "", errCoreInstanceNotRunning
 				},
 			})
