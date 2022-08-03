@@ -22,13 +22,21 @@ import (
 const (
 	userDataTemplate = `
 CALYPTIA_CLOUD_PROJECT_TOKEN={{.ProjectToken}}
+{{if .CoreInstanceName }}
 CALYPTIA_CLOUD_AGGREGATOR_NAME={{.CoreInstanceName}}
+{{end}}
+{{if .CoreInstanceTags }}
+CALYPTIA_CORE_INSTANCE_TAGS={{.CoreInstanceTags}}
+{{end}}
+{{if .CoreInstanceEnvironment }}
+CALYPTIA_CORE_INSTANCE_ENVIRONMENT={{.CoreInstanceEnvironment}}
+{{end}}
 `
 	instanceUpCheckTimeout = 10 * time.Minute
 	instanceUpCheckBackOff = 5 * time.Second
 
 	DefaultRegionName       = "us-east-1"
-	DefaultInstanceTypeName = "t2.micro"
+	DefaultInstanceTypeName = "t2.xlarge"
 	coreInstanceTag         = "core-instance-name"
 	securityGroupNameFormat = "%s-security-group"
 	keyPairNameFormat       = "%s-key-pair"
@@ -65,8 +73,10 @@ type (
 	}
 
 	CreateUserDataParams struct {
-		ProjectToken     string
-		CoreInstanceName string
+		ProjectToken            string
+		CoreInstanceName        string
+		CoreInstanceTags        string
+		CoreInstanceEnvironment string
 	}
 
 	ElasticIPAddressParams struct {
