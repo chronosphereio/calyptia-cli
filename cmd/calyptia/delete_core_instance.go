@@ -12,7 +12,7 @@ func newCmdDeleteCoreInstance(config *config, testClientSet kubernetes.Interface
 		Short:   "Delete a core instance from either Kubernetes, Amazon EC2 (TODO), or Google Compute Engine (TODO)",
 	}
 	cmd.AddCommand(newCmdDeleteCoreInstanceK8s(config, nil))
-	cmd.AddCommand(newCmdDeleteCoreInstanceOnAWS(config))
+	cmd.AddCommand(newCmdDeleteCoreInstanceOnAWS(config, nil))
 	cmd.AddCommand(newCmdDeleteCoreInstanceOnGCP(config))
 	return cmd
 }

@@ -5,16 +5,18 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"github.com/aws/aws-sdk-go-v2/service/ec2"
+	"github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi"
+	types2 "github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi/types"
+	"strings"
 	"text/template"
 	"time"
 
-	"github.com/calyptia/core-images-index/go-index"
-	"github.com/sethvargo/go-retry"
-
 	"github.com/aws/aws-sdk-go-v2/aws"
 	awsconfig "github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/service/ec2"
 	awstypes "github.com/aws/aws-sdk-go-v2/service/ec2/types"
+	"github.com/calyptia/core-images-index/go-index"
+	"github.com/sethvargo/go-retry"
 
 	"github.com/calyptia/api/types"
 )
@@ -35,41 +37,48 @@ CALYPTIA_CORE_INSTANCE_ENVIRONMENT={{.CoreInstanceEnvironment}}
 	instanceUpCheckTimeout = 10 * time.Minute
 	instanceUpCheckBackOff = 5 * time.Second
 
-	DefaultRegionName       = "us-east-1"
-	DefaultInstanceTypeName = "t2.xlarge"
-	coreInstanceTag         = "core-instance-name"
-	securityGroupNameFormat = "%s-security-group"
-	keyPairNameFormat       = "%s-key-pair"
+	DefaultRegionName                 = "us-east-1"
+	DefaultInstanceTypeName           = "t2.xlarge"
+	DefaultCoreInstanceTag            = "core-instance-name"
+	DefaultCoreInstanceEnvironmentTag = "environment"
+	securityGroupNameFormat           = "%s-%s-sg"
+	keyPairNameFormat                 = "%s-%s-key-pair"
 )
 
 var (
 	instanceUpCheckMaxDuration = func() retry.Backoff {
 		return retry.WithMaxDuration(instanceUpCheckTimeout, retry.NewConstant(instanceUpCheckBackOff))
 	}
+	instanceTerminateCheckMaxDuration = instanceUpCheckMaxDuration
 )
+
+type TagSpec map[string]string
 
 type (
 	//go:generate moq -out client_mock.go . Client
 	Client interface {
-		EnsureKeyPair(ctx context.Context, keyPairName string) (string, error)
 		FindMatchingAMI(ctx context.Context, region, version string) (string, error)
+		EnsureKeyPair(ctx context.Context, keyPairName, environment string) (string, error)
 		EnsureInstanceType(ctx context.Context, instanceTypeName string) (string, error)
 		EnsureSubnet(ctx context.Context, subNetID string) (string, error)
-		EnsureSecurityGroup(ctx context.Context, securityGroupName, vpcID string) (string, error)
+		EnsureSecurityGroup(ctx context.Context, securityGroupName, environment, vpcID string) (string, error)
 		EnsureSecurityGroupIngressRules(ctx context.Context, securityGroupID string) error
-		EnsureAndAssociateElasticIPv4Address(ctx context.Context, instanceID, elasticIPv4AddressPool, elasticIPv4Address string) (string, error)
+		EnsureAndAssociateElasticIPv4Address(ctx context.Context, instanceID, environment, elasticIPv4AddressPool, elasticIPv4Address string) (string, error)
 		CreateUserdata(in *CreateUserDataParams) (string, error)
 		CreateInstance(ctx context.Context, in *CreateInstanceParams) (CreatedInstance, error)
 		InstanceState(ctx context.Context, instanceID string) (string, error)
-		DeleteKeyPair(ctx context.Context, keyPairName string) error
+		DeleteKeyPair(ctx context.Context, keyPairID string) error
 		DeleteSecurityGroup(ctx context.Context, securityGroupName string) error
 		DeleteInstance(ctx context.Context, instanceID string) error
+		GetResourcesByTags(ctx context.Context, tags TagSpec) ([]Resource, error)
+		DeleteResources(ctx context.Context, resources []Resource) error
 	}
 
 	DefaultClient struct {
 		Client
-		client *ec2.Client
-		prefix string
+		client     *ec2.Client
+		tagsClient *resourcegroupstaggingapi.Client
+		prefix     string
 	}
 
 	CreateUserDataParams struct {
@@ -90,6 +99,7 @@ type (
 		KeyPairName,
 		SecurityGroupName,
 		InstanceType,
+		Environment,
 		SubnetID string
 		UserData        *CreateUserDataParams
 		PublicIPAddress *ElasticIPAddressParams
@@ -130,19 +140,24 @@ func New(ctx context.Context, prefix, region, credentials, profileFile, profileN
 	}
 
 	return &DefaultClient{
-		client: ec2.NewFromConfig(cfg),
-		prefix: prefix,
+		client:     ec2.NewFromConfig(cfg),
+		tagsClient: resourcegroupstaggingapi.NewFromConfig(cfg),
+		prefix:     prefix,
 	}, nil
 }
 
-func (c *DefaultClient) getTags(resourceType awstypes.ResourceType) []awstypes.TagSpecification {
+func (c *DefaultClient) getTags(resourceType awstypes.ResourceType, environment string) []awstypes.TagSpecification {
 	return []awstypes.TagSpecification{
 		{
 			ResourceType: resourceType,
 			Tags: []awstypes.Tag{
 				{
-					Key:   aws.String(coreInstanceTag),
+					Key:   aws.String(DefaultCoreInstanceTag),
 					Value: aws.String(c.prefix),
+				},
+				{
+					Key:   aws.String(DefaultCoreInstanceEnvironmentTag),
+					Value: aws.String(environment),
 				},
 			},
 		},
@@ -201,10 +216,10 @@ func (c *DefaultClient) FindMatchingAMI(ctx context.Context, region, version str
 	return imageID, nil
 }
 
-func (c *DefaultClient) EnsureAndAssociateElasticIPv4Address(ctx context.Context, instanceID, elasticIPv4AddressPool, elasticIPv4Address string) (string, error) {
+func (c *DefaultClient) EnsureAndAssociateElasticIPv4Address(ctx context.Context, instanceID, environment, elasticIPv4AddressPool, elasticIPv4Address string) (string, error) {
 	var allocateAddressInput ec2.AllocateAddressInput
 
-	allocateAddressInput.TagSpecifications = c.getTags(awstypes.ResourceTypeElasticIp)
+	allocateAddressInput.TagSpecifications = c.getTags(awstypes.ResourceTypeElasticIp, environment)
 
 	if elasticIPv4Address != "" {
 		allocateAddressInput.Address = &elasticIPv4Address
@@ -293,9 +308,9 @@ func (c *DefaultClient) EnsureSecurityGroupIngressRules(ctx context.Context, sec
 	return nil
 }
 
-func (c *DefaultClient) EnsureSecurityGroup(ctx context.Context, securityGroupName, vpcID string) (string, error) {
+func (c *DefaultClient) EnsureSecurityGroup(ctx context.Context, securityGroupName, environment, vpcID string) (string, error) {
 	if securityGroupName == "" {
-		securityGroupName = fmt.Sprintf(securityGroupNameFormat, c.prefix)
+		securityGroupName = fmt.Sprintf(securityGroupNameFormat, c.prefix, environment)
 	}
 
 	describeSecurityGroupsInput := &ec2.DescribeSecurityGroupsInput{
@@ -314,7 +329,7 @@ func (c *DefaultClient) EnsureSecurityGroup(ctx context.Context, securityGroupNa
 		Description:       aws.String(securityGroupName),
 		GroupName:         aws.String(securityGroupName),
 		VpcId:             aws.String(vpcID),
-		TagSpecifications: c.getTags(awstypes.ResourceTypeSecurityGroup),
+		TagSpecifications: c.getTags(awstypes.ResourceTypeSecurityGroup, environment),
 	}
 	securityGroup, err := c.client.CreateSecurityGroup(ctx, createSecurityGroupInput)
 	if err != nil {
@@ -323,73 +338,236 @@ func (c *DefaultClient) EnsureSecurityGroup(ctx context.Context, securityGroupNa
 	return *securityGroup.GroupId, nil
 }
 
+func (c *DefaultClient) ReleaseElasticIP(ctx context.Context, elasticIPID string) error {
+	releaseAddressInput := &ec2.ReleaseAddressInput{
+		AllocationId: aws.String(elasticIPID),
+	}
+	_, err := c.client.ReleaseAddress(ctx, releaseAddressInput)
+	return err
+}
+
 func (c *DefaultClient) DeleteInstance(ctx context.Context, instanceID string) error {
 	terminateInstancesInput := &ec2.TerminateInstancesInput{
-		InstanceIds: []string{instanceID},
+		InstanceIds: []string{
+			instanceID,
+		},
 	}
 	_, err := c.client.TerminateInstances(ctx, terminateInstancesInput)
 	return err
 }
 
-func (c *DefaultClient) DeleteSecurityGroup(ctx context.Context, securityGroupName string) error {
-	if securityGroupName == "" {
-		securityGroupName = fmt.Sprintf(securityGroupNameFormat, c.prefix)
+type Resource struct {
+	Type awstypes.ResourceType
+	ID   string
+}
+
+func (r *Resource) String() string {
+	return fmt.Sprintf("Resource type: %s - Unique ID: %s", string(r.Type), r.ID)
+}
+
+func (c *DefaultClient) DeleteResources(ctx context.Context, resources []Resource) error {
+	var (
+		instancesIDs     []string
+		securityGroupIDs []string
+		elasticIPsIDs    []string
+		keypairIDs       []string
+	)
+
+	for _, resource := range resources {
+		switch resource.Type {
+		case awstypes.ResourceTypeInstance:
+			instancesIDs = append(instancesIDs, resource.ID)
+		case awstypes.ResourceTypeKeyPair:
+			keypairIDs = append(keypairIDs, resource.ID)
+		case awstypes.ResourceTypeSecurityGroup:
+			securityGroupIDs = append(securityGroupIDs, resource.ID)
+		case awstypes.ResourceTypeElasticIp:
+			elasticIPsIDs = append(elasticIPsIDs, resource.ID)
+		}
 	}
 
+	for _, instanceID := range instancesIDs {
+		err := c.DeleteInstance(ctx, instanceID)
+		if err != nil {
+			return err
+		}
+
+		// check if the instance switches to terminated status, in this way, all the
+		// associated resources can be safely removed.
+		err = retry.Do(ctx, instanceTerminateCheckMaxDuration(), func(ctx context.Context) error {
+			state, err := c.InstanceState(ctx, instanceID)
+			if err != nil {
+				return retry.RetryableError(err)
+			}
+
+			if state != string(awstypes.InstanceStateNameTerminated) {
+				return retry.RetryableError(fmt.Errorf("instance not in terminated state"))
+			}
+
+			return nil
+		})
+
+		if err != nil {
+			return err
+		}
+	}
+
+	for _, keypairID := range keypairIDs {
+		err := c.DeleteKeyPair(ctx, keypairID)
+		if err != nil {
+			return err
+		}
+	}
+
+	for _, elasticIPsID := range elasticIPsIDs {
+		err := c.ReleaseElasticIP(ctx, elasticIPsID)
+		if err != nil {
+			return err
+		}
+	}
+
+	for _, securityGroupID := range securityGroupIDs {
+		err := c.DeleteSecurityGroup(ctx, securityGroupID)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+
+}
+
+func (c *DefaultClient) GetResourcesByTags(ctx context.Context, tags TagSpec) ([]Resource, error) {
+	var filters []types2.TagFilter
+	var out []Resource
+
+	for k, v := range tags {
+		filters = append(filters, types2.TagFilter{
+			Key:    &k,
+			Values: []string{v},
+		})
+	}
+	params := &resourcegroupstaggingapi.GetResourcesInput{
+		TagFilters: filters,
+	}
+
+	resources, err := c.tagsClient.GetResources(ctx, params)
+	// Build the request with its input parameters
+	if err != nil {
+		return out, err
+	}
+
+	for _, resource := range resources.ResourceTagMappingList {
+		splitById := strings.Split(*resource.ResourceARN, "/")
+		splitByType := strings.Split(splitById[0], ":")
+
+		if len(splitById) <= 0 || len(splitByType) <= 0 {
+			continue
+		}
+
+		newResource := Resource{
+			Type: awstypes.ResourceType(splitByType[len(splitByType)-1]),
+			ID:   splitById[len(splitById)-1],
+		}
+
+		out = append(out, newResource)
+	}
+
+	return filterOutNonRunningResources(ctx, c, out), nil
+}
+
+// filterOutNonRunningResources given a list of resources, filter out of the array the ones that does not have a running
+// state, for now is only instances but other resources might be stateful as well.
+func filterOutNonRunningResources(ctx context.Context, client Client, resources []Resource) []Resource {
+	var out []Resource
+
+	for _, resource := range resources {
+		switch resource.Type {
+		case awstypes.ResourceTypeInstance:
+			state, err := client.InstanceState(ctx, resource.ID)
+			if err != nil {
+				continue
+			}
+			if state == string(awstypes.InstanceStateNameRunning) {
+				out = append(out, resource)
+			}
+		default:
+			out = append(out, resource)
+		}
+	}
+	return out
+}
+
+func (c *DefaultClient) GetInstanceById(ctx context.Context, instanceID string) ([]string, error) {
+	var out []string
+	describeInstanceInput := &ec2.DescribeInstancesInput{
+		InstanceIds: []string{instanceID},
+	}
+
+	instances, err := c.client.DescribeInstances(ctx, describeInstanceInput)
+	if err != nil {
+		return out, err
+	}
+
+	if len(instances.Reservations) == 0 {
+		return out, fmt.Errorf("not found instances with id: %s", instanceID)
+	}
+
+	for _, reservation := range instances.Reservations {
+		for _, instance := range reservation.Instances {
+			out = append(out, *instance.InstanceId)
+		}
+	}
+
+	return out, nil
+}
+
+func (c *DefaultClient) DeleteSecurityGroup(ctx context.Context, securityGroupID string) error {
 	deleteSecurityGroupInput := &ec2.DeleteSecurityGroupInput{
-		GroupName: aws.String(securityGroupName),
+		GroupId: aws.String(securityGroupID),
 	}
 
 	_, err := c.client.DeleteSecurityGroup(ctx, deleteSecurityGroupInput)
 	return err
 }
 
-func (c *DefaultClient) DeleteKeyPair(ctx context.Context, keyPairName string) error {
-	if keyPairName == "" {
-		keyPairName = fmt.Sprintf(keyPairNameFormat, c.prefix)
-	}
-
+func (c *DefaultClient) DeleteKeyPair(ctx context.Context, keyPairID string) error {
 	deleteKeyPairInput := &ec2.DeleteKeyPairInput{
-		KeyName: aws.String(keyPairName),
+		KeyPairId: aws.String(keyPairID),
 	}
-
 	_, err := c.client.DeleteKeyPair(ctx, deleteKeyPairInput)
 	return err
 }
 
-func (c *DefaultClient) EnsureKeyPair(ctx context.Context, keyPairName string) (string, error) {
+func (c *DefaultClient) EnsureKeyPair(ctx context.Context, keyPairName, environment string) (string, error) {
 	if keyPairName == "" {
-		keyPairName = fmt.Sprintf(keyPairNameFormat, c.prefix)
+		keyPairName = fmt.Sprintf(keyPairNameFormat, c.prefix, environment)
+	}
+
+	describeKeyPairInput := &ec2.DescribeKeyPairsInput{
+		KeyNames: []string{keyPairName},
+	}
+
+	keyPairs, err := c.client.DescribeKeyPairs(ctx, describeKeyPairInput)
+	if err != nil && !errorIsNotFound(err) {
+		return "", err
+	}
+
+	if len(keyPairs.KeyPairs) > 0 {
+		return *keyPairs.KeyPairs[0].KeyName, nil
 	}
 
 	createKeyPairInput := &ec2.CreateKeyPairInput{
 		KeyName:           aws.String(keyPairName),
-		TagSpecifications: c.getTags(awstypes.ResourceTypeKeyPair),
+		TagSpecifications: c.getTags(awstypes.ResourceTypeKeyPair, environment),
 	}
 
-	createKeyPair, err := c.client.CreateKeyPair(ctx, createKeyPairInput)
-	if err != nil && errorIsAlreadyExists(err) {
-		describeKeyPairInput := &ec2.DescribeKeyPairsInput{
-			KeyNames: []string{keyPairName},
-		}
-
-		keyPairs, err := c.client.DescribeKeyPairs(ctx, describeKeyPairInput)
-		if err != nil {
-			return "", err
-		}
-
-		if len(keyPairs.KeyPairs) == 0 {
-			return "", ErrKeyPairNotFound
-		}
-
-		return *keyPairs.KeyPairs[0].KeyName, nil
-	}
-
+	createdKeyPair, err := c.client.CreateKeyPair(ctx, createKeyPairInput)
 	if err != nil {
 		return "", err
 	}
 
-	return *createKeyPair.KeyName, nil
+	return *createdKeyPair.KeyName, nil
 }
 
 func (c *DefaultClient) EnsureInstanceType(ctx context.Context, instanceTypeName string) (string, error) {
@@ -436,7 +614,7 @@ func (c *DefaultClient) CreateInstance(ctx context.Context, params *CreateInstan
 		return out, fmt.Errorf("could not find a matching AMI for version %s on region %s: %w", params.CoreVersion, params.Region, err)
 	}
 
-	keyPairName, err := c.EnsureKeyPair(ctx, params.KeyPairName)
+	keyPairName, err := c.EnsureKeyPair(ctx, params.KeyPairName, params.Environment)
 	if err != nil {
 		return out, fmt.Errorf("could not find a suitable key pair for a key: %w", err)
 	}
@@ -451,7 +629,7 @@ func (c *DefaultClient) CreateInstance(ctx context.Context, params *CreateInstan
 		return out, fmt.Errorf("could not find a suitable subnet: %w", err)
 	}
 
-	securityGroupID, err := c.EnsureSecurityGroup(ctx, params.SecurityGroupName, vpcID)
+	securityGroupID, err := c.EnsureSecurityGroup(ctx, params.SecurityGroupName, params.Environment, vpcID)
 	if err != nil {
 		return out, fmt.Errorf("could not find a suitable security group: %w", err)
 	}
@@ -469,6 +647,7 @@ func (c *DefaultClient) CreateInstance(ctx context.Context, params *CreateInstan
 	}
 
 	runInstancesInput := &ec2.RunInstancesInput{
+
 		MaxCount:          aws.Int32(1),
 		MinCount:          aws.Int32(1),
 		ImageId:           aws.String(imageID),
@@ -477,7 +656,7 @@ func (c *DefaultClient) CreateInstance(ctx context.Context, params *CreateInstan
 		SecurityGroupIds:  []string{securityGroupID},
 		SubnetId:          aws.String(params.SubnetID),
 		KeyName:           aws.String(keyPairName),
-		TagSpecifications: c.getTags(awstypes.ResourceTypeInstance),
+		TagSpecifications: c.getTags(awstypes.ResourceTypeInstance, params.Environment),
 	}
 
 	instances, err := c.client.RunInstances(ctx, runInstancesInput)
@@ -520,7 +699,7 @@ func (c *DefaultClient) CreateInstance(ctx context.Context, params *CreateInstan
 		return out, err
 	}
 
-	elasticIpv4Address, err := c.EnsureAndAssociateElasticIPv4Address(ctx, out.EC2InstanceID,
+	elasticIpv4Address, err := c.EnsureAndAssociateElasticIPv4Address(ctx, out.EC2InstanceID, params.Environment,
 		params.PublicIPAddress.Pool, params.PublicIPAddress.Address)
 
 	if err != nil {
