@@ -27,22 +27,25 @@ var _ Client = &ClientMock{}
 // 			DeleteInstanceFunc: func(ctx context.Context, instanceID string) error {
 // 				panic("mock out the DeleteInstance method")
 // 			},
-// 			DeleteKeyPairFunc: func(ctx context.Context, keyPairName string) error {
+// 			DeleteKeyPairFunc: func(ctx context.Context, keyPairID string) error {
 // 				panic("mock out the DeleteKeyPair method")
+// 			},
+// 			DeleteResourcesFunc: func(ctx context.Context, resources []Resource) error {
+// 				panic("mock out the DeleteResources method")
 // 			},
 // 			DeleteSecurityGroupFunc: func(ctx context.Context, securityGroupName string) error {
 // 				panic("mock out the DeleteSecurityGroup method")
 // 			},
-// 			EnsureAndAssociateElasticIPv4AddressFunc: func(ctx context.Context, instanceID string, elasticIPv4AddressPool string, elasticIPv4Address string) (string, error) {
+// 			EnsureAndAssociateElasticIPv4AddressFunc: func(ctx context.Context, instanceID string, environment string, elasticIPv4AddressPool string, elasticIPv4Address string) (string, error) {
 // 				panic("mock out the EnsureAndAssociateElasticIPv4Address method")
 // 			},
 // 			EnsureInstanceTypeFunc: func(ctx context.Context, instanceTypeName string) (string, error) {
 // 				panic("mock out the EnsureInstanceType method")
 // 			},
-// 			EnsureKeyPairFunc: func(ctx context.Context, keyPairName string) (string, error) {
+// 			EnsureKeyPairFunc: func(ctx context.Context, keyPairName string, environment string) (string, error) {
 // 				panic("mock out the EnsureKeyPair method")
 // 			},
-// 			EnsureSecurityGroupFunc: func(ctx context.Context, securityGroupName string, vpcID string) (string, error) {
+// 			EnsureSecurityGroupFunc: func(ctx context.Context, securityGroupName string, environment string, vpcID string) (string, error) {
 // 				panic("mock out the EnsureSecurityGroup method")
 // 			},
 // 			EnsureSecurityGroupIngressRulesFunc: func(ctx context.Context, securityGroupID string) error {
@@ -53,6 +56,9 @@ var _ Client = &ClientMock{}
 // 			},
 // 			FindMatchingAMIFunc: func(ctx context.Context, region string, version string) (string, error) {
 // 				panic("mock out the FindMatchingAMI method")
+// 			},
+// 			GetResourcesByTagsFunc: func(ctx context.Context, tags TagSpec) ([]Resource, error) {
+// 				panic("mock out the GetResourcesByTags method")
 // 			},
 // 			InstanceStateFunc: func(ctx context.Context, instanceID string) (string, error) {
 // 				panic("mock out the InstanceState method")
@@ -74,22 +80,25 @@ type ClientMock struct {
 	DeleteInstanceFunc func(ctx context.Context, instanceID string) error
 
 	// DeleteKeyPairFunc mocks the DeleteKeyPair method.
-	DeleteKeyPairFunc func(ctx context.Context, keyPairName string) error
+	DeleteKeyPairFunc func(ctx context.Context, keyPairID string) error
+
+	// DeleteResourcesFunc mocks the DeleteResources method.
+	DeleteResourcesFunc func(ctx context.Context, resources []Resource) error
 
 	// DeleteSecurityGroupFunc mocks the DeleteSecurityGroup method.
 	DeleteSecurityGroupFunc func(ctx context.Context, securityGroupName string) error
 
 	// EnsureAndAssociateElasticIPv4AddressFunc mocks the EnsureAndAssociateElasticIPv4Address method.
-	EnsureAndAssociateElasticIPv4AddressFunc func(ctx context.Context, instanceID string, elasticIPv4AddressPool string, elasticIPv4Address string) (string, error)
+	EnsureAndAssociateElasticIPv4AddressFunc func(ctx context.Context, instanceID string, environment string, elasticIPv4AddressPool string, elasticIPv4Address string) (string, error)
 
 	// EnsureInstanceTypeFunc mocks the EnsureInstanceType method.
 	EnsureInstanceTypeFunc func(ctx context.Context, instanceTypeName string) (string, error)
 
 	// EnsureKeyPairFunc mocks the EnsureKeyPair method.
-	EnsureKeyPairFunc func(ctx context.Context, keyPairName string) (string, error)
+	EnsureKeyPairFunc func(ctx context.Context, keyPairName string, environment string) (string, error)
 
 	// EnsureSecurityGroupFunc mocks the EnsureSecurityGroup method.
-	EnsureSecurityGroupFunc func(ctx context.Context, securityGroupName string, vpcID string) (string, error)
+	EnsureSecurityGroupFunc func(ctx context.Context, securityGroupName string, environment string, vpcID string) (string, error)
 
 	// EnsureSecurityGroupIngressRulesFunc mocks the EnsureSecurityGroupIngressRules method.
 	EnsureSecurityGroupIngressRulesFunc func(ctx context.Context, securityGroupID string) error
@@ -99,6 +108,9 @@ type ClientMock struct {
 
 	// FindMatchingAMIFunc mocks the FindMatchingAMI method.
 	FindMatchingAMIFunc func(ctx context.Context, region string, version string) (string, error)
+
+	// GetResourcesByTagsFunc mocks the GetResourcesByTags method.
+	GetResourcesByTagsFunc func(ctx context.Context, tags TagSpec) ([]Resource, error)
 
 	// InstanceStateFunc mocks the InstanceState method.
 	InstanceStateFunc func(ctx context.Context, instanceID string) (string, error)
@@ -128,8 +140,15 @@ type ClientMock struct {
 		DeleteKeyPair []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
-			// KeyPairName is the keyPairName argument value.
-			KeyPairName string
+			// KeyPairID is the keyPairID argument value.
+			KeyPairID string
+		}
+		// DeleteResources holds details about calls to the DeleteResources method.
+		DeleteResources []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Resources is the resources argument value.
+			Resources []Resource
 		}
 		// DeleteSecurityGroup holds details about calls to the DeleteSecurityGroup method.
 		DeleteSecurityGroup []struct {
@@ -144,6 +163,8 @@ type ClientMock struct {
 			Ctx context.Context
 			// InstanceID is the instanceID argument value.
 			InstanceID string
+			// Environment is the environment argument value.
+			Environment string
 			// ElasticIPv4AddressPool is the elasticIPv4AddressPool argument value.
 			ElasticIPv4AddressPool string
 			// ElasticIPv4Address is the elasticIPv4Address argument value.
@@ -162,6 +183,8 @@ type ClientMock struct {
 			Ctx context.Context
 			// KeyPairName is the keyPairName argument value.
 			KeyPairName string
+			// Environment is the environment argument value.
+			Environment string
 		}
 		// EnsureSecurityGroup holds details about calls to the EnsureSecurityGroup method.
 		EnsureSecurityGroup []struct {
@@ -169,6 +192,8 @@ type ClientMock struct {
 			Ctx context.Context
 			// SecurityGroupName is the securityGroupName argument value.
 			SecurityGroupName string
+			// Environment is the environment argument value.
+			Environment string
 			// VpcID is the vpcID argument value.
 			VpcID string
 		}
@@ -195,6 +220,13 @@ type ClientMock struct {
 			// Version is the version argument value.
 			Version string
 		}
+		// GetResourcesByTags holds details about calls to the GetResourcesByTags method.
+		GetResourcesByTags []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Tags is the tags argument value.
+			Tags TagSpec
+		}
 		// InstanceState holds details about calls to the InstanceState method.
 		InstanceState []struct {
 			// Ctx is the ctx argument value.
@@ -207,6 +239,7 @@ type ClientMock struct {
 	lockCreateUserdata                       sync.RWMutex
 	lockDeleteInstance                       sync.RWMutex
 	lockDeleteKeyPair                        sync.RWMutex
+	lockDeleteResources                      sync.RWMutex
 	lockDeleteSecurityGroup                  sync.RWMutex
 	lockEnsureAndAssociateElasticIPv4Address sync.RWMutex
 	lockEnsureInstanceType                   sync.RWMutex
@@ -215,6 +248,7 @@ type ClientMock struct {
 	lockEnsureSecurityGroupIngressRules      sync.RWMutex
 	lockEnsureSubnet                         sync.RWMutex
 	lockFindMatchingAMI                      sync.RWMutex
+	lockGetResourcesByTags                   sync.RWMutex
 	lockInstanceState                        sync.RWMutex
 }
 
@@ -320,37 +354,72 @@ func (mock *ClientMock) DeleteInstanceCalls() []struct {
 }
 
 // DeleteKeyPair calls DeleteKeyPairFunc.
-func (mock *ClientMock) DeleteKeyPair(ctx context.Context, keyPairName string) error {
+func (mock *ClientMock) DeleteKeyPair(ctx context.Context, keyPairID string) error {
 	if mock.DeleteKeyPairFunc == nil {
 		panic("ClientMock.DeleteKeyPairFunc: method is nil but Client.DeleteKeyPair was just called")
 	}
 	callInfo := struct {
-		Ctx         context.Context
-		KeyPairName string
+		Ctx       context.Context
+		KeyPairID string
 	}{
-		Ctx:         ctx,
-		KeyPairName: keyPairName,
+		Ctx:       ctx,
+		KeyPairID: keyPairID,
 	}
 	mock.lockDeleteKeyPair.Lock()
 	mock.calls.DeleteKeyPair = append(mock.calls.DeleteKeyPair, callInfo)
 	mock.lockDeleteKeyPair.Unlock()
-	return mock.DeleteKeyPairFunc(ctx, keyPairName)
+	return mock.DeleteKeyPairFunc(ctx, keyPairID)
 }
 
 // DeleteKeyPairCalls gets all the calls that were made to DeleteKeyPair.
 // Check the length with:
 //     len(mockedClient.DeleteKeyPairCalls())
 func (mock *ClientMock) DeleteKeyPairCalls() []struct {
-	Ctx         context.Context
-	KeyPairName string
+	Ctx       context.Context
+	KeyPairID string
 } {
 	var calls []struct {
-		Ctx         context.Context
-		KeyPairName string
+		Ctx       context.Context
+		KeyPairID string
 	}
 	mock.lockDeleteKeyPair.RLock()
 	calls = mock.calls.DeleteKeyPair
 	mock.lockDeleteKeyPair.RUnlock()
+	return calls
+}
+
+// DeleteResources calls DeleteResourcesFunc.
+func (mock *ClientMock) DeleteResources(ctx context.Context, resources []Resource) error {
+	if mock.DeleteResourcesFunc == nil {
+		panic("ClientMock.DeleteResourcesFunc: method is nil but Client.DeleteResources was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		Resources []Resource
+	}{
+		Ctx:       ctx,
+		Resources: resources,
+	}
+	mock.lockDeleteResources.Lock()
+	mock.calls.DeleteResources = append(mock.calls.DeleteResources, callInfo)
+	mock.lockDeleteResources.Unlock()
+	return mock.DeleteResourcesFunc(ctx, resources)
+}
+
+// DeleteResourcesCalls gets all the calls that were made to DeleteResources.
+// Check the length with:
+//     len(mockedClient.DeleteResourcesCalls())
+func (mock *ClientMock) DeleteResourcesCalls() []struct {
+	Ctx       context.Context
+	Resources []Resource
+} {
+	var calls []struct {
+		Ctx       context.Context
+		Resources []Resource
+	}
+	mock.lockDeleteResources.RLock()
+	calls = mock.calls.DeleteResources
+	mock.lockDeleteResources.RUnlock()
 	return calls
 }
 
@@ -390,25 +459,27 @@ func (mock *ClientMock) DeleteSecurityGroupCalls() []struct {
 }
 
 // EnsureAndAssociateElasticIPv4Address calls EnsureAndAssociateElasticIPv4AddressFunc.
-func (mock *ClientMock) EnsureAndAssociateElasticIPv4Address(ctx context.Context, instanceID string, elasticIPv4AddressPool string, elasticIPv4Address string) (string, error) {
+func (mock *ClientMock) EnsureAndAssociateElasticIPv4Address(ctx context.Context, instanceID string, environment string, elasticIPv4AddressPool string, elasticIPv4Address string) (string, error) {
 	if mock.EnsureAndAssociateElasticIPv4AddressFunc == nil {
 		panic("ClientMock.EnsureAndAssociateElasticIPv4AddressFunc: method is nil but Client.EnsureAndAssociateElasticIPv4Address was just called")
 	}
 	callInfo := struct {
 		Ctx                    context.Context
 		InstanceID             string
+		Environment            string
 		ElasticIPv4AddressPool string
 		ElasticIPv4Address     string
 	}{
 		Ctx:                    ctx,
 		InstanceID:             instanceID,
+		Environment:            environment,
 		ElasticIPv4AddressPool: elasticIPv4AddressPool,
 		ElasticIPv4Address:     elasticIPv4Address,
 	}
 	mock.lockEnsureAndAssociateElasticIPv4Address.Lock()
 	mock.calls.EnsureAndAssociateElasticIPv4Address = append(mock.calls.EnsureAndAssociateElasticIPv4Address, callInfo)
 	mock.lockEnsureAndAssociateElasticIPv4Address.Unlock()
-	return mock.EnsureAndAssociateElasticIPv4AddressFunc(ctx, instanceID, elasticIPv4AddressPool, elasticIPv4Address)
+	return mock.EnsureAndAssociateElasticIPv4AddressFunc(ctx, instanceID, environment, elasticIPv4AddressPool, elasticIPv4Address)
 }
 
 // EnsureAndAssociateElasticIPv4AddressCalls gets all the calls that were made to EnsureAndAssociateElasticIPv4Address.
@@ -417,12 +488,14 @@ func (mock *ClientMock) EnsureAndAssociateElasticIPv4Address(ctx context.Context
 func (mock *ClientMock) EnsureAndAssociateElasticIPv4AddressCalls() []struct {
 	Ctx                    context.Context
 	InstanceID             string
+	Environment            string
 	ElasticIPv4AddressPool string
 	ElasticIPv4Address     string
 } {
 	var calls []struct {
 		Ctx                    context.Context
 		InstanceID             string
+		Environment            string
 		ElasticIPv4AddressPool string
 		ElasticIPv4Address     string
 	}
@@ -468,21 +541,23 @@ func (mock *ClientMock) EnsureInstanceTypeCalls() []struct {
 }
 
 // EnsureKeyPair calls EnsureKeyPairFunc.
-func (mock *ClientMock) EnsureKeyPair(ctx context.Context, keyPairName string) (string, error) {
+func (mock *ClientMock) EnsureKeyPair(ctx context.Context, keyPairName string, environment string) (string, error) {
 	if mock.EnsureKeyPairFunc == nil {
 		panic("ClientMock.EnsureKeyPairFunc: method is nil but Client.EnsureKeyPair was just called")
 	}
 	callInfo := struct {
 		Ctx         context.Context
 		KeyPairName string
+		Environment string
 	}{
 		Ctx:         ctx,
 		KeyPairName: keyPairName,
+		Environment: environment,
 	}
 	mock.lockEnsureKeyPair.Lock()
 	mock.calls.EnsureKeyPair = append(mock.calls.EnsureKeyPair, callInfo)
 	mock.lockEnsureKeyPair.Unlock()
-	return mock.EnsureKeyPairFunc(ctx, keyPairName)
+	return mock.EnsureKeyPairFunc(ctx, keyPairName, environment)
 }
 
 // EnsureKeyPairCalls gets all the calls that were made to EnsureKeyPair.
@@ -491,10 +566,12 @@ func (mock *ClientMock) EnsureKeyPair(ctx context.Context, keyPairName string) (
 func (mock *ClientMock) EnsureKeyPairCalls() []struct {
 	Ctx         context.Context
 	KeyPairName string
+	Environment string
 } {
 	var calls []struct {
 		Ctx         context.Context
 		KeyPairName string
+		Environment string
 	}
 	mock.lockEnsureKeyPair.RLock()
 	calls = mock.calls.EnsureKeyPair
@@ -503,23 +580,25 @@ func (mock *ClientMock) EnsureKeyPairCalls() []struct {
 }
 
 // EnsureSecurityGroup calls EnsureSecurityGroupFunc.
-func (mock *ClientMock) EnsureSecurityGroup(ctx context.Context, securityGroupName string, vpcID string) (string, error) {
+func (mock *ClientMock) EnsureSecurityGroup(ctx context.Context, securityGroupName string, environment string, vpcID string) (string, error) {
 	if mock.EnsureSecurityGroupFunc == nil {
 		panic("ClientMock.EnsureSecurityGroupFunc: method is nil but Client.EnsureSecurityGroup was just called")
 	}
 	callInfo := struct {
 		Ctx               context.Context
 		SecurityGroupName string
+		Environment       string
 		VpcID             string
 	}{
 		Ctx:               ctx,
 		SecurityGroupName: securityGroupName,
+		Environment:       environment,
 		VpcID:             vpcID,
 	}
 	mock.lockEnsureSecurityGroup.Lock()
 	mock.calls.EnsureSecurityGroup = append(mock.calls.EnsureSecurityGroup, callInfo)
 	mock.lockEnsureSecurityGroup.Unlock()
-	return mock.EnsureSecurityGroupFunc(ctx, securityGroupName, vpcID)
+	return mock.EnsureSecurityGroupFunc(ctx, securityGroupName, environment, vpcID)
 }
 
 // EnsureSecurityGroupCalls gets all the calls that were made to EnsureSecurityGroup.
@@ -528,11 +607,13 @@ func (mock *ClientMock) EnsureSecurityGroup(ctx context.Context, securityGroupNa
 func (mock *ClientMock) EnsureSecurityGroupCalls() []struct {
 	Ctx               context.Context
 	SecurityGroupName string
+	Environment       string
 	VpcID             string
 } {
 	var calls []struct {
 		Ctx               context.Context
 		SecurityGroupName string
+		Environment       string
 		VpcID             string
 	}
 	mock.lockEnsureSecurityGroup.RLock()
@@ -647,6 +728,41 @@ func (mock *ClientMock) FindMatchingAMICalls() []struct {
 	mock.lockFindMatchingAMI.RLock()
 	calls = mock.calls.FindMatchingAMI
 	mock.lockFindMatchingAMI.RUnlock()
+	return calls
+}
+
+// GetResourcesByTags calls GetResourcesByTagsFunc.
+func (mock *ClientMock) GetResourcesByTags(ctx context.Context, tags TagSpec) ([]Resource, error) {
+	if mock.GetResourcesByTagsFunc == nil {
+		panic("ClientMock.GetResourcesByTagsFunc: method is nil but Client.GetResourcesByTags was just called")
+	}
+	callInfo := struct {
+		Ctx  context.Context
+		Tags TagSpec
+	}{
+		Ctx:  ctx,
+		Tags: tags,
+	}
+	mock.lockGetResourcesByTags.Lock()
+	mock.calls.GetResourcesByTags = append(mock.calls.GetResourcesByTags, callInfo)
+	mock.lockGetResourcesByTags.Unlock()
+	return mock.GetResourcesByTagsFunc(ctx, tags)
+}
+
+// GetResourcesByTagsCalls gets all the calls that were made to GetResourcesByTags.
+// Check the length with:
+//     len(mockedClient.GetResourcesByTagsCalls())
+func (mock *ClientMock) GetResourcesByTagsCalls() []struct {
+	Ctx  context.Context
+	Tags TagSpec
+} {
+	var calls []struct {
+		Ctx  context.Context
+		Tags TagSpec
+	}
+	mock.lockGetResourcesByTags.RLock()
+	calls = mock.calls.GetResourcesByTags
+	mock.lockGetResourcesByTags.RUnlock()
 	return calls
 }
 

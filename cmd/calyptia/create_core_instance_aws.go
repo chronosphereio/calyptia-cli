@@ -151,6 +151,7 @@ func newCmdCreateCoreInstanceOnAWS(config *config, client awsclient.Client, poll
 				SecurityGroupName: securityGroupName,
 				InstanceType:      instanceTypeName,
 				SubnetID:          subnetID,
+				Environment:       environment,
 				UserData: &awsclient.CreateUserDataParams{
 					ProjectToken: config.projectToken,
 				},
@@ -221,7 +222,6 @@ func newCmdCreateCoreInstanceOnAWS(config *config, client awsclient.Client, poll
 	fs.StringVar(&elasticIPv4Address, "elastic-ip", "", "IPv4 formatted address of an existing elastic ip address allocation to associate to this instance. If not provided, a new one will be allocated for the created VM.")
 	fs.StringVar(&elasticIPv4AddressPool, "elastic-ip-address-pool", "", "IP address pool to allocate the elastic ip address from.")
 
-	// TODO: pass the environment name to the virtual machines.
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
 
 	return cmd
