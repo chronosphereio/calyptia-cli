@@ -92,7 +92,7 @@ func newCmdDeleteCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 			}
 
 			label := fmt.Sprintf("%s=%s", k8s.LabelAggregatorID, agg.ID)
-			err, itemsToDelete := listDeletionsByLabel(ctx, k8sClient, cmd, label)
+			itemsToDelete, err := listDeletionsByLabel(ctx, k8sClient, cmd, label)
 			if err != nil {
 				return err
 			}
@@ -195,150 +195,147 @@ func newCmdDeleteCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 	return cmd
 }
 
-func listDeletionsByLabel(ctx context.Context, k8sClient *k8s.Client, cmd *cobra.Command, label string) (error, int) {
+func listDeletionsByLabel(ctx context.Context, k8sClient *k8s.Client, cmd *cobra.Command, label string) (int, error) {
 	namespaces, err := k8sClient.CoreV1().Namespaces().List(ctx, metav1.ListOptions{})
 	const zeroItemToDelete = 0
 	if err != nil {
-		return err, zeroItemToDelete
+		return zeroItemToDelete, err
 	}
 	var itemsToDelete int
 	for _, ns := range namespaces.Items {
-		err, count := listDeployments(ctx, k8sClient, cmd, label, ns.Name)
+		count, err := listDeployments(ctx, k8sClient, cmd, label, ns.Name)
 		itemsToDelete += count
 		if err != nil {
-			return err, zeroItemToDelete
+			return zeroItemToDelete, err
 		}
-		err, count = listServices(ctx, k8sClient, cmd, label, ns.Name)
+		count, err = listServices(ctx, k8sClient, cmd, label, ns.Name)
 		itemsToDelete += count
 		if err != nil {
-			return err, zeroItemToDelete
+			return zeroItemToDelete, err
 		}
-		err, count = listServiceAccounts(ctx, k8sClient, cmd, label, ns.Name)
+		count, err = listServiceAccounts(ctx, k8sClient, cmd, label, ns.Name)
 		itemsToDelete += count
 		if err != nil {
-			return err, zeroItemToDelete
-		}
-
-		err, count = listSecrets(ctx, k8sClient, cmd, label, ns.Name)
-		itemsToDelete += count
-		if err != nil {
-			return err, zeroItemToDelete
+			return zeroItemToDelete, err
 		}
 
+		count, err = listSecrets(ctx, k8sClient, cmd, label, ns.Name)
+		itemsToDelete += count
+		if err != nil {
+			return zeroItemToDelete, err
+		}
 	}
-	err, count := listRoleBindings(ctx, k8sClient, cmd, label)
+
+	count, err := listRoleBindings(ctx, k8sClient, cmd, label)
 	itemsToDelete += count
 	if err != nil {
-		return err, zeroItemToDelete
+		return zeroItemToDelete, err
 	}
-	err, count = listClusterRoles(ctx, k8sClient, cmd, label)
+	count, err = listClusterRoles(ctx, k8sClient, cmd, label)
 	itemsToDelete += count
-	if err != nil {
-		return err, zeroItemToDelete
-	}
-	return nil, itemsToDelete
+	return itemsToDelete, err
 }
 
-func listSecrets(ctx context.Context, k8sClient *k8s.Client, cmd *cobra.Command, label string, ns string) (error, int) {
+func listSecrets(ctx context.Context, k8sClient *k8s.Client, cmd *cobra.Command, label string, ns string) (int, error) {
 	secrets, err := k8sClient.CoreV1().Secrets(ns).List(ctx, metav1.ListOptions{
 		LabelSelector: label,
 	})
 	if err != nil {
-		return err, 0
+		return 0, err
 	}
 	if len(secrets.Items) == 0 {
-		return nil, 0
+		return 0, nil
 	}
 	fmt.Fprintf(cmd.OutOrStdout(), "Secrets:\n")
 	for _, item := range secrets.Items {
 		fmt.Fprintln(cmd.OutOrStdout(), fmt.Sprintf(itemToDeleteFormat, ns, item.Name))
 	}
-	return nil, len(secrets.Items)
+	return len(secrets.Items), nil
 }
 
-func listRoleBindings(ctx context.Context, k8sClient *k8s.Client, cmd *cobra.Command, label string) (error, int) {
+func listRoleBindings(ctx context.Context, k8sClient *k8s.Client, cmd *cobra.Command, label string) (int, error) {
 	roleBindings, err := k8sClient.RbacV1().ClusterRoleBindings().List(ctx, metav1.ListOptions{
 		LabelSelector: label,
 	})
 	if err != nil {
-		return err, 0
+		return 0, err
 	}
 	if len(roleBindings.Items) == 0 {
-		return nil, 0
+		return 0, nil
 	}
 	fmt.Fprintf(cmd.OutOrStdout(), "Role bindings:\n")
 	for _, item := range roleBindings.Items {
 		fmt.Fprintln(cmd.OutOrStdout(), fmt.Sprintf(itemToDeleteFormat, clusterLevelNamespace, item.Name))
 	}
-	return nil, len(roleBindings.Items)
+	return len(roleBindings.Items), nil
 }
 
-func listServiceAccounts(ctx context.Context, k8sClient *k8s.Client, cmd *cobra.Command, label string, ns string) (error, int) {
+func listServiceAccounts(ctx context.Context, k8sClient *k8s.Client, cmd *cobra.Command, label string, ns string) (int, error) {
 	serviceAccounts, err := k8sClient.CoreV1().ServiceAccounts(ns).List(ctx, metav1.ListOptions{
 		LabelSelector: label,
 	})
 	if err != nil {
-		return err, 0
+		return 0, err
 	}
 	if len(serviceAccounts.Items) == 0 {
-		return nil, 0
+		return 0, nil
 	}
 	fmt.Fprintf(cmd.OutOrStdout(), "Service accounts:\n")
 	for _, item := range serviceAccounts.Items {
 		fmt.Fprintln(cmd.OutOrStdout(), fmt.Sprintf(itemToDeleteFormat, ns, item.Name))
 	}
-	return nil, len(serviceAccounts.Items)
+	return len(serviceAccounts.Items), nil
 }
 
-func listClusterRoles(ctx context.Context, k8sClient *k8s.Client, cmd *cobra.Command, label string) (error, int) {
+func listClusterRoles(ctx context.Context, k8sClient *k8s.Client, cmd *cobra.Command, label string) (int, error) {
 	clusterRoles, err := k8sClient.RbacV1().ClusterRoles().List(ctx, metav1.ListOptions{
 		LabelSelector: label,
 	})
 	if err != nil {
-		return err, 0
+		return 0, err
 	}
 	if len(clusterRoles.Items) == 0 {
-		return nil, 0
+		return 0, nil
 	}
 	fmt.Fprintf(cmd.OutOrStdout(), "Cluster roles:\n")
 	for _, item := range clusterRoles.Items {
 		cmd.Println(fmt.Sprintf(itemToDeleteFormat, clusterLevelNamespace, item.Name))
 	}
-	return nil, len(clusterRoles.Items)
+	return len(clusterRoles.Items), nil
 }
 
-func listServices(ctx context.Context, k8sClient *k8s.Client, cmd *cobra.Command, label string, ns string) (error, int) {
+func listServices(ctx context.Context, k8sClient *k8s.Client, cmd *cobra.Command, label string, ns string) (int, error) {
 	services, err := k8sClient.CoreV1().Services(ns).List(ctx, metav1.ListOptions{
 		LabelSelector: label,
 	})
 	if err != nil {
-		return err, 0
+		return 0, err
 	}
 	if len(services.Items) == 0 {
-		return nil, 0
+		return 0, nil
 	}
 	fmt.Fprintf(cmd.OutOrStdout(), "Services:\n")
 	for _, item := range services.Items {
 		fmt.Fprintln(cmd.OutOrStdout(), fmt.Sprintf(itemToDeleteFormat, ns, item.Name))
 	}
-	return nil, len(services.Items)
+	return len(services.Items), nil
 }
 
-func listDeployments(ctx context.Context, k8sClient *k8s.Client, cmd *cobra.Command, label string, ns string) (error, int) {
+func listDeployments(ctx context.Context, k8sClient *k8s.Client, cmd *cobra.Command, label string, ns string) (int, error) {
 	deployments, err := k8sClient.AppsV1().Deployments(ns).List(ctx, metav1.ListOptions{
 		LabelSelector: label,
 	})
 	if err != nil {
-		return err, 0
+		return 0, err
 	}
 	if len(deployments.Items) == 0 {
-		return nil, 0
+		return 0, nil
 	}
 	fmt.Fprintf(cmd.OutOrStdout(), "Deployments:\n")
 	for _, item := range deployments.Items {
 		fmt.Fprintln(cmd.OutOrStdout(), fmt.Sprintf(itemToDeleteFormat, ns, item.Name))
 	}
-	return nil, len(deployments.Items)
+	return len(deployments.Items), nil
 }
 
 func ask(rd io.Reader, w io.Writer) bool {

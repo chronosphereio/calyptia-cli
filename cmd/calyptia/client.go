@@ -78,4 +78,13 @@ type Client interface {
 	CreateEnvironment(ctx context.Context, projectID string, payload types.CreateEnvironment) (types.CreatedEnvironment, error)
 	DeleteEnvironment(ctx context.Context, environmentID string) error
 	UpdateEnvironment(ctx context.Context, environmentID string, payload types.UpdateEnvironment) error
+
+	CreateTraceSession(ctx context.Context, pipelineID string, in types.CreateTraceSession) (types.CreatedTraceSession, error)
+	TraceSessions(ctx context.Context, pipelineID string, params types.TraceSessionsParams) (types.TraceSessions, error)
+	TraceSession(ctx context.Context, sessionID string) (types.TraceSession, error)
+	ActiveTraceSession(ctx context.Context, pipelineID string) (types.TraceSession, error)
+	UpdateTraceSession(ctx context.Context, sessionID string, in types.UpdateTraceSession) (types.UpdatedTraceSession, error)
+	TerminateActiveTraceSession(ctx context.Context, pipelineID string) (types.TerminatedTraceSession, error)
+
+	TraceRecords(ctx context.Context, sessionID string, params types.TraceRecordsParams) (types.TraceRecords, error)
 }

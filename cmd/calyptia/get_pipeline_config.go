@@ -8,7 +8,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	cloud "github.com/calyptia/api/types"
+	"github.com/calyptia/api/types"
+	fluentbit_config "github.com/calyptia/go-fluentbit-config"
 )
 
 func newCmdGetPipelineConfigHistory(config *config) *cobra.Command {
@@ -24,7 +25,7 @@ func newCmdGetPipelineConfigHistory(config *config) *cobra.Command {
 				return err
 			}
 
-			cc, err := config.cloud.PipelineConfigHistory(config.ctx, pipelineID, cloud.PipelineConfigHistoryParams{
+			cc, err := config.cloud.PipelineConfigHistory(config.ctx, pipelineID, types.PipelineConfigHistoryParams{
 				Last: &last,
 			})
 			if err != nil {
@@ -59,11 +60,22 @@ func newCmdGetPipelineConfigHistory(config *config) *cobra.Command {
 	return cmd
 }
 
-func renderPipelineConfigHistory(w io.Writer, cc []cloud.PipelineConfig) {
+func renderPipelineConfigHistory(w io.Writer, cc []types.PipelineConfig) {
 	tw := tabwriter.NewWriter(w, 0, 4, 1, ' ', 0)
 	fmt.Fprintln(tw, "ID\tAGE")
 	for _, c := range cc {
 		fmt.Fprintf(tw, "%s\t%s\n", c.ID, fmtAgo(c.CreatedAt))
 	}
 	tw.Flush()
+}
+
+func parsePipelineConfig(pipConf types.PipelineConfig) (*fluentbit_config.Config, error) {
+	switch pipConf.ConfigFormat {
+	case types.ConfigFormatJSON:
+		return fluentbit_config.ParseJSON([]byte(pipConf.RawConfig))
+	case types.ConfigFormatYAML:
+		return fluentbit_config.ParseYAML([]byte(pipConf.RawConfig))
+	default:
+		return fluentbit_config.ParseINI([]byte(pipConf.RawConfig))
+	}
 }
