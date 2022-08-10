@@ -3,10 +3,12 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/calyptia/api/types"
+	"os"
+
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
-	"os"
+
+	"github.com/calyptia/api/types"
 )
 
 func newCmdDeleteEnvironment(c *config) *cobra.Command {

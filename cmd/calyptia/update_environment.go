@@ -3,8 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/calyptia/api/types"
+
 	"github.com/spf13/cobra"
+
+	"github.com/calyptia/api/types"
 )
 
 func newCmdUpdateEnvironment(c *config) *cobra.Command {

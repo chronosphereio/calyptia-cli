@@ -3,8 +3,9 @@ package main
 import (
 	"bytes"
 	"context"
-	cloud "github.com/calyptia/api/types"
 	"testing"
+
+	cloud "github.com/calyptia/api/types"
 )
 
 func TestDeleteEnvironment(t *testing.T) {

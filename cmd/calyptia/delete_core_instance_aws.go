@@ -3,10 +3,12 @@ package main
 import (
 	"context"
 	"fmt"
-	awsclient "github.com/calyptia/cli/aws"
-	"golang.org/x/term"
 	"os"
 	"strings"
+
+	"golang.org/x/term"
+
+	awsclient "github.com/calyptia/cli/aws"
 
 	"github.com/spf13/cobra"
 )

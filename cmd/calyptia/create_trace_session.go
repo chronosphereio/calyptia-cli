@@ -6,9 +6,10 @@ import (
 	"text/tabwriter"
 	"time"
 
-	"github.com/calyptia/api/types"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v2"
+
+	"github.com/calyptia/api/types"
 )
 
 func newCmdCreateTraceSession(config *config) *cobra.Command {

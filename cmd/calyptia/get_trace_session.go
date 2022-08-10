@@ -10,11 +10,11 @@ import (
 	"text/tabwriter"
 	"time"
 
-	"github.com/calyptia/api/types"
-	cloud "github.com/calyptia/api/types"
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"
 	"gopkg.in/yaml.v2"
+
+	"github.com/calyptia/api/types"
 )
 
 func newCmdGetTraceSessions(config *config) *cobra.Command {
@@ -222,7 +222,7 @@ func (config *config) fetchAllTraceSessions() ([]types.TraceSession, error) {
 		return nil, nil
 	}
 
-	var ss []cloud.TraceSession
+	var ss []types.TraceSession
 	var mu sync.Mutex
 
 	g, gctx := errgroup.WithContext(config.ctx)
