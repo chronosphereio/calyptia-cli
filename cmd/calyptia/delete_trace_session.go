@@ -17,7 +17,7 @@ func newCmdDeleteTraceSession(config *config) *cobra.Command {
 	var outputFormat string
 
 	cmd := &cobra.Command{
-		Use:   "trace_session",
+		Use:   "trace_session", // child of `delete`
 		Short: "Terminate current active trace session from pipeline",
 		Long: "Terminate the current active trace session from the given pipeline.\n" +
 			"It does so by reducing its lifespan to now, effectively terminating it.",

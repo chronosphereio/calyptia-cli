@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"strings"
@@ -75,6 +76,65 @@ func newCmdGetTraceSessions(config *config) *cobra.Command {
 	return cmd
 }
 
+func newCmdGetTraceSession(config *config) *cobra.Command {
+	var pipelineKey string
+	var showID bool
+	var outputFormat string
+
+	cmd := &cobra.Command{
+		Use:   "trace_session TRACE_SESSION", // child of `get`
+		Short: "Get a single trace session",
+		Long: "Get a single trace session either by passing its name or ID,\n" +
+			"or getting the current active trace session from the given pipeline.",
+		Args: cobra.MaximumNArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			var session types.TraceSession
+			if len(args) == 1 {
+				sessionID := args[0]
+				var err error
+				session, err = config.cloud.TraceSession(config.ctx, sessionID)
+				if err != nil {
+					return err
+				}
+			} else {
+				if pipelineKey == "" {
+					return errors.New("flag needs an argument: --pipeline")
+				}
+
+				pipelineID, err := config.loadPipelineID(pipelineKey)
+				if err != nil {
+					return err
+				}
+
+				session, err = config.cloud.ActiveTraceSession(config.ctx, pipelineID)
+				if err != nil {
+					return err
+				}
+			}
+
+			switch outputFormat {
+			case "json":
+				return json.NewEncoder(cmd.OutOrStdout()).Encode(session)
+			case "yml", "yaml":
+				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(session)
+			default:
+				return renderTraceSessionTable(cmd.OutOrStdout(), session, showID)
+			}
+		},
+	}
+
+	fs := cmd.Flags()
+	fs.StringVar(&pipelineKey, "pipeline", "", "Parent pipeline (name or ID) from which to fetch the current active trace session. Only required if TRACE_SESSION argument is not provided")
+	fs.BoolVar(&showID, "show-id", false, "Show trace session ID. Only applies when output format is table")
+	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml")
+
+	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
+
+	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.completePipelines)
+
+	return cmd
+}
+
 func renderTraceSessionsTable(w io.Writer, ss types.TraceSessions, pipelineID string, showIDs bool) error {
 	tw := tabwriter.NewWriter(w, 0, 4, 1, ' ', 0)
 	if showIDs {
@@ -107,4 +167,26 @@ func renderTraceSessionsTable(w io.Writer, ss types.TraceSessions, pipelineID st
 	}
 
 	return nil
+}
+
+func renderTraceSessionTable(w io.Writer, sess types.TraceSession, showIDs bool) error {
+	tw := tabwriter.NewWriter(w, 0, 4, 1, ' ', 0)
+	if showIDs {
+		if _, err := fmt.Fprint(tw, "ID\t"); err != nil {
+			return err
+		}
+	}
+	fmt.Fprintln(tw, "PLUGINS\tLIFESPAN\tACTIVE\tAGE")
+	if showIDs {
+		_, err := fmt.Fprintf(tw, "%s\t", sess.ID)
+		if err != nil {
+			return err
+		}
+	}
+	_, err := fmt.Fprintf(tw, "%s\t%v\t%v\t%s\n", strings.Join(sess.Plugins, ", "), fmtDuration(time.Duration(sess.Lifespan)), sess.Active(), fmtTime(sess.CreatedAt))
+	if err != nil {
+		return err
+	}
+
+	return tw.Flush()
 }

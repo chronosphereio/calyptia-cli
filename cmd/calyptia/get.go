@@ -24,6 +24,7 @@ func newCmdGet(config *config) *cobra.Command {
 		newCmdGetResourceProfiles(config),
 		newCmdGetEnvironment(config),
 		newCmdGetTraceSessions(config),
+		newCmdGetTraceSession(config),
 	)
 
 	return cmd
