@@ -46,7 +46,7 @@ func newCmdCreateTraceSession(config *config) *cobra.Command {
 			default:
 				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
 				fmt.Fprintln(tw, "ID\tAGE")
-				fmt.Fprintf(tw, "%s\t%s\n", created.ID, fmtAgo(created.CreatedAt))
+				fmt.Fprintf(tw, "%s\t%s\n", created.ID, fmtTime(created.CreatedAt))
 				tw.Flush()
 
 				return nil
@@ -65,28 +65,32 @@ func newCmdCreateTraceSession(config *config) *cobra.Command {
 	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.completePipelines)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("plugins", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		pipelineID, err := config.loadPipelineID(pipelineKey)
-		if err != nil {
-			return nil, cobra.ShellCompDirectiveError
-		}
-
-		pipeline, err := config.cloud.Pipeline(config.ctx, pipelineID, types.PipelineParams{})
-		if err != nil {
-			return nil, cobra.ShellCompDirectiveError
-		}
-
-		cfg, err := parsePipelineConfig(pipeline.Config)
-		if err != nil {
-			return nil, cobra.ShellCompDirectiveError
-		}
-
-		plugins := make([]string, 0, len(cfg.PluginIndex))
-		for plugin := range cfg.PluginIndex {
-			plugins = append(plugins, plugin)
-		}
-
-		return plugins, cobra.ShellCompDirectiveNoFileComp
+		return config.completePipelinePlugins(pipelineKey, cmd, args, toComplete)
 	})
 
 	return cmd
+}
+
+func (config *config) completePipelinePlugins(pipelineKey string, cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	pipelineID, err := config.loadPipelineID(pipelineKey)
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveError
+	}
+
+	pipeline, err := config.cloud.Pipeline(config.ctx, pipelineID, types.PipelineParams{})
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveError
+	}
+
+	cfg, err := parsePipelineConfig(pipeline.Config)
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveError
+	}
+
+	plugins := make([]string, 0, len(cfg.PluginIndex))
+	for plugin := range cfg.PluginIndex {
+		plugins = append(plugins, plugin)
+	}
+
+	return plugins, cobra.ShellCompDirectiveNoFileComp
 }

@@ -42,7 +42,7 @@ func newCmdGetPipelineStatusHistory(config *config) *cobra.Command {
 					if showIDs {
 						fmt.Fprintf(tw, "%s\t", s.ID)
 					}
-					fmt.Fprintf(tw, "%s\t%s\t%s\n", s.Status, s.Config.ID, fmtAgo(s.CreatedAt))
+					fmt.Fprintf(tw, "%s\t%s\t%s\n", s.Status, s.Config.ID, fmtTime(s.CreatedAt))
 				}
 				tw.Flush()
 			case "json":

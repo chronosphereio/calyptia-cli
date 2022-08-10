@@ -97,7 +97,7 @@ func newCmdCreateResourceProfile(config *config) *cobra.Command {
 			case "table":
 				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
 				fmt.Fprintln(tw, "ID\tAGE")
-				fmt.Fprintf(tw, "%s\t%s\n", rp.ID, fmtAgo(rp.CreatedAt))
+				fmt.Fprintf(tw, "%s\t%s\n", rp.ID, fmtTime(rp.CreatedAt))
 				tw.Flush()
 			case "json":
 				err := json.NewEncoder(cmd.OutOrStdout()).Encode(rp)

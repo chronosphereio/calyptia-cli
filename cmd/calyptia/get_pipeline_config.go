@@ -64,7 +64,7 @@ func renderPipelineConfigHistory(w io.Writer, cc []types.PipelineConfig) {
 	tw := tabwriter.NewWriter(w, 0, 4, 1, ' ', 0)
 	fmt.Fprintln(tw, "ID\tAGE")
 	for _, c := range cc {
-		fmt.Fprintf(tw, "%s\t%s\n", c.ID, fmtAgo(c.CreatedAt))
+		fmt.Fprintf(tw, "%s\t%s\n", c.ID, fmtTime(c.CreatedAt))
 	}
 	tw.Flush()
 }
