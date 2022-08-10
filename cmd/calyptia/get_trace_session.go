@@ -6,11 +6,14 @@ import (
 	"fmt"
 	"io"
 	"strings"
+	"sync"
 	"text/tabwriter"
 	"time"
 
 	"github.com/calyptia/api/types"
+	cloud "github.com/calyptia/api/types"
 	"github.com/spf13/cobra"
+	"golang.org/x/sync/errgroup"
 	"gopkg.in/yaml.v2"
 )
 
@@ -189,4 +192,59 @@ func renderTraceSessionTable(w io.Writer, sess types.TraceSession, showIDs bool)
 	}
 
 	return tw.Flush()
+}
+
+func (config *config) completeTraceSessions(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	ss, err := config.fetchAllTraceSessions()
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveError
+	}
+
+	if ss == nil {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+
+	out := make([]string, len(ss))
+	for i, p := range ss {
+		out[i] = p.ID
+	}
+
+	return out, cobra.ShellCompDirectiveNoFileComp
+}
+
+func (config *config) fetchAllTraceSessions() ([]types.TraceSession, error) {
+	pp, err := config.fetchAllPipelines()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(pp) == 0 {
+		return nil, nil
+	}
+
+	var ss []cloud.TraceSession
+	var mu sync.Mutex
+
+	g, gctx := errgroup.WithContext(config.ctx)
+	for _, pip := range pp {
+		a := pip
+		g.Go(func() error {
+			got, err := config.cloud.TraceSessions(gctx, a.ID, types.TraceSessionsParams{})
+			if err != nil {
+				return err
+			}
+
+			mu.Lock()
+			ss = append(ss, got.Items...)
+			mu.Unlock()
+
+			return nil
+		})
+	}
+
+	if err := g.Wait(); err != nil {
+		return nil, err
+	}
+
+	return ss, nil
 }
