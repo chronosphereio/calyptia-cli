@@ -8,7 +8,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.15.15
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.51.1
 	github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi v1.13.10
-	github.com/calyptia/api v0.5.0
+	github.com/calyptia/api v0.6.0
 	github.com/calyptia/cli/k8s v0.0.0-20220728102740-71180cb90205
 	github.com/calyptia/core-images-index/go-index v0.0.0-20220729101912-399f519fe96f
 	github.com/calyptia/go-bubble-table v0.2.1
@@ -58,7 +58,6 @@ require (
 	github.com/hashicorp/go-version v1.6.0 // indirect
 	github.com/imdario/mergo v0.3.13 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
-	github.com/jessevdk/go-flags v1.4.1-0.20181029123624-5de817a9aa20 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
@@ -78,7 +77,6 @@ require (
 	github.com/peterhellberg/link v1.1.0 // indirect
 	github.com/rivo/uniseg v0.3.1 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/vburenin/ifacemaker v1.2.1-0.20220402060045-b2018d8549dc // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220106191415-9b9b3d81d5e3 // indirect
 	golang.org/x/net v0.0.0-20220728211354-c7608f3a8462 // indirect
 	golang.org/x/oauth2 v0.0.0-20220722155238-128564f6959c // indirect
