@@ -116,8 +116,12 @@ func (i *CreatedInstance) String() string {
 	return fmt.Sprintf("instance-id: %s, instance-type: %s, privateIPv4: %s", i.EC2InstanceID, i.EC2InstanceType, i.PrivateIPv4)
 }
 
-func New(ctx context.Context, prefix, region, credentials, profileFile, profileName string) (*DefaultClient, error) {
+func New(ctx context.Context, prefix, region, credentials, profileFile, profileName string, debug bool) (*DefaultClient, error) {
 	var opts []func(options *awsconfig.LoadOptions) error
+
+	if debug {
+		opts = append(opts, awsconfig.WithClientLogMode(aws.LogSigning|aws.LogRequestWithBody|aws.LogResponseWithBody))
+	}
 
 	if region != "" {
 		opts = append(opts, awsconfig.WithRegion(region))
