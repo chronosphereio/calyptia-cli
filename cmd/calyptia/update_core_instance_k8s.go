@@ -26,12 +26,12 @@ func newCmdUpdateCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 			ctx := context.Background()
 			aggregatorKey := args[0]
 
-			coreDockerImageVersion, err := FindCoreImageTag(ctx, newVersion)
+			coreDockerImageTag, err := FindCoreImageTag(ctx, newVersion)
 			if err != nil {
 				return fmt.Errorf("could not find a matching container image for version: %v, %w", newVersion, err)
 			}
 
-			coreDockerImage := fmt.Sprintf("%s:%s", defaultCoreDockerImage, coreDockerImageVersion)
+			coreDockerImage := fmt.Sprintf("%s:%s", defaultCoreDockerImage, coreDockerImageTag)
 
 			var environmentID string
 			if environment != "" {

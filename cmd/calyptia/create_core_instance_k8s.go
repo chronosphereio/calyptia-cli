@@ -36,12 +36,12 @@ func newCmdCreateCoreInstanceOnK8s(config *config, testClientSet kubernetes.Inte
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.Background()
 
-			coreDockerImageVersion, err := FindCoreImageTag(ctx, coreInstanceVersion)
+			coreDockerImageTag, err := FindCoreImageTag(ctx, coreInstanceVersion)
 			if err != nil {
 				return fmt.Errorf("could not find a matching container image for version: %v, %w", coreInstanceVersion, err)
 			}
 
-			coreDockerImage := fmt.Sprintf("%s:%s", defaultCoreDockerImage, coreDockerImageVersion)
+			coreDockerImage := fmt.Sprintf("%s:%s", defaultCoreDockerImage, coreDockerImageTag)
 
 			var environmentID string
 			if environment != "" {
