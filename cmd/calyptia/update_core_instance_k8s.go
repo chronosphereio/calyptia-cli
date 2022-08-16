@@ -2,10 +2,7 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"net/http"
-
 	"github.com/spf13/cobra"
 	apiv1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes"
@@ -14,8 +11,6 @@ import (
 	cloud "github.com/calyptia/api/types"
 	"github.com/calyptia/cli/k8s"
 )
-
-const calyptiaCoreImageIndexURL = "https://raw.githubusercontent.com/calyptia/core-images-index/main/container.index.json"
 
 func newCmdUpdateCoreInstanceK8s(config *config, testClientSet kubernetes.Interface) *cobra.Command {
 	var newVersion, newName, environment string
@@ -31,16 +26,13 @@ func newCmdUpdateCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 			ctx := context.Background()
 			aggregatorKey := args[0]
 
-			if newVersion != "" {
-				tags, err := getCoreImageTags()
-				if err != nil {
-					return err
-				}
-				err = VerifyCoreVersion(newVersion, tags)
-				if err != nil {
-					return err
-				}
+			coreDockerImageVersion, err := FindCoreImageTag(ctx, newVersion)
+			if err != nil {
+				return fmt.Errorf("could not find a matching container image for version: %v, %w", newVersion, err)
 			}
+
+			coreDockerImage := fmt.Sprintf("%s:%s", defaultCoreDockerImage, coreDockerImageVersion)
+
 			var environmentID string
 			if environment != "" {
 				var err error
@@ -101,7 +93,7 @@ func newCmdUpdateCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 				return fmt.Errorf("could not ensure kubernetes namespace exists: %w", err)
 			}
 			label := fmt.Sprintf("%s=%s,!%s", k8s.LabelAggregatorID, agg.ID, k8s.LabelPipelineID)
-			if err := k8sClient.UpdateDeploymentByLabel(ctx, label, coreDockerImage, newVersion); err != nil {
+			if err := k8sClient.UpdateDeploymentByLabel(ctx, label, coreDockerImage); err != nil {
 				return fmt.Errorf("could not update kubernetes deployment: %w", err)
 			}
 
@@ -120,34 +112,4 @@ func newCmdUpdateCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
 	clientcmd.BindOverrideFlags(configOverrides, fs, clientcmd.RecommendedConfigOverrideFlags("kube-"))
 	return cmd
-}
-
-func VerifyCoreVersion(newVersion string, coreVersions []string) error {
-	if !contains(coreVersions, newVersion) {
-		return fmt.Errorf("version %s is not available", newVersion)
-	}
-	return nil
-}
-
-func getCoreImageTags() ([]string, error) {
-	var availableVersions []string
-	get, err := http.Get(calyptiaCoreImageIndexURL)
-	if err != nil {
-		return nil, fmt.Errorf("could not get available core versions: %w", err)
-	}
-	defer get.Body.Close()
-	err = json.NewDecoder(get.Body).Decode(&availableVersions)
-	if err != nil {
-		return nil, err
-	}
-	return availableVersions, nil
-}
-
-func contains(s []string, e string) bool {
-	for _, a := range s {
-		if a == e {
-			return true
-		}
-	}
-	return false
 }
