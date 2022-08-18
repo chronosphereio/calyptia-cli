@@ -112,6 +112,8 @@ github.com/aws/smithy-go v1.12.1/go.mod h1:Tg+OJXh4MB2R/uN61Ko2f6hTZwB/ZYGOtib8J
 github.com/buger/jsonparser v1.1.1/go.mod h1:6RYKKt7H4d4+iWqouImQ9R2FZql3VbhNgx27UK13J/0=
 github.com/calyptia/api v0.6.0 h1:CE76VXokO6ateOpSKfGuLsUmP7x9OgYU3gaiYiJ+OIM=
 github.com/calyptia/api v0.6.0/go.mod h1:M2uo7OMK12AYALAngY4O+aGJYQlsTkVQKyk+U5cuDo0=
+github.com/calyptia/api v0.6.2 h1:fiOPU+JIs+d8DYJ8bCgICQPMsGbrBo0IKQ86C3qCujg=
+github.com/calyptia/api v0.6.2/go.mod h1:M2uo7OMK12AYALAngY4O+aGJYQlsTkVQKyk+U5cuDo0=
 github.com/calyptia/core-images-index/go-index v0.0.0-20220812133607-cbec7b5b6081 h1:HO6RJUTVFYxJ8BabOQh2JamVobJoqvoRvUmsCUCIsCQ=
 github.com/calyptia/core-images-index/go-index v0.0.0-20220812133607-cbec7b5b6081/go.mod h1:9+aUlL+o9dpq2wcF4CLEQlPAcjlmuwohVRvOxNN6TWk=
 github.com/calyptia/core-images-index/go-index v0.0.0-20220812165253-b8ed89d359a7 h1:E3brR7gIsIEcQMlafGisw5UWwS1zKeFtOQbJSYOh0uU=
