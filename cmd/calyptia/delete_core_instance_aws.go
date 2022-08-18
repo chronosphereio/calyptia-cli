@@ -15,6 +15,7 @@ import (
 
 func newCmdDeleteCoreInstanceOnAWS(config *config, client awsclient.Client) *cobra.Command {
 	var (
+		debug       bool
 		credentials string
 		region      string
 		profileFile string
@@ -52,7 +53,7 @@ func newCmdDeleteCoreInstanceOnAWS(config *config, client awsclient.Client) *cob
 
 			ctx := context.Background()
 			if client == nil {
-				client, err = awsclient.New(ctx, coreInstanceName, region, credentials, profileFile, profileName)
+				client, err = awsclient.New(ctx, coreInstanceName, region, credentials, profileFile, profileName, false)
 				if err != nil {
 					return fmt.Errorf("could not initialize AWS client: %w", err)
 				}
@@ -121,6 +122,7 @@ func newCmdDeleteCoreInstanceOnAWS(config *config, client awsclient.Client) *cob
 	fs.StringVar(&environment, "environment", "default", "Calyptia environment name")
 	fs.BoolVar(&skipError, "skip-error", false, "Skip errors during delete process")
 	fs.BoolVar(&confirmDelete, "yes", isNonInteractiveMode, "Confirm deletion")
+	fs.BoolVar(&debug, "debug", false, "Enable debug logging")
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
 

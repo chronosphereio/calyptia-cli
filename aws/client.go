@@ -12,10 +12,16 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
 	"github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi"
 	types2 "github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi/types"
+	ifaces "github.com/calyptia/cli/aws/ifaces"
+
+	"github.com/aws/aws-sdk-go-v2/service/ec2"
+	"github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi"
+	types2 "github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi/types"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	awsconfig "github.com/aws/aws-sdk-go-v2/config"
 	awstypes "github.com/aws/aws-sdk-go-v2/service/ec2/types"
+	"github.com/calyptia/core-images-index/go-index"
 	"github.com/sethvargo/go-retry"
 
 	"github.com/calyptia/core-images-index/go-index"
@@ -78,7 +84,7 @@ type (
 
 	DefaultClient struct {
 		Client
-		client     *ec2.Client
+		ec2Client  ifaces.Client
 		tagsClient *resourcegroupstaggingapi.Client
 		prefix     string
 	}
@@ -117,8 +123,12 @@ func (i *CreatedInstance) String() string {
 	return fmt.Sprintf("instance-id: %s, instance-type: %s, privateIPv4: %s", i.EC2InstanceID, i.EC2InstanceType, i.PrivateIPv4)
 }
 
-func New(ctx context.Context, prefix, region, credentials, profileFile, profileName string) (*DefaultClient, error) {
+func New(ctx context.Context, prefix, region, credentials, profileFile, profileName string, debug bool) (*DefaultClient, error) {
 	var opts []func(options *awsconfig.LoadOptions) error
+
+	if debug {
+		opts = append(opts, awsconfig.WithClientLogMode(aws.LogSigning|aws.LogRequestWithBody|aws.LogResponseWithBody))
+	}
 
 	if region != "" {
 		opts = append(opts, awsconfig.WithRegion(region))
@@ -142,7 +152,7 @@ func New(ctx context.Context, prefix, region, credentials, profileFile, profileN
 	}
 
 	return &DefaultClient{
-		client:     ec2.NewFromConfig(cfg),
+		ec2Client:  ec2.NewFromConfig(cfg),
 		tagsClient: resourcegroupstaggingapi.NewFromConfig(cfg),
 		prefix:     prefix,
 	}, nil
@@ -172,7 +182,7 @@ func (c *DefaultClient) InstanceState(ctx context.Context, instanceID string) (s
 		InstanceIds:         []string{instanceID},
 	}
 
-	instanceStatus, err := c.client.DescribeInstanceStatus(ctx, describeInstanceStatus)
+	instanceStatus, err := c.ec2Client.DescribeInstanceStatus(ctx, describeInstanceStatus)
 	if err != nil {
 		return "", err
 	}
@@ -231,7 +241,7 @@ func (c *DefaultClient) EnsureAndAssociateElasticIPv4Address(ctx context.Context
 		allocateAddressInput.CustomerOwnedIpv4Pool = &elasticIPv4AddressPool
 	}
 
-	ipv4Allocation, err := c.client.AllocateAddress(ctx, &allocateAddressInput)
+	ipv4Allocation, err := c.ec2Client.AllocateAddress(ctx, &allocateAddressInput)
 	if err != nil {
 		return "", err
 	}
@@ -242,7 +252,7 @@ func (c *DefaultClient) EnsureAndAssociateElasticIPv4Address(ctx context.Context
 		InstanceId:         aws.String(instanceID),
 	}
 
-	_, err = c.client.AssociateAddress(ctx, associateAddressInput)
+	_, err = c.ec2Client.AssociateAddress(ctx, associateAddressInput)
 	if err != nil {
 		return "", err
 	}
@@ -273,7 +283,7 @@ func (c *DefaultClient) EnsureSubnet(ctx context.Context, subNetID string) (stri
 		}
 	}
 
-	subNets, err := c.client.DescribeSubnets(ctx, &describeSubnetInput)
+	subNets, err := c.ec2Client.DescribeSubnets(ctx, &describeSubnetInput)
 	if err != nil {
 		return "", err
 	}
@@ -303,7 +313,7 @@ func (c *DefaultClient) EnsureSecurityGroupIngressRules(ctx context.Context, sec
 			},
 		},
 	}
-	_, err := c.client.AuthorizeSecurityGroupIngress(ctx, authorizeSecurityGroupIngress)
+	_, err := c.ec2Client.AuthorizeSecurityGroupIngress(ctx, authorizeSecurityGroupIngress)
 	if err != nil && !errorIsAlreadyExists(err) {
 		return err
 	}
@@ -319,7 +329,7 @@ func (c *DefaultClient) EnsureSecurityGroup(ctx context.Context, securityGroupNa
 		GroupNames: []string{securityGroupName},
 	}
 
-	securityGroups, err := c.client.DescribeSecurityGroups(ctx, describeSecurityGroupsInput)
+	securityGroups, err := c.ec2Client.DescribeSecurityGroups(ctx, describeSecurityGroupsInput)
 	if err != nil && !errorIsNotFound(err) {
 		return "", err
 	}
@@ -333,7 +343,7 @@ func (c *DefaultClient) EnsureSecurityGroup(ctx context.Context, securityGroupNa
 		VpcId:             aws.String(vpcID),
 		TagSpecifications: c.getTags(awstypes.ResourceTypeSecurityGroup, environment),
 	}
-	securityGroup, err := c.client.CreateSecurityGroup(ctx, createSecurityGroupInput)
+	securityGroup, err := c.ec2Client.CreateSecurityGroup(ctx, createSecurityGroupInput)
 	if err != nil {
 		return "", err
 	}
@@ -344,7 +354,7 @@ func (c *DefaultClient) ReleaseElasticIP(ctx context.Context, elasticIPID string
 	releaseAddressInput := &ec2.ReleaseAddressInput{
 		AllocationId: aws.String(elasticIPID),
 	}
-	_, err := c.client.ReleaseAddress(ctx, releaseAddressInput)
+	_, err := c.ec2Client.ReleaseAddress(ctx, releaseAddressInput)
 	return err
 }
 
@@ -354,7 +364,7 @@ func (c *DefaultClient) DeleteInstance(ctx context.Context, instanceID string) e
 			instanceID,
 		},
 	}
-	_, err := c.client.TerminateInstances(ctx, terminateInstancesInput)
+	_, err := c.ec2Client.TerminateInstances(ctx, terminateInstancesInput)
 	return err
 }
 
@@ -506,7 +516,7 @@ func (c *DefaultClient) GetInstanceById(ctx context.Context, instanceID string) 
 		InstanceIds: []string{instanceID},
 	}
 
-	instances, err := c.client.DescribeInstances(ctx, describeInstanceInput)
+	instances, err := c.ec2Client.DescribeInstances(ctx, describeInstanceInput)
 	if err != nil {
 		return out, err
 	}
@@ -529,7 +539,7 @@ func (c *DefaultClient) DeleteSecurityGroup(ctx context.Context, securityGroupID
 		GroupId: aws.String(securityGroupID),
 	}
 
-	_, err := c.client.DeleteSecurityGroup(ctx, deleteSecurityGroupInput)
+	_, err := c.ec2Client.DeleteSecurityGroup(ctx, deleteSecurityGroupInput)
 	return err
 }
 
@@ -537,7 +547,7 @@ func (c *DefaultClient) DeleteKeyPair(ctx context.Context, keyPairID string) err
 	deleteKeyPairInput := &ec2.DeleteKeyPairInput{
 		KeyPairId: aws.String(keyPairID),
 	}
-	_, err := c.client.DeleteKeyPair(ctx, deleteKeyPairInput)
+	_, err := c.ec2Client.DeleteKeyPair(ctx, deleteKeyPairInput)
 	return err
 }
 
@@ -550,12 +560,12 @@ func (c *DefaultClient) EnsureKeyPair(ctx context.Context, keyPairName, environm
 		KeyNames: []string{keyPairName},
 	}
 
-	keyPairs, err := c.client.DescribeKeyPairs(ctx, describeKeyPairInput)
+	keyPairs, err := c.ec2Client.DescribeKeyPairs(ctx, describeKeyPairInput)
 	if err != nil && !errorIsNotFound(err) {
 		return "", err
 	}
 
-	if len(keyPairs.KeyPairs) > 0 {
+	if keyPairs != nil && len(keyPairs.KeyPairs) > 0 {
 		return *keyPairs.KeyPairs[0].KeyName, nil
 	}
 
@@ -564,7 +574,7 @@ func (c *DefaultClient) EnsureKeyPair(ctx context.Context, keyPairName, environm
 		TagSpecifications: c.getTags(awstypes.ResourceTypeKeyPair, environment),
 	}
 
-	createdKeyPair, err := c.client.CreateKeyPair(ctx, createKeyPairInput)
+	createdKeyPair, err := c.ec2Client.CreateKeyPair(ctx, createKeyPairInput)
 	if err != nil {
 		return "", err
 	}
@@ -579,7 +589,7 @@ func (c *DefaultClient) EnsureInstanceType(ctx context.Context, instanceTypeName
 		InstanceTypes: []awstypes.InstanceType{awstypes.InstanceType(instanceTypeName)},
 	}
 
-	instanceTypes, err := c.client.DescribeInstanceTypes(ctx, describeInstanceTypeInput)
+	instanceTypes, err := c.ec2Client.DescribeInstanceTypes(ctx, describeInstanceTypeInput)
 	if err != nil {
 		return string(out), err
 	}
@@ -661,7 +671,7 @@ func (c *DefaultClient) CreateInstance(ctx context.Context, params *CreateInstan
 		TagSpecifications: c.getTags(awstypes.ResourceTypeInstance, params.Environment),
 	}
 
-	instances, err := c.client.RunInstances(ctx, runInstancesInput)
+	instances, err := c.ec2Client.RunInstances(ctx, runInstancesInput)
 	if err != nil {
 		return out, err
 	}

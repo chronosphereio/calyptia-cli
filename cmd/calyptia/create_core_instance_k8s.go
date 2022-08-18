@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/calyptia/core-images-index/go-index"
 
 	"github.com/spf13/cobra"
 	apiv1 "k8s.io/api/core/v1"
@@ -15,7 +16,7 @@ import (
 
 const (
 	//nolint: gosec // this is not a secret leak, it's just a format declaration.
-	coreDockerImage = "ghcr.io/calyptia/core"
+	defaultCoreDockerImage = "ghcr.io/calyptia/core"
 )
 
 func newCmdCreateCoreInstanceOnK8s(config *config, testClientSet kubernetes.Interface) *cobra.Command {
@@ -35,18 +36,12 @@ func newCmdCreateCoreInstanceOnK8s(config *config, testClientSet kubernetes.Inte
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.Background()
 
-			coreDockerImage := coreDockerImage
-			if coreInstanceVersion != "" {
-				tags, err := getCoreImageTags()
-				if err != nil {
-					return err
-				}
-				err = VerifyCoreVersion(coreInstanceVersion, tags)
-				if err != nil {
-					return err
-				}
-				coreDockerImage = fmt.Sprintf("%s:%s", coreDockerImage, coreInstanceVersion)
+			coreDockerImageTag, err := FindCoreImageTag(ctx, coreInstanceVersion)
+			if err != nil {
+				return fmt.Errorf("could not find a matching container image for version: %v, %w", coreInstanceVersion, err)
 			}
+
+			coreDockerImage := fmt.Sprintf("%s:%s", defaultCoreDockerImage, coreDockerImageTag)
 
 			var environmentID string
 			if environment != "" {
@@ -159,4 +154,28 @@ func newCmdCreateCoreInstanceOnK8s(config *config, testClientSet kubernetes.Inte
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
 
 	return cmd
+}
+
+func FindCoreImageTag(ctx context.Context, version string) (string, error) {
+	containerIndex, err := index.NewContainer()
+	if err != nil {
+		return "", err
+	}
+
+	if version != "" {
+		coreImageTag, err := containerIndex.Match(ctx, version)
+		if err != nil {
+			return "", err
+		}
+		version = coreImageTag
+	} else {
+		// If no specific core instance version has been provided, use the latest published image.
+		latest, err := containerIndex.Last(ctx)
+		if err != nil {
+			return "", err
+		}
+		version = latest
+	}
+
+	return version, nil
 }

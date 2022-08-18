@@ -128,4 +128,5 @@ func Test_newCmdCreateCoreInstanceOnAWS(t *testing.T) {
 		err := cmd.Execute()
 		wantErrMsg(t, `calyptia core instance not ready: core instance not in running status`, err)
 	})
+
 }
