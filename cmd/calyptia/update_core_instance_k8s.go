@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+
 	"github.com/spf13/cobra"
 	apiv1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes"
@@ -26,12 +27,7 @@ func newCmdUpdateCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 			ctx := context.Background()
 			aggregatorKey := args[0]
 
-			coreDockerImageTag, err := FindCoreImageTag(ctx, newVersion)
-			if err != nil {
-				return fmt.Errorf("could not find a matching container image for version: %v, %w", newVersion, err)
-			}
-
-			coreDockerImage := fmt.Sprintf("%s:%s", defaultCoreDockerImage, coreDockerImageTag)
+			coreDockerImage := fmt.Sprintf("%s:%s", defaultCoreDockerImage, newVersion)
 
 			var environmentID string
 			if environment != "" {
@@ -110,6 +106,7 @@ func newCmdUpdateCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("version", config.completeCoreContainerVersion)
 	clientcmd.BindOverrideFlags(configOverrides, fs, clientcmd.RecommendedConfigOverrideFlags("kube-"))
 	return cmd
 }

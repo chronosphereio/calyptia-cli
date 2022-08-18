@@ -14,17 +14,11 @@ import (
 	types2 "github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi/types"
 	ifaces "github.com/calyptia/cli/aws/ifaces"
 
-	"github.com/aws/aws-sdk-go-v2/service/ec2"
-	"github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi"
-	types2 "github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi/types"
-
 	"github.com/aws/aws-sdk-go-v2/aws"
 	awsconfig "github.com/aws/aws-sdk-go-v2/config"
 	awstypes "github.com/aws/aws-sdk-go-v2/service/ec2/types"
 	"github.com/calyptia/core-images-index/go-index"
 	"github.com/sethvargo/go-retry"
-
-	"github.com/calyptia/core-images-index/go-index"
 
 	"github.com/calyptia/api/types"
 )
