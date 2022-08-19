@@ -10,6 +10,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
+	fluentbit_config "github.com/calyptia/go-fluentbit-config"
 )
 
 func newCmdCreateTraceSession(config *config) *cobra.Command {
@@ -88,10 +89,12 @@ func (config *config) completePipelinePlugins(pipelineKey string, cmd *cobra.Com
 		return nil, cobra.ShellCompDirectiveError
 	}
 
-	plugins := make([]string, 0, len(cfg.PluginIndex))
-	for plugin := range cfg.PluginIndex {
-		plugins = append(plugins, plugin)
+	var out []string
+	for _, sec := range cfg.Sections {
+		if sec.Type == fluentbit_config.InputSection || sec.Type == fluentbit_config.FilterSection || sec.Type == fluentbit_config.OutputSection {
+			out = append(out, sec.ID)
+		}
 	}
 
-	return plugins, cobra.ShellCompDirectiveNoFileComp
+	return out, cobra.ShellCompDirectiveNoFileComp
 }
