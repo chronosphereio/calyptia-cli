@@ -194,6 +194,10 @@ func (client *Client) CreateDeployment(
 									Name:  "AGGREGATOR_FLUENTBIT_CLOUD_URL",
 									Value: client.CloudBaseURL,
 								},
+								{
+									Name:  "NATS_URL",
+									Value: fmt.Sprintf("nats://tcp-4222-nats-messaging.%s.svc.cluster.local:4222", client.Namespace),
+								},
 							},
 						},
 					},
