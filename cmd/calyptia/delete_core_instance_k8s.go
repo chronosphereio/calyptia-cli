@@ -98,8 +98,7 @@ func newCmdDeleteCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 			}
 
 			if itemsToDelete == 0 {
-				cmd.Println("nothing to delete")
-				return nil
+				return config.cloud.DeleteAggregator(ctx, agg.ID)
 			}
 
 			if !confirmDelete && !isNonInteractiveMode {
