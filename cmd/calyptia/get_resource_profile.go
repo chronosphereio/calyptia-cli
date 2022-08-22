@@ -12,7 +12,7 @@ import (
 
 func newCmdGetResourceProfiles(config *config) *cobra.Command {
 	var aggregatorKey string
-	var last uint64
+	var last uint
 	var format string
 	var showIDs bool
 	var environment string
@@ -70,7 +70,7 @@ func newCmdGetResourceProfiles(config *config) *cobra.Command {
 
 	fs := cmd.Flags()
 	fs.StringVar(&aggregatorKey, "aggregator", "", "Parent aggregator ID or name")
-	fs.Uint64VarP(&last, "last", "l", 0, "Last `N` pipelines. 0 means no limit")
+	fs.UintVarP(&last, "last", "l", 0, "Last `N` pipelines. 0 means no limit")
 	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include resource profile IDs in table output")
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")

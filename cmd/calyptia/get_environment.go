@@ -36,7 +36,7 @@ func environmentNames(aa []cloud.Environment) []string {
 func (config *config) loadEnvironmentID(environmentName string) (string, error) {
 	aa, err := config.cloud.Environments(config.ctx, config.projectID, cloud.EnvironmentsParams{
 		Name: &environmentName,
-		Last: ptr(uint64(1)),
+		Last: ptr(uint(1)),
 	})
 	if err != nil {
 		return "", err
@@ -51,7 +51,7 @@ func (config *config) loadEnvironmentID(environmentName string) (string, error) 
 }
 
 func newCmdGetEnvironment(c *config) *cobra.Command {
-	var last uint64
+	var last uint
 	var format string
 	var showIDs bool
 	cmd := &cobra.Command{
@@ -96,7 +96,7 @@ func newCmdGetEnvironment(c *config) *cobra.Command {
 		},
 	}
 	fs := cmd.Flags()
-	fs.Uint64VarP(&last, "last", "l", 0, "Last `N` members. 0 means no limit")
+	fs.UintVarP(&last, "last", "l", 0, "Last `N` members. 0 means no limit")
 	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include member IDs in table output")
 	return cmd

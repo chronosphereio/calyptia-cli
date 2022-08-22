@@ -14,7 +14,7 @@ import (
 )
 
 func newCmdGetAgents(config *config) *cobra.Command {
-	var last uint64
+	var last uint
 	var format string
 	var showIDs bool
 	var environment string
@@ -71,7 +71,7 @@ func newCmdGetAgents(config *config) *cobra.Command {
 	}
 
 	fs := cmd.Flags()
-	fs.Uint64VarP(&last, "last", "l", 0, "Last `N` agents. 0 means no limit")
+	fs.UintVarP(&last, "last", "l", 0, "Last `N` agents. 0 means no limit")
 	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include agent IDs in table output")
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
@@ -206,7 +206,7 @@ func (config *config) loadAgentID(agentKey string, environmentID string) (string
 
 	var params cloud.AgentsParams
 
-	params.Last = ptr(uint64(2))
+	params.Last = ptr(uint(2))
 	params.Name = &agentKey
 
 	if environmentID != "" {

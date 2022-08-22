@@ -14,7 +14,7 @@ import (
 
 func newCmdGetTraceRecords(config *config) *cobra.Command {
 	var sessionID string
-	var last uint64
+	var last uint
 	var before string
 	var showIDs bool
 	var outputFormat string
@@ -25,7 +25,7 @@ func newCmdGetTraceRecords(config *config) *cobra.Command {
 		Long: "List all records from the given trace session,\n" +
 			"sorted by creation time in descending order.",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			var lastOpt *uint64
+			var lastOpt *uint
 			var beforeOpt *string
 
 			if last > 0 {
@@ -56,7 +56,7 @@ func newCmdGetTraceRecords(config *config) *cobra.Command {
 
 	fs := cmd.Flags()
 	fs.StringVar(&sessionID, "session", "", "Parent trace session ID from which to list the records")
-	fs.Uint64VarP(&last, "last", "l", 0, "Last `N` trace records. 0 means no limit")
+	fs.UintVarP(&last, "last", "l", 0, "Last `N` trace records. 0 means no limit")
 	fs.StringVar(&before, "before", "", "Only show trace records created before the given cursor")
 	fs.BoolVar(&showIDs, "show-ids", false, "Show trace records IDs. Only applies when output format is table")
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml")

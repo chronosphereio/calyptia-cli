@@ -47,7 +47,7 @@ func newCmdDeleteCoreInstances(config *config) *cobra.Command {
 			}
 
 			aa, err := config.cloud.Aggregators(config.ctx, config.projectID, types.AggregatorsParams{
-				Last: ptr(uint64(200)),
+				Last: ptr(uint(200)),
 			})
 			if err != nil {
 				return err

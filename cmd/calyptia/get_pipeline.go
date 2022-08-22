@@ -15,7 +15,7 @@ import (
 
 func newCmdGetPipelines(config *config) *cobra.Command {
 	var aggregatorKey string
-	var last uint64
+	var last uint
 	var format string
 	var showIDs bool
 	var environment string
@@ -72,7 +72,7 @@ func newCmdGetPipelines(config *config) *cobra.Command {
 
 	fs := cmd.Flags()
 	fs.StringVar(&aggregatorKey, "aggregator", "", "Parent aggregator ID or name")
-	fs.Uint64VarP(&last, "last", "l", 0, "Last `N` pipelines. 0 means no limit")
+	fs.UintVarP(&last, "last", "l", 0, "Last `N` pipelines. 0 means no limit")
 	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include pipeline IDs in table output")
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
@@ -88,7 +88,7 @@ func newCmdGetPipelines(config *config) *cobra.Command {
 
 func newCmdGetPipeline(config *config) *cobra.Command {
 	var onlyConfig bool
-	var lastEndpoints, lastConfigHistory, lastSecrets uint64
+	var lastEndpoints, lastConfigHistory, lastSecrets uint
 	var includeEndpoints, includeConfigHistory, includeSecrets bool
 	var showIDs bool
 	var format string
@@ -217,9 +217,9 @@ func newCmdGetPipeline(config *config) *cobra.Command {
 	fs.BoolVar(&includeEndpoints, "include-endpoints", false, "Include endpoints in output (only available with table format)")
 	fs.BoolVar(&includeConfigHistory, "include-config-history", false, "Include config history in output (only available with table format)")
 	fs.BoolVar(&includeSecrets, "include-secrets", false, "Include secrets in output (only available with table format)")
-	fs.Uint64Var(&lastEndpoints, "last-endpoints", 0, "Last `N` pipeline endpoints if included. 0 means no limit")
-	fs.Uint64Var(&lastConfigHistory, "last-config-history", 0, "Last `N` pipeline config history if included. 0 means no limit")
-	fs.Uint64Var(&lastSecrets, "last-secrets", 0, "Last `N` pipeline secrets if included. 0 means no limit")
+	fs.UintVar(&lastEndpoints, "last-endpoints", 0, "Last `N` pipeline endpoints if included. 0 means no limit")
+	fs.UintVar(&lastConfigHistory, "last-config-history", 0, "Last `N` pipeline config history if included. 0 means no limit")
+	fs.UintVar(&lastSecrets, "last-secrets", 0, "Last `N` pipeline secrets if included. 0 means no limit")
 	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
 
 	fs.BoolVar(&showIDs, "show-ids", false, "Include IDs in table output")
@@ -324,7 +324,7 @@ func pipelinesKeys(aa []cloud.Pipeline) []string {
 func (config *config) loadPipelineID(pipelineKey string) (string, error) {
 	pp, err := config.cloud.ProjectPipelines(config.ctx, config.projectID, cloud.PipelinesParams{
 		Name: &pipelineKey,
-		Last: ptr(uint64(2)),
+		Last: ptr(uint(2)),
 	})
 	if err != nil {
 		return "", err

@@ -19,7 +19,7 @@ import (
 
 func newCmdGetTraceSessions(config *config) *cobra.Command {
 	var pipelineKey string
-	var last uint64
+	var last uint
 	var before string
 	var showIDs bool
 	var outputFormat string
@@ -35,7 +35,7 @@ func newCmdGetTraceSessions(config *config) *cobra.Command {
 				return err
 			}
 
-			var lastOpt *uint64
+			var lastOpt *uint
 			var beforeOpt *string
 
 			if last > 0 {
@@ -66,7 +66,7 @@ func newCmdGetTraceSessions(config *config) *cobra.Command {
 
 	fs := cmd.Flags()
 	fs.StringVar(&pipelineKey, "pipeline", "", "Parent pipeline (name or ID) from which to list the trace sessions")
-	fs.Uint64VarP(&last, "last", "l", 0, "Last `N` trace sessions. 0 means no limit")
+	fs.UintVarP(&last, "last", "l", 0, "Last `N` trace sessions. 0 means no limit")
 	fs.StringVar(&before, "before", "", "Only show trace sessions created before the given cursor")
 	fs.BoolVar(&showIDs, "show-ids", false, "Show trace session IDs. Only applies when output format is table")
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml")

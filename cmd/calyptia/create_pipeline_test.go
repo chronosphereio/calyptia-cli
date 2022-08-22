@@ -60,7 +60,7 @@ func Test_newCmdCreatePipeline(t *testing.T) {
 	call := calls[0]
 	wantEq(t, "want_aggregator", call.AggregatorID)
 	wantEq(t, "want_name", call.Payload.Name)
-	wantEq(t, uint64(33), call.Payload.ReplicasCount)
+	wantEq(t, uint(33), call.Payload.ReplicasCount)
 	wantEq(t, 1, len(call.Payload.Files))
 	wantEq(t, "TEST CONFIG", call.Payload.RawConfig)
 	wantEq(t, strings.TrimSuffix(filepath.Base(sharedFile.Name()), filepath.Ext(sharedFile.Name())), call.Payload.Files[0].Name)

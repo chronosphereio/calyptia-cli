@@ -15,7 +15,7 @@ import (
 func newCmdGetPipelineConfigHistory(config *config) *cobra.Command {
 	var format string
 	var pipelineKey string
-	var last uint64
+	var last uint
 	cmd := &cobra.Command{
 		Use:   "pipeline_config_history",
 		Short: "Display latest config history from a pipeline",
@@ -50,7 +50,7 @@ func newCmdGetPipelineConfigHistory(config *config) *cobra.Command {
 	fs := cmd.Flags()
 	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
 	fs.StringVar(&pipelineKey, "pipeline", "", "Parent pipeline ID or name")
-	fs.Uint64VarP(&last, "last", "l", 0, "Last `N` pipeline config history entries. 0 means no limit")
+	fs.UintVarP(&last, "last", "l", 0, "Last `N` pipeline config history entries. 0 means no limit")
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.completePipelines)

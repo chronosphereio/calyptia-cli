@@ -12,7 +12,7 @@ import (
 )
 
 func newCmdGetMembers(config *config) *cobra.Command {
-	var last uint64
+	var last uint
 	var format string
 	var showIDs bool
 	cmd := &cobra.Command{
@@ -65,7 +65,7 @@ func newCmdGetMembers(config *config) *cobra.Command {
 	}
 
 	fs := cmd.Flags()
-	fs.Uint64VarP(&last, "last", "l", 0, "Last `N` members. 0 means no limit")
+	fs.UintVarP(&last, "last", "l", 0, "Last `N` members. 0 means no limit")
 	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include member IDs in table output")
 
