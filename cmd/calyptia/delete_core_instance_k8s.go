@@ -1,12 +1,9 @@
 package main
 
 import (
-	"bufio"
 	"context"
 	"fmt"
-	"io"
 	"os"
-	"strings"
 
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
@@ -54,10 +51,31 @@ func newCmdDeleteCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 			if err != nil {
 				return err
 			}
+
+			if !confirmDelete && !isNonInteractiveMode {
+				cmd.Printf("Are you sure you want to delete core instance %q and all of its kubernetes resources associated? [y/N] ", aggregatorID)
+				confirmDelete, err := readConfirm(cmd.InOrStdin())
+				if err != nil {
+					return err
+				}
+
+				if !confirmDelete {
+					cmd.Println("Aborting...")
+					return nil
+				}
+			}
+
 			agg, err := config.cloud.Aggregator(ctx, aggregatorID)
 			if err != nil {
 				return err
 			}
+
+			err = config.cloud.DeleteAggregator(ctx, aggregatorID)
+			if err != nil {
+				return err
+			}
+
+			cmd.Printf("Deleted aggregator %q\n", aggregatorID)
 
 			if configOverrides.Context.Namespace == "" {
 				configOverrides.Context.Namespace = apiv1.NamespaceDefault
@@ -77,7 +95,6 @@ func newCmdDeleteCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 				if err != nil {
 					return err
 				}
-
 			}
 
 			k8sClient := &k8s.Client{
@@ -98,16 +115,6 @@ func newCmdDeleteCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 			}
 
 			if itemsToDelete == 0 {
-				return config.cloud.DeleteAggregator(ctx, agg.ID)
-			}
-
-			if !confirmDelete && !isNonInteractiveMode {
-				cmd.Println("\nYou confirm the deletion of those resources? [Y/n]")
-				confirmDelete = ask(cmd.InOrStdin(), cmd.ErrOrStderr())
-			}
-
-			if !confirmDelete {
-				cmd.Println("operation canceled")
 				return nil
 			}
 
@@ -116,7 +123,6 @@ func newCmdDeleteCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 				return err
 			}
 			for _, ns := range namespaces.Items {
-
 				err = k8sClient.DeleteDeploymentByLabel(ctx, label, ns.Name)
 				if err != nil {
 					if !skipError {
@@ -185,7 +191,7 @@ func newCmdDeleteCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 	}
 	fs := cmd.Flags()
 	fs.BoolVar(&skipError, "skip-error", false, "Skip errors during delete process")
-	fs.BoolVar(&confirmDelete, "yes", isNonInteractiveMode, "Confirm deletion")
+	fs.BoolVarP(&confirmDelete, "yes", "y", isNonInteractiveMode, "Confirm deletion")
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 
 	clientcmd.BindOverrideFlags(configOverrides, fs, clientcmd.RecommendedConfigOverrideFlags("kube-"))
@@ -335,26 +341,4 @@ func listDeployments(ctx context.Context, k8sClient *k8s.Client, cmd *cobra.Comm
 		fmt.Fprintln(cmd.OutOrStdout(), fmt.Sprintf(itemToDeleteFormat, ns, item.Name))
 	}
 	return len(deployments.Items), nil
-}
-
-func ask(rd io.Reader, w io.Writer) bool {
-	reader := bufio.NewReader(rd)
-	for {
-		s, _ := reader.ReadString('\n')
-		s = strings.TrimSuffix(s, "\n")
-		s = strings.ToLower(s)
-		if len(s) > 1 {
-			fmt.Fprintln(w, "Please enter Y or N")
-			continue
-		}
-		if strings.Compare(s, "n") == 0 {
-			return false
-		} else if strings.Compare(s, "y") == 0 {
-			break
-		} else {
-			fmt.Fprintln(w, "Please enter Y or N")
-			continue
-		}
-	}
-	return true
 }

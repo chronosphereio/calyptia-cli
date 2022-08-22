@@ -90,8 +90,16 @@ func newCmdDeleteCoreInstanceOnAWS(config *config, client awsclient.Client) *cob
 			fmt.Fprintln(cmd.OutOrStdout(), "The following resources will be removed from your AWS account:\n"+strings.Join(toDelete, "\n"))
 
 			if !confirmDelete && !isNonInteractiveMode {
-				cmd.Println("\nYou confirm the deletion of those resources? [Y/n]")
-				confirmDelete = ask(cmd.InOrStdin(), cmd.ErrOrStderr())
+				cmd.Println("You confirm the deletion of those resources? [y/N] ")
+				confirmDelete, err = readConfirm(cmd.InOrStdin())
+				if err != nil {
+					return err
+				}
+
+				if !confirmDelete {
+					cmd.Println("Aborting...")
+					return nil
+				}
 			}
 
 			if !confirmDelete {
@@ -121,7 +129,7 @@ func newCmdDeleteCoreInstanceOnAWS(config *config, client awsclient.Client) *cob
 	fs.StringVar(&region, "region", awsclient.DefaultRegionName, "AWS region name to use in the instance.")
 	fs.StringVar(&environment, "environment", "default", "Calyptia environment name")
 	fs.BoolVar(&skipError, "skip-error", false, "Skip errors during delete process")
-	fs.BoolVar(&confirmDelete, "yes", isNonInteractiveMode, "Confirm deletion")
+	fs.BoolVarP(&confirmDelete, "yes", "y", isNonInteractiveMode, "Confirm deletion")
 	fs.BoolVar(&debug, "debug", false, "Enable debug logging")
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)

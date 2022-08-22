@@ -30,8 +30,16 @@ func newCmdDeleteEnvironment(c *config) *cobra.Command {
 			}
 			environment := environments.Items[0]
 			if !confirmDelete && !isNonInteractiveMode {
-				cmd.Println("This will remove ALL your agents, aggregators. Do you confirm? [Y/n]")
-				confirmDelete = ask(cmd.InOrStdin(), cmd.ErrOrStderr())
+				cmd.Println("This will remove ALL your agents, aggregators. Do you confirm? [y/N] ")
+				confirmDelete, err = readConfirm(cmd.InOrStdin())
+				if err != nil {
+					return err
+				}
+
+				if !confirmDelete {
+					cmd.Println("Aborted")
+					return nil
+				}
 			}
 			if !confirmDelete {
 				cmd.Println("operation canceled")

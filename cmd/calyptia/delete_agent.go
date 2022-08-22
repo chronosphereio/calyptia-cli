@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
-	"strings"
+	"sync"
 	"time"
 
 	"github.com/spf13/cobra"
-	"golang.org/x/sync/errgroup"
 
+	"github.com/calyptia/api/types"
 	cloud "github.com/calyptia/api/types"
 )
 
@@ -33,18 +33,13 @@ func newCmdDeleteAgent(config *config) *cobra.Command {
 
 			if !confirmed {
 				fmt.Printf("Are you sure you want to delete %q? (y/N) ", agentKey)
-				var answer string
-				_, err := fmt.Scanln(&answer)
-				if err != nil && err.Error() == "unexpected newline" {
-					err = nil
-				}
-
+				confirmed, err := readConfirm(cmd.InOrStdin())
 				if err != nil {
-					return fmt.Errorf("could not to read answer: %v", err)
+					return err
 				}
 
-				answer = strings.TrimSpace(strings.ToLower(answer))
-				if answer != "y" && answer != "yes" {
+				if !confirmed {
+					cmd.Println("Aborted")
 					return nil
 				}
 			}
@@ -58,6 +53,8 @@ func newCmdDeleteAgent(config *config) *cobra.Command {
 			if err != nil {
 				return fmt.Errorf("could not delete agent: %w", err)
 			}
+
+			cmd.Printf("Agent with id %q deleted\n", agentID)
 
 			return nil
 		},
@@ -79,7 +76,22 @@ func newCmdDeleteAgents(config *config) *cobra.Command {
 		Use:   "agents",
 		Short: "Delete many agents from a project",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			aa, err := config.cloud.Agents(config.ctx, config.projectID, cloud.AgentsParams{})
+			if !confirmed {
+				fmt.Print("Are you sure you want to delete all agents? (y/N) ")
+				confirmed, err := readConfirm(cmd.InOrStdin())
+				if err != nil {
+					return err
+				}
+
+				if !confirmed {
+					cmd.Println("Aborted")
+					return nil
+				}
+			}
+
+			aa, err := config.cloud.Agents(config.ctx, config.projectID, cloud.AgentsParams{
+				Last: ptr(uint64(200)),
+			})
 			if err != nil {
 				return fmt.Errorf("could not prefetch agents to delete: %w", err)
 			}
@@ -96,43 +108,33 @@ func newCmdDeleteAgents(config *config) *cobra.Command {
 			}
 
 			if len(aa.Items) == 0 {
-				fmt.Fprintln(cmd.OutOrStdout(), "No agents to delete")
+				cmd.Println("No agents left to delete")
 				return nil
 			}
 
-			if !confirmed {
-				fmt.Printf("You are about to delete:\n\n%s\n\nAre you sure you want to delete all of them? (yes/N) ", strings.Join(agentsKeys(aa.Items), "\n"))
-				var answer string
-				_, err := fmt.Scanln(&answer)
-				if err != nil && err.Error() == "unexpected newline" {
-					err = nil
-				}
+			cmd.Printf("About to delete %d agents\n", len(aa.Items))
 
-				if err != nil {
-					return fmt.Errorf("could not to read answer: %v", err)
-				}
+			g := sync.WaitGroup{}
 
-				answer = strings.TrimSpace(strings.ToLower(answer))
-				if answer != "yes" {
-					return nil
-				}
-			}
-
-			g, gctx := errgroup.WithContext(config.ctx)
+			var count uint
 			for _, a := range aa.Items {
-				a := a
-				g.Go(func() error {
-					err := config.cloud.DeleteAgent(gctx, a.ID)
+				g.Add(1)
+				go func(a types.Agent) {
+					defer g.Done()
+
+					err := config.cloud.DeleteAgent(config.ctx, a.ID)
 					if err != nil {
-						return fmt.Errorf("could not delete agent %q: %w", a.ID, err)
+						cmd.PrintErrf("could not delete agent %q: %v\n", a.ID, err)
+						return
 					}
 
-					return nil
-				})
+					count++
+				}(a)
 			}
-			if err := g.Wait(); err != nil {
-				return err
-			}
+
+			g.Wait()
+
+			cmd.Printf("Deleted %d agents\n", count)
 
 			return nil
 		},
