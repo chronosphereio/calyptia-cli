@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	itemToDeleteFormat    = "	- namespace: %s, name: %s"
+	itemToDeleteFormat    = "\tnamespace=%s name=%s\n"
 	clusterLevelNamespace = "cluster"
 )
 
@@ -120,6 +120,8 @@ func newCmdDeleteCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 			if err != nil {
 				return err
 			}
+
+			var deletedInNamespace bool
 			for _, ns := range namespaces.Items {
 				err = k8sClient.DeleteDeploymentByLabel(ctx, label, ns.Name)
 				if err != nil {
@@ -146,7 +148,31 @@ func newCmdDeleteCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 					}
 				}
 
-				serviceAcc := agg.Name + "-service-account"
+				if !deletedInNamespace {
+					roleBinding := fmt.Sprintf("%s-%s-cluster-role-binding", agg.Name, agg.EnvironmentName)
+					err = k8sClient.DeleteRoleBindingByLabel(ctx, label)
+					if err != nil {
+						if !skipError {
+							return err
+						} else {
+							cmd.PrintErrf("Error: could not delete cluster role binding %q: %v\n", roleBinding, err)
+						}
+					}
+
+					clusterRole := fmt.Sprintf("%s-%s-cluster-role", agg.Name, agg.EnvironmentName)
+					err = k8sClient.DeleteClusterRoleByLabel(ctx, label)
+					if err != nil {
+						if !skipError {
+							return err
+						} else {
+							cmd.PrintErrf("Error: could not delete cluster role %q: %v\n", clusterRole, err)
+						}
+					}
+
+					deletedInNamespace = true
+				}
+
+				serviceAcc := fmt.Sprintf("%s-%s-service-account", agg.Name, agg.EnvironmentName)
 				err = k8sClient.DeleteServiceAccountByLabel(ctx, label, ns.Name)
 				if err != nil {
 					if !skipError {
@@ -164,26 +190,6 @@ func newCmdDeleteCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 					} else {
 						cmd.PrintErrf("Error: could not delete secret %q: %v\n", secret, err)
 					}
-				}
-			}
-
-			clusterRole := agg.Name + "-cluster-role"
-			err = k8sClient.DeleteClusterRoleByLabel(ctx, label)
-			if err != nil {
-				if !skipError {
-					return err
-				} else {
-					cmd.PrintErrf("Error: could not delete cluster role %q: %v\n", clusterRole, err)
-				}
-			}
-
-			roleBinding := agg.Name + "-cluster-role-binding"
-			err = k8sClient.DeleteRoleBindingByLabel(ctx, label)
-			if err != nil {
-				if !skipError {
-					return err
-				} else {
-					cmd.PrintErrf("Error: could not delete cluster role binding %q: %v\n", roleBinding, err)
 				}
 			}
 
