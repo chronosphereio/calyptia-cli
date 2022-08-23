@@ -20,7 +20,7 @@ import (
 func newCmdCreatePipeline(config *config) *cobra.Command {
 	var aggregatorKey string
 	var name string
-	var replicasCount uint64
+	var replicasCount uint
 	var configFile string
 	var secretsFile string
 	var secretsFormat string
@@ -138,7 +138,7 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 	fs := cmd.Flags()
 	fs.StringVar(&aggregatorKey, "aggregator", "", "Parent aggregator ID or name")
 	fs.StringVar(&name, "name", "", "Pipeline name; leave it empty to generate a random name")
-	fs.Uint64Var(&replicasCount, "replicas", 1, "Pipeline replica size")
+	fs.UintVar(&replicasCount, "replicas", 1, "Pipeline replica size")
 	fs.StringVar(&configFile, "config-file", "fluent-bit.conf", "Fluent Bit config file used by pipeline")
 	fs.StringVar(&secretsFile, "secrets-file", "", "Optional file where secrets are defined. You can store key values and reference them inside your config like so:\n{{ secrets.foo }}")
 	fs.StringVar(&secretsFormat, "secrets-format", "auto", "Secrets file format. Allowed: auto, env, json, yaml. Auto tries to detect it from file extension")

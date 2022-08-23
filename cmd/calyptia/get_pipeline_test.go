@@ -59,7 +59,7 @@ func Test_newCmdGetPipelines(t *testing.T) {
 		cmd := newCmdGetPipelines(configWithMock(&ClientMock{
 			PipelinesFunc: func(ctx context.Context, aggregatorID string, params types.PipelinesParams) (types.Pipelines, error) {
 				wantNoEq(t, nil, params.Last)
-				wantEq(t, uint64(2), *params.Last)
+				wantEq(t, uint(2), *params.Last)
 				return want, nil
 			},
 		}))

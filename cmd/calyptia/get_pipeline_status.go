@@ -12,7 +12,7 @@ import (
 
 func newCmdGetPipelineStatusHistory(config *config) *cobra.Command {
 	var pipelineKey string
-	var last uint64
+	var last uint
 	var format string
 	var showIDs bool
 	cmd := &cobra.Command{
@@ -59,7 +59,7 @@ func newCmdGetPipelineStatusHistory(config *config) *cobra.Command {
 
 	fs := cmd.Flags()
 	fs.StringVar(&pipelineKey, "pipeline", "", "Parent pipeline ID or name")
-	fs.Uint64VarP(&last, "last", "l", 0, "Last `N` pipeline status history entries. 0 means no limit")
+	fs.UintVarP(&last, "last", "l", 0, "Last `N` pipeline status history entries. 0 means no limit")
 	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include status IDs in table output")
 

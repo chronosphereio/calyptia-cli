@@ -11,7 +11,7 @@ import (
 )
 
 func newCmdRolloutPipeline(config *config) *cobra.Command {
-	var stepsBack uint64
+	var stepsBack uint
 	var toConfigID string
 	var autoCreatePortsFromConfig bool
 	var outputFormat string
@@ -94,7 +94,7 @@ func newCmdRolloutPipeline(config *config) *cobra.Command {
 	}
 
 	fs := cmd.Flags()
-	fs.Uint64Var(&stepsBack, "steps-back", 1, "Steps back to rollout")
+	fs.UintVar(&stepsBack, "steps-back", 1, "Steps back to rollout")
 	fs.StringVar(&toConfigID, "to-config-id", "", "Configuration ID to rollout to. It overrides steps-back")
 	fs.BoolVar(&autoCreatePortsFromConfig, "auto-create-ports", true, "Automatically create pipeline ports from config")
 	fs.StringVar(&outputFormat, "output-format", "table", "Output format. Allowed: table, json")

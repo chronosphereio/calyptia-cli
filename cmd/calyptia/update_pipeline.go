@@ -19,7 +19,7 @@ import (
 func newCmdUpdatePipeline(config *config) *cobra.Command {
 	var newName string
 	var newConfigFile string
-	var newReplicasCount uint64
+	var newReplicasCount uint
 	var autoCreatePortsFromConfig bool
 	var secretsFile string
 	var secretsFormat string
@@ -140,7 +140,7 @@ func newCmdUpdatePipeline(config *config) *cobra.Command {
 	fs := cmd.Flags()
 	fs.StringVar(&newName, "new-name", "", "New pipeline name")
 	fs.StringVar(&newConfigFile, "config-file", "", "New Fluent Bit config file used by pipeline")
-	fs.Uint64Var(&newReplicasCount, "replicas", 0, "New pipeline replica size")
+	fs.UintVar(&newReplicasCount, "replicas", 0, "New pipeline replica size")
 	fs.BoolVar(&autoCreatePortsFromConfig, "auto-create-ports", true, "Automatically create pipeline ports from config if updated")
 	fs.StringVar(&secretsFile, "secrets-file", "", "Optional file containing a full definition of all secrets.\nThe format is derived either from the extension or the --secrets-format argument.\nThese can be referenced in pipeline files as such:\n{{ secrets.name }}\nThe prefix is the same for all secrets, the name is defined in the secrets file.")
 	fs.StringVar(&secretsFormat, "secrets-format", "auto", "Secrets file format. Allowed: auto, env, json, yaml. If not set it is derived from secrets file extension")

@@ -25,7 +25,7 @@ func newCmdTop(config *config) *cobra.Command {
 	return cmd
 }
 
-func initialProjectModel(ctx context.Context, cloud Client, projectID string, metricsStart, metricsInterval time.Duration, last uint64) Model {
+func initialProjectModel(ctx context.Context, cloud Client, projectID string, metricsStart, metricsInterval time.Duration, last uint) Model {
 	return Model{
 		currentView: "project",
 		project:     NewProjectModel(ctx, cloud, projectID, metricsStart, metricsInterval, last),
