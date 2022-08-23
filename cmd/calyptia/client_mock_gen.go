@@ -15,178 +15,178 @@ var _ Client = &ClientMock{}
 
 // ClientMock is a mock implementation of Client.
 //
-// 	func TestSomethingThatUsesClient(t *testing.T) {
+//	func TestSomethingThatUsesClient(t *testing.T) {
 //
-// 		// make and configure a mocked Client
-// 		mockedClient := &ClientMock{
-// 			AgentFunc: func(ctx context.Context, agentID string) (cloud.Agent, error) {
-// 				panic("mock out the Agent method")
-// 			},
-// 			AgentConfigHistoryFunc: func(ctx context.Context, agentID string, params cloud.AgentConfigHistoryParams) (cloud.AgentConfigHistory, error) {
-// 				panic("mock out the AgentConfigHistory method")
-// 			},
-// 			AgentMetricsFunc: func(ctx context.Context, agentID string, params cloud.MetricsParams) (cloud.AgentMetrics, error) {
-// 				panic("mock out the AgentMetrics method")
-// 			},
-// 			AgentsFunc: func(ctx context.Context, projectID string, params cloud.AgentsParams) (cloud.Agents, error) {
-// 				panic("mock out the Agents method")
-// 			},
-// 			AggregatorFunc: func(ctx context.Context, aggregatorID string) (cloud.Aggregator, error) {
-// 				panic("mock out the Aggregator method")
-// 			},
-// 			AggregatorsFunc: func(ctx context.Context, projectID string, params cloud.AggregatorsParams) (cloud.Aggregators, error) {
-// 				panic("mock out the Aggregators method")
-// 			},
-// 			CreateAggregatorFunc: func(ctx context.Context, payload cloud.CreateAggregator) (cloud.CreatedAggregator, error) {
-// 				panic("mock out the CreateAggregator method")
-// 			},
-// 			CreateEnvironmentFunc: func(ctx context.Context, projectID string, payload cloud.CreateEnvironment) (cloud.CreatedEnvironment, error) {
-// 				panic("mock out the CreateEnvironment method")
-// 			},
-// 			CreateInvitationFunc: func(ctx context.Context, projectID string, payload cloud.CreateInvitation) error {
-// 				panic("mock out the CreateInvitation method")
-// 			},
-// 			CreatePipelineFunc: func(ctx context.Context, aggregatorID string, payload cloud.CreatePipeline) (cloud.CreatedPipeline, error) {
-// 				panic("mock out the CreatePipeline method")
-// 			},
-// 			CreatePipelineFileFunc: func(ctx context.Context, pipelineID string, payload cloud.CreatePipelineFile) (cloud.CreatedPipelineFile, error) {
-// 				panic("mock out the CreatePipelineFile method")
-// 			},
-// 			CreatePipelinePortFunc: func(ctx context.Context, pipelineID string, payload cloud.CreatePipelinePort) (cloud.CreatedPipelinePort, error) {
-// 				panic("mock out the CreatePipelinePort method")
-// 			},
-// 			CreatePipelineSecretFunc: func(ctx context.Context, pipelineID string, payload cloud.CreatePipelineSecret) (cloud.CreatedPipelineSecret, error) {
-// 				panic("mock out the CreatePipelineSecret method")
-// 			},
-// 			CreateResourceProfileFunc: func(ctx context.Context, aggregatorID string, payload cloud.CreateResourceProfile) (cloud.CreatedResourceProfile, error) {
-// 				panic("mock out the CreateResourceProfile method")
-// 			},
-// 			DeleteAgentFunc: func(ctx context.Context, agentID string) error {
-// 				panic("mock out the DeleteAgent method")
-// 			},
-// 			DeleteAggregatorFunc: func(ctx context.Context, aggregatorID string) error {
-// 				panic("mock out the DeleteAggregator method")
-// 			},
-// 			DeleteEnvironmentFunc: func(ctx context.Context, environmentID string) error {
-// 				panic("mock out the DeleteEnvironment method")
-// 			},
-// 			DeletePipelineFunc: func(ctx context.Context, pipelineID string) error {
-// 				panic("mock out the DeletePipeline method")
-// 			},
-// 			DeletePipelineFileFunc: func(ctx context.Context, fileID string) error {
-// 				panic("mock out the DeletePipelineFile method")
-// 			},
-// 			DeletePipelinePortFunc: func(ctx context.Context, portID string) error {
-// 				panic("mock out the DeletePipelinePort method")
-// 			},
-// 			DeletePipelineSecretFunc: func(ctx context.Context, secretID string) error {
-// 				panic("mock out the DeletePipelineSecret method")
-// 			},
-// 			DeleteResourceProfileFunc: func(ctx context.Context, resourceProfileID string) error {
-// 				panic("mock out the DeleteResourceProfile method")
-// 			},
-// 			DeleteTokenFunc: func(ctx context.Context, tokenID string) error {
-// 				panic("mock out the DeleteToken method")
-// 			},
-// 			EnvironmentsFunc: func(ctx context.Context, projectID string, params cloud.EnvironmentsParams) (cloud.Environments, error) {
-// 				panic("mock out the Environments method")
-// 			},
-// 			MembersFunc: func(ctx context.Context, projectID string, params cloud.MembersParams) (cloud.Memberships, error) {
-// 				panic("mock out the Members method")
-// 			},
-// 			PipelineFunc: func(ctx context.Context, pipelineID string, params cloud.PipelineParams) (cloud.Pipeline, error) {
-// 				panic("mock out the Pipeline method")
-// 			},
-// 			PipelineConfigHistoryFunc: func(ctx context.Context, pipelineID string, params cloud.PipelineConfigHistoryParams) (cloud.PipelineConfigHistory, error) {
-// 				panic("mock out the PipelineConfigHistory method")
-// 			},
-// 			PipelineFileFunc: func(ctx context.Context, fileID string) (cloud.PipelineFile, error) {
-// 				panic("mock out the PipelineFile method")
-// 			},
-// 			PipelineFilesFunc: func(ctx context.Context, pipelineID string, params cloud.PipelineFilesParams) (cloud.PipelineFiles, error) {
-// 				panic("mock out the PipelineFiles method")
-// 			},
-// 			PipelineMetricsFunc: func(ctx context.Context, pipelineID string, params cloud.MetricsParams) (cloud.AgentMetrics, error) {
-// 				panic("mock out the PipelineMetrics method")
-// 			},
-// 			PipelinePortFunc: func(ctx context.Context, portID string) (cloud.PipelinePort, error) {
-// 				panic("mock out the PipelinePort method")
-// 			},
-// 			PipelinePortsFunc: func(ctx context.Context, pipelineID string, params cloud.PipelinePortsParams) (cloud.PipelinePorts, error) {
-// 				panic("mock out the PipelinePorts method")
-// 			},
-// 			PipelineSecretFunc: func(ctx context.Context, secretID string) (cloud.PipelineSecret, error) {
-// 				panic("mock out the PipelineSecret method")
-// 			},
-// 			PipelineSecretsFunc: func(ctx context.Context, pipelineID string, params cloud.PipelineSecretsParams) (cloud.PipelineSecrets, error) {
-// 				panic("mock out the PipelineSecrets method")
-// 			},
-// 			PipelineStatusHistoryFunc: func(ctx context.Context, pipelineID string, params cloud.PipelineStatusHistoryParams) (cloud.PipelineStatusHistory, error) {
-// 				panic("mock out the PipelineStatusHistory method")
-// 			},
-// 			PipelinesFunc: func(ctx context.Context, aggregatorID string, params cloud.PipelinesParams) (cloud.Pipelines, error) {
-// 				panic("mock out the Pipelines method")
-// 			},
-// 			ProjectFunc: func(ctx context.Context, projectID string) (cloud.Project, error) {
-// 				panic("mock out the Project method")
-// 			},
-// 			ProjectMetricsFunc: func(ctx context.Context, projectID string, params cloud.MetricsParams) (cloud.ProjectMetrics, error) {
-// 				panic("mock out the ProjectMetrics method")
-// 			},
-// 			ProjectPipelinesFunc: func(ctx context.Context, projectID string, params cloud.PipelinesParams) (cloud.Pipelines, error) {
-// 				panic("mock out the ProjectPipelines method")
-// 			},
-// 			RegisterAgentFunc: func(ctx context.Context, payload cloud.RegisterAgent) (cloud.RegisteredAgent, error) {
-// 				panic("mock out the RegisterAgent method")
-// 			},
-// 			ResourceProfileFunc: func(ctx context.Context, resourceProfileID string) (cloud.ResourceProfile, error) {
-// 				panic("mock out the ResourceProfile method")
-// 			},
-// 			ResourceProfilesFunc: func(ctx context.Context, aggregatorID string, params cloud.ResourceProfilesParams) (cloud.ResourceProfiles, error) {
-// 				panic("mock out the ResourceProfiles method")
-// 			},
-// 			TokenFunc: func(ctx context.Context, tokenID string) (cloud.Token, error) {
-// 				panic("mock out the Token method")
-// 			},
-// 			UpdateAgentFunc: func(ctx context.Context, agentID string, payload cloud.UpdateAgent) error {
-// 				panic("mock out the UpdateAgent method")
-// 			},
-// 			UpdateAggregatorFunc: func(ctx context.Context, aggregatorID string, payload cloud.UpdateAggregator) error {
-// 				panic("mock out the UpdateAggregator method")
-// 			},
-// 			UpdateEnvironmentFunc: func(ctx context.Context, environmentID string, payload cloud.UpdateEnvironment) error {
-// 				panic("mock out the UpdateEnvironment method")
-// 			},
-// 			UpdatePipelineFunc: func(ctx context.Context, pipelineID string, opts cloud.UpdatePipeline) (cloud.UpdatedPipeline, error) {
-// 				panic("mock out the UpdatePipeline method")
-// 			},
-// 			UpdatePipelineFileFunc: func(ctx context.Context, fileID string, opts cloud.UpdatePipelineFile) error {
-// 				panic("mock out the UpdatePipelineFile method")
-// 			},
-// 			UpdatePipelinePortFunc: func(ctx context.Context, portID string, opts cloud.UpdatePipelinePort) error {
-// 				panic("mock out the UpdatePipelinePort method")
-// 			},
-// 			UpdatePipelineSecretFunc: func(ctx context.Context, secretID string, opts cloud.UpdatePipelineSecret) error {
-// 				panic("mock out the UpdatePipelineSecret method")
-// 			},
-// 			UpdateProjectFunc: func(ctx context.Context, projectID string, opts cloud.UpdateProject) error {
-// 				panic("mock out the UpdateProject method")
-// 			},
-// 			UpdateResourceProfileFunc: func(ctx context.Context, resourceProfileID string, opts cloud.UpdateResourceProfile) error {
-// 				panic("mock out the UpdateResourceProfile method")
-// 			},
-// 			UpdateTokenFunc: func(ctx context.Context, tokenID string, opts cloud.UpdateToken) error {
-// 				panic("mock out the UpdateToken method")
-// 			},
-// 			ValidateConfigFunc: func(ctx context.Context, agentType cloud.AgentType, payload cloud.ValidatingConfig) (cloud.ValidatedConfig, error) {
-// 				panic("mock out the ValidateConfig method")
-// 			},
-// 		}
+//		// make and configure a mocked Client
+//		mockedClient := &ClientMock{
+//			AgentFunc: func(ctx context.Context, agentID string) (cloud.Agent, error) {
+//				panic("mock out the Agent method")
+//			},
+//			AgentConfigHistoryFunc: func(ctx context.Context, agentID string, params cloud.AgentConfigHistoryParams) (cloud.AgentConfigHistory, error) {
+//				panic("mock out the AgentConfigHistory method")
+//			},
+//			AgentMetricsFunc: func(ctx context.Context, agentID string, params cloud.MetricsParams) (cloud.AgentMetrics, error) {
+//				panic("mock out the AgentMetrics method")
+//			},
+//			AgentsFunc: func(ctx context.Context, projectID string, params cloud.AgentsParams) (cloud.Agents, error) {
+//				panic("mock out the Agents method")
+//			},
+//			AggregatorFunc: func(ctx context.Context, aggregatorID string) (cloud.Aggregator, error) {
+//				panic("mock out the Aggregator method")
+//			},
+//			AggregatorsFunc: func(ctx context.Context, projectID string, params cloud.AggregatorsParams) (cloud.Aggregators, error) {
+//				panic("mock out the Aggregators method")
+//			},
+//			CreateAggregatorFunc: func(ctx context.Context, payload cloud.CreateAggregator) (cloud.CreatedAggregator, error) {
+//				panic("mock out the CreateAggregator method")
+//			},
+//			CreateEnvironmentFunc: func(ctx context.Context, projectID string, payload cloud.CreateEnvironment) (cloud.CreatedEnvironment, error) {
+//				panic("mock out the CreateEnvironment method")
+//			},
+//			CreateInvitationFunc: func(ctx context.Context, projectID string, payload cloud.CreateInvitation) error {
+//				panic("mock out the CreateInvitation method")
+//			},
+//			CreatePipelineFunc: func(ctx context.Context, aggregatorID string, payload cloud.CreatePipeline) (cloud.CreatedPipeline, error) {
+//				panic("mock out the CreatePipeline method")
+//			},
+//			CreatePipelineFileFunc: func(ctx context.Context, pipelineID string, payload cloud.CreatePipelineFile) (cloud.CreatedPipelineFile, error) {
+//				panic("mock out the CreatePipelineFile method")
+//			},
+//			CreatePipelinePortFunc: func(ctx context.Context, pipelineID string, payload cloud.CreatePipelinePort) (cloud.CreatedPipelinePort, error) {
+//				panic("mock out the CreatePipelinePort method")
+//			},
+//			CreatePipelineSecretFunc: func(ctx context.Context, pipelineID string, payload cloud.CreatePipelineSecret) (cloud.CreatedPipelineSecret, error) {
+//				panic("mock out the CreatePipelineSecret method")
+//			},
+//			CreateResourceProfileFunc: func(ctx context.Context, aggregatorID string, payload cloud.CreateResourceProfile) (cloud.CreatedResourceProfile, error) {
+//				panic("mock out the CreateResourceProfile method")
+//			},
+//			DeleteAgentFunc: func(ctx context.Context, agentID string) error {
+//				panic("mock out the DeleteAgent method")
+//			},
+//			DeleteAggregatorFunc: func(ctx context.Context, aggregatorID string) error {
+//				panic("mock out the DeleteAggregator method")
+//			},
+//			DeleteEnvironmentFunc: func(ctx context.Context, environmentID string) error {
+//				panic("mock out the DeleteEnvironment method")
+//			},
+//			DeletePipelineFunc: func(ctx context.Context, pipelineID string) error {
+//				panic("mock out the DeletePipeline method")
+//			},
+//			DeletePipelineFileFunc: func(ctx context.Context, fileID string) error {
+//				panic("mock out the DeletePipelineFile method")
+//			},
+//			DeletePipelinePortFunc: func(ctx context.Context, portID string) error {
+//				panic("mock out the DeletePipelinePort method")
+//			},
+//			DeletePipelineSecretFunc: func(ctx context.Context, secretID string) error {
+//				panic("mock out the DeletePipelineSecret method")
+//			},
+//			DeleteResourceProfileFunc: func(ctx context.Context, resourceProfileID string) error {
+//				panic("mock out the DeleteResourceProfile method")
+//			},
+//			DeleteTokenFunc: func(ctx context.Context, tokenID string) error {
+//				panic("mock out the DeleteToken method")
+//			},
+//			EnvironmentsFunc: func(ctx context.Context, projectID string, params cloud.EnvironmentsParams) (cloud.Environments, error) {
+//				panic("mock out the Environments method")
+//			},
+//			MembersFunc: func(ctx context.Context, projectID string, params cloud.MembersParams) (cloud.Memberships, error) {
+//				panic("mock out the Members method")
+//			},
+//			PipelineFunc: func(ctx context.Context, pipelineID string, params cloud.PipelineParams) (cloud.Pipeline, error) {
+//				panic("mock out the Pipeline method")
+//			},
+//			PipelineConfigHistoryFunc: func(ctx context.Context, pipelineID string, params cloud.PipelineConfigHistoryParams) (cloud.PipelineConfigHistory, error) {
+//				panic("mock out the PipelineConfigHistory method")
+//			},
+//			PipelineFileFunc: func(ctx context.Context, fileID string) (cloud.PipelineFile, error) {
+//				panic("mock out the PipelineFile method")
+//			},
+//			PipelineFilesFunc: func(ctx context.Context, pipelineID string, params cloud.PipelineFilesParams) (cloud.PipelineFiles, error) {
+//				panic("mock out the PipelineFiles method")
+//			},
+//			PipelineMetricsFunc: func(ctx context.Context, pipelineID string, params cloud.MetricsParams) (cloud.AgentMetrics, error) {
+//				panic("mock out the PipelineMetrics method")
+//			},
+//			PipelinePortFunc: func(ctx context.Context, portID string) (cloud.PipelinePort, error) {
+//				panic("mock out the PipelinePort method")
+//			},
+//			PipelinePortsFunc: func(ctx context.Context, pipelineID string, params cloud.PipelinePortsParams) (cloud.PipelinePorts, error) {
+//				panic("mock out the PipelinePorts method")
+//			},
+//			PipelineSecretFunc: func(ctx context.Context, secretID string) (cloud.PipelineSecret, error) {
+//				panic("mock out the PipelineSecret method")
+//			},
+//			PipelineSecretsFunc: func(ctx context.Context, pipelineID string, params cloud.PipelineSecretsParams) (cloud.PipelineSecrets, error) {
+//				panic("mock out the PipelineSecrets method")
+//			},
+//			PipelineStatusHistoryFunc: func(ctx context.Context, pipelineID string, params cloud.PipelineStatusHistoryParams) (cloud.PipelineStatusHistory, error) {
+//				panic("mock out the PipelineStatusHistory method")
+//			},
+//			PipelinesFunc: func(ctx context.Context, aggregatorID string, params cloud.PipelinesParams) (cloud.Pipelines, error) {
+//				panic("mock out the Pipelines method")
+//			},
+//			ProjectFunc: func(ctx context.Context, projectID string) (cloud.Project, error) {
+//				panic("mock out the Project method")
+//			},
+//			ProjectMetricsFunc: func(ctx context.Context, projectID string, params cloud.MetricsParams) (cloud.ProjectMetrics, error) {
+//				panic("mock out the ProjectMetrics method")
+//			},
+//			ProjectPipelinesFunc: func(ctx context.Context, projectID string, params cloud.PipelinesParams) (cloud.Pipelines, error) {
+//				panic("mock out the ProjectPipelines method")
+//			},
+//			RegisterAgentFunc: func(ctx context.Context, payload cloud.RegisterAgent) (cloud.RegisteredAgent, error) {
+//				panic("mock out the RegisterAgent method")
+//			},
+//			ResourceProfileFunc: func(ctx context.Context, resourceProfileID string) (cloud.ResourceProfile, error) {
+//				panic("mock out the ResourceProfile method")
+//			},
+//			ResourceProfilesFunc: func(ctx context.Context, aggregatorID string, params cloud.ResourceProfilesParams) (cloud.ResourceProfiles, error) {
+//				panic("mock out the ResourceProfiles method")
+//			},
+//			TokenFunc: func(ctx context.Context, tokenID string) (cloud.Token, error) {
+//				panic("mock out the Token method")
+//			},
+//			UpdateAgentFunc: func(ctx context.Context, agentID string, payload cloud.UpdateAgent) error {
+//				panic("mock out the UpdateAgent method")
+//			},
+//			UpdateAggregatorFunc: func(ctx context.Context, aggregatorID string, payload cloud.UpdateAggregator) error {
+//				panic("mock out the UpdateAggregator method")
+//			},
+//			UpdateEnvironmentFunc: func(ctx context.Context, environmentID string, payload cloud.UpdateEnvironment) error {
+//				panic("mock out the UpdateEnvironment method")
+//			},
+//			UpdatePipelineFunc: func(ctx context.Context, pipelineID string, opts cloud.UpdatePipeline) (cloud.UpdatedPipeline, error) {
+//				panic("mock out the UpdatePipeline method")
+//			},
+//			UpdatePipelineFileFunc: func(ctx context.Context, fileID string, opts cloud.UpdatePipelineFile) error {
+//				panic("mock out the UpdatePipelineFile method")
+//			},
+//			UpdatePipelinePortFunc: func(ctx context.Context, portID string, opts cloud.UpdatePipelinePort) error {
+//				panic("mock out the UpdatePipelinePort method")
+//			},
+//			UpdatePipelineSecretFunc: func(ctx context.Context, secretID string, opts cloud.UpdatePipelineSecret) error {
+//				panic("mock out the UpdatePipelineSecret method")
+//			},
+//			UpdateProjectFunc: func(ctx context.Context, projectID string, opts cloud.UpdateProject) error {
+//				panic("mock out the UpdateProject method")
+//			},
+//			UpdateResourceProfileFunc: func(ctx context.Context, resourceProfileID string, opts cloud.UpdateResourceProfile) error {
+//				panic("mock out the UpdateResourceProfile method")
+//			},
+//			UpdateTokenFunc: func(ctx context.Context, tokenID string, opts cloud.UpdateToken) error {
+//				panic("mock out the UpdateToken method")
+//			},
+//			ValidateConfigFunc: func(ctx context.Context, agentType cloud.AgentType, payload cloud.ValidatingConfig) (cloud.ValidatedConfig, error) {
+//				panic("mock out the ValidateConfig method")
+//			},
+//		}
 //
-// 		// use mockedClient in code that requires Client
-// 		// and then make assertions.
+//		// use mockedClient in code that requires Client
+//		// and then make assertions.
 //
-// 	}
+//	}
 type ClientMock struct {
 	// AgentFunc mocks the Agent method.
 	AgentFunc func(ctx context.Context, agentID string) (cloud.Agent, error)
@@ -881,7 +881,8 @@ func (mock *ClientMock) Agent(ctx context.Context, agentID string) (cloud.Agent,
 
 // AgentCalls gets all the calls that were made to Agent.
 // Check the length with:
-//     len(mockedClient.AgentCalls())
+//
+//	len(mockedClient.AgentCalls())
 func (mock *ClientMock) AgentCalls() []struct {
 	Ctx     context.Context
 	AgentID string
@@ -922,7 +923,8 @@ func (mock *ClientMock) AgentConfigHistory(ctx context.Context, agentID string, 
 
 // AgentConfigHistoryCalls gets all the calls that were made to AgentConfigHistory.
 // Check the length with:
-//     len(mockedClient.AgentConfigHistoryCalls())
+//
+//	len(mockedClient.AgentConfigHistoryCalls())
 func (mock *ClientMock) AgentConfigHistoryCalls() []struct {
 	Ctx     context.Context
 	AgentID string
@@ -965,7 +967,8 @@ func (mock *ClientMock) AgentMetrics(ctx context.Context, agentID string, params
 
 // AgentMetricsCalls gets all the calls that were made to AgentMetrics.
 // Check the length with:
-//     len(mockedClient.AgentMetricsCalls())
+//
+//	len(mockedClient.AgentMetricsCalls())
 func (mock *ClientMock) AgentMetricsCalls() []struct {
 	Ctx     context.Context
 	AgentID string
@@ -1008,7 +1011,8 @@ func (mock *ClientMock) Agents(ctx context.Context, projectID string, params clo
 
 // AgentsCalls gets all the calls that were made to Agents.
 // Check the length with:
-//     len(mockedClient.AgentsCalls())
+//
+//	len(mockedClient.AgentsCalls())
 func (mock *ClientMock) AgentsCalls() []struct {
 	Ctx       context.Context
 	ProjectID string
@@ -1049,7 +1053,8 @@ func (mock *ClientMock) Aggregator(ctx context.Context, aggregatorID string) (cl
 
 // AggregatorCalls gets all the calls that were made to Aggregator.
 // Check the length with:
-//     len(mockedClient.AggregatorCalls())
+//
+//	len(mockedClient.AggregatorCalls())
 func (mock *ClientMock) AggregatorCalls() []struct {
 	Ctx          context.Context
 	AggregatorID string
@@ -1090,7 +1095,8 @@ func (mock *ClientMock) Aggregators(ctx context.Context, projectID string, param
 
 // AggregatorsCalls gets all the calls that were made to Aggregators.
 // Check the length with:
-//     len(mockedClient.AggregatorsCalls())
+//
+//	len(mockedClient.AggregatorsCalls())
 func (mock *ClientMock) AggregatorsCalls() []struct {
 	Ctx       context.Context
 	ProjectID string
@@ -1131,7 +1137,8 @@ func (mock *ClientMock) CreateAggregator(ctx context.Context, payload cloud.Crea
 
 // CreateAggregatorCalls gets all the calls that were made to CreateAggregator.
 // Check the length with:
-//     len(mockedClient.CreateAggregatorCalls())
+//
+//	len(mockedClient.CreateAggregatorCalls())
 func (mock *ClientMock) CreateAggregatorCalls() []struct {
 	Ctx     context.Context
 	Payload cloud.CreateAggregator
@@ -1172,7 +1179,8 @@ func (mock *ClientMock) CreateEnvironment(ctx context.Context, projectID string,
 
 // CreateEnvironmentCalls gets all the calls that were made to CreateEnvironment.
 // Check the length with:
-//     len(mockedClient.CreateEnvironmentCalls())
+//
+//	len(mockedClient.CreateEnvironmentCalls())
 func (mock *ClientMock) CreateEnvironmentCalls() []struct {
 	Ctx       context.Context
 	ProjectID string
@@ -1214,7 +1222,8 @@ func (mock *ClientMock) CreateInvitation(ctx context.Context, projectID string, 
 
 // CreateInvitationCalls gets all the calls that were made to CreateInvitation.
 // Check the length with:
-//     len(mockedClient.CreateInvitationCalls())
+//
+//	len(mockedClient.CreateInvitationCalls())
 func (mock *ClientMock) CreateInvitationCalls() []struct {
 	Ctx       context.Context
 	ProjectID string
@@ -1257,7 +1266,8 @@ func (mock *ClientMock) CreatePipeline(ctx context.Context, aggregatorID string,
 
 // CreatePipelineCalls gets all the calls that were made to CreatePipeline.
 // Check the length with:
-//     len(mockedClient.CreatePipelineCalls())
+//
+//	len(mockedClient.CreatePipelineCalls())
 func (mock *ClientMock) CreatePipelineCalls() []struct {
 	Ctx          context.Context
 	AggregatorID string
@@ -1300,7 +1310,8 @@ func (mock *ClientMock) CreatePipelineFile(ctx context.Context, pipelineID strin
 
 // CreatePipelineFileCalls gets all the calls that were made to CreatePipelineFile.
 // Check the length with:
-//     len(mockedClient.CreatePipelineFileCalls())
+//
+//	len(mockedClient.CreatePipelineFileCalls())
 func (mock *ClientMock) CreatePipelineFileCalls() []struct {
 	Ctx        context.Context
 	PipelineID string
@@ -1343,7 +1354,8 @@ func (mock *ClientMock) CreatePipelinePort(ctx context.Context, pipelineID strin
 
 // CreatePipelinePortCalls gets all the calls that were made to CreatePipelinePort.
 // Check the length with:
-//     len(mockedClient.CreatePipelinePortCalls())
+//
+//	len(mockedClient.CreatePipelinePortCalls())
 func (mock *ClientMock) CreatePipelinePortCalls() []struct {
 	Ctx        context.Context
 	PipelineID string
@@ -1386,7 +1398,8 @@ func (mock *ClientMock) CreatePipelineSecret(ctx context.Context, pipelineID str
 
 // CreatePipelineSecretCalls gets all the calls that were made to CreatePipelineSecret.
 // Check the length with:
-//     len(mockedClient.CreatePipelineSecretCalls())
+//
+//	len(mockedClient.CreatePipelineSecretCalls())
 func (mock *ClientMock) CreatePipelineSecretCalls() []struct {
 	Ctx        context.Context
 	PipelineID string
@@ -1429,7 +1442,8 @@ func (mock *ClientMock) CreateResourceProfile(ctx context.Context, aggregatorID 
 
 // CreateResourceProfileCalls gets all the calls that were made to CreateResourceProfile.
 // Check the length with:
-//     len(mockedClient.CreateResourceProfileCalls())
+//
+//	len(mockedClient.CreateResourceProfileCalls())
 func (mock *ClientMock) CreateResourceProfileCalls() []struct {
 	Ctx          context.Context
 	AggregatorID string
@@ -1469,7 +1483,8 @@ func (mock *ClientMock) DeleteAgent(ctx context.Context, agentID string) error {
 
 // DeleteAgentCalls gets all the calls that were made to DeleteAgent.
 // Check the length with:
-//     len(mockedClient.DeleteAgentCalls())
+//
+//	len(mockedClient.DeleteAgentCalls())
 func (mock *ClientMock) DeleteAgentCalls() []struct {
 	Ctx     context.Context
 	AgentID string
@@ -1507,7 +1522,8 @@ func (mock *ClientMock) DeleteAggregator(ctx context.Context, aggregatorID strin
 
 // DeleteAggregatorCalls gets all the calls that were made to DeleteAggregator.
 // Check the length with:
-//     len(mockedClient.DeleteAggregatorCalls())
+//
+//	len(mockedClient.DeleteAggregatorCalls())
 func (mock *ClientMock) DeleteAggregatorCalls() []struct {
 	Ctx          context.Context
 	AggregatorID string
@@ -1545,7 +1561,8 @@ func (mock *ClientMock) DeleteEnvironment(ctx context.Context, environmentID str
 
 // DeleteEnvironmentCalls gets all the calls that were made to DeleteEnvironment.
 // Check the length with:
-//     len(mockedClient.DeleteEnvironmentCalls())
+//
+//	len(mockedClient.DeleteEnvironmentCalls())
 func (mock *ClientMock) DeleteEnvironmentCalls() []struct {
 	Ctx           context.Context
 	EnvironmentID string
@@ -1583,7 +1600,8 @@ func (mock *ClientMock) DeletePipeline(ctx context.Context, pipelineID string) e
 
 // DeletePipelineCalls gets all the calls that were made to DeletePipeline.
 // Check the length with:
-//     len(mockedClient.DeletePipelineCalls())
+//
+//	len(mockedClient.DeletePipelineCalls())
 func (mock *ClientMock) DeletePipelineCalls() []struct {
 	Ctx        context.Context
 	PipelineID string
@@ -1621,7 +1639,8 @@ func (mock *ClientMock) DeletePipelineFile(ctx context.Context, fileID string) e
 
 // DeletePipelineFileCalls gets all the calls that were made to DeletePipelineFile.
 // Check the length with:
-//     len(mockedClient.DeletePipelineFileCalls())
+//
+//	len(mockedClient.DeletePipelineFileCalls())
 func (mock *ClientMock) DeletePipelineFileCalls() []struct {
 	Ctx    context.Context
 	FileID string
@@ -1659,7 +1678,8 @@ func (mock *ClientMock) DeletePipelinePort(ctx context.Context, portID string) e
 
 // DeletePipelinePortCalls gets all the calls that were made to DeletePipelinePort.
 // Check the length with:
-//     len(mockedClient.DeletePipelinePortCalls())
+//
+//	len(mockedClient.DeletePipelinePortCalls())
 func (mock *ClientMock) DeletePipelinePortCalls() []struct {
 	Ctx    context.Context
 	PortID string
@@ -1697,7 +1717,8 @@ func (mock *ClientMock) DeletePipelineSecret(ctx context.Context, secretID strin
 
 // DeletePipelineSecretCalls gets all the calls that were made to DeletePipelineSecret.
 // Check the length with:
-//     len(mockedClient.DeletePipelineSecretCalls())
+//
+//	len(mockedClient.DeletePipelineSecretCalls())
 func (mock *ClientMock) DeletePipelineSecretCalls() []struct {
 	Ctx      context.Context
 	SecretID string
@@ -1735,7 +1756,8 @@ func (mock *ClientMock) DeleteResourceProfile(ctx context.Context, resourceProfi
 
 // DeleteResourceProfileCalls gets all the calls that were made to DeleteResourceProfile.
 // Check the length with:
-//     len(mockedClient.DeleteResourceProfileCalls())
+//
+//	len(mockedClient.DeleteResourceProfileCalls())
 func (mock *ClientMock) DeleteResourceProfileCalls() []struct {
 	Ctx               context.Context
 	ResourceProfileID string
@@ -1773,7 +1795,8 @@ func (mock *ClientMock) DeleteToken(ctx context.Context, tokenID string) error {
 
 // DeleteTokenCalls gets all the calls that were made to DeleteToken.
 // Check the length with:
-//     len(mockedClient.DeleteTokenCalls())
+//
+//	len(mockedClient.DeleteTokenCalls())
 func (mock *ClientMock) DeleteTokenCalls() []struct {
 	Ctx     context.Context
 	TokenID string
@@ -1814,7 +1837,8 @@ func (mock *ClientMock) Environments(ctx context.Context, projectID string, para
 
 // EnvironmentsCalls gets all the calls that were made to Environments.
 // Check the length with:
-//     len(mockedClient.EnvironmentsCalls())
+//
+//	len(mockedClient.EnvironmentsCalls())
 func (mock *ClientMock) EnvironmentsCalls() []struct {
 	Ctx       context.Context
 	ProjectID string
@@ -1857,7 +1881,8 @@ func (mock *ClientMock) Members(ctx context.Context, projectID string, params cl
 
 // MembersCalls gets all the calls that were made to Members.
 // Check the length with:
-//     len(mockedClient.MembersCalls())
+//
+//	len(mockedClient.MembersCalls())
 func (mock *ClientMock) MembersCalls() []struct {
 	Ctx       context.Context
 	ProjectID string
@@ -1900,7 +1925,8 @@ func (mock *ClientMock) Pipeline(ctx context.Context, pipelineID string, params 
 
 // PipelineCalls gets all the calls that were made to Pipeline.
 // Check the length with:
-//     len(mockedClient.PipelineCalls())
+//
+//	len(mockedClient.PipelineCalls())
 func (mock *ClientMock) PipelineCalls() []struct {
 	Ctx        context.Context
 	PipelineID string
@@ -1943,7 +1969,8 @@ func (mock *ClientMock) PipelineConfigHistory(ctx context.Context, pipelineID st
 
 // PipelineConfigHistoryCalls gets all the calls that were made to PipelineConfigHistory.
 // Check the length with:
-//     len(mockedClient.PipelineConfigHistoryCalls())
+//
+//	len(mockedClient.PipelineConfigHistoryCalls())
 func (mock *ClientMock) PipelineConfigHistoryCalls() []struct {
 	Ctx        context.Context
 	PipelineID string
@@ -1984,7 +2011,8 @@ func (mock *ClientMock) PipelineFile(ctx context.Context, fileID string) (cloud.
 
 // PipelineFileCalls gets all the calls that were made to PipelineFile.
 // Check the length with:
-//     len(mockedClient.PipelineFileCalls())
+//
+//	len(mockedClient.PipelineFileCalls())
 func (mock *ClientMock) PipelineFileCalls() []struct {
 	Ctx    context.Context
 	FileID string
@@ -2025,7 +2053,8 @@ func (mock *ClientMock) PipelineFiles(ctx context.Context, pipelineID string, pa
 
 // PipelineFilesCalls gets all the calls that were made to PipelineFiles.
 // Check the length with:
-//     len(mockedClient.PipelineFilesCalls())
+//
+//	len(mockedClient.PipelineFilesCalls())
 func (mock *ClientMock) PipelineFilesCalls() []struct {
 	Ctx        context.Context
 	PipelineID string
@@ -2068,7 +2097,8 @@ func (mock *ClientMock) PipelineMetrics(ctx context.Context, pipelineID string, 
 
 // PipelineMetricsCalls gets all the calls that were made to PipelineMetrics.
 // Check the length with:
-//     len(mockedClient.PipelineMetricsCalls())
+//
+//	len(mockedClient.PipelineMetricsCalls())
 func (mock *ClientMock) PipelineMetricsCalls() []struct {
 	Ctx        context.Context
 	PipelineID string
@@ -2109,7 +2139,8 @@ func (mock *ClientMock) PipelinePort(ctx context.Context, portID string) (cloud.
 
 // PipelinePortCalls gets all the calls that were made to PipelinePort.
 // Check the length with:
-//     len(mockedClient.PipelinePortCalls())
+//
+//	len(mockedClient.PipelinePortCalls())
 func (mock *ClientMock) PipelinePortCalls() []struct {
 	Ctx    context.Context
 	PortID string
@@ -2150,7 +2181,8 @@ func (mock *ClientMock) PipelinePorts(ctx context.Context, pipelineID string, pa
 
 // PipelinePortsCalls gets all the calls that were made to PipelinePorts.
 // Check the length with:
-//     len(mockedClient.PipelinePortsCalls())
+//
+//	len(mockedClient.PipelinePortsCalls())
 func (mock *ClientMock) PipelinePortsCalls() []struct {
 	Ctx        context.Context
 	PipelineID string
@@ -2191,7 +2223,8 @@ func (mock *ClientMock) PipelineSecret(ctx context.Context, secretID string) (cl
 
 // PipelineSecretCalls gets all the calls that were made to PipelineSecret.
 // Check the length with:
-//     len(mockedClient.PipelineSecretCalls())
+//
+//	len(mockedClient.PipelineSecretCalls())
 func (mock *ClientMock) PipelineSecretCalls() []struct {
 	Ctx      context.Context
 	SecretID string
@@ -2232,7 +2265,8 @@ func (mock *ClientMock) PipelineSecrets(ctx context.Context, pipelineID string, 
 
 // PipelineSecretsCalls gets all the calls that were made to PipelineSecrets.
 // Check the length with:
-//     len(mockedClient.PipelineSecretsCalls())
+//
+//	len(mockedClient.PipelineSecretsCalls())
 func (mock *ClientMock) PipelineSecretsCalls() []struct {
 	Ctx        context.Context
 	PipelineID string
@@ -2275,7 +2309,8 @@ func (mock *ClientMock) PipelineStatusHistory(ctx context.Context, pipelineID st
 
 // PipelineStatusHistoryCalls gets all the calls that were made to PipelineStatusHistory.
 // Check the length with:
-//     len(mockedClient.PipelineStatusHistoryCalls())
+//
+//	len(mockedClient.PipelineStatusHistoryCalls())
 func (mock *ClientMock) PipelineStatusHistoryCalls() []struct {
 	Ctx        context.Context
 	PipelineID string
@@ -2318,7 +2353,8 @@ func (mock *ClientMock) Pipelines(ctx context.Context, aggregatorID string, para
 
 // PipelinesCalls gets all the calls that were made to Pipelines.
 // Check the length with:
-//     len(mockedClient.PipelinesCalls())
+//
+//	len(mockedClient.PipelinesCalls())
 func (mock *ClientMock) PipelinesCalls() []struct {
 	Ctx          context.Context
 	AggregatorID string
@@ -2359,7 +2395,8 @@ func (mock *ClientMock) Project(ctx context.Context, projectID string) (cloud.Pr
 
 // ProjectCalls gets all the calls that were made to Project.
 // Check the length with:
-//     len(mockedClient.ProjectCalls())
+//
+//	len(mockedClient.ProjectCalls())
 func (mock *ClientMock) ProjectCalls() []struct {
 	Ctx       context.Context
 	ProjectID string
@@ -2400,7 +2437,8 @@ func (mock *ClientMock) ProjectMetrics(ctx context.Context, projectID string, pa
 
 // ProjectMetricsCalls gets all the calls that were made to ProjectMetrics.
 // Check the length with:
-//     len(mockedClient.ProjectMetricsCalls())
+//
+//	len(mockedClient.ProjectMetricsCalls())
 func (mock *ClientMock) ProjectMetricsCalls() []struct {
 	Ctx       context.Context
 	ProjectID string
@@ -2443,7 +2481,8 @@ func (mock *ClientMock) ProjectPipelines(ctx context.Context, projectID string, 
 
 // ProjectPipelinesCalls gets all the calls that were made to ProjectPipelines.
 // Check the length with:
-//     len(mockedClient.ProjectPipelinesCalls())
+//
+//	len(mockedClient.ProjectPipelinesCalls())
 func (mock *ClientMock) ProjectPipelinesCalls() []struct {
 	Ctx       context.Context
 	ProjectID string
@@ -2484,7 +2523,8 @@ func (mock *ClientMock) RegisterAgent(ctx context.Context, payload cloud.Registe
 
 // RegisterAgentCalls gets all the calls that were made to RegisterAgent.
 // Check the length with:
-//     len(mockedClient.RegisterAgentCalls())
+//
+//	len(mockedClient.RegisterAgentCalls())
 func (mock *ClientMock) RegisterAgentCalls() []struct {
 	Ctx     context.Context
 	Payload cloud.RegisterAgent
@@ -2523,7 +2563,8 @@ func (mock *ClientMock) ResourceProfile(ctx context.Context, resourceProfileID s
 
 // ResourceProfileCalls gets all the calls that were made to ResourceProfile.
 // Check the length with:
-//     len(mockedClient.ResourceProfileCalls())
+//
+//	len(mockedClient.ResourceProfileCalls())
 func (mock *ClientMock) ResourceProfileCalls() []struct {
 	Ctx               context.Context
 	ResourceProfileID string
@@ -2564,7 +2605,8 @@ func (mock *ClientMock) ResourceProfiles(ctx context.Context, aggregatorID strin
 
 // ResourceProfilesCalls gets all the calls that were made to ResourceProfiles.
 // Check the length with:
-//     len(mockedClient.ResourceProfilesCalls())
+//
+//	len(mockedClient.ResourceProfilesCalls())
 func (mock *ClientMock) ResourceProfilesCalls() []struct {
 	Ctx          context.Context
 	AggregatorID string
@@ -2605,7 +2647,8 @@ func (mock *ClientMock) Token(ctx context.Context, tokenID string) (cloud.Token,
 
 // TokenCalls gets all the calls that were made to Token.
 // Check the length with:
-//     len(mockedClient.TokenCalls())
+//
+//	len(mockedClient.TokenCalls())
 func (mock *ClientMock) TokenCalls() []struct {
 	Ctx     context.Context
 	TokenID string
@@ -2645,7 +2688,8 @@ func (mock *ClientMock) UpdateAgent(ctx context.Context, agentID string, payload
 
 // UpdateAgentCalls gets all the calls that were made to UpdateAgent.
 // Check the length with:
-//     len(mockedClient.UpdateAgentCalls())
+//
+//	len(mockedClient.UpdateAgentCalls())
 func (mock *ClientMock) UpdateAgentCalls() []struct {
 	Ctx     context.Context
 	AgentID string
@@ -2687,7 +2731,8 @@ func (mock *ClientMock) UpdateAggregator(ctx context.Context, aggregatorID strin
 
 // UpdateAggregatorCalls gets all the calls that were made to UpdateAggregator.
 // Check the length with:
-//     len(mockedClient.UpdateAggregatorCalls())
+//
+//	len(mockedClient.UpdateAggregatorCalls())
 func (mock *ClientMock) UpdateAggregatorCalls() []struct {
 	Ctx          context.Context
 	AggregatorID string
@@ -2729,7 +2774,8 @@ func (mock *ClientMock) UpdateEnvironment(ctx context.Context, environmentID str
 
 // UpdateEnvironmentCalls gets all the calls that were made to UpdateEnvironment.
 // Check the length with:
-//     len(mockedClient.UpdateEnvironmentCalls())
+//
+//	len(mockedClient.UpdateEnvironmentCalls())
 func (mock *ClientMock) UpdateEnvironmentCalls() []struct {
 	Ctx           context.Context
 	EnvironmentID string
@@ -2772,7 +2818,8 @@ func (mock *ClientMock) UpdatePipeline(ctx context.Context, pipelineID string, o
 
 // UpdatePipelineCalls gets all the calls that were made to UpdatePipeline.
 // Check the length with:
-//     len(mockedClient.UpdatePipelineCalls())
+//
+//	len(mockedClient.UpdatePipelineCalls())
 func (mock *ClientMock) UpdatePipelineCalls() []struct {
 	Ctx        context.Context
 	PipelineID string
@@ -2814,7 +2861,8 @@ func (mock *ClientMock) UpdatePipelineFile(ctx context.Context, fileID string, o
 
 // UpdatePipelineFileCalls gets all the calls that were made to UpdatePipelineFile.
 // Check the length with:
-//     len(mockedClient.UpdatePipelineFileCalls())
+//
+//	len(mockedClient.UpdatePipelineFileCalls())
 func (mock *ClientMock) UpdatePipelineFileCalls() []struct {
 	Ctx    context.Context
 	FileID string
@@ -2856,7 +2904,8 @@ func (mock *ClientMock) UpdatePipelinePort(ctx context.Context, portID string, o
 
 // UpdatePipelinePortCalls gets all the calls that were made to UpdatePipelinePort.
 // Check the length with:
-//     len(mockedClient.UpdatePipelinePortCalls())
+//
+//	len(mockedClient.UpdatePipelinePortCalls())
 func (mock *ClientMock) UpdatePipelinePortCalls() []struct {
 	Ctx    context.Context
 	PortID string
@@ -2898,7 +2947,8 @@ func (mock *ClientMock) UpdatePipelineSecret(ctx context.Context, secretID strin
 
 // UpdatePipelineSecretCalls gets all the calls that were made to UpdatePipelineSecret.
 // Check the length with:
-//     len(mockedClient.UpdatePipelineSecretCalls())
+//
+//	len(mockedClient.UpdatePipelineSecretCalls())
 func (mock *ClientMock) UpdatePipelineSecretCalls() []struct {
 	Ctx      context.Context
 	SecretID string
@@ -2940,7 +2990,8 @@ func (mock *ClientMock) UpdateProject(ctx context.Context, projectID string, opt
 
 // UpdateProjectCalls gets all the calls that were made to UpdateProject.
 // Check the length with:
-//     len(mockedClient.UpdateProjectCalls())
+//
+//	len(mockedClient.UpdateProjectCalls())
 func (mock *ClientMock) UpdateProjectCalls() []struct {
 	Ctx       context.Context
 	ProjectID string
@@ -2982,7 +3033,8 @@ func (mock *ClientMock) UpdateResourceProfile(ctx context.Context, resourceProfi
 
 // UpdateResourceProfileCalls gets all the calls that were made to UpdateResourceProfile.
 // Check the length with:
-//     len(mockedClient.UpdateResourceProfileCalls())
+//
+//	len(mockedClient.UpdateResourceProfileCalls())
 func (mock *ClientMock) UpdateResourceProfileCalls() []struct {
 	Ctx               context.Context
 	ResourceProfileID string
@@ -3024,7 +3076,8 @@ func (mock *ClientMock) UpdateToken(ctx context.Context, tokenID string, opts cl
 
 // UpdateTokenCalls gets all the calls that were made to UpdateToken.
 // Check the length with:
-//     len(mockedClient.UpdateTokenCalls())
+//
+//	len(mockedClient.UpdateTokenCalls())
 func (mock *ClientMock) UpdateTokenCalls() []struct {
 	Ctx     context.Context
 	TokenID string
@@ -3067,7 +3120,8 @@ func (mock *ClientMock) ValidateConfig(ctx context.Context, agentType cloud.Agen
 
 // ValidateConfigCalls gets all the calls that were made to ValidateConfig.
 // Check the length with:
-//     len(mockedClient.ValidateConfigCalls())
+//
+//	len(mockedClient.ValidateConfigCalls())
 func (mock *ClientMock) ValidateConfigCalls() []struct {
 	Ctx       context.Context
 	AgentType cloud.AgentType

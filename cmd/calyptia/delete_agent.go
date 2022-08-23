@@ -2,11 +2,13 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/spf13/cobra"
-	"golang.org/x/sync/errgroup"
+	"golang.org/x/term"
 
 	cloud "github.com/calyptia/api/types"
 )
@@ -21,6 +23,8 @@ func newCmdDeleteAgent(config *config) *cobra.Command {
 		Args:              cobra.ExactArgs(1),
 		ValidArgsFunction: config.completeAgents,
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
+
 			agentKey := args[0]
 			var environmentID string
 			if environment != "" {
@@ -31,41 +35,40 @@ func newCmdDeleteAgent(config *config) *cobra.Command {
 				}
 			}
 
-			if !confirmed {
-				fmt.Printf("Are you sure you want to delete %q? (y/N) ", agentKey)
-				var answer string
-				_, err := fmt.Scanln(&answer)
-				if err != nil && err.Error() == "unexpected newline" {
-					err = nil
-				}
-
-				if err != nil {
-					return fmt.Errorf("could not to read answer: %v", err)
-				}
-
-				answer = strings.TrimSpace(strings.ToLower(answer))
-				if answer != "y" && answer != "yes" {
-					return nil
-				}
-			}
-
 			agentID, err := config.loadAgentID(agentKey, environmentID)
 			if err != nil {
 				return err
 			}
 
-			err = config.cloud.DeleteAgent(config.ctx, agentID)
+			if !confirmed {
+				cmd.Printf("Are you sure you want to delete agent with id %q? (y/N) ", agentID)
+				confirmed, err := readConfirm(cmd.InOrStdin())
+				if err != nil {
+					return err
+				}
+
+				if !confirmed {
+					cmd.Println("Aborted")
+				}
+			}
+
+			err = config.cloud.DeleteAgent(ctx, agentID)
 			if err != nil {
 				return fmt.Errorf("could not delete agent: %w", err)
 			}
+
+			cmd.Printf("Successully deleted agent with id %q\n", agentID)
 
 			return nil
 		},
 	}
 
+	isNonInteractive := os.Stdin == nil || !term.IsTerminal(int(os.Stdin.Fd()))
+
 	fs := cmd.Flags()
-	fs.BoolVarP(&confirmed, "yes", "y", false, "Confirm deletion")
+	fs.BoolVarP(&confirmed, "yes", "y", isNonInteractive, "Confirm deletion")
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
+
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
 
 	return cmd
@@ -79,7 +82,10 @@ func newCmdDeleteAgents(config *config) *cobra.Command {
 		Use:   "agents",
 		Short: "Delete many agents from a project",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			aa, err := config.cloud.Agents(config.ctx, config.projectID, cloud.AgentsParams{})
+			ctx := cmd.Context()
+			aa, err := config.cloud.Agents(ctx, config.projectID, cloud.AgentsParams{
+				Last: ptr(uint(0)),
+			})
 			if err != nil {
 				return fmt.Errorf("could not prefetch agents to delete: %w", err)
 			}
@@ -96,51 +102,55 @@ func newCmdDeleteAgents(config *config) *cobra.Command {
 			}
 
 			if len(aa.Items) == 0 {
-				fmt.Fprintln(cmd.OutOrStdout(), "No agents to delete")
+				cmd.Println("No agents to delete")
 				return nil
 			}
 
 			if !confirmed {
-				fmt.Printf("You are about to delete:\n\n%s\n\nAre you sure you want to delete all of them? (yes/N) ", strings.Join(agentsKeys(aa.Items), "\n"))
-				var answer string
-				_, err := fmt.Scanln(&answer)
-				if err != nil && err.Error() == "unexpected newline" {
-					err = nil
-				}
-
+				cmd.Printf("You are about to delete:\n\n%s\n\nAre you sure you want to delete all of them? (y/N) ", strings.Join(agentsKeys(aa.Items), "\n"))
+				confirmed, err := readConfirm(cmd.InOrStdin())
 				if err != nil {
-					return fmt.Errorf("could not to read answer: %v", err)
+					return err
 				}
 
-				answer = strings.TrimSpace(strings.ToLower(answer))
-				if answer != "yes" {
+				if !confirmed {
+					cmd.Println("Aborted")
 					return nil
 				}
 			}
 
-			g, gctx := errgroup.WithContext(config.ctx)
+			g := sync.WaitGroup{}
+
+			var count uint
 			for _, a := range aa.Items {
 				a := a
-				g.Go(func() error {
-					err := config.cloud.DeleteAgent(gctx, a.ID)
+				g.Add(1)
+				go func() {
+					defer g.Done()
+
+					err := config.cloud.DeleteAgent(ctx, a.ID)
 					if err != nil {
-						return fmt.Errorf("could not delete agent %q: %w", a.ID, err)
+						cmd.PrintErrf("Error: could not delete agent with id %q: %v\n", a.ID, err)
+						return
 					}
 
-					return nil
-				})
+					count++
+				}()
 			}
-			if err := g.Wait(); err != nil {
-				return err
-			}
+
+			g.Wait()
+
+			cmd.Printf("Successfully deleted %d agents\n", count)
 
 			return nil
 		},
 	}
 
+	isNonInteractive := os.Stdin == nil || !term.IsTerminal(int(os.Stdin.Fd()))
+
 	fs := cmd.Flags()
 	fs.BoolVar(&inactive, "inactive", true, "Delete inactive agents only")
-	fs.BoolVarP(&confirmed, "yes", "y", false, "Confirm deletion")
+	fs.BoolVarP(&confirmed, "yes", "y", isNonInteractive, "Confirm deletion")
 
 	return cmd
 }

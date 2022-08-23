@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"math"
 	"regexp"
 	"sort"
@@ -215,4 +216,19 @@ func filterOutEmptyMetadata(in *json.RawMessage) {
 	}
 	c := json.RawMessage(b)
 	*in = c
+}
+
+func readConfirm(r io.Reader) (bool, error) {
+	var answer string
+	_, err := fmt.Fscanln(r, &answer)
+	if err != nil && err.Error() == "unexpected newline" {
+		err = nil
+	}
+
+	if err != nil {
+		return false, fmt.Errorf("could not to read answer: %v", err)
+	}
+
+	answer = strings.TrimSpace(strings.ToLower(answer))
+	return answer == "y" || answer == "yes", nil
 }

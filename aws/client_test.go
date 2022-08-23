@@ -2,10 +2,11 @@ package aws
 
 import (
 	"context"
+	"testing"
+
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
 	"github.com/aws/aws-sdk-go-v2/service/ec2/types"
 	"github.com/calyptia/cli/aws/ifaces"
-	"testing"
 )
 
 func TestDefaultClient_EnsureKeyPair(t *testing.T) {
@@ -13,14 +14,14 @@ func TestDefaultClient_EnsureKeyPair(t *testing.T) {
 
 	tt := []struct {
 		name               string
-		client             ifaces.ClientMock
+		client             *ifaces.ClientMock
 		createKeyPairCount int
 		wantErr            bool
 		wantPairName       string
 	}{
 		{
 			name: "return existing keypair",
-			client: ifaces.ClientMock{
+			client: &ifaces.ClientMock{
 				DescribeKeyPairsFunc: func(ctx context.Context, params *ec2.DescribeKeyPairsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeKeyPairsOutput, error) {
 					return &ec2.DescribeKeyPairsOutput{KeyPairs: []types.KeyPairInfo{
 						{
@@ -34,7 +35,7 @@ func TestDefaultClient_EnsureKeyPair(t *testing.T) {
 		},
 		{
 			name: "error in amazon, returns empty key",
-			client: ifaces.ClientMock{
+			client: &ifaces.ClientMock{
 				DescribeKeyPairsFunc: func(ctx context.Context, params *ec2.DescribeKeyPairsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeKeyPairsOutput, error) {
 					return nil, ErrKeyPairNotFound
 				},
@@ -44,7 +45,7 @@ func TestDefaultClient_EnsureKeyPair(t *testing.T) {
 		},
 		{
 			name: "non existing keypair creates a new keypair",
-			client: ifaces.ClientMock{
+			client: &ifaces.ClientMock{
 				DescribeKeyPairsFunc: func(ctx context.Context, params *ec2.DescribeKeyPairsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeKeyPairsOutput, error) {
 					return nil, nil
 				},
@@ -61,7 +62,7 @@ func TestDefaultClient_EnsureKeyPair(t *testing.T) {
 	ctx := context.Background()
 
 	for _, tc := range tt {
-		cc := DefaultClient{ec2Client: &tc.client}
+		cc := DefaultClient{ec2Client: tc.client}
 		t.Run(tc.name, func(t *testing.T) {
 			pair, err := cc.EnsureKeyPair(ctx, defaultKeyPairName, "default")
 			if err != nil {

@@ -72,7 +72,7 @@ func Test_newCmdGetMembers(t *testing.T) {
 		cmd := newCmdGetMembers(configWithMock(&ClientMock{
 			MembersFunc: func(ctx context.Context, projectID string, params types.MembersParams) (types.Memberships, error) {
 				wantNoEq(t, nil, params.Last)
-				wantEq(t, uint64(2), *params.Last)
+				wantEq(t, uint(2), *params.Last)
 				return want, nil
 			},
 		}))

@@ -70,7 +70,7 @@ func Test_newCmdGetAgents(t *testing.T) {
 		cmd := newCmdGetAgents(configWithMock(&ClientMock{
 			AgentsFunc: func(ctx context.Context, projectID string, params types.AgentsParams) (types.Agents, error) {
 				wantNoEq(t, nil, params.Last)
-				wantEq(t, uint64(2), *params.Last)
+				wantEq(t, uint(2), *params.Last)
 				return want, nil
 			},
 		}))

@@ -22,7 +22,7 @@ import (
 
 func newCmdTopProject(config *config) *cobra.Command {
 	var start, interval time.Duration
-	var last uint64
+	var last uint
 	cmd := &cobra.Command{
 		Use:   "project",
 		Short: "Display metrics from the current project",
@@ -34,12 +34,12 @@ func newCmdTopProject(config *config) *cobra.Command {
 	fs := cmd.Flags()
 	fs.DurationVar(&start, "start", time.Minute*-3, "Start time range")
 	fs.DurationVar(&interval, "interval", time.Minute, "Interval rate")
-	fs.Uint64VarP(&last, "last", "l", 0, "Last `N` agents. 0 means no limit")
+	fs.UintVarP(&last, "last", "l", 0, "Last `N` agents. 0 means no limit")
 
 	return cmd
 }
 
-func NewProjectModel(ctx context.Context, cloud Client, projectID string, metricsStart, metricsInterval time.Duration, last uint64) ProjectModel {
+func NewProjectModel(ctx context.Context, cloud Client, projectID string, metricsStart, metricsInterval time.Duration, last uint) ProjectModel {
 	// TODO: disable project table nivigation.
 	projectTable := table.New([]string{"PLUGIN", "INPUT-BYTES", "INPUT-RECORDS", "OUTPUT-BYTES", "OUTPUT-RECORDS"}, 0, 0)
 	agentsTable := table.New([]string{"AGENT", "TYPE", "VERSION", "INPUT-BYTES", "INPUT-RECORDS", "OUTPUT-BYTES", "OUTPUT-RECORDS"}, 0, 0)
@@ -59,7 +59,7 @@ func NewProjectModel(ctx context.Context, cloud Client, projectID string, metric
 type ProjectModel struct {
 	metricsStart    time.Duration
 	metricsInterval time.Duration
-	last            uint64
+	last            uint
 	cloud           Client
 	ctx             context.Context
 
