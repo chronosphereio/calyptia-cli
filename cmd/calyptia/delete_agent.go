@@ -11,7 +11,6 @@ import (
 	"golang.org/x/term"
 
 	"github.com/calyptia/api/types"
-	cloud "github.com/calyptia/api/types"
 )
 
 func newCmdDeleteAgent(config *config) *cobra.Command {
@@ -84,7 +83,7 @@ func newCmdDeleteAgents(config *config) *cobra.Command {
 		Short: "Delete many agents from a project",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			aa, err := config.cloud.Agents(ctx, config.projectID, cloud.AgentsParams{
+			aa, err := config.cloud.Agents(ctx, config.projectID, types.AgentsParams{
 				Last: ptr(uint(0)),
 			})
 			if err != nil {
@@ -92,7 +91,7 @@ func newCmdDeleteAgents(config *config) *cobra.Command {
 			}
 
 			if inactive {
-				var onlyInactive []cloud.Agent
+				var onlyInactive []types.Agent
 				for _, a := range aa.Items {
 					inactive := a.LastMetricsAddedAt.IsZero() || a.LastMetricsAddedAt.Before(time.Now().Add(time.Minute*-5))
 					if inactive {
