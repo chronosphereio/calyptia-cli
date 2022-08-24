@@ -3,8 +3,9 @@ package main
 import (
 	"bytes"
 	"context"
-	"github.com/calyptia/api/types"
 	"testing"
+
+	"github.com/calyptia/api/types"
 )
 
 func TestNewEnvironment(t *testing.T) {

@@ -75,7 +75,7 @@ func renderEndpointsTable(w io.Writer, pp []cloud.PipelinePort, showIDs bool) {
 		if showIDs {
 			fmt.Fprintf(tw, "%s\t", p.ID)
 		}
-		fmt.Fprintf(tw, "%s\t%d\t%d\t%s\t%s\n", p.Protocol, p.FrontendPort, p.BackendPort, endpoint, fmtAgo(p.CreatedAt))
+		fmt.Fprintf(tw, "%s\t%d\t%d\t%s\t%s\n", p.Protocol, p.FrontendPort, p.BackendPort, endpoint, fmtTime(p.CreatedAt))
 	}
 	tw.Flush()
 }

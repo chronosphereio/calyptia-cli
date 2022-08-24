@@ -49,7 +49,7 @@ func newCmdGetMembers(config *config) *cobra.Command {
 					if showIDs {
 						fmt.Fprintf(tw, "%s\t", m.ID)
 					}
-					fmt.Fprintln(tw, fmtAgo(m.CreatedAt))
+					fmt.Fprintln(tw, fmtTime(m.CreatedAt))
 				}
 				tw.Flush()
 			case "json":

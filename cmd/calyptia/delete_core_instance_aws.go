@@ -3,12 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
-	awsclient "github.com/calyptia/cli/aws"
-	"golang.org/x/term"
 	"os"
 	"strings"
 
 	"github.com/spf13/cobra"
+	"golang.org/x/term"
+
+	awsclient "github.com/calyptia/cli/aws"
 )
 
 func newCmdDeleteCoreInstanceOnAWS(config *config, client awsclient.Client) *cobra.Command {
@@ -20,7 +21,6 @@ func newCmdDeleteCoreInstanceOnAWS(config *config, client awsclient.Client) *cob
 		profileName string
 		environment string
 	)
-	isNonInteractiveMode := os.Stdin == nil || !term.IsTerminal(int(os.Stdin.Fd()))
 
 	var skipError, confirmDelete bool
 
@@ -48,6 +48,8 @@ func newCmdDeleteCoreInstanceOnAWS(config *config, client awsclient.Client) *cob
 			if !skipError && err != nil {
 				return fmt.Errorf("could not load core instance ID: %w", err)
 			}
+
+			// TODO: Make sure to delete core instance from Cloud even if we cannot connect to AWS.
 
 			ctx := context.Background()
 			if client == nil {
@@ -87,14 +89,17 @@ func newCmdDeleteCoreInstanceOnAWS(config *config, client awsclient.Client) *cob
 
 			fmt.Fprintln(cmd.OutOrStdout(), "The following resources will be removed from your AWS account:\n"+strings.Join(toDelete, "\n"))
 
-			if !confirmDelete && !isNonInteractiveMode {
-				cmd.Println("\nYou confirm the deletion of those resources? [Y/n]")
-				confirmDelete = ask(cmd.InOrStdin(), cmd.ErrOrStderr())
-			}
-
 			if !confirmDelete {
-				cmd.Println("operation canceled")
-				return nil
+				cmd.Print("You confirm the deletion of those resources? [y/N] ")
+				confirmDelete, err = readConfirm(cmd.InOrStdin())
+				if err != nil {
+					return err
+				}
+
+				if !confirmDelete {
+					cmd.Println("Aborting...")
+					return nil
+				}
 			}
 
 			err = config.cloud.DeleteAggregator(ctx, coreInstanceID)
@@ -111,6 +116,8 @@ func newCmdDeleteCoreInstanceOnAWS(config *config, client awsclient.Client) *cob
 		},
 	}
 
+	isNonInteractive := os.Stdin == nil || !term.IsTerminal(int(os.Stdin.Fd()))
+
 	fs := cmd.Flags()
 
 	fs.StringVar(&credentials, "credentials", "", "Path to the AWS credentials file. If not specified the default credential loader will be used.")
@@ -119,7 +126,7 @@ func newCmdDeleteCoreInstanceOnAWS(config *config, client awsclient.Client) *cob
 	fs.StringVar(&region, "region", awsclient.DefaultRegionName, "AWS region name to use in the instance.")
 	fs.StringVar(&environment, "environment", "default", "Calyptia environment name")
 	fs.BoolVar(&skipError, "skip-error", false, "Skip errors during delete process")
-	fs.BoolVar(&confirmDelete, "yes", isNonInteractiveMode, "Confirm deletion")
+	fs.BoolVarP(&confirmDelete, "yes", "y", isNonInteractive, "Confirm deletion")
 	fs.BoolVar(&debug, "debug", false, "Enable debug logging")
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)

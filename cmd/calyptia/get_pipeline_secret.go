@@ -72,7 +72,7 @@ func renderPipelineSecrets(w io.Writer, ss []cloud.PipelineSecret, showIDs bool)
 		if showIDs {
 			fmt.Fprintf(tw, "%s\t", s.ID)
 		}
-		fmt.Fprintf(tw, "%s\t%s\n", s.Key, fmtAgo(s.CreatedAt))
+		fmt.Fprintf(tw, "%s\t%s\n", s.Key, fmtTime(s.CreatedAt))
 	}
 	tw.Flush()
 }

@@ -55,7 +55,7 @@ func newCmdGetAgents(config *config) *cobra.Command {
 					if showIDs {
 						fmt.Fprintf(tw, "%s\t", a.ID)
 					}
-					fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\t%s\n", a.Name, a.Type, a.EnvironmentName, a.Version, status, fmtAgo(a.CreatedAt))
+					fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\t%s\n", a.Name, a.Type, a.EnvironmentName, a.Version, status, fmtTime(a.CreatedAt))
 				}
 				tw.Flush()
 			case "json":
@@ -130,7 +130,7 @@ func newCmdGetAgent(config *config) *cobra.Command {
 				if showIDs {
 					fmt.Fprintf(tw, "%s\t", agent.ID)
 				}
-				fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\n", agent.Name, agent.Type, agent.Version, status, fmtAgo(agent.CreatedAt))
+				fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\n", agent.Name, agent.Type, agent.Version, status, fmtTime(agent.CreatedAt))
 				tw.Flush()
 			case "json":
 				err := json.NewEncoder(cmd.OutOrStdout()).Encode(agent)

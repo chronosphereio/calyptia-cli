@@ -1,12 +1,9 @@
 package main
 
 import (
-	"bufio"
 	"context"
 	"fmt"
-	"io"
 	"os"
-	"strings"
 
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
@@ -373,26 +370,4 @@ func listDeployments(ctx context.Context, k8sClient *k8s.Client, cmd *cobra.Comm
 	}
 
 	return len(deployments.Items), nil
-}
-
-func ask(rd io.Reader, w io.Writer) bool {
-	reader := bufio.NewReader(rd)
-	for {
-		s, _ := reader.ReadString('\n')
-		s = strings.TrimSuffix(s, "\n")
-		s = strings.ToLower(s)
-		if len(s) > 1 {
-			fmt.Fprintln(w, "Please enter Y or N")
-			continue
-		}
-		if strings.Compare(s, "n") == 0 {
-			return false
-		} else if strings.Compare(s, "y") == 0 {
-			break
-		} else {
-			fmt.Fprintln(w, "Please enter Y or N")
-			continue
-		}
-	}
-	return true
 }

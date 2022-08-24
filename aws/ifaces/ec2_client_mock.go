@@ -5,8 +5,9 @@ package ifaces
 
 import (
 	"context"
-	"github.com/aws/aws-sdk-go-v2/service/ec2"
 	"sync"
+
+	"github.com/aws/aws-sdk-go-v2/service/ec2"
 )
 
 // Ensure, that ClientMock does implement Client.

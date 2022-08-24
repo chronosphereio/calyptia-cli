@@ -14,6 +14,7 @@ require (
 	github.com/calyptia/cli/k8s v0.0.0-00010101000000-000000000000
 	github.com/calyptia/core-images-index/go-index v0.0.0-20220819192914-db952b930502
 	github.com/calyptia/go-bubble-table v0.2.1
+	github.com/calyptia/go-fluentbit-config v0.1.1
 	github.com/charmbracelet/bubbletea v0.22.1
 	github.com/charmbracelet/lipgloss v0.5.0
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
@@ -32,6 +33,7 @@ require (
 )
 
 require (
+	github.com/alecthomas/participle/v2 v2.0.0-alpha9 // indirect
 	github.com/alessio/shellescape v1.4.1 // indirect
 	github.com/aws/aws-sdk-go-v2/credentials v1.12.14 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.12.12 // indirect

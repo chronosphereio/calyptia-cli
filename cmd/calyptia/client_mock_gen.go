@@ -19,6 +19,9 @@ var _ Client = &ClientMock{}
 //
 //		// make and configure a mocked Client
 //		mockedClient := &ClientMock{
+//			ActiveTraceSessionFunc: func(ctx context.Context, pipelineID string) (cloud.TraceSession, error) {
+//				panic("mock out the ActiveTraceSession method")
+//			},
 //			AgentFunc: func(ctx context.Context, agentID string) (cloud.Agent, error) {
 //				panic("mock out the Agent method")
 //			},
@@ -60,6 +63,9 @@ var _ Client = &ClientMock{}
 //			},
 //			CreateResourceProfileFunc: func(ctx context.Context, aggregatorID string, payload cloud.CreateResourceProfile) (cloud.CreatedResourceProfile, error) {
 //				panic("mock out the CreateResourceProfile method")
+//			},
+//			CreateTraceSessionFunc: func(ctx context.Context, pipelineID string, in cloud.CreateTraceSession) (cloud.CreatedTraceSession, error) {
+//				panic("mock out the CreateTraceSession method")
 //			},
 //			DeleteAgentFunc: func(ctx context.Context, agentID string) error {
 //				panic("mock out the DeleteAgent method")
@@ -145,8 +151,20 @@ var _ Client = &ClientMock{}
 //			ResourceProfilesFunc: func(ctx context.Context, aggregatorID string, params cloud.ResourceProfilesParams) (cloud.ResourceProfiles, error) {
 //				panic("mock out the ResourceProfiles method")
 //			},
+//			TerminateActiveTraceSessionFunc: func(ctx context.Context, pipelineID string) (cloud.TerminatedTraceSession, error) {
+//				panic("mock out the TerminateActiveTraceSession method")
+//			},
 //			TokenFunc: func(ctx context.Context, tokenID string) (cloud.Token, error) {
 //				panic("mock out the Token method")
+//			},
+//			TraceRecordsFunc: func(ctx context.Context, sessionID string, params cloud.TraceRecordsParams) (cloud.TraceRecords, error) {
+//				panic("mock out the TraceRecords method")
+//			},
+//			TraceSessionFunc: func(ctx context.Context, sessionID string) (cloud.TraceSession, error) {
+//				panic("mock out the TraceSession method")
+//			},
+//			TraceSessionsFunc: func(ctx context.Context, pipelineID string, params cloud.TraceSessionsParams) (cloud.TraceSessions, error) {
+//				panic("mock out the TraceSessions method")
 //			},
 //			UpdateAgentFunc: func(ctx context.Context, agentID string, payload cloud.UpdateAgent) error {
 //				panic("mock out the UpdateAgent method")
@@ -178,6 +196,9 @@ var _ Client = &ClientMock{}
 //			UpdateTokenFunc: func(ctx context.Context, tokenID string, opts cloud.UpdateToken) error {
 //				panic("mock out the UpdateToken method")
 //			},
+//			UpdateTraceSessionFunc: func(ctx context.Context, sessionID string, in cloud.UpdateTraceSession) (cloud.UpdatedTraceSession, error) {
+//				panic("mock out the UpdateTraceSession method")
+//			},
 //			ValidateConfigFunc: func(ctx context.Context, agentType cloud.AgentType, payload cloud.ValidatingConfig) (cloud.ValidatedConfig, error) {
 //				panic("mock out the ValidateConfig method")
 //			},
@@ -188,6 +209,9 @@ var _ Client = &ClientMock{}
 //
 //	}
 type ClientMock struct {
+	// ActiveTraceSessionFunc mocks the ActiveTraceSession method.
+	ActiveTraceSessionFunc func(ctx context.Context, pipelineID string) (cloud.TraceSession, error)
+
 	// AgentFunc mocks the Agent method.
 	AgentFunc func(ctx context.Context, agentID string) (cloud.Agent, error)
 
@@ -229,6 +253,9 @@ type ClientMock struct {
 
 	// CreateResourceProfileFunc mocks the CreateResourceProfile method.
 	CreateResourceProfileFunc func(ctx context.Context, aggregatorID string, payload cloud.CreateResourceProfile) (cloud.CreatedResourceProfile, error)
+
+	// CreateTraceSessionFunc mocks the CreateTraceSession method.
+	CreateTraceSessionFunc func(ctx context.Context, pipelineID string, in cloud.CreateTraceSession) (cloud.CreatedTraceSession, error)
 
 	// DeleteAgentFunc mocks the DeleteAgent method.
 	DeleteAgentFunc func(ctx context.Context, agentID string) error
@@ -314,8 +341,20 @@ type ClientMock struct {
 	// ResourceProfilesFunc mocks the ResourceProfiles method.
 	ResourceProfilesFunc func(ctx context.Context, aggregatorID string, params cloud.ResourceProfilesParams) (cloud.ResourceProfiles, error)
 
+	// TerminateActiveTraceSessionFunc mocks the TerminateActiveTraceSession method.
+	TerminateActiveTraceSessionFunc func(ctx context.Context, pipelineID string) (cloud.TerminatedTraceSession, error)
+
 	// TokenFunc mocks the Token method.
 	TokenFunc func(ctx context.Context, tokenID string) (cloud.Token, error)
+
+	// TraceRecordsFunc mocks the TraceRecords method.
+	TraceRecordsFunc func(ctx context.Context, sessionID string, params cloud.TraceRecordsParams) (cloud.TraceRecords, error)
+
+	// TraceSessionFunc mocks the TraceSession method.
+	TraceSessionFunc func(ctx context.Context, sessionID string) (cloud.TraceSession, error)
+
+	// TraceSessionsFunc mocks the TraceSessions method.
+	TraceSessionsFunc func(ctx context.Context, pipelineID string, params cloud.TraceSessionsParams) (cloud.TraceSessions, error)
 
 	// UpdateAgentFunc mocks the UpdateAgent method.
 	UpdateAgentFunc func(ctx context.Context, agentID string, payload cloud.UpdateAgent) error
@@ -347,11 +386,21 @@ type ClientMock struct {
 	// UpdateTokenFunc mocks the UpdateToken method.
 	UpdateTokenFunc func(ctx context.Context, tokenID string, opts cloud.UpdateToken) error
 
+	// UpdateTraceSessionFunc mocks the UpdateTraceSession method.
+	UpdateTraceSessionFunc func(ctx context.Context, sessionID string, in cloud.UpdateTraceSession) (cloud.UpdatedTraceSession, error)
+
 	// ValidateConfigFunc mocks the ValidateConfig method.
 	ValidateConfigFunc func(ctx context.Context, agentType cloud.AgentType, payload cloud.ValidatingConfig) (cloud.ValidatedConfig, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
+		// ActiveTraceSession holds details about calls to the ActiveTraceSession method.
+		ActiveTraceSession []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PipelineID is the pipelineID argument value.
+			PipelineID string
+		}
 		// Agent holds details about calls to the Agent method.
 		Agent []struct {
 			// Ctx is the ctx argument value.
@@ -471,6 +520,15 @@ type ClientMock struct {
 			AggregatorID string
 			// Payload is the payload argument value.
 			Payload cloud.CreateResourceProfile
+		}
+		// CreateTraceSession holds details about calls to the CreateTraceSession method.
+		CreateTraceSession []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PipelineID is the pipelineID argument value.
+			PipelineID string
+			// In is the in argument value.
+			In cloud.CreateTraceSession
 		}
 		// DeleteAgent holds details about calls to the DeleteAgent method.
 		DeleteAgent []struct {
@@ -694,12 +752,44 @@ type ClientMock struct {
 			// Params is the params argument value.
 			Params cloud.ResourceProfilesParams
 		}
+		// TerminateActiveTraceSession holds details about calls to the TerminateActiveTraceSession method.
+		TerminateActiveTraceSession []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PipelineID is the pipelineID argument value.
+			PipelineID string
+		}
 		// Token holds details about calls to the Token method.
 		Token []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// TokenID is the tokenID argument value.
 			TokenID string
+		}
+		// TraceRecords holds details about calls to the TraceRecords method.
+		TraceRecords []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// SessionID is the sessionID argument value.
+			SessionID string
+			// Params is the params argument value.
+			Params cloud.TraceRecordsParams
+		}
+		// TraceSession holds details about calls to the TraceSession method.
+		TraceSession []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// SessionID is the sessionID argument value.
+			SessionID string
+		}
+		// TraceSessions holds details about calls to the TraceSessions method.
+		TraceSessions []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PipelineID is the pipelineID argument value.
+			PipelineID string
+			// Params is the params argument value.
+			Params cloud.TraceSessionsParams
 		}
 		// UpdateAgent holds details about calls to the UpdateAgent method.
 		UpdateAgent []struct {
@@ -791,6 +881,15 @@ type ClientMock struct {
 			// Opts is the opts argument value.
 			Opts cloud.UpdateToken
 		}
+		// UpdateTraceSession holds details about calls to the UpdateTraceSession method.
+		UpdateTraceSession []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// SessionID is the sessionID argument value.
+			SessionID string
+			// In is the in argument value.
+			In cloud.UpdateTraceSession
+		}
 		// ValidateConfig holds details about calls to the ValidateConfig method.
 		ValidateConfig []struct {
 			// Ctx is the ctx argument value.
@@ -801,60 +900,107 @@ type ClientMock struct {
 			Payload cloud.ValidatingConfig
 		}
 	}
-	lockAgent                 sync.RWMutex
-	lockAgentConfigHistory    sync.RWMutex
-	lockAgentMetrics          sync.RWMutex
-	lockAgents                sync.RWMutex
-	lockAggregator            sync.RWMutex
-	lockAggregators           sync.RWMutex
-	lockCreateAggregator      sync.RWMutex
-	lockCreateEnvironment     sync.RWMutex
-	lockCreateInvitation      sync.RWMutex
-	lockCreatePipeline        sync.RWMutex
-	lockCreatePipelineFile    sync.RWMutex
-	lockCreatePipelinePort    sync.RWMutex
-	lockCreatePipelineSecret  sync.RWMutex
-	lockCreateResourceProfile sync.RWMutex
-	lockDeleteAgent           sync.RWMutex
-	lockDeleteAggregator      sync.RWMutex
-	lockDeleteEnvironment     sync.RWMutex
-	lockDeletePipeline        sync.RWMutex
-	lockDeletePipelineFile    sync.RWMutex
-	lockDeletePipelinePort    sync.RWMutex
-	lockDeletePipelineSecret  sync.RWMutex
-	lockDeleteResourceProfile sync.RWMutex
-	lockDeleteToken           sync.RWMutex
-	lockEnvironments          sync.RWMutex
-	lockMembers               sync.RWMutex
-	lockPipeline              sync.RWMutex
-	lockPipelineConfigHistory sync.RWMutex
-	lockPipelineFile          sync.RWMutex
-	lockPipelineFiles         sync.RWMutex
-	lockPipelineMetrics       sync.RWMutex
-	lockPipelinePort          sync.RWMutex
-	lockPipelinePorts         sync.RWMutex
-	lockPipelineSecret        sync.RWMutex
-	lockPipelineSecrets       sync.RWMutex
-	lockPipelineStatusHistory sync.RWMutex
-	lockPipelines             sync.RWMutex
-	lockProject               sync.RWMutex
-	lockProjectMetrics        sync.RWMutex
-	lockProjectPipelines      sync.RWMutex
-	lockRegisterAgent         sync.RWMutex
-	lockResourceProfile       sync.RWMutex
-	lockResourceProfiles      sync.RWMutex
-	lockToken                 sync.RWMutex
-	lockUpdateAgent           sync.RWMutex
-	lockUpdateAggregator      sync.RWMutex
-	lockUpdateEnvironment     sync.RWMutex
-	lockUpdatePipeline        sync.RWMutex
-	lockUpdatePipelineFile    sync.RWMutex
-	lockUpdatePipelinePort    sync.RWMutex
-	lockUpdatePipelineSecret  sync.RWMutex
-	lockUpdateProject         sync.RWMutex
-	lockUpdateResourceProfile sync.RWMutex
-	lockUpdateToken           sync.RWMutex
-	lockValidateConfig        sync.RWMutex
+	lockActiveTraceSession          sync.RWMutex
+	lockAgent                       sync.RWMutex
+	lockAgentConfigHistory          sync.RWMutex
+	lockAgentMetrics                sync.RWMutex
+	lockAgents                      sync.RWMutex
+	lockAggregator                  sync.RWMutex
+	lockAggregators                 sync.RWMutex
+	lockCreateAggregator            sync.RWMutex
+	lockCreateEnvironment           sync.RWMutex
+	lockCreateInvitation            sync.RWMutex
+	lockCreatePipeline              sync.RWMutex
+	lockCreatePipelineFile          sync.RWMutex
+	lockCreatePipelinePort          sync.RWMutex
+	lockCreatePipelineSecret        sync.RWMutex
+	lockCreateResourceProfile       sync.RWMutex
+	lockCreateTraceSession          sync.RWMutex
+	lockDeleteAgent                 sync.RWMutex
+	lockDeleteAggregator            sync.RWMutex
+	lockDeleteEnvironment           sync.RWMutex
+	lockDeletePipeline              sync.RWMutex
+	lockDeletePipelineFile          sync.RWMutex
+	lockDeletePipelinePort          sync.RWMutex
+	lockDeletePipelineSecret        sync.RWMutex
+	lockDeleteResourceProfile       sync.RWMutex
+	lockDeleteToken                 sync.RWMutex
+	lockEnvironments                sync.RWMutex
+	lockMembers                     sync.RWMutex
+	lockPipeline                    sync.RWMutex
+	lockPipelineConfigHistory       sync.RWMutex
+	lockPipelineFile                sync.RWMutex
+	lockPipelineFiles               sync.RWMutex
+	lockPipelineMetrics             sync.RWMutex
+	lockPipelinePort                sync.RWMutex
+	lockPipelinePorts               sync.RWMutex
+	lockPipelineSecret              sync.RWMutex
+	lockPipelineSecrets             sync.RWMutex
+	lockPipelineStatusHistory       sync.RWMutex
+	lockPipelines                   sync.RWMutex
+	lockProject                     sync.RWMutex
+	lockProjectMetrics              sync.RWMutex
+	lockProjectPipelines            sync.RWMutex
+	lockRegisterAgent               sync.RWMutex
+	lockResourceProfile             sync.RWMutex
+	lockResourceProfiles            sync.RWMutex
+	lockTerminateActiveTraceSession sync.RWMutex
+	lockToken                       sync.RWMutex
+	lockTraceRecords                sync.RWMutex
+	lockTraceSession                sync.RWMutex
+	lockTraceSessions               sync.RWMutex
+	lockUpdateAgent                 sync.RWMutex
+	lockUpdateAggregator            sync.RWMutex
+	lockUpdateEnvironment           sync.RWMutex
+	lockUpdatePipeline              sync.RWMutex
+	lockUpdatePipelineFile          sync.RWMutex
+	lockUpdatePipelinePort          sync.RWMutex
+	lockUpdatePipelineSecret        sync.RWMutex
+	lockUpdateProject               sync.RWMutex
+	lockUpdateResourceProfile       sync.RWMutex
+	lockUpdateToken                 sync.RWMutex
+	lockUpdateTraceSession          sync.RWMutex
+	lockValidateConfig              sync.RWMutex
+}
+
+// ActiveTraceSession calls ActiveTraceSessionFunc.
+func (mock *ClientMock) ActiveTraceSession(ctx context.Context, pipelineID string) (cloud.TraceSession, error) {
+	callInfo := struct {
+		Ctx        context.Context
+		PipelineID string
+	}{
+		Ctx:        ctx,
+		PipelineID: pipelineID,
+	}
+	mock.lockActiveTraceSession.Lock()
+	mock.calls.ActiveTraceSession = append(mock.calls.ActiveTraceSession, callInfo)
+	mock.lockActiveTraceSession.Unlock()
+	if mock.ActiveTraceSessionFunc == nil {
+		var (
+			traceSessionOut cloud.TraceSession
+			errOut          error
+		)
+		return traceSessionOut, errOut
+	}
+	return mock.ActiveTraceSessionFunc(ctx, pipelineID)
+}
+
+// ActiveTraceSessionCalls gets all the calls that were made to ActiveTraceSession.
+// Check the length with:
+//
+//	len(mockedClient.ActiveTraceSessionCalls())
+func (mock *ClientMock) ActiveTraceSessionCalls() []struct {
+	Ctx        context.Context
+	PipelineID string
+} {
+	var calls []struct {
+		Ctx        context.Context
+		PipelineID string
+	}
+	mock.lockActiveTraceSession.RLock()
+	calls = mock.calls.ActiveTraceSession
+	mock.lockActiveTraceSession.RUnlock()
+	return calls
 }
 
 // Agent calls AgentFunc.
@@ -1457,6 +1603,50 @@ func (mock *ClientMock) CreateResourceProfileCalls() []struct {
 	mock.lockCreateResourceProfile.RLock()
 	calls = mock.calls.CreateResourceProfile
 	mock.lockCreateResourceProfile.RUnlock()
+	return calls
+}
+
+// CreateTraceSession calls CreateTraceSessionFunc.
+func (mock *ClientMock) CreateTraceSession(ctx context.Context, pipelineID string, in cloud.CreateTraceSession) (cloud.CreatedTraceSession, error) {
+	callInfo := struct {
+		Ctx        context.Context
+		PipelineID string
+		In         cloud.CreateTraceSession
+	}{
+		Ctx:        ctx,
+		PipelineID: pipelineID,
+		In:         in,
+	}
+	mock.lockCreateTraceSession.Lock()
+	mock.calls.CreateTraceSession = append(mock.calls.CreateTraceSession, callInfo)
+	mock.lockCreateTraceSession.Unlock()
+	if mock.CreateTraceSessionFunc == nil {
+		var (
+			createdTraceSessionOut cloud.CreatedTraceSession
+			errOut                 error
+		)
+		return createdTraceSessionOut, errOut
+	}
+	return mock.CreateTraceSessionFunc(ctx, pipelineID, in)
+}
+
+// CreateTraceSessionCalls gets all the calls that were made to CreateTraceSession.
+// Check the length with:
+//
+//	len(mockedClient.CreateTraceSessionCalls())
+func (mock *ClientMock) CreateTraceSessionCalls() []struct {
+	Ctx        context.Context
+	PipelineID string
+	In         cloud.CreateTraceSession
+} {
+	var calls []struct {
+		Ctx        context.Context
+		PipelineID string
+		In         cloud.CreateTraceSession
+	}
+	mock.lockCreateTraceSession.RLock()
+	calls = mock.calls.CreateTraceSession
+	mock.lockCreateTraceSession.RUnlock()
 	return calls
 }
 
@@ -2623,6 +2813,46 @@ func (mock *ClientMock) ResourceProfilesCalls() []struct {
 	return calls
 }
 
+// TerminateActiveTraceSession calls TerminateActiveTraceSessionFunc.
+func (mock *ClientMock) TerminateActiveTraceSession(ctx context.Context, pipelineID string) (cloud.TerminatedTraceSession, error) {
+	callInfo := struct {
+		Ctx        context.Context
+		PipelineID string
+	}{
+		Ctx:        ctx,
+		PipelineID: pipelineID,
+	}
+	mock.lockTerminateActiveTraceSession.Lock()
+	mock.calls.TerminateActiveTraceSession = append(mock.calls.TerminateActiveTraceSession, callInfo)
+	mock.lockTerminateActiveTraceSession.Unlock()
+	if mock.TerminateActiveTraceSessionFunc == nil {
+		var (
+			terminatedTraceSessionOut cloud.TerminatedTraceSession
+			errOut                    error
+		)
+		return terminatedTraceSessionOut, errOut
+	}
+	return mock.TerminateActiveTraceSessionFunc(ctx, pipelineID)
+}
+
+// TerminateActiveTraceSessionCalls gets all the calls that were made to TerminateActiveTraceSession.
+// Check the length with:
+//
+//	len(mockedClient.TerminateActiveTraceSessionCalls())
+func (mock *ClientMock) TerminateActiveTraceSessionCalls() []struct {
+	Ctx        context.Context
+	PipelineID string
+} {
+	var calls []struct {
+		Ctx        context.Context
+		PipelineID string
+	}
+	mock.lockTerminateActiveTraceSession.RLock()
+	calls = mock.calls.TerminateActiveTraceSession
+	mock.lockTerminateActiveTraceSession.RUnlock()
+	return calls
+}
+
 // Token calls TokenFunc.
 func (mock *ClientMock) Token(ctx context.Context, tokenID string) (cloud.Token, error) {
 	callInfo := struct {
@@ -2660,6 +2890,134 @@ func (mock *ClientMock) TokenCalls() []struct {
 	mock.lockToken.RLock()
 	calls = mock.calls.Token
 	mock.lockToken.RUnlock()
+	return calls
+}
+
+// TraceRecords calls TraceRecordsFunc.
+func (mock *ClientMock) TraceRecords(ctx context.Context, sessionID string, params cloud.TraceRecordsParams) (cloud.TraceRecords, error) {
+	callInfo := struct {
+		Ctx       context.Context
+		SessionID string
+		Params    cloud.TraceRecordsParams
+	}{
+		Ctx:       ctx,
+		SessionID: sessionID,
+		Params:    params,
+	}
+	mock.lockTraceRecords.Lock()
+	mock.calls.TraceRecords = append(mock.calls.TraceRecords, callInfo)
+	mock.lockTraceRecords.Unlock()
+	if mock.TraceRecordsFunc == nil {
+		var (
+			traceRecordsOut cloud.TraceRecords
+			errOut          error
+		)
+		return traceRecordsOut, errOut
+	}
+	return mock.TraceRecordsFunc(ctx, sessionID, params)
+}
+
+// TraceRecordsCalls gets all the calls that were made to TraceRecords.
+// Check the length with:
+//
+//	len(mockedClient.TraceRecordsCalls())
+func (mock *ClientMock) TraceRecordsCalls() []struct {
+	Ctx       context.Context
+	SessionID string
+	Params    cloud.TraceRecordsParams
+} {
+	var calls []struct {
+		Ctx       context.Context
+		SessionID string
+		Params    cloud.TraceRecordsParams
+	}
+	mock.lockTraceRecords.RLock()
+	calls = mock.calls.TraceRecords
+	mock.lockTraceRecords.RUnlock()
+	return calls
+}
+
+// TraceSession calls TraceSessionFunc.
+func (mock *ClientMock) TraceSession(ctx context.Context, sessionID string) (cloud.TraceSession, error) {
+	callInfo := struct {
+		Ctx       context.Context
+		SessionID string
+	}{
+		Ctx:       ctx,
+		SessionID: sessionID,
+	}
+	mock.lockTraceSession.Lock()
+	mock.calls.TraceSession = append(mock.calls.TraceSession, callInfo)
+	mock.lockTraceSession.Unlock()
+	if mock.TraceSessionFunc == nil {
+		var (
+			traceSessionOut cloud.TraceSession
+			errOut          error
+		)
+		return traceSessionOut, errOut
+	}
+	return mock.TraceSessionFunc(ctx, sessionID)
+}
+
+// TraceSessionCalls gets all the calls that were made to TraceSession.
+// Check the length with:
+//
+//	len(mockedClient.TraceSessionCalls())
+func (mock *ClientMock) TraceSessionCalls() []struct {
+	Ctx       context.Context
+	SessionID string
+} {
+	var calls []struct {
+		Ctx       context.Context
+		SessionID string
+	}
+	mock.lockTraceSession.RLock()
+	calls = mock.calls.TraceSession
+	mock.lockTraceSession.RUnlock()
+	return calls
+}
+
+// TraceSessions calls TraceSessionsFunc.
+func (mock *ClientMock) TraceSessions(ctx context.Context, pipelineID string, params cloud.TraceSessionsParams) (cloud.TraceSessions, error) {
+	callInfo := struct {
+		Ctx        context.Context
+		PipelineID string
+		Params     cloud.TraceSessionsParams
+	}{
+		Ctx:        ctx,
+		PipelineID: pipelineID,
+		Params:     params,
+	}
+	mock.lockTraceSessions.Lock()
+	mock.calls.TraceSessions = append(mock.calls.TraceSessions, callInfo)
+	mock.lockTraceSessions.Unlock()
+	if mock.TraceSessionsFunc == nil {
+		var (
+			traceSessionsOut cloud.TraceSessions
+			errOut           error
+		)
+		return traceSessionsOut, errOut
+	}
+	return mock.TraceSessionsFunc(ctx, pipelineID, params)
+}
+
+// TraceSessionsCalls gets all the calls that were made to TraceSessions.
+// Check the length with:
+//
+//	len(mockedClient.TraceSessionsCalls())
+func (mock *ClientMock) TraceSessionsCalls() []struct {
+	Ctx        context.Context
+	PipelineID string
+	Params     cloud.TraceSessionsParams
+} {
+	var calls []struct {
+		Ctx        context.Context
+		PipelineID string
+		Params     cloud.TraceSessionsParams
+	}
+	mock.lockTraceSessions.RLock()
+	calls = mock.calls.TraceSessions
+	mock.lockTraceSessions.RUnlock()
 	return calls
 }
 
@@ -3091,6 +3449,50 @@ func (mock *ClientMock) UpdateTokenCalls() []struct {
 	mock.lockUpdateToken.RLock()
 	calls = mock.calls.UpdateToken
 	mock.lockUpdateToken.RUnlock()
+	return calls
+}
+
+// UpdateTraceSession calls UpdateTraceSessionFunc.
+func (mock *ClientMock) UpdateTraceSession(ctx context.Context, sessionID string, in cloud.UpdateTraceSession) (cloud.UpdatedTraceSession, error) {
+	callInfo := struct {
+		Ctx       context.Context
+		SessionID string
+		In        cloud.UpdateTraceSession
+	}{
+		Ctx:       ctx,
+		SessionID: sessionID,
+		In:        in,
+	}
+	mock.lockUpdateTraceSession.Lock()
+	mock.calls.UpdateTraceSession = append(mock.calls.UpdateTraceSession, callInfo)
+	mock.lockUpdateTraceSession.Unlock()
+	if mock.UpdateTraceSessionFunc == nil {
+		var (
+			updatedTraceSessionOut cloud.UpdatedTraceSession
+			errOut                 error
+		)
+		return updatedTraceSessionOut, errOut
+	}
+	return mock.UpdateTraceSessionFunc(ctx, sessionID, in)
+}
+
+// UpdateTraceSessionCalls gets all the calls that were made to UpdateTraceSession.
+// Check the length with:
+//
+//	len(mockedClient.UpdateTraceSessionCalls())
+func (mock *ClientMock) UpdateTraceSessionCalls() []struct {
+	Ctx       context.Context
+	SessionID string
+	In        cloud.UpdateTraceSession
+} {
+	var calls []struct {
+		Ctx       context.Context
+		SessionID string
+		In        cloud.UpdateTraceSession
+	}
+	mock.lockUpdateTraceSession.RLock()
+	calls = mock.calls.UpdateTraceSession
+	mock.lockUpdateTraceSession.RUnlock()
 	return calls
 }
 

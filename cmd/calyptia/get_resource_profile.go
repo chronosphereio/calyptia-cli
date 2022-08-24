@@ -53,7 +53,7 @@ func newCmdGetResourceProfiles(config *config) *cobra.Command {
 					if showIDs {
 						fmt.Fprintf(tw, "%s\t", p.ID)
 					}
-					fmt.Fprintf(tw, "%s\t%d\t%v\t%s\t%s\t%v\t%d\t%s\t%s\t%s\t%s\t%s\n", p.Name, p.StorageMaxChunksUp, p.StorageSyncFull, p.StorageBacklogMemLimit, p.StorageVolumeSize, p.StorageMaxChunksPause, p.CPUBufferWorkers, p.CPULimit, p.CPURequest, p.MemoryLimit, p.MemoryRequest, fmtAgo(p.CreatedAt))
+					fmt.Fprintf(tw, "%s\t%d\t%v\t%s\t%s\t%v\t%d\t%s\t%s\t%s\t%s\t%s\n", p.Name, p.StorageMaxChunksUp, p.StorageSyncFull, p.StorageBacklogMemLimit, p.StorageVolumeSize, p.StorageMaxChunksPause, p.CPUBufferWorkers, p.CPULimit, p.CPURequest, p.MemoryLimit, p.MemoryRequest, fmtTime(p.CreatedAt))
 				}
 				tw.Flush()
 			case "json":

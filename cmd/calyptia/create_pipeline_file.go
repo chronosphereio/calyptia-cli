@@ -47,7 +47,7 @@ func newCmdCreatePipelineFile(config *config) *cobra.Command {
 			case "table":
 				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
 				fmt.Fprintln(tw, "ID\tAGE")
-				fmt.Fprintf(tw, "%s\t%s\n", out.ID, fmtAgo(out.CreatedAt))
+				fmt.Fprintf(tw, "%s\t%s\n", out.ID, fmtTime(out.CreatedAt))
 				tw.Flush()
 
 				return nil

@@ -24,11 +24,16 @@ func validUUID(s string) bool {
 	return reUUID4.MatchString(s)
 }
 
-func fmtAgo(t time.Time) string {
+func fmtTime(t time.Time) string {
 	d := time.Since(t)
 	if d < time.Second {
 		return "Just now"
 	}
+
+	return fmtDuration(d)
+}
+
+func fmtDuration(d time.Duration) string {
 	return durafmt.ParseShort(d).LimitFirstN(1).String()
 }
 

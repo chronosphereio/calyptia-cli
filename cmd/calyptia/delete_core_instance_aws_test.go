@@ -4,8 +4,9 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	types2 "github.com/aws/aws-sdk-go-v2/service/ec2/types"
 	"testing"
+
+	types2 "github.com/aws/aws-sdk-go-v2/service/ec2/types"
 
 	"github.com/calyptia/api/types"
 	"github.com/calyptia/cli/aws"

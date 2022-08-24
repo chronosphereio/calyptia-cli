@@ -111,7 +111,7 @@ func newCmdGetPipelineFile(config *config) *cobra.Command {
 				if showIDs {
 					fmt.Fprintf(tw, "%s\t", file.ID)
 				}
-				fmt.Fprintf(tw, "%s\t%v\t%s\n", file.Name, file.Encrypted, fmtAgo(file.CreatedAt))
+				fmt.Fprintf(tw, "%s\t%v\t%s\n", file.Name, file.Encrypted, fmtTime(file.CreatedAt))
 				tw.Flush()
 			case "json":
 				err := json.NewEncoder(cmd.OutOrStdout()).Encode(file)
@@ -151,7 +151,7 @@ func renderPipelineFiles(w io.Writer, ff []cloud.PipelineFile, showIDs bool) {
 		if showIDs {
 			fmt.Fprintf(tw, "%s\t", f.ID)
 		}
-		fmt.Fprintf(tw, "%s\t%v\t%s\n", f.Name, f.Encrypted, fmtAgo(f.CreatedAt))
+		fmt.Fprintf(tw, "%s\t%v\t%s\n", f.Name, f.Encrypted, fmtTime(f.CreatedAt))
 	}
 	tw.Flush()
 }

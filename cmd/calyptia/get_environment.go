@@ -81,7 +81,7 @@ func newCmdGetEnvironment(c *config) *cobra.Command {
 					}
 
 					fmt.Fprintf(tw, "%s\t", m.Name)
-					fmt.Fprintln(tw, fmtAgo(m.CreatedAt))
+					fmt.Fprintln(tw, fmtTime(m.CreatedAt))
 				}
 				tw.Flush()
 			case "json":

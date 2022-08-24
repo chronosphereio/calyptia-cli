@@ -55,7 +55,7 @@ func newCmdGetPipelines(config *config) *cobra.Command {
 					if showIDs {
 						fmt.Fprintf(tw, "%s\t", p.ID)
 					}
-					fmt.Fprintf(tw, "%s\t%d\t%s\t%s\n", p.Name, p.ReplicasCount, p.Status.Status, fmtAgo(p.CreatedAt))
+					fmt.Fprintf(tw, "%s\t%d\t%s\t%s\n", p.Name, p.ReplicasCount, p.Status.Status, fmtTime(p.CreatedAt))
 				}
 				tw.Flush()
 			case "json":
@@ -185,7 +185,7 @@ func newCmdGetPipeline(config *config) *cobra.Command {
 					if showIDs {
 						fmt.Fprintf(tw, "%s\t", pip.ID)
 					}
-					fmt.Fprintf(tw, "%s\t%d\t%s\t%s\n", pip.Name, pip.ReplicasCount, pip.Status.Status, fmtAgo(pip.CreatedAt))
+					fmt.Fprintf(tw, "%s\t%d\t%s\t%s\n", pip.Name, pip.ReplicasCount, pip.Status.Status, fmtTime(pip.CreatedAt))
 					tw.Flush()
 				}
 				if includeEndpoints {

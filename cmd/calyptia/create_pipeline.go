@@ -121,7 +121,7 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 			case "table":
 				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
 				fmt.Fprintln(tw, "ID\tNAME\tAGE")
-				fmt.Fprintf(tw, "%s\t%s\t%s\n", a.ID, a.Name, fmtAgo(a.CreatedAt))
+				fmt.Fprintf(tw, "%s\t%s\t%s\n", a.ID, a.Name, fmtTime(a.CreatedAt))
 				tw.Flush()
 			case "json":
 				err := json.NewEncoder(cmd.OutOrStdout()).Encode(a)
