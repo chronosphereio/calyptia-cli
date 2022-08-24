@@ -12,7 +12,6 @@ import (
 )
 
 func newCmdDeleteEnvironment(c *config) *cobra.Command {
-	isNonInteractiveMode := os.Stdin == nil || !term.IsTerminal(int(os.Stdin.Fd()))
 	var confirmDelete bool
 	cmd := &cobra.Command{
 		Use:   "environment ENVIRONMENT_NAME",
@@ -29,8 +28,8 @@ func newCmdDeleteEnvironment(c *config) *cobra.Command {
 				return fmt.Errorf("environment not found")
 			}
 			environment := environments.Items[0]
-			if !confirmDelete && !isNonInteractiveMode {
-				cmd.Println("This will remove ALL your agents, aggregators. Do you confirm? [y/N] ")
+			if !confirmDelete {
+				cmd.Print("This will remove ALL your agents, aggregators. Do you confirm? [y/N] ")
 				confirmDelete, err = readConfirm(cmd.InOrStdin())
 				if err != nil {
 					return err
@@ -41,10 +40,7 @@ func newCmdDeleteEnvironment(c *config) *cobra.Command {
 					return nil
 				}
 			}
-			if !confirmDelete {
-				cmd.Println("operation canceled")
-				return nil
-			}
+
 			err = c.cloud.DeleteEnvironment(ctx, environment.ID)
 			if err != nil {
 				return err
@@ -53,7 +49,11 @@ func newCmdDeleteEnvironment(c *config) *cobra.Command {
 			return nil
 		},
 	}
+
+	isNonInteractive := os.Stdin == nil || !term.IsTerminal(int(os.Stdin.Fd()))
+
 	fs := cmd.Flags()
-	fs.BoolVar(&confirmDelete, "yes", isNonInteractiveMode, "Confirm deletion")
+	fs.BoolVar(&confirmDelete, "yes", isNonInteractive, "Confirm deletion")
+
 	return cmd
 }
