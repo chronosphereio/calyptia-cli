@@ -1,3 +1,4 @@
+/fluent-bit.conf
 .idea/
 /calyptia
 gha-creds-*.json
