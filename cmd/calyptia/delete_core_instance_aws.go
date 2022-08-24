@@ -6,11 +6,10 @@ import (
 	"os"
 	"strings"
 
+	"github.com/spf13/cobra"
 	"golang.org/x/term"
 
 	awsclient "github.com/calyptia/cli/aws"
-
-	"github.com/spf13/cobra"
 )
 
 func newCmdDeleteCoreInstanceOnAWS(config *config, client awsclient.Client) *cobra.Command {

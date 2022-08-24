@@ -6,10 +6,11 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/calyptia/api/types"
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
 	"k8s.io/client-go/kubernetes"
+
+	"github.com/calyptia/api/types"
 )
 
 func newCmdDeleteCoreInstance(config *config, testClientSet kubernetes.Interface) *cobra.Command {
