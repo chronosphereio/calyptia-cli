@@ -19,9 +19,6 @@ var _ Client = &ClientMock{}
 //
 //		// make and configure a mocked Client
 //		mockedClient := &ClientMock{
-//			ActiveTraceSessionFunc: func(ctx context.Context, pipelineID string) (cloud.TraceSession, error) {
-//				panic("mock out the ActiveTraceSession method")
-//			},
 //			AgentFunc: func(ctx context.Context, agentID string) (cloud.Agent, error) {
 //				panic("mock out the Agent method")
 //			},
@@ -63,9 +60,6 @@ var _ Client = &ClientMock{}
 //			},
 //			CreateResourceProfileFunc: func(ctx context.Context, aggregatorID string, payload cloud.CreateResourceProfile) (cloud.CreatedResourceProfile, error) {
 //				panic("mock out the CreateResourceProfile method")
-//			},
-//			CreateTraceSessionFunc: func(ctx context.Context, pipelineID string, in cloud.CreateTraceSession) (cloud.CreatedTraceSession, error) {
-//				panic("mock out the CreateTraceSession method")
 //			},
 //			DeleteAgentFunc: func(ctx context.Context, agentID string) error {
 //				panic("mock out the DeleteAgent method")
@@ -151,20 +145,8 @@ var _ Client = &ClientMock{}
 //			ResourceProfilesFunc: func(ctx context.Context, aggregatorID string, params cloud.ResourceProfilesParams) (cloud.ResourceProfiles, error) {
 //				panic("mock out the ResourceProfiles method")
 //			},
-//			TerminateActiveTraceSessionFunc: func(ctx context.Context, pipelineID string) (cloud.TerminatedTraceSession, error) {
-//				panic("mock out the TerminateActiveTraceSession method")
-//			},
 //			TokenFunc: func(ctx context.Context, tokenID string) (cloud.Token, error) {
 //				panic("mock out the Token method")
-//			},
-//			TraceRecordsFunc: func(ctx context.Context, sessionID string, params cloud.TraceRecordsParams) (cloud.TraceRecords, error) {
-//				panic("mock out the TraceRecords method")
-//			},
-//			TraceSessionFunc: func(ctx context.Context, sessionID string) (cloud.TraceSession, error) {
-//				panic("mock out the TraceSession method")
-//			},
-//			TraceSessionsFunc: func(ctx context.Context, pipelineID string, params cloud.TraceSessionsParams) (cloud.TraceSessions, error) {
-//				panic("mock out the TraceSessions method")
 //			},
 //			UpdateAgentFunc: func(ctx context.Context, agentID string, payload cloud.UpdateAgent) error {
 //				panic("mock out the UpdateAgent method")
@@ -195,9 +177,6 @@ var _ Client = &ClientMock{}
 //			},
 //			UpdateTokenFunc: func(ctx context.Context, tokenID string, opts cloud.UpdateToken) error {
 //				panic("mock out the UpdateToken method")
-//			},
-//			UpdateTraceSessionFunc: func(ctx context.Context, sessionID string, in cloud.UpdateTraceSession) (cloud.UpdatedTraceSession, error) {
-//				panic("mock out the UpdateTraceSession method")
 //			},
 //			ValidateConfigFunc: func(ctx context.Context, agentType cloud.AgentType, payload cloud.ValidatingConfig) (cloud.ValidatedConfig, error) {
 //				panic("mock out the ValidateConfig method")

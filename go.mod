@@ -10,11 +10,10 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.17.1
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.54.0
 	github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi v1.13.13
-	github.com/calyptia/api v0.7.0
+	github.com/calyptia/api v0.8.0
 	github.com/calyptia/cli/k8s v0.0.0-00010101000000-000000000000
 	github.com/calyptia/core-images-index/go-index v0.0.0-20220819192914-db952b930502
 	github.com/calyptia/go-bubble-table v0.2.1
-	github.com/calyptia/go-fluentbit-config v0.1.1
 	github.com/charmbracelet/bubbletea v0.22.1
 	github.com/charmbracelet/lipgloss v0.5.0
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
@@ -83,7 +82,7 @@ require (
 	github.com/rivo/uniseg v0.3.4 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220106191415-9b9b3d81d5e3 // indirect
-	golang.org/x/net v0.0.0-20220812174116-3211cb980234 // indirect
+	golang.org/x/net v0.0.0-20220822230855-b0a4917ee28c // indirect
 	golang.org/x/oauth2 v0.0.0-20220822191816-0ebed06d0094 // indirect
 	golang.org/x/sys v0.0.0-20220818161305-2296e01440c6 // indirect
 	golang.org/x/text v0.3.7 // indirect
@@ -96,7 +95,7 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	k8s.io/klog/v2 v2.70.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20220803164354-a70c9af30aea // indirect
-	k8s.io/utils v0.0.0-20220812165043-ad590609e2e5 // indirect
+	k8s.io/utils v0.0.0-20220823124924-e9cbc92d1a73 // indirect
 	sigs.k8s.io/json v0.0.0-20220713155537-f223a00ba0e2 // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.2.3 // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect
