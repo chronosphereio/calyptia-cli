@@ -32,6 +32,9 @@ func Test_newCmdCreateCoreInstanceOnAWS(t *testing.T) {
 				},
 			}),
 			&aws.ClientMock{
+				KeyPairExistsFunc: func(ctx context.Context, keyPairName string) (bool, error) {
+					return true, nil
+				},
 				CreateInstanceFunc: func(ctx context.Context, in *aws.CreateInstanceParams) (aws.CreatedInstance, error) {
 					return instanceParams, nil
 				},
@@ -96,6 +99,9 @@ func Test_newCmdCreateCoreInstanceOnAWS(t *testing.T) {
 				CreateInstanceFunc: func(ctx context.Context, in *aws.CreateInstanceParams) (aws.CreatedInstance, error) {
 					return aws.CreatedInstance{}, aws.ErrSubnetNotFound
 				},
+				KeyPairExistsFunc: func(ctx context.Context, keyPairName string) (bool, error) {
+					return true, nil
+				},
 			}, &CoreInstancePollerMock{
 				ReadyFunc: func(ctx context.Context, env, name string) (string, error) {
 					return "", nil
@@ -115,6 +121,9 @@ func Test_newCmdCreateCoreInstanceOnAWS(t *testing.T) {
 				},
 			}),
 			&aws.ClientMock{
+				KeyPairExistsFunc: func(ctx context.Context, keyPairName string) (bool, error) {
+					return true, nil
+				},
 				CreateInstanceFunc: func(ctx context.Context, in *aws.CreateInstanceParams) (aws.CreatedInstance, error) {
 					return aws.CreatedInstance{}, nil
 				},

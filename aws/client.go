@@ -59,7 +59,8 @@ type (
 	//go:generate moq -out client_mock.go . Client
 	Client interface {
 		FindMatchingAMI(ctx context.Context, region, version string) (string, error)
-		EnsureKeyPair(ctx context.Context, keyPairName, environment string) (string, error)
+		KeyPairExists(ctx context.Context, keyPairName string) (bool, error)
+		CreateKeyPair(ct context.Context, keyPairName, environment string) (string, string, error)
 		EnsureInstanceType(ctx context.Context, instanceTypeName string) (string, error)
 		EnsureSubnet(ctx context.Context, subNetID string) (string, error)
 		EnsureSecurityGroup(ctx context.Context, securityGroupName, environment, vpcID string) (string, error)
@@ -544,6 +545,41 @@ func (c *DefaultClient) DeleteKeyPair(ctx context.Context, keyPairID string) err
 	return err
 }
 
+func (c *DefaultClient) CreateKeyPair(ctx context.Context, keyPairName, environment string) (string, string, error) {
+	if keyPairName == "" {
+		keyPairName = fmt.Sprintf(keyPairNameFormat, c.prefix, environment)
+	}
+
+	createKeyPairInput := &ec2.CreateKeyPairInput{
+		KeyName:           aws.String(keyPairName),
+		TagSpecifications: c.getTags(awstypes.ResourceTypeKeyPair, environment),
+	}
+
+	createdKeyPair, err := c.ec2Client.CreateKeyPair(ctx, createKeyPairInput)
+	if err != nil {
+		return keyPairName, "", err
+	}
+
+	return *createdKeyPair.KeyName, *createdKeyPair.KeyMaterial, nil
+}
+
+func (c *DefaultClient) KeyPairExists(ctx context.Context, keyPairName string) (bool, error) {
+	describeKeyPairInput := &ec2.DescribeKeyPairsInput{
+		KeyNames: []string{keyPairName},
+	}
+
+	keyPairs, err := c.ec2Client.DescribeKeyPairs(ctx, describeKeyPairInput)
+	if err != nil && !errorIsNotFound(err) {
+		return false, err
+	}
+
+	if keyPairs != nil && len(keyPairs.KeyPairs) > 0 {
+		return true, nil
+	}
+
+	return false, ErrKeyPairNotFound
+}
+
 func (c *DefaultClient) EnsureKeyPair(ctx context.Context, keyPairName, environment string) (string, error) {
 	if keyPairName == "" {
 		keyPairName = fmt.Sprintf(keyPairNameFormat, c.prefix, environment)
@@ -619,11 +655,6 @@ func (c *DefaultClient) CreateInstance(ctx context.Context, params *CreateInstan
 		return out, fmt.Errorf("could not find a matching AMI for version %s on region %s: %w", params.CoreVersion, params.Region, err)
 	}
 
-	keyPairName, err := c.EnsureKeyPair(ctx, params.KeyPairName, params.Environment)
-	if err != nil {
-		return out, fmt.Errorf("could not find a suitable key pair for a key: %w", err)
-	}
-
 	instanceType, err := c.EnsureInstanceType(ctx, params.InstanceType)
 	if err != nil {
 		return out, fmt.Errorf("could not find a suitable instance type: %w", err)
@@ -660,7 +691,7 @@ func (c *DefaultClient) CreateInstance(ctx context.Context, params *CreateInstan
 		UserData:          aws.String(userData),
 		SecurityGroupIds:  []string{securityGroupID},
 		SubnetId:          aws.String(params.SubnetID),
-		KeyName:           aws.String(keyPairName),
+		KeyName:           aws.String(params.KeyPairName),
 		TagSpecifications: c.getTags(awstypes.ResourceTypeInstance, params.Environment),
 	}
 
