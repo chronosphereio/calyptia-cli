@@ -21,7 +21,6 @@ func newCmdDeleteCoreInstanceOnAWS(config *config, client awsclient.Client) *cob
 		profileName string
 		environment string
 	)
-	isNonInteractiveMode := os.Stdin == nil || !term.IsTerminal(int(os.Stdin.Fd()))
 
 	var skipError, confirmDelete bool
 
@@ -90,7 +89,7 @@ func newCmdDeleteCoreInstanceOnAWS(config *config, client awsclient.Client) *cob
 
 			fmt.Fprintln(cmd.OutOrStdout(), "The following resources will be removed from your AWS account:\n"+strings.Join(toDelete, "\n"))
 
-			if !confirmDelete && !isNonInteractiveMode {
+			if !confirmDelete {
 				cmd.Print("You confirm the deletion of those resources? [y/N] ")
 				confirmDelete, err = readConfirm(cmd.InOrStdin())
 				if err != nil {
@@ -101,11 +100,6 @@ func newCmdDeleteCoreInstanceOnAWS(config *config, client awsclient.Client) *cob
 					cmd.Println("Aborting...")
 					return nil
 				}
-			}
-
-			if !confirmDelete {
-				cmd.Println("operation canceled")
-				return nil
 			}
 
 			err = config.cloud.DeleteAggregator(ctx, coreInstanceID)
@@ -122,6 +116,8 @@ func newCmdDeleteCoreInstanceOnAWS(config *config, client awsclient.Client) *cob
 		},
 	}
 
+	isNonInteractive := os.Stdin == nil || !term.IsTerminal(int(os.Stdin.Fd()))
+
 	fs := cmd.Flags()
 
 	fs.StringVar(&credentials, "credentials", "", "Path to the AWS credentials file. If not specified the default credential loader will be used.")
@@ -130,7 +126,7 @@ func newCmdDeleteCoreInstanceOnAWS(config *config, client awsclient.Client) *cob
 	fs.StringVar(&region, "region", awsclient.DefaultRegionName, "AWS region name to use in the instance.")
 	fs.StringVar(&environment, "environment", "default", "Calyptia environment name")
 	fs.BoolVar(&skipError, "skip-error", false, "Skip errors during delete process")
-	fs.BoolVarP(&confirmDelete, "yes", "y", isNonInteractiveMode, "Confirm deletion")
+	fs.BoolVarP(&confirmDelete, "yes", "y", isNonInteractive, "Confirm deletion")
 	fs.BoolVar(&debug, "debug", false, "Enable debug logging")
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
