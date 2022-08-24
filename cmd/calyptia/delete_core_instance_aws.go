@@ -50,6 +50,8 @@ func newCmdDeleteCoreInstanceOnAWS(config *config, client awsclient.Client) *cob
 				return fmt.Errorf("could not load core instance ID: %w", err)
 			}
 
+			// TODO: Make sure to delete core instance from Cloud even if we cannot connect to AWS.
+
 			ctx := context.Background()
 			if client == nil {
 				client, err = awsclient.New(ctx, coreInstanceName, region, credentials, profileFile, profileName, false)
@@ -89,7 +91,7 @@ func newCmdDeleteCoreInstanceOnAWS(config *config, client awsclient.Client) *cob
 			fmt.Fprintln(cmd.OutOrStdout(), "The following resources will be removed from your AWS account:\n"+strings.Join(toDelete, "\n"))
 
 			if !confirmDelete && !isNonInteractiveMode {
-				cmd.Println("You confirm the deletion of those resources? [y/N] ")
+				cmd.Print("You confirm the deletion of those resources? [y/N] ")
 				confirmDelete, err = readConfirm(cmd.InOrStdin())
 				if err != nil {
 					return err
