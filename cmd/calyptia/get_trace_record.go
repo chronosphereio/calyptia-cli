@@ -77,7 +77,8 @@ func renderTraceRecordsTable(w io.Writer, rr types.TraceRecords, sessionID strin
 		}
 	}
 	// TODO: show actual records in a nice human readable way.
-	fmt.Fprintln(tw, "TYPE\tTRACE-ID\tSTART\tEND\tINSTANCE\tALIAS\tRETURN\tAGE")
+	// Maybe logfmt.
+	fmt.Fprintln(tw, "TYPE\tTRACE-ID\tSTART\tEND\tPLUGIN-ID\tPLUGIN-ALIAS\tRETURN-CODE\tAGE")
 	for _, rec := range rr.Items {
 		if showIDs {
 			_, err := fmt.Fprintf(tw, "%s\t", rec.ID)
