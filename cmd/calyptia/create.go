@@ -5,7 +5,7 @@ import "github.com/spf13/cobra"
 func newCmdCreate(config *config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create",
-		Short: "Create aggregators, pipelines, etc.",
+		Short: "Create core instances, pipelines, etc.",
 	}
 
 	cmd.AddCommand(

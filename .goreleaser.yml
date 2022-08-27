@@ -14,5 +14,14 @@ builds:
       - darwin_arm64
       - linux_amd64
       - windows_amd64
+
 universal_binaries:
   - replace: true
+
+brews:
+  - name: calyptia
+    description: Calyptia Cloud CLI
+    homepage: https://github.com/calyptia/cli
+    tap:
+      owner: calyptia
+      name: homebrew-tap

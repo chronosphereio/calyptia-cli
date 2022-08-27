@@ -5,7 +5,7 @@ import "github.com/spf13/cobra"
 func newCmdUpdate(config *config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update",
-		Short: "Update aggregators, pipelines, core instances etc.",
+		Short: "Update core instances, pipelines, etc.",
 	}
 
 	cmd.AddCommand(
