@@ -72,18 +72,18 @@ Usage:
 Available Commands:
   completion  Generate the autocompletion script for the specified shell
   config      Configure Calyptia CLI
-  create      Create aggregators, pipelines, etc.
-  delete      Delete aggregators, pipelines, etc.
+  create      Create core instances, pipelines, etc.
+  delete      Delete core instances, pipelines, etc.
   get         Display one or many resources
   help        Help about any command
   rollout     Rollout resources to previous versions
   top         Display metrics
-  update      Update aggregators, pipelines, etc.
+  update      Update core instances, pipelines, etc.
 
 Flags:
       --cloud-url string   Calyptia Cloud URL (default "https://cloud-api.calyptia.com")
   -h, --help               help for calyptia
-      --token string       Calyptia Cloud Project token (default "eyJUb2tlbklEIjoiOWI5ODIwNzUtYzY4MC00MzdiLWE4YjMtYjU5NjNkMzE4OTUyIiwiUHJvamVjdElEIjoiMDkwZDFhYTEtZGU5Ni00NDZjLTk1NDQtMGUwMGNiNmRkMzkzIn0.JPD_g6oDQdmO_sPlshUJdNefpHT7AMDUjSRjg0x0E61U8-Frh2_ZOCTP93O5UBC9")
+      --token string       Calyptia Cloud Project token
   -v, --version            version for calyptia
 
 Use "calyptia [command] --help" for more information about a command.
