@@ -30,7 +30,7 @@ Alternatively, you can install only the binary by running:
 ---
 
 ```markdown
-go install github.com/calyptia/cloud-cli@latest
+go install github.com/calyptia/cli@latest
 ```
 
 ---
