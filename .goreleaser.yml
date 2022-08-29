@@ -5,6 +5,20 @@ blobs:
 
 builds:
   - main: ./cmd/calyptia
+    id: calyptia-cli-pkg
+    binary: calyptia
+    ldflags:
+      - -s -w -X main.version={{.Version}}
+    targets:
+      - darwin_amd64
+      - darwin_arm64
+    goarch:
+      - amd64
+      - arm64
+    hooks:
+      post:
+        ./macos/create-package.sh {{ .Os }} {{ .Path }} {{ .Version }} {{ .Arch }}
+  - main: ./cmd/calyptia
     id: calyptia
     binary: calyptia
     ldflags:
@@ -14,12 +28,23 @@ builds:
       - darwin_arm64
       - linux_amd64
       - windows_amd64
+    goarch:
+      - amd64
+      - arm64
+
+archives:
+  - id: calyptia
+    format: tar.gz
+    builds:
+      - calyptia
 
 universal_binaries:
   - replace: true
 
 brews:
   - name: calyptia
+    ids:
+      - calyptia
     description: Calyptia Cloud CLI
     homepage: https://github.com/calyptia/cli
     tap:
