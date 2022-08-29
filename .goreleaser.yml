@@ -25,4 +25,4 @@ brews:
     tap:
       owner: calyptia
       name: homebrew-tap
-      token: "{{ .Env.GITHUB_TOKEN }}"
+    folder: Formula
