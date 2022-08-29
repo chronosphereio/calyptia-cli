@@ -10,7 +10,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.17.1
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.54.0
 	github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi v1.13.13
-	github.com/calyptia/api v0.8.0
+	github.com/calyptia/api v0.8.1
 	github.com/calyptia/cli/k8s v0.0.0-00010101000000-000000000000
 	github.com/calyptia/core-images-index/go-index v0.0.0-20220819192914-db952b930502
 	github.com/calyptia/go-bubble-table v0.2.1
