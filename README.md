@@ -25,11 +25,18 @@ go build ./cmd/calyptia
 You can get the latest release artifacts for the major operating systems
 at the [Releases](https://github.com/calyptia/cloud-cli/releases) page.
 
-Alternatively, you can install only the binary by running:
+Alternatively, you can use `Brew`:
+
+```bash
+brew tap calyptia/tap
+brew install calyptia
+```
+
+You can even install latest from `main` branch using `Go`:
 
 ---
 
-```markdown
+```bash
 go install github.com/calyptia/cli@latest
 ```
 
@@ -44,7 +51,7 @@ Get a token (API key) from [cloud.calyptia.com](https://cloud.calyptia.com).
 
 ---
 
-```markdown
+```bash
 calyptia config set_token TOKEN
 ```
 
@@ -55,7 +62,7 @@ pass the token on each command, as an example:
 
 ---
 
-```markdown
+```bash
 calyptia get members --token TOKEN
 ```
 
@@ -63,7 +70,7 @@ calyptia get members --token TOKEN
 
 ## Commands
 
-```shell
+```bash
 Calyptia Cloud CLI
 
 Usage:
