@@ -3,6 +3,7 @@ package k8s
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	appsv1 "k8s.io/api/apps/v1"
 	apiv1 "k8s.io/api/core/v1"
@@ -27,6 +28,7 @@ const (
 var (
 	deploymentReplicas           int32 = 1
 	automountServiceAccountToken       = true
+	defaultObjectMetaNamePrefix        = "calyptia"
 )
 
 type Client struct {
@@ -38,8 +40,12 @@ type Client struct {
 }
 
 func (client *Client) getObjectMeta(agg cloud.CreatedAggregator, objectType objectType) metav1.ObjectMeta {
+	name := fmt.Sprintf("%s-%s-%s", agg.Name, agg.EnvironmentName, objectType)
+	if !strings.HasPrefix(name, defaultObjectMetaNamePrefix) {
+		name = fmt.Sprintf("%s-%s", defaultObjectMetaNamePrefix, name)
+	}
 	return metav1.ObjectMeta{
-		Name:   fmt.Sprintf("%s-%s-%s", agg.Name, agg.EnvironmentName, objectType),
+		Name:   name,
 		Labels: client.LabelsFunc(),
 	}
 }
