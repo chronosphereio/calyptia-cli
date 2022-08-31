@@ -6,13 +6,13 @@ replace github.com/calyptia/cli/k8s => ./k8s
 
 require (
 	code.cloudfoundry.org/bytefmt v0.0.0-20211005130812-5bb3c17173e5
-	github.com/aws/aws-sdk-go-v2 v1.16.11
-	github.com/aws/aws-sdk-go-v2/config v1.17.1
-	github.com/aws/aws-sdk-go-v2/service/ec2 v1.54.0
-	github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi v1.13.13
-	github.com/calyptia/api v0.8.0
+	github.com/aws/aws-sdk-go-v2 v1.16.12
+	github.com/aws/aws-sdk-go-v2/config v1.17.3
+	github.com/aws/aws-sdk-go-v2/service/ec2 v1.54.2
+	github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi v1.13.15
+	github.com/calyptia/api v0.8.2
 	github.com/calyptia/cli/k8s v0.0.0-00010101000000-000000000000
-	github.com/calyptia/core-images-index/go-index v0.0.0-20220819192914-db952b930502
+	github.com/calyptia/core-images-index/go-index v0.0.0-20220827134246-fcd12815a18c
 	github.com/calyptia/go-bubble-table v0.2.1
 	github.com/calyptia/go-fluentbit-config v0.1.1
 	github.com/charmbracelet/bubbletea v0.22.1
@@ -27,23 +27,24 @@ require (
 	golang.org/x/sync v0.0.0-20220819030929-7fc1605a5dde
 	golang.org/x/term v0.0.0-20220722155259-a9ba230a4035
 	gopkg.in/yaml.v2 v2.4.0
-	k8s.io/api v0.24.4
-	k8s.io/apimachinery v0.24.4
-	k8s.io/client-go v0.24.4
+	k8s.io/api v0.25.0
+	k8s.io/apimachinery v0.25.0
+	k8s.io/client-go v0.25.0
 )
 
 require (
 	github.com/alecthomas/participle/v2 v2.0.0-alpha9 // indirect
 	github.com/alessio/shellescape v1.4.1 // indirect
-	github.com/aws/aws-sdk-go-v2/credentials v1.12.14 // indirect
-	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.12.12 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/configsources v1.1.18 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.4.12 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/ini v1.3.19 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.9.12 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sso v1.11.17 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sts v1.16.13 // indirect
-	github.com/aws/smithy-go v1.12.1 // indirect
+	github.com/aws/aws-sdk-go-v2/credentials v1.12.16 // indirect
+	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.12.13 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/configsources v1.1.19 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.4.13 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/ini v1.3.20 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.9.13 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sso v1.11.19 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.13.1 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sts v1.16.15 // indirect
+	github.com/aws/smithy-go v1.13.0 // indirect
 	github.com/charmbracelet/bubbles v0.13.0 // indirect
 	github.com/containerd/console v1.0.3 // indirect
 	github.com/danieljoos/wincred v1.1.2 // indirect
@@ -83,9 +84,9 @@ require (
 	github.com/rivo/uniseg v0.3.4 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220106191415-9b9b3d81d5e3 // indirect
-	golang.org/x/net v0.0.0-20220822230855-b0a4917ee28c // indirect
+	golang.org/x/net v0.0.0-20220826154423-83b083e8dc8b // indirect
 	golang.org/x/oauth2 v0.0.0-20220822191816-0ebed06d0094 // indirect
-	golang.org/x/sys v0.0.0-20220818161305-2296e01440c6 // indirect
+	golang.org/x/sys v0.0.0-20220829200755-d48e67d00261 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/time v0.0.0-20220722155302-e5dcc9cfc0b9 // indirect
 	golang.org/x/tools v0.1.10 // indirect
