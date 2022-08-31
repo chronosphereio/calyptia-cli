@@ -41,10 +41,10 @@ func Test_newCmdCreateAggregatorOnK8s(t *testing.T) {
 
 		err := cmd.Execute()
 		wantEq(t, nil, err)
-		wantEq(t, "secret=\"want-aggregator-name-default-secret\"\n"+
-			"cluster_role=\"want-aggregator-name-default-cluster-role\"\n"+
-			"service_account=\"want-aggregator-name-default-service-account\"\n"+
-			"cluster_role_binding=\"want-aggregator-name-default-cluster-role-binding\"\n"+
-			"deployment=\"want-aggregator-name-default-deployment\"\n", got.String())
+		wantEq(t, "secret=\"calyptia-want-aggregator-name-default-secret\"\n"+
+			"cluster_role=\"calyptia-want-aggregator-name-default-cluster-role\"\n"+
+			"service_account=\"calyptia-want-aggregator-name-default-service-account\"\n"+
+			"cluster_role_binding=\"calyptia-want-aggregator-name-default-cluster-role-binding\"\n"+
+			"deployment=\"calyptia-want-aggregator-name-default-deployment\"\n", got.String())
 	})
 }
