@@ -25,6 +25,7 @@ type Client interface {
 	Agent(ctx context.Context, agentID string) (types.Agent, error)
 	UpdateAgent(ctx context.Context, agentID string, payload types.UpdateAgent) error
 	DeleteAgent(ctx context.Context, agentID string) error
+	DeleteAgents(ctx context.Context, projectID string, agentIDs ...string) error
 
 	AgentConfigHistory(ctx context.Context, agentID string, params types.AgentConfigHistoryParams) (types.AgentConfigHistory, error)
 
@@ -33,6 +34,7 @@ type Client interface {
 	Aggregator(ctx context.Context, aggregatorID string) (types.Aggregator, error)
 	UpdateAggregator(ctx context.Context, aggregatorID string, payload types.UpdateAggregator) error
 	DeleteAggregator(ctx context.Context, aggregatorID string) error
+	DeleteAggregators(ctx context.Context, projectID string, aggregatorIDs ...string) error
 
 	CreateResourceProfile(ctx context.Context, aggregatorID string, payload types.CreateResourceProfile) (types.CreatedResourceProfile, error)
 	ResourceProfiles(ctx context.Context, aggregatorID string, params types.ResourceProfilesParams) (types.ResourceProfiles, error)
@@ -46,6 +48,7 @@ type Client interface {
 	Pipeline(ctx context.Context, pipelineID string, params types.PipelineParams) (types.Pipeline, error)
 	UpdatePipeline(ctx context.Context, pipelineID string, opts types.UpdatePipeline) (types.UpdatedPipeline, error)
 	DeletePipeline(ctx context.Context, pipelineID string) error
+	DeletePipelines(ctx context.Context, aggregatorID string, pipelineIDs ...string) error
 
 	PipelineConfigHistory(ctx context.Context, pipelineID string, params types.PipelineConfigHistoryParams) (types.PipelineConfigHistory, error)
 
