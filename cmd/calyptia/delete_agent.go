@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -119,28 +118,17 @@ func newCmdDeleteAgents(config *config) *cobra.Command {
 				}
 			}
 
-			g := sync.WaitGroup{}
-
-			var count uint
-			for _, a := range aa.Items {
-				a := a
-				g.Add(1)
-				go func() {
-					defer g.Done()
-
-					err := config.cloud.DeleteAgent(ctx, a.ID)
-					if err != nil {
-						cmd.PrintErrf("Error: could not delete agent with id %q: %v\n", a.ID, err)
-						return
-					}
-
-					count++
-				}()
+			agentIDs := make([]string, len(aa.Items))
+			for i, a := range aa.Items {
+				agentIDs[i] = a.ID
 			}
 
-			g.Wait()
+			err = config.cloud.DeleteAgents(ctx, config.projectID, agentIDs...)
+			if err != nil {
+				return fmt.Errorf("delete agents: %w", err)
+			}
 
-			cmd.Printf("Successfully deleted %d agents\n", count)
+			cmd.Printf("Successfully deleted %d agents\n", len(agentIDs))
 
 			return nil
 		},

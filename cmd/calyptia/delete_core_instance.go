@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"sync"
 
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
@@ -60,28 +59,17 @@ func newCmdDeleteCoreInstances(config *config) *cobra.Command {
 				}
 			}
 
-			g := sync.WaitGroup{}
-
-			var count uint
-			for _, a := range aa.Items {
-				a := a
-				g.Add(1)
-				go func() {
-					defer g.Done()
-
-					err := config.cloud.DeleteAggregator(ctx, a.ID)
-					if err != nil {
-						cmd.PrintErrf("Error: could not delete core instance with id %q: %v\n", a.ID, err)
-						return
-					}
-
-					count++
-				}()
+			aggregatorIDs := make([]string, len(aa.Items))
+			for i, a := range aa.Items {
+				aggregatorIDs[i] = a.ID
 			}
 
-			g.Wait()
+			err = config.cloud.DeleteAggregators(ctx, config.projectID, aggregatorIDs...)
+			if err != nil {
+				return fmt.Errorf("delete core instances: %w", err)
+			}
 
-			cmd.Printf("Successfully deleted %d core instances\n", count)
+			cmd.Printf("Successfully deleted %d core instances\n", len(aggregatorIDs))
 
 			return nil
 		},

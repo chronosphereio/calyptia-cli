@@ -70,8 +70,14 @@ var _ Client = &ClientMock{}
 //			DeleteAgentFunc: func(ctx context.Context, agentID string) error {
 //				panic("mock out the DeleteAgent method")
 //			},
+//			DeleteAgentsFunc: func(ctx context.Context, projectID string, agentIDs ...string) error {
+//				panic("mock out the DeleteAgents method")
+//			},
 //			DeleteAggregatorFunc: func(ctx context.Context, aggregatorID string) error {
 //				panic("mock out the DeleteAggregator method")
+//			},
+//			DeleteAggregatorsFunc: func(ctx context.Context, projectID string, aggregatorIDs ...string) error {
+//				panic("mock out the DeleteAggregators method")
 //			},
 //			DeleteEnvironmentFunc: func(ctx context.Context, environmentID string) error {
 //				panic("mock out the DeleteEnvironment method")
@@ -87,6 +93,9 @@ var _ Client = &ClientMock{}
 //			},
 //			DeletePipelineSecretFunc: func(ctx context.Context, secretID string) error {
 //				panic("mock out the DeletePipelineSecret method")
+//			},
+//			DeletePipelinesFunc: func(ctx context.Context, aggregatorID string, pipelineIDs ...string) error {
+//				panic("mock out the DeletePipelines method")
 //			},
 //			DeleteResourceProfileFunc: func(ctx context.Context, resourceProfileID string) error {
 //				panic("mock out the DeleteResourceProfile method")
@@ -260,8 +269,14 @@ type ClientMock struct {
 	// DeleteAgentFunc mocks the DeleteAgent method.
 	DeleteAgentFunc func(ctx context.Context, agentID string) error
 
+	// DeleteAgentsFunc mocks the DeleteAgents method.
+	DeleteAgentsFunc func(ctx context.Context, projectID string, agentIDs ...string) error
+
 	// DeleteAggregatorFunc mocks the DeleteAggregator method.
 	DeleteAggregatorFunc func(ctx context.Context, aggregatorID string) error
+
+	// DeleteAggregatorsFunc mocks the DeleteAggregators method.
+	DeleteAggregatorsFunc func(ctx context.Context, projectID string, aggregatorIDs ...string) error
 
 	// DeleteEnvironmentFunc mocks the DeleteEnvironment method.
 	DeleteEnvironmentFunc func(ctx context.Context, environmentID string) error
@@ -277,6 +292,9 @@ type ClientMock struct {
 
 	// DeletePipelineSecretFunc mocks the DeletePipelineSecret method.
 	DeletePipelineSecretFunc func(ctx context.Context, secretID string) error
+
+	// DeletePipelinesFunc mocks the DeletePipelines method.
+	DeletePipelinesFunc func(ctx context.Context, aggregatorID string, pipelineIDs ...string) error
 
 	// DeleteResourceProfileFunc mocks the DeleteResourceProfile method.
 	DeleteResourceProfileFunc func(ctx context.Context, resourceProfileID string) error
@@ -537,12 +555,30 @@ type ClientMock struct {
 			// AgentID is the agentID argument value.
 			AgentID string
 		}
+		// DeleteAgents holds details about calls to the DeleteAgents method.
+		DeleteAgents []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ProjectID is the projectID argument value.
+			ProjectID string
+			// AgentIDs is the agentIDs argument value.
+			AgentIDs []string
+		}
 		// DeleteAggregator holds details about calls to the DeleteAggregator method.
 		DeleteAggregator []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// AggregatorID is the aggregatorID argument value.
 			AggregatorID string
+		}
+		// DeleteAggregators holds details about calls to the DeleteAggregators method.
+		DeleteAggregators []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ProjectID is the projectID argument value.
+			ProjectID string
+			// AggregatorIDs is the aggregatorIDs argument value.
+			AggregatorIDs []string
 		}
 		// DeleteEnvironment holds details about calls to the DeleteEnvironment method.
 		DeleteEnvironment []struct {
@@ -578,6 +614,15 @@ type ClientMock struct {
 			Ctx context.Context
 			// SecretID is the secretID argument value.
 			SecretID string
+		}
+		// DeletePipelines holds details about calls to the DeletePipelines method.
+		DeletePipelines []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// AggregatorID is the aggregatorID argument value.
+			AggregatorID string
+			// PipelineIDs is the pipelineIDs argument value.
+			PipelineIDs []string
 		}
 		// DeleteResourceProfile holds details about calls to the DeleteResourceProfile method.
 		DeleteResourceProfile []struct {
@@ -917,12 +962,15 @@ type ClientMock struct {
 	lockCreateResourceProfile       sync.RWMutex
 	lockCreateTraceSession          sync.RWMutex
 	lockDeleteAgent                 sync.RWMutex
+	lockDeleteAgents                sync.RWMutex
 	lockDeleteAggregator            sync.RWMutex
+	lockDeleteAggregators           sync.RWMutex
 	lockDeleteEnvironment           sync.RWMutex
 	lockDeletePipeline              sync.RWMutex
 	lockDeletePipelineFile          sync.RWMutex
 	lockDeletePipelinePort          sync.RWMutex
 	lockDeletePipelineSecret        sync.RWMutex
+	lockDeletePipelines             sync.RWMutex
 	lockDeleteResourceProfile       sync.RWMutex
 	lockDeleteToken                 sync.RWMutex
 	lockEnvironments                sync.RWMutex
@@ -1689,6 +1737,49 @@ func (mock *ClientMock) DeleteAgentCalls() []struct {
 	return calls
 }
 
+// DeleteAgents calls DeleteAgentsFunc.
+func (mock *ClientMock) DeleteAgents(ctx context.Context, projectID string, agentIDs ...string) error {
+	callInfo := struct {
+		Ctx       context.Context
+		ProjectID string
+		AgentIDs  []string
+	}{
+		Ctx:       ctx,
+		ProjectID: projectID,
+		AgentIDs:  agentIDs,
+	}
+	mock.lockDeleteAgents.Lock()
+	mock.calls.DeleteAgents = append(mock.calls.DeleteAgents, callInfo)
+	mock.lockDeleteAgents.Unlock()
+	if mock.DeleteAgentsFunc == nil {
+		var (
+			errOut error
+		)
+		return errOut
+	}
+	return mock.DeleteAgentsFunc(ctx, projectID, agentIDs...)
+}
+
+// DeleteAgentsCalls gets all the calls that were made to DeleteAgents.
+// Check the length with:
+//
+//	len(mockedClient.DeleteAgentsCalls())
+func (mock *ClientMock) DeleteAgentsCalls() []struct {
+	Ctx       context.Context
+	ProjectID string
+	AgentIDs  []string
+} {
+	var calls []struct {
+		Ctx       context.Context
+		ProjectID string
+		AgentIDs  []string
+	}
+	mock.lockDeleteAgents.RLock()
+	calls = mock.calls.DeleteAgents
+	mock.lockDeleteAgents.RUnlock()
+	return calls
+}
+
 // DeleteAggregator calls DeleteAggregatorFunc.
 func (mock *ClientMock) DeleteAggregator(ctx context.Context, aggregatorID string) error {
 	callInfo := struct {
@@ -1725,6 +1816,49 @@ func (mock *ClientMock) DeleteAggregatorCalls() []struct {
 	mock.lockDeleteAggregator.RLock()
 	calls = mock.calls.DeleteAggregator
 	mock.lockDeleteAggregator.RUnlock()
+	return calls
+}
+
+// DeleteAggregators calls DeleteAggregatorsFunc.
+func (mock *ClientMock) DeleteAggregators(ctx context.Context, projectID string, aggregatorIDs ...string) error {
+	callInfo := struct {
+		Ctx           context.Context
+		ProjectID     string
+		AggregatorIDs []string
+	}{
+		Ctx:           ctx,
+		ProjectID:     projectID,
+		AggregatorIDs: aggregatorIDs,
+	}
+	mock.lockDeleteAggregators.Lock()
+	mock.calls.DeleteAggregators = append(mock.calls.DeleteAggregators, callInfo)
+	mock.lockDeleteAggregators.Unlock()
+	if mock.DeleteAggregatorsFunc == nil {
+		var (
+			errOut error
+		)
+		return errOut
+	}
+	return mock.DeleteAggregatorsFunc(ctx, projectID, aggregatorIDs...)
+}
+
+// DeleteAggregatorsCalls gets all the calls that were made to DeleteAggregators.
+// Check the length with:
+//
+//	len(mockedClient.DeleteAggregatorsCalls())
+func (mock *ClientMock) DeleteAggregatorsCalls() []struct {
+	Ctx           context.Context
+	ProjectID     string
+	AggregatorIDs []string
+} {
+	var calls []struct {
+		Ctx           context.Context
+		ProjectID     string
+		AggregatorIDs []string
+	}
+	mock.lockDeleteAggregators.RLock()
+	calls = mock.calls.DeleteAggregators
+	mock.lockDeleteAggregators.RUnlock()
 	return calls
 }
 
@@ -1920,6 +2054,49 @@ func (mock *ClientMock) DeletePipelineSecretCalls() []struct {
 	mock.lockDeletePipelineSecret.RLock()
 	calls = mock.calls.DeletePipelineSecret
 	mock.lockDeletePipelineSecret.RUnlock()
+	return calls
+}
+
+// DeletePipelines calls DeletePipelinesFunc.
+func (mock *ClientMock) DeletePipelines(ctx context.Context, aggregatorID string, pipelineIDs ...string) error {
+	callInfo := struct {
+		Ctx          context.Context
+		AggregatorID string
+		PipelineIDs  []string
+	}{
+		Ctx:          ctx,
+		AggregatorID: aggregatorID,
+		PipelineIDs:  pipelineIDs,
+	}
+	mock.lockDeletePipelines.Lock()
+	mock.calls.DeletePipelines = append(mock.calls.DeletePipelines, callInfo)
+	mock.lockDeletePipelines.Unlock()
+	if mock.DeletePipelinesFunc == nil {
+		var (
+			errOut error
+		)
+		return errOut
+	}
+	return mock.DeletePipelinesFunc(ctx, aggregatorID, pipelineIDs...)
+}
+
+// DeletePipelinesCalls gets all the calls that were made to DeletePipelines.
+// Check the length with:
+//
+//	len(mockedClient.DeletePipelinesCalls())
+func (mock *ClientMock) DeletePipelinesCalls() []struct {
+	Ctx          context.Context
+	AggregatorID string
+	PipelineIDs  []string
+} {
+	var calls []struct {
+		Ctx          context.Context
+		AggregatorID string
+		PipelineIDs  []string
+	}
+	mock.lockDeletePipelines.RLock()
+	calls = mock.calls.DeletePipelines
+	mock.lockDeletePipelines.RUnlock()
 	return calls
 }
 
