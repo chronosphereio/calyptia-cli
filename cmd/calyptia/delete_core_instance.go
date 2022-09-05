@@ -21,7 +21,7 @@ func newCmdDeleteCoreInstance(config *config, testClientSet kubernetes.Interface
 	cmd.AddCommand(
 		newCmdDeleteCoreInstanceK8s(config, nil),
 		newCmdDeleteCoreInstanceOnAWS(config, nil),
-		newCmdDeleteCoreInstanceOnGCP(config),
+		newCmdDeleteCoreInstanceOnGCP(config, nil),
 	)
 	return cmd
 }

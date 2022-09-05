@@ -20,7 +20,7 @@ var _ Client = &ClientMock{}
 //
 // 		// make and configure a mocked Client
 // 		mockedClient := &ClientMock{
-// 			DeleteFunc: func(contextMoqParam context.Context) error {
+// 			DeleteFunc: func(ctx context.Context, coreInstanceName string) error {
 // 				panic("mock out the Delete method")
 // 			},
 // 			DeployFunc: func(contextMoqParam context.Context) error {
@@ -46,7 +46,7 @@ var _ Client = &ClientMock{}
 // 	}
 type ClientMock struct {
 	// DeleteFunc mocks the Delete method.
-	DeleteFunc func(contextMoqParam context.Context) error
+	DeleteFunc func(ctx context.Context, coreInstanceName string) error
 
 	// DeployFunc mocks the Deploy method.
 	DeployFunc func(contextMoqParam context.Context) error
@@ -67,8 +67,10 @@ type ClientMock struct {
 	calls struct {
 		// Delete holds details about calls to the Delete method.
 		Delete []struct {
-			// ContextMoqParam is the contextMoqParam argument value.
-			ContextMoqParam context.Context
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// CoreInstanceName is the coreInstanceName argument value.
+			CoreInstanceName string
 		}
 		// Deploy holds details about calls to the Deploy method.
 		Deploy []struct {
@@ -109,29 +111,33 @@ type ClientMock struct {
 }
 
 // Delete calls DeleteFunc.
-func (mock *ClientMock) Delete(contextMoqParam context.Context) error {
+func (mock *ClientMock) Delete(ctx context.Context, coreInstanceName string) error {
 	if mock.DeleteFunc == nil {
 		panic("ClientMock.DeleteFunc: method is nil but Client.Delete was just called")
 	}
 	callInfo := struct {
-		ContextMoqParam context.Context
+		Ctx              context.Context
+		CoreInstanceName string
 	}{
-		ContextMoqParam: contextMoqParam,
+		Ctx:              ctx,
+		CoreInstanceName: coreInstanceName,
 	}
 	mock.lockDelete.Lock()
 	mock.calls.Delete = append(mock.calls.Delete, callInfo)
 	mock.lockDelete.Unlock()
-	return mock.DeleteFunc(contextMoqParam)
+	return mock.DeleteFunc(ctx, coreInstanceName)
 }
 
 // DeleteCalls gets all the calls that were made to Delete.
 // Check the length with:
 //     len(mockedClient.DeleteCalls())
 func (mock *ClientMock) DeleteCalls() []struct {
-	ContextMoqParam context.Context
+	Ctx              context.Context
+	CoreInstanceName string
 } {
 	var calls []struct {
-		ContextMoqParam context.Context
+		Ctx              context.Context
+		CoreInstanceName string
 	}
 	mock.lockDelete.RLock()
 	calls = mock.calls.Delete

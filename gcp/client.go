@@ -10,7 +10,7 @@ import (
 
 //go:generate moq -out client_mock.go . Client
 type Client interface {
-	Delete(context.Context) error
+	Delete(ctx context.Context, coreInstanceName string) error
 	SetConfig(newConfig Config)
 	Deploy(context.Context) error
 	FollowOperations(context.Context) (*deploymentmanager.Operation, error)
@@ -75,13 +75,14 @@ func (c *DefaultClient) FollowOperations(ctx context.Context) (*deploymentmanage
 }
 
 func (c *DefaultClient) Rollback(ctx context.Context) error {
-	if err := c.Delete(ctx); err != nil {
+	if err := c.Delete(ctx, c.config.Resources[0].Name); err != nil {
 		return err
 	}
 	return nil
 }
-func (c *DefaultClient) Delete(ctx context.Context) error {
-	_, err := c.manager.Deployments.Delete(c.projectName, c.deploymentName).Context(ctx).Do()
+func (c *DefaultClient) Delete(ctx context.Context, coreInstanceName string) error {
+	deploymentName := fmt.Sprintf("%s-%s-deployment", coreInstanceName, c.environment)
+	_, err := c.manager.Deployments.Delete(c.projectName, deploymentName).Context(ctx).Do()
 	return err
 }
 
