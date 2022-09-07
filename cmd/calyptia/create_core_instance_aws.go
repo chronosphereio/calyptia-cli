@@ -94,6 +94,7 @@ func newCmdCreateCoreInstanceOnAWS(config *config, client awsclient.Client, poll
 		tags                   []string
 		noHealthCheckPipeline  bool
 		noElasticIPv4Address   bool
+		useTestImages          bool
 		debug                  bool
 		coreInstanceVersion    string
 		coreInstanceName       string
@@ -156,6 +157,7 @@ func newCmdCreateCoreInstanceOnAWS(config *config, client awsclient.Client, poll
 				UserData: &awsclient.CreateUserDataParams{
 					ProjectToken: config.projectToken,
 				},
+				UseTestImages: useTestImages,
 			}
 
 			if environment != "" {
@@ -212,6 +214,7 @@ func newCmdCreateCoreInstanceOnAWS(config *config, client awsclient.Client, poll
 	fs.StringVar(&credentials, "credentials", "", "Path to the AWS credentials file. If not specified the default credential loader will be used.")
 	fs.StringVar(&profileFile, "profile-file", "", "Path to the AWS profile file. If not specified the default credential loader will be used.")
 	fs.StringVar(&profileName, "profile", "", "Name of the AWS profile to use, if not specified, the default profileFile will be used.")
+	fs.BoolVar(&useTestImages, "use-test-images", false, "Use AWS test images instead of released channel (only for testing/development).")
 
 	// Set of parameters that map into https://docs.aws.amazon.com/sdk-for-go/api/service/ec2/#RunInstancesInput
 	fs.StringVar(&keyPairName, "key-pair", "", "AWS Key pair to use for SSH into the core instance.")

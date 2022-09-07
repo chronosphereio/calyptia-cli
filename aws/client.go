@@ -61,7 +61,7 @@ type TagSpec map[string]string
 type (
 	//go:generate moq -out client_mock.go . Client
 	Client interface {
-		FindMatchingAMI(ctx context.Context, region, version string) (string, error)
+		FindMatchingAMI(ctx context.Context, useTestImages bool, region, version string) (string, error)
 		EnsureKeyPair(ctx context.Context, keyPairName, environment string) (string, error)
 		EnsureInstanceType(ctx context.Context, instanceTypeName string) (string, error)
 		EnsureSubnet(ctx context.Context, subNetID string) (string, error)
@@ -107,6 +107,7 @@ type (
 		SubnetID string
 		UserData        *CreateUserDataParams
 		PublicIPAddress *ElasticIPAddressParams
+		UseTestImages   bool
 	}
 
 	CreatedInstance struct {
@@ -190,7 +191,7 @@ func (c *DefaultClient) InstanceState(ctx context.Context, instanceID string) (s
 	return string(instanceStatus.InstanceStatuses[0].InstanceState.Name), nil
 }
 
-func (c *DefaultClient) FindMatchingAMI(ctx context.Context, region, version string) (string, error) {
+func (c *DefaultClient) FindMatchingAMI(ctx context.Context, useTestImages bool, region, version string) (string, error) {
 	containerIndex, err := index.NewContainer()
 	if err != nil {
 		return "", err
@@ -216,12 +217,13 @@ func (c *DefaultClient) FindMatchingAMI(ctx context.Context, region, version str
 		return "", err
 	}
 
-	imageID, err := awsIndex.Match(ctx, region, version)
-	if err != nil {
-		return "", err
-	}
+	imageID, err := awsIndex.Match(ctx, index.FilterOpts{
+		Region:    region,
+		Version:   version,
+		TestIndex: useTestImages,
+	})
 
-	return imageID, nil
+	return imageID, err
 }
 
 func (c *DefaultClient) EnsureAndAssociateElasticIPv4Address(ctx context.Context, instanceID, environment, elasticIPv4AddressPool, elasticIPv4Address string) (string, error) {
@@ -617,7 +619,7 @@ func (c DefaultClient) CreateUserdata(in *CreateUserDataParams) (string, error) 
 func (c *DefaultClient) CreateInstance(ctx context.Context, params *CreateInstanceParams) (CreatedInstance, error) {
 	var out CreatedInstance
 
-	imageID, err := c.FindMatchingAMI(ctx, params.Region, params.CoreVersion)
+	imageID, err := c.FindMatchingAMI(ctx, params.UseTestImages, params.Region, params.CoreVersion)
 	if err != nil {
 		return out, fmt.Errorf("could not find a matching AMI for version %s on region %s: %w", params.CoreVersion, params.Region, err)
 	}
