@@ -25,6 +25,7 @@ func newCmdCreateCoreInstanceOnGCP(config *config, client gcp.Client) *cobra.Com
 		sshKeyPath            string
 		sshUser               string
 		network               string
+		useTestImages         bool
 	)
 	cmd := &cobra.Command{
 		Use:     "gcp",
@@ -43,7 +44,11 @@ func newCmdCreateCoreInstanceOnGCP(config *config, client gcp.Client) *cobra.Com
 				if err != nil {
 					return err
 				}
-				coreInstanceVersion, err = gcpImage.Match(ctx, coreInstanceVersion, location)
+				coreInstanceVersion, err = gcpImage.Match(ctx, index.FilterOpts{
+					Region:    location,
+					Version:   coreInstanceVersion,
+					TestIndex: useTestImages,
+				})
 				if err != nil {
 					return err
 				}
@@ -133,6 +138,7 @@ func newCmdCreateCoreInstanceOnGCP(config *config, client gcp.Client) *cobra.Com
 	fs.StringVar(&sshUser, "ssh-user", "", "GCP SSH user to use for the instance. (default is no user)")
 	fs.StringVar(&sshKeyPath, "ssh-key", "", "SSH Key path to use for the instance. (default is no key)")
 	fs.StringVar(&network, "network", "default", "GCP Network")
+	fs.BoolVar(&useTestImages, "use-test-images", false, "Use GCP test images instead of released channel (only for testing/development).")
 
 	return cmd
 }

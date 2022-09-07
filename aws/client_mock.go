@@ -54,7 +54,7 @@ var _ Client = &ClientMock{}
 // 			EnsureSubnetFunc: func(ctx context.Context, subNetID string) (string, error) {
 // 				panic("mock out the EnsureSubnet method")
 // 			},
-// 			FindMatchingAMIFunc: func(ctx context.Context, region string, version string) (string, error) {
+// 			FindMatchingAMIFunc: func(ctx context.Context, useTestImages bool, region string, version string) (string, error) {
 // 				panic("mock out the FindMatchingAMI method")
 // 			},
 // 			GetResourcesByTagsFunc: func(ctx context.Context, tags TagSpec) ([]Resource, error) {
@@ -107,7 +107,7 @@ type ClientMock struct {
 	EnsureSubnetFunc func(ctx context.Context, subNetID string) (string, error)
 
 	// FindMatchingAMIFunc mocks the FindMatchingAMI method.
-	FindMatchingAMIFunc func(ctx context.Context, region string, version string) (string, error)
+	FindMatchingAMIFunc func(ctx context.Context, useTestImages bool, region string, version string) (string, error)
 
 	// GetResourcesByTagsFunc mocks the GetResourcesByTags method.
 	GetResourcesByTagsFunc func(ctx context.Context, tags TagSpec) ([]Resource, error)
@@ -215,6 +215,8 @@ type ClientMock struct {
 		FindMatchingAMI []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
+			// UseTestImages is the useTestImages argument value.
+			UseTestImages bool
 			// Region is the region argument value.
 			Region string
 			// Version is the version argument value.
@@ -693,37 +695,41 @@ func (mock *ClientMock) EnsureSubnetCalls() []struct {
 }
 
 // FindMatchingAMI calls FindMatchingAMIFunc.
-func (mock *ClientMock) FindMatchingAMI(ctx context.Context, region string, version string) (string, error) {
+func (mock *ClientMock) FindMatchingAMI(ctx context.Context, useTestImages bool, region string, version string) (string, error) {
 	if mock.FindMatchingAMIFunc == nil {
 		panic("ClientMock.FindMatchingAMIFunc: method is nil but Client.FindMatchingAMI was just called")
 	}
 	callInfo := struct {
-		Ctx     context.Context
-		Region  string
-		Version string
+		Ctx           context.Context
+		UseTestImages bool
+		Region        string
+		Version       string
 	}{
-		Ctx:     ctx,
-		Region:  region,
-		Version: version,
+		Ctx:           ctx,
+		UseTestImages: useTestImages,
+		Region:        region,
+		Version:       version,
 	}
 	mock.lockFindMatchingAMI.Lock()
 	mock.calls.FindMatchingAMI = append(mock.calls.FindMatchingAMI, callInfo)
 	mock.lockFindMatchingAMI.Unlock()
-	return mock.FindMatchingAMIFunc(ctx, region, version)
+	return mock.FindMatchingAMIFunc(ctx, useTestImages, region, version)
 }
 
 // FindMatchingAMICalls gets all the calls that were made to FindMatchingAMI.
 // Check the length with:
 //     len(mockedClient.FindMatchingAMICalls())
 func (mock *ClientMock) FindMatchingAMICalls() []struct {
-	Ctx     context.Context
-	Region  string
-	Version string
+	Ctx           context.Context
+	UseTestImages bool
+	Region        string
+	Version       string
 } {
 	var calls []struct {
-		Ctx     context.Context
-		Region  string
-		Version string
+		Ctx           context.Context
+		UseTestImages bool
+		Region        string
+		Version       string
 	}
 	mock.lockFindMatchingAMI.RLock()
 	calls = mock.calls.FindMatchingAMI
