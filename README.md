@@ -37,7 +37,7 @@ You can even install latest from `main` branch using `Go`:
 ---
 
 ```bash
-go install github.com/calyptia/cli@latest
+go install github.com/calyptia/cli/cmd/calyptia@latest
 ```
 
 ---
