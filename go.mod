@@ -14,7 +14,7 @@ require (
 	github.com/calyptia/cli/k8s v0.0.0-00010101000000-000000000000
 	github.com/calyptia/core-images-index/go-index v0.0.0-20220907103121-f0a8df68bedc
 	github.com/calyptia/go-bubble-table v0.2.1
-	github.com/calyptia/go-fluentbit-config v0.2.0
+	github.com/calyptia/go-fluentbit-config v0.3.2
 	github.com/charmbracelet/bubbletea v0.22.1
 	github.com/charmbracelet/lipgloss v0.5.0
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
