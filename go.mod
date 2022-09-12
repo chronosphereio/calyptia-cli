@@ -26,7 +26,7 @@ require (
 	github.com/zalando/go-keyring v0.2.1
 	golang.org/x/sync v0.0.0-20220819030929-7fc1605a5dde
 	golang.org/x/term v0.0.0-20220722155259-a9ba230a4035
-	google.golang.org/api v0.94.0
+	google.golang.org/api v0.95.0
 	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/api v0.25.0
 	k8s.io/apimachinery v0.25.0
