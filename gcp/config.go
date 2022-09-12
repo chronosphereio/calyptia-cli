@@ -46,7 +46,7 @@ type networkInterface struct {
 // accessConfig
 type accessConfig struct {
 	Name  string `yaml:"name"`
-	NatIP string `yaml:"natIP"`
+	NatIP string `yaml:"natIP,omitempty"`
 }
 
 // Config
