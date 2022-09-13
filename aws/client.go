@@ -37,6 +37,9 @@ CALYPTIA_CORE_INSTANCE_TAGS={{.CoreInstanceTags}}
 {{if .CoreInstanceEnvironment }}
 CALYPTIA_CORE_INSTANCE_ENVIRONMENT={{.CoreInstanceEnvironment}}
 {{end}}
+{{if .CoreInstanceGitHubToken }}
+GITHUB_TOKEN={{.CoreInstanceGitHubToken}}
+{{end}}
 `
 	instanceUpCheckTimeout = 10 * time.Minute
 	instanceUpCheckBackOff = 5 * time.Second
@@ -90,6 +93,7 @@ type (
 		CoreInstanceName        string
 		CoreInstanceTags        string
 		CoreInstanceEnvironment string
+		CoreInstanceGitHubToken string
 	}
 
 	ElasticIPAddressParams struct {
