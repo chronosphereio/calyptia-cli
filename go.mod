@@ -16,7 +16,7 @@ require (
 	github.com/calyptia/go-bubble-table v0.2.1
 	github.com/calyptia/go-fluentbit-config v0.3.2
 	github.com/charmbracelet/bubbletea v0.22.1
-	github.com/charmbracelet/lipgloss v0.5.0
+	github.com/charmbracelet/lipgloss v0.6.0
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
 	github.com/joho/godotenv v1.4.0
 	github.com/matryer/moq v0.2.7
