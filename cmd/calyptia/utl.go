@@ -9,7 +9,6 @@ import (
 	"os"
 	"regexp"
 	"sort"
-	"strconv"
 	"strings"
 	text_template "text/template"
 	"time"
@@ -250,11 +249,7 @@ func applyGoTemplate(w io.Writer, outputFormat, goTemplate string, data any) err
 			return nil
 		}
 
-		if s, err := strconv.Unquote(parts[1]); err == nil {
-			goTemplate = s
-		} else {
-			goTemplate = parts[1]
-		}
+		goTemplate = trimQuotes(parts[1])
 
 		if goTemplate == "" {
 			return nil
@@ -283,4 +278,13 @@ func applyGoTemplate(w io.Writer, outputFormat, goTemplate string, data any) err
 	}
 
 	return nil
+}
+
+func trimQuotes(s string) string {
+	if len(s) >= 2 {
+		if c := s[len(s)-1]; s[0] == c && (c == '"' || c == '\'' || c == '`') {
+			return s[1 : len(s)-1]
+		}
+	}
+	return s
 }
