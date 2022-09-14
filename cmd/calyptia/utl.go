@@ -1,13 +1,17 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
 	"math"
+	"os"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
+	text_template "text/template"
 	"time"
 
 	"code.cloudfoundry.org/bytefmt"
@@ -236,4 +240,46 @@ func readConfirm(r io.Reader) (bool, error) {
 
 	answer = strings.TrimSpace(strings.ToLower(answer))
 	return answer == "y" || answer == "yes", nil
+}
+
+func applyGoTemplate(w io.Writer, outputFormat, goTemplate string, data any) error {
+	if goTemplate == "" {
+		parts := strings.SplitN(outputFormat, "=", 2)
+		if len(parts) != 2 {
+			return nil
+		}
+
+		if s, err := strconv.Unquote(parts[1]); err == nil {
+			goTemplate = s
+		} else {
+			goTemplate = parts[1]
+		}
+
+		if goTemplate == "" {
+			return nil
+		}
+	}
+
+	goTemplate = strings.TrimSpace(goTemplate)
+
+	if strings.HasPrefix(outputFormat, "go-template-file") {
+		b, err := os.ReadFile(goTemplate)
+		if err != nil {
+			return fmt.Errorf("reading go-template-file: %w", err)
+		}
+
+		goTemplate = string(bytes.TrimSpace(b))
+	}
+
+	tmpl, err := text_template.New("").Parse(goTemplate + "\n")
+	if err != nil {
+		return fmt.Errorf("parsing go-template: %w", err)
+	}
+
+	err = tmpl.Execute(w, data)
+	if err != nil {
+		return fmt.Errorf("rendering go-template: %w", err)
+	}
+
+	return nil
 }

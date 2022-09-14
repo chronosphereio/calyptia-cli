@@ -13,8 +13,9 @@ import (
 
 func newCmdGetMembers(config *config) *cobra.Command {
 	var last uint
-	var format string
+	var outputFormat, goTemplate string
 	var showIDs bool
+
 	cmd := &cobra.Command{
 		Use:   "members",
 		Short: "Display latest members from a project",
@@ -26,7 +27,11 @@ func newCmdGetMembers(config *config) *cobra.Command {
 				return fmt.Errorf("could not fetch your project members: %w", err)
 			}
 
-			switch format {
+			if strings.HasPrefix(outputFormat, "go-template") {
+				return applyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, mm.Items)
+			}
+
+			switch outputFormat {
 			case "table":
 				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
 				if showIDs {
@@ -58,7 +63,7 @@ func newCmdGetMembers(config *config) *cobra.Command {
 					return fmt.Errorf("could not json encode your project members: %w", err)
 				}
 			default:
-				return fmt.Errorf("unknown output format %q", format)
+				return fmt.Errorf("unknown output format %q", outputFormat)
 			}
 			return nil
 		},
@@ -66,8 +71,9 @@ func newCmdGetMembers(config *config) *cobra.Command {
 
 	fs := cmd.Flags()
 	fs.UintVarP(&last, "last", "l", 0, "Last `N` members. 0 means no limit")
-	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include member IDs in table output")
+	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
+	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
 

@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
@@ -12,7 +13,7 @@ import (
 func newCmdDeleteTraceSession(config *config) *cobra.Command {
 	var confirmed bool
 	var pipelineKey string
-	var outputFormat string
+	var outputFormat, goTemplate string
 
 	cmd := &cobra.Command{
 		Use:   "trace_session", // child of `delete`
@@ -42,6 +43,10 @@ func newCmdDeleteTraceSession(config *config) *cobra.Command {
 				return err
 			}
 
+			if strings.HasPrefix(outputFormat, "go-template") {
+				return applyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, terminated)
+			}
+
 			switch outputFormat {
 			case "json":
 				return json.NewEncoder(cmd.OutOrStdout()).Encode(terminated)
@@ -61,7 +66,8 @@ func newCmdDeleteTraceSession(config *config) *cobra.Command {
 	fs := cmd.Flags()
 	fs.BoolVarP(&confirmed, "yes", "y", false, "Confirm deletion")
 	fs.StringVar(&pipelineKey, "pipeline", "", "Parent pipeline ID or name")
-	fs.StringVar(&outputFormat, "output", "table", "Output format (table, json, yaml)")
+	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
+	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
 	_ = cmd.MarkFlagRequired("pipeline")
 

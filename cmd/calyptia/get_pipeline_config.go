@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"strings"
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
@@ -13,7 +14,7 @@ import (
 )
 
 func newCmdGetPipelineConfigHistory(config *config) *cobra.Command {
-	var format string
+	var outputFormat, goTemplate string
 	var pipelineKey string
 	var last uint
 	cmd := &cobra.Command{
@@ -32,7 +33,11 @@ func newCmdGetPipelineConfigHistory(config *config) *cobra.Command {
 				return fmt.Errorf("could not fetch your pipeline config history: %w", err)
 			}
 
-			switch format {
+			if strings.HasPrefix(outputFormat, "go-template") {
+				return applyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, cc.Items)
+			}
+
+			switch outputFormat {
 			case "table":
 				renderPipelineConfigHistory(cmd.OutOrStdout(), cc.Items)
 			case "json":
@@ -41,16 +46,17 @@ func newCmdGetPipelineConfigHistory(config *config) *cobra.Command {
 					return fmt.Errorf("could not json encode your pipeline config history: %w", err)
 				}
 			default:
-				return fmt.Errorf("unknown output format %q", format)
+				return fmt.Errorf("unknown output format %q", outputFormat)
 			}
 			return nil
 		},
 	}
 
 	fs := cmd.Flags()
-	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
 	fs.StringVar(&pipelineKey, "pipeline", "", "Parent pipeline ID or name")
 	fs.UintVarP(&last, "last", "l", 0, "Last `N` pipeline config history entries. 0 means no limit")
+	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
+	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.completePipelines)

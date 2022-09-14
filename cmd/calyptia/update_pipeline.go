@@ -25,7 +25,7 @@ func newCmdUpdatePipeline(config *config) *cobra.Command {
 	var secretsFormat string
 	var files []string
 	var encryptFiles bool
-	var outputFormat string
+	var outputFormat, goTemplate string
 	var metadataPairs []string
 	var metadataFile string
 
@@ -115,6 +115,10 @@ func newCmdUpdatePipeline(config *config) *cobra.Command {
 			}
 
 			if autoCreatePortsFromConfig && len(updated.AddedPorts) != 0 {
+				if strings.HasPrefix(outputFormat, "go-template") {
+					return applyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, updated)
+				}
+
 				switch outputFormat {
 				case "table":
 					tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
@@ -148,7 +152,8 @@ func newCmdUpdatePipeline(config *config) *cobra.Command {
 	fs.BoolVar(&encryptFiles, "encrypt-files", false, "Encrypt file contents")
 	fs.StringSliceVar(&metadataPairs, "metadata", nil, "Metadata to attach to the pipeline in the form of key:value. You could instead use a file with the --metadata-file option")
 	fs.StringVar(&metadataFile, "metadata-file", "", "Metadata JSON file to attach to the pipeline intead of passing multiple --metadata flags")
-	fs.StringVar(&outputFormat, "output-format", "table", "Output format. Allowed: table, json")
+	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
+	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
 

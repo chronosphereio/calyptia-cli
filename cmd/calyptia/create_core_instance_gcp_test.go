@@ -3,8 +3,9 @@ package main
 import (
 	"bytes"
 	"context"
-	"google.golang.org/api/compute/v1"
 	"testing"
+
+	"google.golang.org/api/compute/v1"
 
 	"google.golang.org/api/deploymentmanager/v2"
 

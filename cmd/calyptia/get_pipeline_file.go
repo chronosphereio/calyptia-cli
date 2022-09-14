@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"strings"
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
@@ -14,7 +15,7 @@ import (
 func newCmdGetPipelineFiles(config *config) *cobra.Command {
 	var pipelineKey string
 	var last uint
-	var format string
+	var outputFormat, goTemplate string
 	var showIDs bool
 
 	cmd := &cobra.Command{
@@ -33,7 +34,11 @@ func newCmdGetPipelineFiles(config *config) *cobra.Command {
 				return fmt.Errorf("could not fetch your pipeline files: %w", err)
 			}
 
-			switch format {
+			if strings.HasPrefix(outputFormat, "go-template") {
+				return applyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, ff.Items)
+			}
+
+			switch outputFormat {
 			case "table":
 				renderPipelineFiles(cmd.OutOrStdout(), ff.Items, showIDs)
 			case "json":
@@ -42,7 +47,7 @@ func newCmdGetPipelineFiles(config *config) *cobra.Command {
 					return fmt.Errorf("could not json encode your pipeline files: %w", err)
 				}
 			default:
-				return fmt.Errorf("unknown output format %q", format)
+				return fmt.Errorf("unknown output format %q", outputFormat)
 			}
 			return nil
 		},
@@ -51,8 +56,9 @@ func newCmdGetPipelineFiles(config *config) *cobra.Command {
 	fs := cmd.Flags()
 	fs.StringVar(&pipelineKey, "pipeline", "", "Parent pipeline ID or name")
 	fs.UintVarP(&last, "last", "l", 0, "Last `N` pipeline files. 0 means no limit")
-	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include status IDs in table output")
+	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
+	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.completePipelines)
@@ -65,7 +71,7 @@ func newCmdGetPipelineFiles(config *config) *cobra.Command {
 func newCmdGetPipelineFile(config *config) *cobra.Command {
 	var pipelineKey string
 	var name string
-	var format string
+	var outputFormat, goTemplate string
 	var showIDs, onlyContents bool
 
 	cmd := &cobra.Command{
@@ -101,7 +107,11 @@ func newCmdGetPipelineFile(config *config) *cobra.Command {
 				return nil
 			}
 
-			switch format {
+			if strings.HasPrefix(outputFormat, "go-template") {
+				return applyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, file)
+			}
+
+			switch outputFormat {
 			case "table":
 				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
 				if showIDs {
@@ -119,7 +129,7 @@ func newCmdGetPipelineFile(config *config) *cobra.Command {
 					return fmt.Errorf("could not json encode your pipeline file: %w", err)
 				}
 			default:
-				return fmt.Errorf("unknown output format %q", format)
+				return fmt.Errorf("unknown output format %q", outputFormat)
 			}
 			return nil
 		},
@@ -128,9 +138,10 @@ func newCmdGetPipelineFile(config *config) *cobra.Command {
 	fs := cmd.Flags()
 	fs.StringVar(&pipelineKey, "pipeline", "", "Parent pipeline ID or name")
 	fs.StringVar(&name, "name", "", "File name")
-	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include status IDs in table output")
 	fs.BoolVar(&onlyContents, "only-contents", false, "Only print file contents")
+	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
+	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
 	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.completePipelines)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)

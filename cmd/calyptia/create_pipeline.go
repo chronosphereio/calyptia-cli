@@ -28,7 +28,7 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 	var encryptFiles bool
 	var autoCreatePortsFromConfig bool
 	var resourceProfileName string
-	var outputFormat string
+	var outputFormat, goTemplate string
 	var metadataPairs []string
 	var metadataFile string
 	var environment string
@@ -117,6 +117,10 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 				return fmt.Errorf("could not create pipeline: %w", err)
 			}
 
+			if strings.HasPrefix(outputFormat, "go-template") {
+				return applyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, a)
+			}
+
 			switch outputFormat {
 			case "table":
 				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
@@ -148,8 +152,9 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 	fs.StringVar(&resourceProfileName, "resource-profile", cloud.DefaultResourceProfileName, "Resource profile name")
 	fs.StringSliceVar(&metadataPairs, "metadata", nil, "Metadata to attach to the pipeline in the form of key:value. You could instead use a file with the --metadata-file option")
 	fs.StringVar(&metadataFile, "metadata-file", "", "Metadata JSON file to attach to the pipeline intead of passing multiple --metadata flags")
-	fs.StringVar(&outputFormat, "output-format", "table", "Output format. Allowed: table, json")
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
+	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
+	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
 	_ = cmd.RegisterFlagCompletionFunc("aggregator", config.completeAggregators)

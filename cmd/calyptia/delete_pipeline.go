@@ -5,9 +5,10 @@ import (
 	"os"
 	"strings"
 
-	"github.com/calyptia/api/types"
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
+
+	"github.com/calyptia/api/types"
 )
 
 func newCmdDeletePipeline(config *config) *cobra.Command {

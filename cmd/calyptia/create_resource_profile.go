@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
@@ -44,7 +45,7 @@ func newCmdCreateResourceProfile(config *config) *cobra.Command {
 	var aggregatorKey string
 	var name string
 	var specFile string
-	var outputFormat string
+	var outputFormat, goTemplate string
 	var environment string
 
 	cmd := &cobra.Command{
@@ -93,6 +94,10 @@ func newCmdCreateResourceProfile(config *config) *cobra.Command {
 				return fmt.Errorf("could not create resource profile: %w", err)
 			}
 
+			if strings.HasPrefix(outputFormat, "go-template") {
+				return applyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, rp)
+			}
+
 			switch outputFormat {
 			case "table":
 				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
@@ -115,8 +120,9 @@ func newCmdCreateResourceProfile(config *config) *cobra.Command {
 	fs.StringVar(&aggregatorKey, "aggregator", "", "Parent aggregator ID or name")
 	fs.StringVar(&name, "name", "", "Resource profile name")
 	fs.StringVar(&specFile, "spec", "", "Take spec from JSON file. Example:\n"+resourceProfileSpecExample)
-	fs.StringVar(&outputFormat, "output-format", "table", "Output format. Allowed: table, json")
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
+	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
+	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
 	_ = cmd.RegisterFlagCompletionFunc("aggregator", config.completeAggregators)

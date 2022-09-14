@@ -2,10 +2,12 @@ package main
 
 import (
 	"fmt"
+	"regexp"
+
+	"github.com/spf13/cobra"
+
 	"github.com/calyptia/cli/gcp"
 	"github.com/calyptia/core-images-index/go-index"
-	"github.com/spf13/cobra"
-	"regexp"
 )
 
 const OperationConcluded = "DONE"
