@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"code.cloudfoundry.org/bytefmt"
+	"github.com/Masterminds/sprig/v3"
 	"github.com/hako/durafmt"
 
 	cloud "github.com/calyptia/api/types"
@@ -271,7 +272,7 @@ func applyGoTemplate(w io.Writer, outputFormat, goTemplate string, data any) err
 		goTemplate = string(bytes.TrimSpace(b))
 	}
 
-	tmpl, err := text_template.New("").Parse(goTemplate + "\n")
+	tmpl, err := text_template.New("").Funcs(sprig.FuncMap()).Parse(goTemplate + "\n")
 	if err != nil {
 		return fmt.Errorf("parsing go-template: %w", err)
 	}
