@@ -128,10 +128,9 @@ func newCmdUpdatePipeline(config *config) *cobra.Command {
 					}
 					tw.Flush()
 				case "json":
-					err := json.NewEncoder(cmd.OutOrStdout()).Encode(updated)
-					if err != nil {
-						return fmt.Errorf("could not json encode updated pipeline: %w", err)
-					}
+					return json.NewEncoder(cmd.OutOrStdout()).Encode(updated)
+				case "yml", "yaml":
+					return yaml.NewEncoder(cmd.OutOrStdout()).Encode(updated)
 				default:
 					return fmt.Errorf("unknown output format %q", outputFormat)
 				}
@@ -211,7 +210,7 @@ func parseUpdatePipelineSecrets(file, format string) ([]cloud.UpdatePipelineSecr
 				Value: ptrBytes([]byte(fmt.Sprintf("%v", v))),
 			})
 		}
-	case "yaml", "yml":
+	case "yml", "yaml":
 		var m map[string]interface{}
 		if err := yaml.Unmarshal(b, &m); err != nil {
 			return nil, fmt.Errorf("could not parse secrets file %q: %w", file, err)

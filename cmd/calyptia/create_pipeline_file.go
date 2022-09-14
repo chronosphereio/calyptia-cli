@@ -8,6 +8,7 @@ import (
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
 )
@@ -56,15 +57,12 @@ func newCmdCreatePipelineFile(config *config) *cobra.Command {
 
 				return nil
 			case "json":
-				err := json.NewEncoder(cmd.OutOrStdout()).Encode(out)
-				if err != nil {
-					return fmt.Errorf("could not json encode your newly created file: %w", err)
-				}
+				return json.NewEncoder(cmd.OutOrStdout()).Encode(out)
+			case "yml", "yaml":
+				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(out)
 			default:
 				return fmt.Errorf("unknown output format %q", outputFormat)
 			}
-
-			return nil
 		},
 	}
 

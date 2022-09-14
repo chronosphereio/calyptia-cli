@@ -7,6 +7,7 @@ import (
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
 )
@@ -105,10 +106,9 @@ func newCmdCreateResourceProfile(config *config) *cobra.Command {
 				fmt.Fprintf(tw, "%s\t%s\n", rp.ID, fmtTime(rp.CreatedAt))
 				tw.Flush()
 			case "json":
-				err := json.NewEncoder(cmd.OutOrStdout()).Encode(rp)
-				if err != nil {
-					return fmt.Errorf("could not json encode your new resource profile: %w", err)
-				}
+				return json.NewEncoder(cmd.OutOrStdout()).Encode(rp)
+			case "yml", "yaml":
+				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(rp)
 			default:
 				return fmt.Errorf("unknown output format %q", outputFormat)
 			}

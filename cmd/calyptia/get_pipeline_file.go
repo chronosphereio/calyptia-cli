@@ -8,6 +8,7 @@ import (
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
 )
@@ -42,10 +43,9 @@ func newCmdGetPipelineFiles(config *config) *cobra.Command {
 			case "table":
 				renderPipelineFiles(cmd.OutOrStdout(), ff.Items, showIDs)
 			case "json":
-				err := json.NewEncoder(cmd.OutOrStdout()).Encode(ff.Items)
-				if err != nil {
-					return fmt.Errorf("could not json encode your pipeline files: %w", err)
-				}
+				return json.NewEncoder(cmd.OutOrStdout()).Encode(ff.Items)
+			case "yml", "yaml":
+				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(ff.Items)
 			default:
 				return fmt.Errorf("unknown output format %q", outputFormat)
 			}
@@ -124,10 +124,9 @@ func newCmdGetPipelineFile(config *config) *cobra.Command {
 				fmt.Fprintf(tw, "%s\t%v\t%s\n", file.Name, file.Encrypted, fmtTime(file.CreatedAt))
 				tw.Flush()
 			case "json":
-				err := json.NewEncoder(cmd.OutOrStdout()).Encode(file)
-				if err != nil {
-					return fmt.Errorf("could not json encode your pipeline file: %w", err)
-				}
+				return json.NewEncoder(cmd.OutOrStdout()).Encode(file)
+			case "yml", "yaml":
+				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(file)
 			default:
 				return fmt.Errorf("unknown output format %q", outputFormat)
 			}

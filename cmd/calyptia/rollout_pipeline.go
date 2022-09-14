@@ -7,6 +7,7 @@ import (
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
 )
@@ -85,10 +86,9 @@ func newCmdRolloutPipeline(config *config) *cobra.Command {
 					}
 					tw.Flush()
 				case "json":
-					err := json.NewEncoder(cmd.OutOrStdout()).Encode(updated)
-					if err != nil {
-						return fmt.Errorf("could not json encode updated pipeline: %w", err)
-					}
+					return json.NewEncoder(cmd.OutOrStdout()).Encode(updated)
+				case "yml", "yaml":
+					return yaml.NewEncoder(cmd.OutOrStdout()).Encode(updated)
 				default:
 					return fmt.Errorf("unknown output format %q", outputFormat)
 				}

@@ -8,6 +8,7 @@ import (
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
 	fluentbit_config "github.com/calyptia/go-fluentbit-config"
@@ -41,10 +42,9 @@ func newCmdGetPipelineConfigHistory(config *config) *cobra.Command {
 			case "table":
 				renderPipelineConfigHistory(cmd.OutOrStdout(), cc.Items)
 			case "json":
-				err := json.NewEncoder(cmd.OutOrStdout()).Encode(cc.Items)
-				if err != nil {
-					return fmt.Errorf("could not json encode your pipeline config history: %w", err)
-				}
+				return json.NewEncoder(cmd.OutOrStdout()).Encode(cc.Items)
+			case "yml", "yaml":
+				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(cc.Items)
 			default:
 				return fmt.Errorf("unknown output format %q", outputFormat)
 			}

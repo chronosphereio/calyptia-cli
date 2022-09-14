@@ -7,6 +7,7 @@ import (
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
 )
@@ -73,10 +74,9 @@ func newCmdGetAggregators(config *config) *cobra.Command {
 				}
 				tw.Flush()
 			case "json":
-				err := json.NewEncoder(cmd.OutOrStdout()).Encode(aa.Items)
-				if err != nil {
-					return fmt.Errorf("could not json encode your core instances: %w", err)
-				}
+				return json.NewEncoder(cmd.OutOrStdout()).Encode(aa.Items)
+			case "yml", "yaml":
+				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(aa.Items)
 			default:
 				return fmt.Errorf("unknown output format %q", outputFormat)
 			}
