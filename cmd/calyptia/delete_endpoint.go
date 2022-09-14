@@ -17,7 +17,7 @@ func newCmdDeleteEndpoint(config *config) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			portID := args[0]
 			if !confirmed {
-				fmt.Printf("Are you sure you want to delete %q? (y/N) ", portID)
+				cmd.Printf("Are you sure you want to delete %q? (y/N) ", portID)
 				var answer string
 				_, err := fmt.Scanln(&answer)
 				if err != nil && err.Error() == "unexpected newline" {

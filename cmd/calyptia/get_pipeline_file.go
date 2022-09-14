@@ -103,7 +103,7 @@ func newCmdGetPipelineFile(config *config) *cobra.Command {
 			}
 
 			if onlyContents {
-				fmt.Print(file.Contents)
+				cmd.Print(file.Contents)
 				return nil
 			}
 

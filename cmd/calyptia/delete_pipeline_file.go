@@ -19,7 +19,7 @@ func newCmdDeletePipelineFile(config *config) *cobra.Command {
 		Short: "Delete a single file from a pipeline by its name",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if !confirmed {
-				fmt.Printf("Are you sure you want to delete %q? (y/N) ", pipelineKey)
+				cmd.Printf("Are you sure you want to delete %q? (y/N) ", pipelineKey)
 				var answer string
 				_, err := fmt.Scanln(&answer)
 				if err != nil && err.Error() == "unexpected newline" {
