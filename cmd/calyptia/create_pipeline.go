@@ -28,7 +28,7 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 	var encryptFiles bool
 	var autoCreatePortsFromConfig bool
 	var resourceProfileName string
-	var outputFormat string
+	var outputFormat, goTemplate string
 	var metadataPairs []string
 	var metadataFile string
 	var environment string
@@ -117,6 +117,10 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 				return fmt.Errorf("could not create pipeline: %w", err)
 			}
 
+			if strings.HasPrefix(outputFormat, "go-template") {
+				return applyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, a)
+			}
+
 			switch outputFormat {
 			case "table":
 				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
@@ -124,10 +128,9 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 				fmt.Fprintf(tw, "%s\t%s\t%s\n", a.ID, a.Name, fmtTime(a.CreatedAt))
 				tw.Flush()
 			case "json":
-				err := json.NewEncoder(cmd.OutOrStdout()).Encode(a)
-				if err != nil {
-					return fmt.Errorf("could not json encode your new pipeline: %w", err)
-				}
+				return json.NewEncoder(cmd.OutOrStdout()).Encode(a)
+			case "yml", "yaml":
+				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(a)
 			default:
 				return fmt.Errorf("unknown output format %q", outputFormat)
 			}
@@ -148,8 +151,9 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 	fs.StringVar(&resourceProfileName, "resource-profile", cloud.DefaultResourceProfileName, "Resource profile name")
 	fs.StringSliceVar(&metadataPairs, "metadata", nil, "Metadata to attach to the pipeline in the form of key:value. You could instead use a file with the --metadata-file option")
 	fs.StringVar(&metadataFile, "metadata-file", "", "Metadata JSON file to attach to the pipeline intead of passing multiple --metadata flags")
-	fs.StringVar(&outputFormat, "output-format", "table", "Output format. Allowed: table, json")
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
+	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
+	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
 	_ = cmd.RegisterFlagCompletionFunc("aggregator", config.completeAggregators)
@@ -231,7 +235,7 @@ func parseCreatePipelineSecret(file, format string) ([]cloud.CreatePipelineSecre
 				Value: []byte(fmt.Sprintf("%v", v)),
 			})
 		}
-	case "yaml", "yml":
+	case "yml", "yaml":
 		var m map[string]interface{}
 		if err := yaml.Unmarshal(b, &m); err != nil {
 			return nil, fmt.Errorf("could not parse secrets file %q: %w", file, err)

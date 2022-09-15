@@ -3,9 +3,11 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
 )
@@ -14,7 +16,7 @@ func newCmdRolloutPipeline(config *config) *cobra.Command {
 	var stepsBack uint
 	var toConfigID string
 	var autoCreatePortsFromConfig bool
-	var outputFormat string
+	var outputFormat, goTemplate string
 
 	cmd := &cobra.Command{
 		Use:               "pipeline PIPELINE",
@@ -71,6 +73,10 @@ func newCmdRolloutPipeline(config *config) *cobra.Command {
 			}
 
 			if autoCreatePortsFromConfig && len(updated.AddedPorts) != 0 {
+				if strings.HasPrefix(outputFormat, "go-template") {
+					return applyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, updated)
+				}
+
 				switch outputFormat {
 				case "table":
 					tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
@@ -80,10 +86,9 @@ func newCmdRolloutPipeline(config *config) *cobra.Command {
 					}
 					tw.Flush()
 				case "json":
-					err := json.NewEncoder(cmd.OutOrStdout()).Encode(updated)
-					if err != nil {
-						return fmt.Errorf("could not json encode updated pipeline: %w", err)
-					}
+					return json.NewEncoder(cmd.OutOrStdout()).Encode(updated)
+				case "yml", "yaml":
+					return yaml.NewEncoder(cmd.OutOrStdout()).Encode(updated)
 				default:
 					return fmt.Errorf("unknown output format %q", outputFormat)
 				}
@@ -97,7 +102,8 @@ func newCmdRolloutPipeline(config *config) *cobra.Command {
 	fs.UintVar(&stepsBack, "steps-back", 1, "Steps back to rollout")
 	fs.StringVar(&toConfigID, "to-config-id", "", "Configuration ID to rollout to. It overrides steps-back")
 	fs.BoolVar(&autoCreatePortsFromConfig, "auto-create-ports", true, "Automatically create pipeline ports from config")
-	fs.StringVar(&outputFormat, "output-format", "table", "Output format. Allowed: table, json")
+	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
+	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
 

@@ -4,9 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
 )
@@ -52,14 +54,15 @@ func (config *config) loadEnvironmentID(environmentName string) (string, error) 
 
 func newCmdGetEnvironment(c *config) *cobra.Command {
 	var last uint
-	var format string
+	var outputFormat, goTemplate string
 	var showIDs bool
+
 	cmd := &cobra.Command{
 		Use:   "environment",
 		Short: "Get environments",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.Background()
-			environments, err := c.cloud.Environments(ctx, c.projectID, cloud.EnvironmentsParams{Last: &last})
+			ee, err := c.cloud.Environments(ctx, c.projectID, cloud.EnvironmentsParams{Last: &last})
 			if err != nil {
 				return err
 			}
@@ -67,7 +70,11 @@ func newCmdGetEnvironment(c *config) *cobra.Command {
 				return fmt.Errorf("could not fetch your project members: %w", err)
 			}
 
-			switch format {
+			if strings.HasPrefix(outputFormat, "go-template") {
+				return applyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, ee.Items)
+			}
+
+			switch outputFormat {
 			case "table":
 				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 3, 1, ' ', 0)
 				if showIDs {
@@ -75,7 +82,7 @@ func newCmdGetEnvironment(c *config) *cobra.Command {
 				}
 				fmt.Fprint(tw, "NAME\t")
 				fmt.Fprintln(tw, "AGE")
-				for _, m := range environments.Items {
+				for _, m := range ee.Items {
 					if showIDs {
 						fmt.Fprintf(tw, "%s\t", m.ID)
 					}
@@ -85,20 +92,24 @@ func newCmdGetEnvironment(c *config) *cobra.Command {
 				}
 				tw.Flush()
 			case "json":
-				err := json.NewEncoder(cmd.OutOrStdout()).Encode(environments.Items)
-				if err != nil {
-					return fmt.Errorf("could not json encode your environments: %w", err)
-				}
+				return json.NewEncoder(cmd.OutOrStdout()).Encode(ee.Items)
+			case "yml", "yaml":
+				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(ee.Items)
 			default:
-				return fmt.Errorf("unknown output format %q", format)
+				return fmt.Errorf("unknown output format %q", outputFormat)
 			}
 			return nil
 		},
 	}
+
 	fs := cmd.Flags()
 	fs.UintVarP(&last, "last", "l", 0, "Last `N` members. 0 means no limit")
-	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include member IDs in table output")
+	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
+	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
+
+	_ = cmd.RegisterFlagCompletionFunc("output-format", c.completeOutputFormat)
+
 	return cmd
 
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"text/tabwriter"
 	"time"
 
@@ -17,7 +18,7 @@ func newCmdCreateTraceSession(config *config) *cobra.Command {
 	var pipelineKey string
 	var plugins []string
 	var lifespan time.Duration
-	var outputFormat string
+	var outputFormat, goTemplate string
 
 	cmd := &cobra.Command{
 		Use:   "trace_session", // child of `create`
@@ -40,6 +41,10 @@ func newCmdCreateTraceSession(config *config) *cobra.Command {
 				return err
 			}
 
+			if strings.HasPrefix(outputFormat, "go-template") {
+				return applyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, created)
+			}
+
 			switch outputFormat {
 			case "json":
 				return json.NewEncoder(cmd.OutOrStdout()).Encode(created)
@@ -60,7 +65,8 @@ func newCmdCreateTraceSession(config *config) *cobra.Command {
 	fs.StringVar(&pipelineKey, "pipeline", "", "Parent pipeline (name or ID) in which to start the trace session")
 	fs.StringSliceVar(&plugins, "plugins", nil, "Fluent-bit plugins to trace")
 	fs.DurationVar(&lifespan, "lifespan", time.Minute*10, "Trace session lifespan")
-	fs.StringVar(&outputFormat, "output", "table", "Output format (table, json, yaml)")
+	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
+	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
 	_ = cmd.MarkFlagRequired("pipeline")
 

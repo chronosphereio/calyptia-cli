@@ -9,13 +9,14 @@ import (
 
 	"github.com/hako/durafmt"
 	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
 )
 
 func newCmdGetAgents(config *config) *cobra.Command {
 	var last uint
-	var format string
+	var outputFormat, goTemplate string
 	var showIDs bool
 	var environment string
 
@@ -43,7 +44,11 @@ func newCmdGetAgents(config *config) *cobra.Command {
 				return fmt.Errorf("could not fetch your agents: %w", err)
 			}
 
-			switch format {
+			if strings.HasPrefix(outputFormat, "go-template") {
+				return applyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, aa.Items)
+			}
+
+			switch outputFormat {
 			case "table":
 				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
 				if showIDs {
@@ -59,12 +64,11 @@ func newCmdGetAgents(config *config) *cobra.Command {
 				}
 				tw.Flush()
 			case "json":
-				err := json.NewEncoder(cmd.OutOrStdout()).Encode(aa.Items)
-				if err != nil {
-					return fmt.Errorf("could not json encode agents: %w", err)
-				}
+				return json.NewEncoder(cmd.OutOrStdout()).Encode(aa.Items)
+			case "yml", "yaml":
+				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(aa.Items)
 			default:
-				return fmt.Errorf("unknown output format %q", format)
+				return fmt.Errorf("unknown output format %q", outputFormat)
 			}
 			return nil
 		},
@@ -72,9 +76,10 @@ func newCmdGetAgents(config *config) *cobra.Command {
 
 	fs := cmd.Flags()
 	fs.UintVarP(&last, "last", "l", 0, "Last `N` agents. 0 means no limit")
-	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include agent IDs in table output")
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
+	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
+	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
@@ -83,7 +88,7 @@ func newCmdGetAgents(config *config) *cobra.Command {
 }
 
 func newCmdGetAgent(config *config) *cobra.Command {
-	var format string
+	var outputFormat, goTemplate string
 	var showIDs bool
 	var onlyConfig bool
 	var environment string
@@ -119,7 +124,11 @@ func newCmdGetAgent(config *config) *cobra.Command {
 				return nil
 			}
 
-			switch format {
+			if strings.HasPrefix(outputFormat, "go-template") {
+				return applyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, agent)
+			}
+
+			switch outputFormat {
 			case "table":
 				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
 				if showIDs {
@@ -133,12 +142,11 @@ func newCmdGetAgent(config *config) *cobra.Command {
 				fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\n", agent.Name, agent.Type, agent.Version, status, fmtTime(agent.CreatedAt))
 				tw.Flush()
 			case "json":
-				err := json.NewEncoder(cmd.OutOrStdout()).Encode(agent)
-				if err != nil {
-					return fmt.Errorf("could not json encode your agent: %w", err)
-				}
+				return json.NewEncoder(cmd.OutOrStdout()).Encode(agent)
+			case "yml", "yaml":
+				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(agent)
 			default:
-				return fmt.Errorf("unknown output format %q", format)
+				return fmt.Errorf("unknown output format %q", outputFormat)
 			}
 
 			return nil
@@ -147,9 +155,10 @@ func newCmdGetAgent(config *config) *cobra.Command {
 
 	fs := cmd.Flags()
 	fs.BoolVar(&onlyConfig, "only-config", false, "Only show the agent configuration")
-	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include agent IDs in table output")
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
+	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
+	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)

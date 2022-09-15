@@ -8,6 +8,7 @@ import (
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
 )
@@ -16,7 +17,7 @@ func newCmdCreatePipelineFile(config *config) *cobra.Command {
 	var pipelineKey string
 	var file string
 	var encrypt bool
-	var outputFormat string
+	var outputFormat, goTemplate string
 	cmd := &cobra.Command{
 		Use:   "pipeline_file",
 		Short: "Create a new file within a pipeline",
@@ -43,6 +44,10 @@ func newCmdCreatePipelineFile(config *config) *cobra.Command {
 				return err
 			}
 
+			if strings.HasPrefix(outputFormat, "go-template") {
+				return applyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, out)
+			}
+
 			switch outputFormat {
 			case "table":
 				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
@@ -52,15 +57,12 @@ func newCmdCreatePipelineFile(config *config) *cobra.Command {
 
 				return nil
 			case "json":
-				err := json.NewEncoder(cmd.OutOrStdout()).Encode(out)
-				if err != nil {
-					return fmt.Errorf("could not json encode your newly created file: %w", err)
-				}
+				return json.NewEncoder(cmd.OutOrStdout()).Encode(out)
+			case "yml", "yaml":
+				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(out)
 			default:
 				return fmt.Errorf("unknown output format %q", outputFormat)
 			}
-
-			return nil
 		},
 	}
 
@@ -68,7 +70,8 @@ func newCmdCreatePipelineFile(config *config) *cobra.Command {
 	fs.StringVar(&pipelineKey, "pipeline", "", "Pipeline ID or name")
 	fs.StringVar(&file, "file", "", "File path. You will be able to reference the file from a fluentbit config using its base name without the extension. Ex: `some_dir/my_file.txt` will be referenced as `{{files.my_file}}`")
 	fs.BoolVar(&encrypt, "encrypt", false, "Encrypt file contents")
-	fs.StringVar(&outputFormat, "output-format", "table", "Output format. Allowed: table, json")
+	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
+	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
 	_ = cmd.MarkFlagRequired("pipeline")
 	_ = cmd.MarkFlagRequired("file")

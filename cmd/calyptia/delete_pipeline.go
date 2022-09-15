@@ -5,9 +5,10 @@ import (
 	"os"
 	"strings"
 
-	"github.com/calyptia/api/types"
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
+
+	"github.com/calyptia/api/types"
 )
 
 func newCmdDeletePipeline(config *config) *cobra.Command {
@@ -20,7 +21,7 @@ func newCmdDeletePipeline(config *config) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			pipelineKey := args[0]
 			if !confirmed {
-				fmt.Printf("Are you sure you want to delete %q? (y/N) ", pipelineKey)
+				cmd.Printf("Are you sure you want to delete %q? (y/N) ", pipelineKey)
 				var answer string
 				_, err := fmt.Scanln(&answer)
 				if err != nil && err.Error() == "unexpected newline" {

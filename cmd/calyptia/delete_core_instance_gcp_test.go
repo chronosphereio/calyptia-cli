@@ -3,9 +3,11 @@ package main
 import (
 	"bytes"
 	"context"
-	"github.com/calyptia/cli/gcp"
-	"google.golang.org/api/deploymentmanager/v2"
 	"testing"
+
+	"google.golang.org/api/deploymentmanager/v2"
+
+	"github.com/calyptia/cli/gcp"
 )
 
 func Test_newCmdDeleteCoreInstanceOnGCP(t *testing.T) {

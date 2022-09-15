@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"strings"
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
 )
@@ -14,7 +16,7 @@ import (
 func newCmdGetPipelineSecrets(config *config) *cobra.Command {
 	var pipelineKey string
 	var last uint
-	var format string
+	var outputFormat, goTemplate string
 	var showIDs bool
 
 	cmd := &cobra.Command{
@@ -33,16 +35,19 @@ func newCmdGetPipelineSecrets(config *config) *cobra.Command {
 				return fmt.Errorf("could not fetch your pipeline secrets: %w", err)
 			}
 
-			switch format {
+			if strings.HasPrefix(outputFormat, "go-template") {
+				return applyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, ss.Items)
+			}
+
+			switch outputFormat {
 			case "table":
 				renderPipelineSecrets(cmd.OutOrStdout(), ss.Items, showIDs)
 			case "json":
-				err := json.NewEncoder(cmd.OutOrStdout()).Encode(ss.Items)
-				if err != nil {
-					return fmt.Errorf("could not json encode your pipeline secrets: %w", err)
-				}
+				return json.NewEncoder(cmd.OutOrStdout()).Encode(ss.Items)
+			case "yml", "yaml":
+				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(ss.Items)
 			default:
-				return fmt.Errorf("unknown output format %q", format)
+				return fmt.Errorf("unknown output format %q", outputFormat)
 			}
 			return nil
 		},
@@ -51,8 +56,9 @@ func newCmdGetPipelineSecrets(config *config) *cobra.Command {
 	fs := cmd.Flags()
 	fs.StringVar(&pipelineKey, "pipeline", "", "Parent pipeline ID or name")
 	fs.UintVarP(&last, "last", "l", 0, "Last `N` pipeline secrets. 0 means no limit")
-	fs.StringVarP(&format, "output-format", "o", "table", "Output format. Allowed: table, json")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include status IDs in table output")
+	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
+	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.completePipelines)
