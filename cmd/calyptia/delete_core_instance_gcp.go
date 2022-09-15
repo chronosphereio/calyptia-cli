@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/calyptia/cli/gcp"
 
@@ -12,6 +13,7 @@ func newCmdDeleteCoreInstanceOnGCP(config *config, client gcp.Client) *cobra.Com
 	var (
 		environment string
 		projectID   string
+		credentials string
 	)
 	cmd := &cobra.Command{
 		Use:               "gcp CORE_INSTANCE",
@@ -24,7 +26,7 @@ func newCmdDeleteCoreInstanceOnGCP(config *config, client gcp.Client) *cobra.Com
 			ctx := cmd.Context()
 			if client == nil {
 				var err error
-				client, err = gcp.New(ctx, projectID, environment)
+				client, err = gcp.New(ctx, projectID, environment, credentials)
 				if err != nil {
 					return fmt.Errorf("could not initialize GCP client: %w", err)
 				}
@@ -63,5 +65,6 @@ func newCmdDeleteCoreInstanceOnGCP(config *config, client gcp.Client) *cobra.Com
 	fs := cmd.Flags()
 	fs.StringVar(&projectID, "project-id", "", "GCP project ID")
 	fs.StringVar(&environment, "environment", "default", "Calyptia environment name")
+	fs.StringVar(&credentials, "credentials", os.Getenv("GOOGLE_APPLICATION_CREDENTIALS"), "Path to GCP credentials file. (default is $GOOGLE_APPLICATION_CREDENTIALS)")
 	return cmd
 }

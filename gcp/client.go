@@ -6,6 +6,7 @@ import (
 
 	"google.golang.org/api/compute/v1"
 	"google.golang.org/api/deploymentmanager/v2"
+	option "google.golang.org/api/option"
 	"gopkg.in/yaml.v2"
 )
 
@@ -56,12 +57,18 @@ func (c *DefaultClient) Deploy(ctx context.Context) error {
 	return nil
 }
 
-func New(ctx context.Context, projectName string, environment string) (*DefaultClient, error) {
-	m, err := deploymentmanager.NewService(ctx)
+func New(ctx context.Context, projectName string, environment string, credentials string) (*DefaultClient, error) {
+	var authOpts []option.ClientOption
+
+	if credentials != "" {
+		authOpts = append(authOpts, option.WithCredentialsFile(credentials))
+	}
+
+	m, err := deploymentmanager.NewService(ctx, authOpts...)
 	if err != nil {
 		return nil, err
 	}
-	c, err := compute.NewService(ctx)
+	c, err := compute.NewService(ctx, authOpts...)
 	if err != nil {
 		return nil, err
 	}
