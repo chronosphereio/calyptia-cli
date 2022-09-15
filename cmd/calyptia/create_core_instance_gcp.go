@@ -32,6 +32,7 @@ func newCmdCreateCoreInstanceOnGCP(config *config, client gcp.Client) *cobra.Com
 		network               string
 		githubToken           string
 		useTestImages         bool
+		credentials           string
 	)
 	cmd := &cobra.Command{
 		Use:     "gcp",
@@ -61,7 +62,7 @@ func newCmdCreateCoreInstanceOnGCP(config *config, client gcp.Client) *cobra.Com
 			}
 
 			if client == nil {
-				client, err = gcp.New(ctx, projectID, environment)
+				client, err = gcp.New(ctx, projectID, environment, credentials)
 				if err != nil {
 					return fmt.Errorf("could not initialize GCP client: %w", err)
 				}
@@ -152,6 +153,7 @@ func newCmdCreateCoreInstanceOnGCP(config *config, client gcp.Client) *cobra.Com
 	fs.StringVar(&network, "network", "default", "GCP Network")
 	fs.StringVar(&githubToken, "github-token", os.Getenv("GITHUB_TOKEN"), "GitHub token for test purposes")
 	fs.BoolVar(&useTestImages, "use-test-images", envBool("CALYPTIA_USE_TEST_IMAGES"), "Use GCP test images instead of released channel (only for testing/development).")
+	fs.StringVar(&credentials, "credentials", os.Getenv("GOOGLE_APPLICATION_CREDENTIALS"), "Path to GCP credentials file. (default is $GOOGLE_APPLICATION_CREDENTIALS)")
 	fs.MarkHidden("github-token")
 	fs.MarkHidden("use-test-images")
 

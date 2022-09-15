@@ -24,7 +24,7 @@ func newCmdDeleteCoreInstanceOnGCP(config *config, client gcp.Client) *cobra.Com
 			ctx := cmd.Context()
 			if client == nil {
 				var err error
-				client, err = gcp.New(ctx, projectID, environment)
+				client, err = gcp.New(ctx, projectID, environment, "")
 				if err != nil {
 					return fmt.Errorf("could not initialize GCP client: %w", err)
 				}
