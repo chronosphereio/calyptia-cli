@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"regexp"
 
@@ -8,6 +9,8 @@ import (
 
 	"github.com/calyptia/cli/gcp"
 	"github.com/calyptia/core-images-index/go-index"
+	"os"
+	"strings"
 )
 
 const OperationConcluded = "DONE"
@@ -27,6 +30,7 @@ func newCmdCreateCoreInstanceOnGCP(config *config, client gcp.Client) *cobra.Com
 		sshKeyPath            string
 		sshUser               string
 		network               string
+		githubToken           string
 		useTestImages         bool
 	)
 	cmd := &cobra.Command{
@@ -64,6 +68,12 @@ func newCmdCreateCoreInstanceOnGCP(config *config, client gcp.Client) *cobra.Com
 			}
 
 			newConfig := gcp.NewConfig(projectID, coreInstanceName, environment)
+
+			if useTestImages && githubToken == "" {
+				return errors.New("github token required when using test images")
+			} else {
+				newConfig.SetGitHubToken(githubToken)
+			}
 
 			newConfig.SetZone(zone).
 				SetMachineType(machineType).
@@ -140,9 +150,16 @@ func newCmdCreateCoreInstanceOnGCP(config *config, client gcp.Client) *cobra.Com
 	fs.StringVar(&sshUser, "ssh-user", "", "GCP SSH user to use for the instance. (default is no user)")
 	fs.StringVar(&sshKeyPath, "ssh-key", "", "SSH Key path to use for the instance. (default is no key)")
 	fs.StringVar(&network, "network", "default", "GCP Network")
-	fs.BoolVar(&useTestImages, "use-test-images", false, "Use GCP test images instead of released channel (only for testing/development).")
+	fs.StringVar(&githubToken, "github-token", os.Getenv("GITHUB_TOKEN"), "GitHub token for test purposes")
+	fs.BoolVar(&useTestImages, "use-test-images", envBool("CALYPTIA_USE_TEST_IMAGES"), "Use GCP test images instead of released channel (only for testing/development).")
+	fs.MarkHidden("github-token")
+	fs.MarkHidden("use-test-images")
 
 	return cmd
+}
+
+func envBool(key string) bool {
+	return strings.EqualFold(os.Getenv(key), "true")
 }
 
 func extractLocation(zone string) (string, error) {

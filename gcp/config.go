@@ -246,3 +246,15 @@ func (c *Config) loadKey(path string) (string, error) {
 	}
 	return string(file), nil
 }
+
+func (c *Config) SetGitHubToken(token string) *Config {
+	if token == "" {
+		return c
+	}
+
+	c.Resources[0].Properties.Metadata.Items = append(c.Resources[0].Properties.Metadata.Items, item{
+		Key:   "GITHUB_TOKEN",
+		Value: token,
+	})
+	return c
+}
