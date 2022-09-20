@@ -15,6 +15,10 @@ import (
 
 func newCmdUpdateCoreInstanceK8s(config *config, testClientSet kubernetes.Interface) *cobra.Command {
 	var newVersion, newName, environment string
+	var (
+		disableClusterLogging bool
+		enableClusterLogging  bool
+	)
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	configOverrides := &clientcmd.ConfigOverrides{}
 	cmd := &cobra.Command{
@@ -41,17 +45,29 @@ func newCmdUpdateCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 			if aggregatorKey == newName {
 				return fmt.Errorf("cannot update core instance with the same name")
 			}
+
+			var opts cloud.UpdateAggregator
+
 			if newName != "" {
-				err = config.cloud.UpdateAggregator(config.ctx, aggregatorID, cloud.UpdateAggregator{
-					Name: &newName,
-				})
-				if err != nil {
-					return fmt.Errorf("could not update core instance: %w", err)
-				}
+				opts.Name = &newName
 			}
+
+			if enableClusterLogging && disableClusterLogging {
+				return fmt.Errorf("either --enable-cluster-logging or --disable-cluster-logging can be set")
+			}
+
+			if enableClusterLogging {
+				opts.ClusterLogging = &enableClusterLogging
+			} else if disableClusterLogging {
+				disableClusterLogging = !disableClusterLogging
+				opts.ClusterLogging = &disableClusterLogging
+			}
+
+			err = config.cloud.UpdateAggregator(config.ctx, aggregatorID, opts)
 			if err != nil {
-				return err
+				return fmt.Errorf("could not update core instance: %w", err)
 			}
+
 			agg, err := config.cloud.Aggregator(ctx, aggregatorID)
 			if err != nil {
 				return err
@@ -61,9 +77,9 @@ func newCmdUpdateCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 				configOverrides.Context.Namespace = apiv1.NamespaceDefault
 			}
 
-			var clientset kubernetes.Interface
+			var clientSet kubernetes.Interface
 			if testClientSet != nil {
-				clientset = testClientSet
+				clientSet = testClientSet
 			} else {
 				kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
 				kubeClientConfig, err := kubeConfig.ClientConfig()
@@ -71,7 +87,7 @@ func newCmdUpdateCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 					return err
 				}
 
-				clientset, err = kubernetes.NewForConfig(kubeClientConfig)
+				clientSet, err = kubernetes.NewForConfig(kubeClientConfig)
 				if err != nil {
 					return err
 				}
@@ -79,7 +95,7 @@ func newCmdUpdateCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 			}
 
 			k8sClient := &k8s.Client{
-				Interface:    clientset,
+				Interface:    clientSet,
 				Namespace:    configOverrides.Context.Namespace,
 				ProjectToken: config.projectToken,
 				CloudBaseURL: config.baseURL,
@@ -104,6 +120,8 @@ func newCmdUpdateCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 	fs.StringVar(&newVersion, "version", "", "New version of the calyptia-core instance")
 	fs.StringVar(&newName, "name", "", "New core instance name")
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
+	fs.BoolVar(&enableClusterLogging, "enable-cluster-logging", false, "Enable cluster logging functionality")
+	fs.BoolVar(&disableClusterLogging, "disable-cluster-logging", false, "Disable cluster logging functionality")
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
 	_ = cmd.RegisterFlagCompletionFunc("version", config.completeCoreContainerVersion)
