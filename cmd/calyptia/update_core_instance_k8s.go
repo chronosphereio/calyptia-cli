@@ -42,6 +42,10 @@ func newCmdUpdateCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 				}
 			}
 			aggregatorID, err := config.loadAggregatorID(aggregatorKey, environmentID)
+			if err != nil {
+				return err
+			}
+
 			if aggregatorKey == newName {
 				return fmt.Errorf("cannot update core instance with the same name")
 			}

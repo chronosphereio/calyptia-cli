@@ -90,4 +90,11 @@ type Client interface {
 	TerminateActiveTraceSession(ctx context.Context, pipelineID string) (types.TerminatedTraceSession, error)
 
 	TraceRecords(ctx context.Context, sessionID string, params types.TraceRecordsParams) (types.TraceRecords, error)
+
+	CreateConfigSection(ctx context.Context, projectID string, in types.CreateConfigSection) (types.CreatedConfigSection, error)
+	ConfigSections(ctx context.Context, projectID string, params types.ConfigSectionsParams) (types.ConfigSections, error)
+	ConfigSection(ctx context.Context, configSectionID string) (types.ConfigSection, error)
+	UpdateConfigSection(ctx context.Context, configSectionID string, in types.UpdateConfigSection) (types.UpdatedConfigSection, error)
+	DeleteConfigSection(ctx context.Context, configSectionID string) error
+	UpdateConfigSectionSet(ctx context.Context, pipelineID string, configSectionIDs ...string) error
 }

@@ -41,8 +41,17 @@ var _ Client = &ClientMock{}
 //			AggregatorsFunc: func(ctx context.Context, projectID string, params cloud.AggregatorsParams) (cloud.Aggregators, error) {
 //				panic("mock out the Aggregators method")
 //			},
+//			ConfigSectionFunc: func(ctx context.Context, configSectionID string) (cloud.ConfigSection, error) {
+//				panic("mock out the ConfigSection method")
+//			},
+//			ConfigSectionsFunc: func(ctx context.Context, projectID string, params cloud.ConfigSectionsParams) (cloud.ConfigSections, error) {
+//				panic("mock out the ConfigSections method")
+//			},
 //			CreateAggregatorFunc: func(ctx context.Context, payload cloud.CreateAggregator) (cloud.CreatedAggregator, error) {
 //				panic("mock out the CreateAggregator method")
+//			},
+//			CreateConfigSectionFunc: func(ctx context.Context, projectID string, in cloud.CreateConfigSection) (cloud.CreatedConfigSection, error) {
+//				panic("mock out the CreateConfigSection method")
 //			},
 //			CreateEnvironmentFunc: func(ctx context.Context, projectID string, payload cloud.CreateEnvironment) (cloud.CreatedEnvironment, error) {
 //				panic("mock out the CreateEnvironment method")
@@ -79,6 +88,9 @@ var _ Client = &ClientMock{}
 //			},
 //			DeleteAggregatorsFunc: func(ctx context.Context, projectID string, aggregatorIDs ...string) error {
 //				panic("mock out the DeleteAggregators method")
+//			},
+//			DeleteConfigSectionFunc: func(ctx context.Context, configSectionID string) error {
+//				panic("mock out the DeleteConfigSection method")
 //			},
 //			DeleteEnvironmentFunc: func(ctx context.Context, environmentID string) error {
 //				panic("mock out the DeleteEnvironment method")
@@ -182,6 +194,12 @@ var _ Client = &ClientMock{}
 //			UpdateAggregatorFunc: func(ctx context.Context, aggregatorID string, payload cloud.UpdateAggregator) error {
 //				panic("mock out the UpdateAggregator method")
 //			},
+//			UpdateConfigSectionFunc: func(ctx context.Context, configSectionID string, in cloud.UpdateConfigSection) (cloud.UpdatedConfigSection, error) {
+//				panic("mock out the UpdateConfigSection method")
+//			},
+//			UpdateConfigSectionSetFunc: func(ctx context.Context, pipelineID string, configSectionIDs ...string) error {
+//				panic("mock out the UpdateConfigSectionSet method")
+//			},
 //			UpdateEnvironmentFunc: func(ctx context.Context, environmentID string, payload cloud.UpdateEnvironment) error {
 //				panic("mock out the UpdateEnvironment method")
 //			},
@@ -240,8 +258,17 @@ type ClientMock struct {
 	// AggregatorsFunc mocks the Aggregators method.
 	AggregatorsFunc func(ctx context.Context, projectID string, params cloud.AggregatorsParams) (cloud.Aggregators, error)
 
+	// ConfigSectionFunc mocks the ConfigSection method.
+	ConfigSectionFunc func(ctx context.Context, configSectionID string) (cloud.ConfigSection, error)
+
+	// ConfigSectionsFunc mocks the ConfigSections method.
+	ConfigSectionsFunc func(ctx context.Context, projectID string, params cloud.ConfigSectionsParams) (cloud.ConfigSections, error)
+
 	// CreateAggregatorFunc mocks the CreateAggregator method.
 	CreateAggregatorFunc func(ctx context.Context, payload cloud.CreateAggregator) (cloud.CreatedAggregator, error)
+
+	// CreateConfigSectionFunc mocks the CreateConfigSection method.
+	CreateConfigSectionFunc func(ctx context.Context, projectID string, in cloud.CreateConfigSection) (cloud.CreatedConfigSection, error)
 
 	// CreateEnvironmentFunc mocks the CreateEnvironment method.
 	CreateEnvironmentFunc func(ctx context.Context, projectID string, payload cloud.CreateEnvironment) (cloud.CreatedEnvironment, error)
@@ -278,6 +305,9 @@ type ClientMock struct {
 
 	// DeleteAggregatorsFunc mocks the DeleteAggregators method.
 	DeleteAggregatorsFunc func(ctx context.Context, projectID string, aggregatorIDs ...string) error
+
+	// DeleteConfigSectionFunc mocks the DeleteConfigSection method.
+	DeleteConfigSectionFunc func(ctx context.Context, configSectionID string) error
 
 	// DeleteEnvironmentFunc mocks the DeleteEnvironment method.
 	DeleteEnvironmentFunc func(ctx context.Context, environmentID string) error
@@ -381,6 +411,12 @@ type ClientMock struct {
 	// UpdateAggregatorFunc mocks the UpdateAggregator method.
 	UpdateAggregatorFunc func(ctx context.Context, aggregatorID string, payload cloud.UpdateAggregator) error
 
+	// UpdateConfigSectionFunc mocks the UpdateConfigSection method.
+	UpdateConfigSectionFunc func(ctx context.Context, configSectionID string, in cloud.UpdateConfigSection) (cloud.UpdatedConfigSection, error)
+
+	// UpdateConfigSectionSetFunc mocks the UpdateConfigSectionSet method.
+	UpdateConfigSectionSetFunc func(ctx context.Context, pipelineID string, configSectionIDs ...string) error
+
 	// UpdateEnvironmentFunc mocks the UpdateEnvironment method.
 	UpdateEnvironmentFunc func(ctx context.Context, environmentID string, payload cloud.UpdateEnvironment) error
 
@@ -470,12 +506,37 @@ type ClientMock struct {
 			// Params is the params argument value.
 			Params cloud.AggregatorsParams
 		}
+		// ConfigSection holds details about calls to the ConfigSection method.
+		ConfigSection []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ConfigSectionID is the configSectionID argument value.
+			ConfigSectionID string
+		}
+		// ConfigSections holds details about calls to the ConfigSections method.
+		ConfigSections []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ProjectID is the projectID argument value.
+			ProjectID string
+			// Params is the params argument value.
+			Params cloud.ConfigSectionsParams
+		}
 		// CreateAggregator holds details about calls to the CreateAggregator method.
 		CreateAggregator []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// Payload is the payload argument value.
 			Payload cloud.CreateAggregator
+		}
+		// CreateConfigSection holds details about calls to the CreateConfigSection method.
+		CreateConfigSection []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ProjectID is the projectID argument value.
+			ProjectID string
+			// In is the in argument value.
+			In cloud.CreateConfigSection
 		}
 		// CreateEnvironment holds details about calls to the CreateEnvironment method.
 		CreateEnvironment []struct {
@@ -580,6 +641,13 @@ type ClientMock struct {
 			ProjectID string
 			// AggregatorIDs is the aggregatorIDs argument value.
 			AggregatorIDs []string
+		}
+		// DeleteConfigSection holds details about calls to the DeleteConfigSection method.
+		DeleteConfigSection []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ConfigSectionID is the configSectionID argument value.
+			ConfigSectionID string
 		}
 		// DeleteEnvironment holds details about calls to the DeleteEnvironment method.
 		DeleteEnvironment []struct {
@@ -855,6 +923,24 @@ type ClientMock struct {
 			// Payload is the payload argument value.
 			Payload cloud.UpdateAggregator
 		}
+		// UpdateConfigSection holds details about calls to the UpdateConfigSection method.
+		UpdateConfigSection []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ConfigSectionID is the configSectionID argument value.
+			ConfigSectionID string
+			// In is the in argument value.
+			In cloud.UpdateConfigSection
+		}
+		// UpdateConfigSectionSet holds details about calls to the UpdateConfigSectionSet method.
+		UpdateConfigSectionSet []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PipelineID is the pipelineID argument value.
+			PipelineID string
+			// ConfigSectionIDs is the configSectionIDs argument value.
+			ConfigSectionIDs []string
+		}
 		// UpdateEnvironment holds details about calls to the UpdateEnvironment method.
 		UpdateEnvironment []struct {
 			// Ctx is the ctx argument value.
@@ -953,7 +1039,10 @@ type ClientMock struct {
 	lockAgents                      sync.RWMutex
 	lockAggregator                  sync.RWMutex
 	lockAggregators                 sync.RWMutex
+	lockConfigSection               sync.RWMutex
+	lockConfigSections              sync.RWMutex
 	lockCreateAggregator            sync.RWMutex
+	lockCreateConfigSection         sync.RWMutex
 	lockCreateEnvironment           sync.RWMutex
 	lockCreateInvitation            sync.RWMutex
 	lockCreatePipeline              sync.RWMutex
@@ -966,6 +1055,7 @@ type ClientMock struct {
 	lockDeleteAgents                sync.RWMutex
 	lockDeleteAggregator            sync.RWMutex
 	lockDeleteAggregators           sync.RWMutex
+	lockDeleteConfigSection         sync.RWMutex
 	lockDeleteEnvironment           sync.RWMutex
 	lockDeletePipeline              sync.RWMutex
 	lockDeletePipelineFile          sync.RWMutex
@@ -1000,6 +1090,8 @@ type ClientMock struct {
 	lockTraceSessions               sync.RWMutex
 	lockUpdateAgent                 sync.RWMutex
 	lockUpdateAggregator            sync.RWMutex
+	lockUpdateConfigSection         sync.RWMutex
+	lockUpdateConfigSectionSet      sync.RWMutex
 	lockUpdateEnvironment           sync.RWMutex
 	lockUpdatePipeline              sync.RWMutex
 	lockUpdatePipelineFile          sync.RWMutex
@@ -1308,6 +1400,90 @@ func (mock *ClientMock) AggregatorsCalls() []struct {
 	return calls
 }
 
+// ConfigSection calls ConfigSectionFunc.
+func (mock *ClientMock) ConfigSection(ctx context.Context, configSectionID string) (cloud.ConfigSection, error) {
+	callInfo := struct {
+		Ctx             context.Context
+		ConfigSectionID string
+	}{
+		Ctx:             ctx,
+		ConfigSectionID: configSectionID,
+	}
+	mock.lockConfigSection.Lock()
+	mock.calls.ConfigSection = append(mock.calls.ConfigSection, callInfo)
+	mock.lockConfigSection.Unlock()
+	if mock.ConfigSectionFunc == nil {
+		var (
+			configSectionOut cloud.ConfigSection
+			errOut           error
+		)
+		return configSectionOut, errOut
+	}
+	return mock.ConfigSectionFunc(ctx, configSectionID)
+}
+
+// ConfigSectionCalls gets all the calls that were made to ConfigSection.
+// Check the length with:
+//
+//	len(mockedClient.ConfigSectionCalls())
+func (mock *ClientMock) ConfigSectionCalls() []struct {
+	Ctx             context.Context
+	ConfigSectionID string
+} {
+	var calls []struct {
+		Ctx             context.Context
+		ConfigSectionID string
+	}
+	mock.lockConfigSection.RLock()
+	calls = mock.calls.ConfigSection
+	mock.lockConfigSection.RUnlock()
+	return calls
+}
+
+// ConfigSections calls ConfigSectionsFunc.
+func (mock *ClientMock) ConfigSections(ctx context.Context, projectID string, params cloud.ConfigSectionsParams) (cloud.ConfigSections, error) {
+	callInfo := struct {
+		Ctx       context.Context
+		ProjectID string
+		Params    cloud.ConfigSectionsParams
+	}{
+		Ctx:       ctx,
+		ProjectID: projectID,
+		Params:    params,
+	}
+	mock.lockConfigSections.Lock()
+	mock.calls.ConfigSections = append(mock.calls.ConfigSections, callInfo)
+	mock.lockConfigSections.Unlock()
+	if mock.ConfigSectionsFunc == nil {
+		var (
+			configSectionsOut cloud.ConfigSections
+			errOut            error
+		)
+		return configSectionsOut, errOut
+	}
+	return mock.ConfigSectionsFunc(ctx, projectID, params)
+}
+
+// ConfigSectionsCalls gets all the calls that were made to ConfigSections.
+// Check the length with:
+//
+//	len(mockedClient.ConfigSectionsCalls())
+func (mock *ClientMock) ConfigSectionsCalls() []struct {
+	Ctx       context.Context
+	ProjectID string
+	Params    cloud.ConfigSectionsParams
+} {
+	var calls []struct {
+		Ctx       context.Context
+		ProjectID string
+		Params    cloud.ConfigSectionsParams
+	}
+	mock.lockConfigSections.RLock()
+	calls = mock.calls.ConfigSections
+	mock.lockConfigSections.RUnlock()
+	return calls
+}
+
 // CreateAggregator calls CreateAggregatorFunc.
 func (mock *ClientMock) CreateAggregator(ctx context.Context, payload cloud.CreateAggregator) (cloud.CreatedAggregator, error) {
 	callInfo := struct {
@@ -1345,6 +1521,50 @@ func (mock *ClientMock) CreateAggregatorCalls() []struct {
 	mock.lockCreateAggregator.RLock()
 	calls = mock.calls.CreateAggregator
 	mock.lockCreateAggregator.RUnlock()
+	return calls
+}
+
+// CreateConfigSection calls CreateConfigSectionFunc.
+func (mock *ClientMock) CreateConfigSection(ctx context.Context, projectID string, in cloud.CreateConfigSection) (cloud.CreatedConfigSection, error) {
+	callInfo := struct {
+		Ctx       context.Context
+		ProjectID string
+		In        cloud.CreateConfigSection
+	}{
+		Ctx:       ctx,
+		ProjectID: projectID,
+		In:        in,
+	}
+	mock.lockCreateConfigSection.Lock()
+	mock.calls.CreateConfigSection = append(mock.calls.CreateConfigSection, callInfo)
+	mock.lockCreateConfigSection.Unlock()
+	if mock.CreateConfigSectionFunc == nil {
+		var (
+			createdConfigSectionOut cloud.CreatedConfigSection
+			errOut                  error
+		)
+		return createdConfigSectionOut, errOut
+	}
+	return mock.CreateConfigSectionFunc(ctx, projectID, in)
+}
+
+// CreateConfigSectionCalls gets all the calls that were made to CreateConfigSection.
+// Check the length with:
+//
+//	len(mockedClient.CreateConfigSectionCalls())
+func (mock *ClientMock) CreateConfigSectionCalls() []struct {
+	Ctx       context.Context
+	ProjectID string
+	In        cloud.CreateConfigSection
+} {
+	var calls []struct {
+		Ctx       context.Context
+		ProjectID string
+		In        cloud.CreateConfigSection
+	}
+	mock.lockCreateConfigSection.RLock()
+	calls = mock.calls.CreateConfigSection
+	mock.lockCreateConfigSection.RUnlock()
 	return calls
 }
 
@@ -1860,6 +2080,45 @@ func (mock *ClientMock) DeleteAggregatorsCalls() []struct {
 	mock.lockDeleteAggregators.RLock()
 	calls = mock.calls.DeleteAggregators
 	mock.lockDeleteAggregators.RUnlock()
+	return calls
+}
+
+// DeleteConfigSection calls DeleteConfigSectionFunc.
+func (mock *ClientMock) DeleteConfigSection(ctx context.Context, configSectionID string) error {
+	callInfo := struct {
+		Ctx             context.Context
+		ConfigSectionID string
+	}{
+		Ctx:             ctx,
+		ConfigSectionID: configSectionID,
+	}
+	mock.lockDeleteConfigSection.Lock()
+	mock.calls.DeleteConfigSection = append(mock.calls.DeleteConfigSection, callInfo)
+	mock.lockDeleteConfigSection.Unlock()
+	if mock.DeleteConfigSectionFunc == nil {
+		var (
+			errOut error
+		)
+		return errOut
+	}
+	return mock.DeleteConfigSectionFunc(ctx, configSectionID)
+}
+
+// DeleteConfigSectionCalls gets all the calls that were made to DeleteConfigSection.
+// Check the length with:
+//
+//	len(mockedClient.DeleteConfigSectionCalls())
+func (mock *ClientMock) DeleteConfigSectionCalls() []struct {
+	Ctx             context.Context
+	ConfigSectionID string
+} {
+	var calls []struct {
+		Ctx             context.Context
+		ConfigSectionID string
+	}
+	mock.lockDeleteConfigSection.RLock()
+	calls = mock.calls.DeleteConfigSection
+	mock.lockDeleteConfigSection.RUnlock()
 	return calls
 }
 
@@ -3282,6 +3541,93 @@ func (mock *ClientMock) UpdateAggregatorCalls() []struct {
 	mock.lockUpdateAggregator.RLock()
 	calls = mock.calls.UpdateAggregator
 	mock.lockUpdateAggregator.RUnlock()
+	return calls
+}
+
+// UpdateConfigSection calls UpdateConfigSectionFunc.
+func (mock *ClientMock) UpdateConfigSection(ctx context.Context, configSectionID string, in cloud.UpdateConfigSection) (cloud.UpdatedConfigSection, error) {
+	callInfo := struct {
+		Ctx             context.Context
+		ConfigSectionID string
+		In              cloud.UpdateConfigSection
+	}{
+		Ctx:             ctx,
+		ConfigSectionID: configSectionID,
+		In:              in,
+	}
+	mock.lockUpdateConfigSection.Lock()
+	mock.calls.UpdateConfigSection = append(mock.calls.UpdateConfigSection, callInfo)
+	mock.lockUpdateConfigSection.Unlock()
+	if mock.UpdateConfigSectionFunc == nil {
+		var (
+			updatedConfigSectionOut cloud.UpdatedConfigSection
+			errOut                  error
+		)
+		return updatedConfigSectionOut, errOut
+	}
+	return mock.UpdateConfigSectionFunc(ctx, configSectionID, in)
+}
+
+// UpdateConfigSectionCalls gets all the calls that were made to UpdateConfigSection.
+// Check the length with:
+//
+//	len(mockedClient.UpdateConfigSectionCalls())
+func (mock *ClientMock) UpdateConfigSectionCalls() []struct {
+	Ctx             context.Context
+	ConfigSectionID string
+	In              cloud.UpdateConfigSection
+} {
+	var calls []struct {
+		Ctx             context.Context
+		ConfigSectionID string
+		In              cloud.UpdateConfigSection
+	}
+	mock.lockUpdateConfigSection.RLock()
+	calls = mock.calls.UpdateConfigSection
+	mock.lockUpdateConfigSection.RUnlock()
+	return calls
+}
+
+// UpdateConfigSectionSet calls UpdateConfigSectionSetFunc.
+func (mock *ClientMock) UpdateConfigSectionSet(ctx context.Context, pipelineID string, configSectionIDs ...string) error {
+	callInfo := struct {
+		Ctx              context.Context
+		PipelineID       string
+		ConfigSectionIDs []string
+	}{
+		Ctx:              ctx,
+		PipelineID:       pipelineID,
+		ConfigSectionIDs: configSectionIDs,
+	}
+	mock.lockUpdateConfigSectionSet.Lock()
+	mock.calls.UpdateConfigSectionSet = append(mock.calls.UpdateConfigSectionSet, callInfo)
+	mock.lockUpdateConfigSectionSet.Unlock()
+	if mock.UpdateConfigSectionSetFunc == nil {
+		var (
+			errOut error
+		)
+		return errOut
+	}
+	return mock.UpdateConfigSectionSetFunc(ctx, pipelineID, configSectionIDs...)
+}
+
+// UpdateConfigSectionSetCalls gets all the calls that were made to UpdateConfigSectionSet.
+// Check the length with:
+//
+//	len(mockedClient.UpdateConfigSectionSetCalls())
+func (mock *ClientMock) UpdateConfigSectionSetCalls() []struct {
+	Ctx              context.Context
+	PipelineID       string
+	ConfigSectionIDs []string
+} {
+	var calls []struct {
+		Ctx              context.Context
+		PipelineID       string
+		ConfigSectionIDs []string
+	}
+	mock.lockUpdateConfigSectionSet.RLock()
+	calls = mock.calls.UpdateConfigSectionSet
+	mock.lockUpdateConfigSectionSet.RUnlock()
 	return calls
 }
 
