@@ -46,8 +46,8 @@ func newCmdDeleteCoreInstanceOnGCP(config *config, client gcp.Client) *cobra.Com
 			for {
 				operation, err := client.FollowOperations(ctx)
 
-				if err != nil || operation.Error != nil {
-					cmd.PrintErrf("an error occurred with the operation %s", operation.Name)
+				if err != nil {
+					cmd.PrintErr(err)
 					return nil
 				}
 
