@@ -79,7 +79,11 @@ func New(ctx context.Context, projectName string, environment string, credential
 }
 
 func (c *DefaultClient) FollowOperations(ctx context.Context) (*deploymentmanager.Operation, error) {
-	return c.manager.Operations.Get(c.projectName, c.deploymentName).Context(ctx).Do()
+	operation, err := c.manager.Operations.Get(c.projectName, c.deploymentName).Context(ctx).Do()
+	if operation != nil && operation.Error != nil {
+		return operation, fmt.Errorf("occurred an error with the %s operation: %v", operation.Name, operation.Error.Errors)
+	}
+	return operation, err
 }
 
 func (c *DefaultClient) Rollback(ctx context.Context) error {

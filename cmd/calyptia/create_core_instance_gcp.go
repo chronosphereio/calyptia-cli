@@ -104,14 +104,15 @@ func newCmdCreateCoreInstanceOnGCP(config *config, client gcp.Client) *cobra.Com
 
 			for {
 				operation, err := client.FollowOperations(ctx)
-
-				if err != nil || operation.Error != nil {
+				if err != nil {
+					cmd.PrintErr(err)
+					cmd.Println("A problem occurred while creating the instance, a rollback will be performed...")
 					err = client.Rollback(ctx)
 					if err != nil {
 						cmd.PrintErrf("an error occurred with the operation and the rollback was not successful")
 						return nil
 					}
-					cmd.PrintErrf("an error occurred with the operation %s", operation.Name)
+					cmd.Println("Rollback successful")
 					return nil
 				}
 
