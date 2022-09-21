@@ -22,7 +22,7 @@ func newCmdCreateConfigSection(config *config) *cobra.Command {
 	var outputFormat, goTemplate string
 
 	cmd := &cobra.Command{
-		Use:   "config_section",
+		Use:   "config_section", // child of `create`
 		Short: "Create config section",
 		Long:  "Create a snipet of a reutilizable config section that you can attach later to pipelines",
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -123,17 +123,11 @@ func pluginNames(kind string) []string {
 		}
 	}
 
-	// common properties that are not in the schema.
-	out = append(out, "Alias")
-	if kind == "input" {
-		out = append(out, "Tag")
-	} else if kind == "filter" || kind == "output" {
-		out = append(out, "Match", "Match_Regex")
-	}
-
 	return uniqueSlice(out)
 }
 
+// pluginProps -
+// TODO: exclude already defined property.
 func pluginProps(kind, name string) []string {
 	if kind == "" || name == "" {
 		return nil
@@ -168,6 +162,14 @@ func pluginProps(kind, name string) []string {
 		for _, o := range fluentbit_config.DefaultSchema.Outputs {
 			add(o)
 		}
+	}
+
+	// common properties that are not in the schema.
+	out = append(out, "Alias")
+	if kind == "input" {
+		out = append(out, "Tag")
+	} else if kind == "filter" || kind == "output" {
+		out = append(out, "Match", "Match_Regex")
 	}
 
 	slices.Sort(out)
