@@ -21,12 +21,13 @@ type Client interface {
 }
 
 type DefaultClient struct {
-	projectName    string
-	config         Config
-	deploymentName string
-	manager        *deploymentmanager.Service
-	environment    string
-	compute        *compute.Service
+	projectName      string
+	config           Config
+	deploymentName   string
+	manager          *deploymentmanager.Service
+	environment      string
+	compute          *compute.Service
+	currentOperation string
 }
 
 func (c *DefaultClient) SetConfig(newConfig Config) {
@@ -49,11 +50,11 @@ func (c *DefaultClient) Deploy(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	insertDeployment, err := c.manager.Deployments.Insert(c.projectName, deployment).Context(ctx).Do()
+	operation, err := c.manager.Deployments.Insert(c.projectName, deployment).Context(ctx).Do()
 	if err != nil {
 		return err
 	}
-	c.deploymentName = insertDeployment.Name
+	c.currentOperation = operation.Name
 	return nil
 }
 
@@ -79,7 +80,7 @@ func New(ctx context.Context, projectName string, environment string, credential
 }
 
 func (c *DefaultClient) FollowOperations(ctx context.Context) (*deploymentmanager.Operation, error) {
-	operation, err := c.manager.Operations.Get(c.projectName, c.deploymentName).Context(ctx).Do()
+	operation, err := c.manager.Operations.Get(c.projectName, c.currentOperation).Context(ctx).Do()
 	if operation != nil && operation.Error != nil {
 		return operation, fmt.Errorf("occurred an error with the %s operation: %v", operation.Name, operation.Error.Errors)
 	}
@@ -94,7 +95,8 @@ func (c *DefaultClient) Rollback(ctx context.Context) error {
 }
 func (c *DefaultClient) Delete(ctx context.Context, coreInstanceName string) error {
 	deploymentName := fmt.Sprintf("%s-%s-deployment", coreInstanceName, c.environment)
-	_, err := c.manager.Deployments.Delete(c.projectName, deploymentName).Context(ctx).Do()
+	operation, err := c.manager.Deployments.Delete(c.projectName, deploymentName).Context(ctx).Do()
+	c.currentOperation = operation.Name
 	return err
 }
 
