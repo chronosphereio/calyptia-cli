@@ -9,10 +9,11 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/calyptia/cli/gcp"
-	"github.com/calyptia/core-images-index/go-index"
 	"os"
 	"strings"
+
+	"github.com/calyptia/cli/gcp"
+	"github.com/calyptia/core-images-index/go-index"
 )
 
 const OperationConcluded = "DONE"

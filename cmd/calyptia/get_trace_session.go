@@ -25,7 +25,7 @@ func newCmdGetTraceSessions(config *config) *cobra.Command {
 	var outputFormat, goTemplate string
 
 	cmd := &cobra.Command{
-		Use:   "trace_sessions", // child of `create`
+		Use:   "trace_sessions", // child of `get`
 		Short: "List trace sessions",
 		Long: "List all trace sessions from the given pipeline,\n" +
 			"sorted by creation time in descending order.",

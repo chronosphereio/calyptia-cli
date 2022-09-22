@@ -10,6 +10,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"text/tabwriter"
 	text_template "text/template"
 	"time"
 
@@ -152,7 +153,7 @@ func rate(points []cloud.MetricFields) *float64 {
 	return &rate
 }
 
-func pluginNames(plugins map[string]cloud.Metrics) []string {
+func metricPluginNames(plugins map[string]cloud.Metrics) []string {
 	if len(plugins) == 0 {
 		return nil
 	}
@@ -287,4 +288,38 @@ func trimQuotes(s string) string {
 		}
 	}
 	return s
+}
+
+func uniqueSlice[S ~[]E, E comparable](s S) S {
+	m := map[E]struct{}{}
+
+	var out S
+	for _, item := range s {
+		if _, ok := m[item]; !ok {
+			out = append(out, item)
+		}
+	}
+	return out
+}
+
+func renderCreatedTable(w io.Writer, createdID string, createdAt time.Time) error {
+	tw := tabwriter.NewWriter(w, 0, 4, 1, ' ', 0)
+	fmt.Fprintln(tw, "ID\tCREATED-AT")
+	_, err := fmt.Fprintf(tw, "%s\t%s\n", createdID, createdAt.Local().Format(time.RFC822))
+	if err != nil {
+		return err
+	}
+
+	return tw.Flush()
+}
+
+func renderUpdatedTable(w io.Writer, updatedAt time.Time) error {
+	tw := tabwriter.NewWriter(w, 0, 4, 1, ' ', 0)
+	fmt.Fprintln(tw, "UPDATED-AT")
+	_, err := fmt.Fprintln(tw, updatedAt.Local().Format(time.RFC822))
+	if err != nil {
+		return err
+	}
+
+	return tw.Flush()
 }

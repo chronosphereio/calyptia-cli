@@ -20,6 +20,7 @@ func newCmdGetPipelines(config *config) *cobra.Command {
 	var outputFormat, goTemplate string
 	var showIDs bool
 	var environment string
+	var renderWithConfigSections bool
 
 	cmd := &cobra.Command{
 		Use:   "pipelines",
@@ -39,7 +40,8 @@ func newCmdGetPipelines(config *config) *cobra.Command {
 			}
 
 			pp, err := config.cloud.Pipelines(config.ctx, aggregatorID, cloud.PipelinesParams{
-				Last: &last,
+				Last:                     &last,
+				RenderWithConfigSections: renderWithConfigSections,
 			})
 			if err != nil {
 				return fmt.Errorf("could not fetch your pipelines: %w", err)
@@ -79,6 +81,7 @@ func newCmdGetPipelines(config *config) *cobra.Command {
 	fs.UintVarP(&last, "last", "l", 0, "Last `N` pipelines. 0 means no limit")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include pipeline IDs in table output")
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
+	fs.BoolVar(&renderWithConfigSections, "render-with-config-sections", false, "Render the pipeline config with the attached config sections; if any")
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
@@ -96,6 +99,7 @@ func newCmdGetPipeline(config *config) *cobra.Command {
 	var lastEndpoints, lastConfigHistory, lastSecrets uint
 	var includeEndpoints, includeConfigHistory, includeSecrets bool
 	var showIDs bool
+	var renderWithConfigSections bool
 	var outputFormat, goTemplate string
 
 	cmd := &cobra.Command{
@@ -118,7 +122,9 @@ func newCmdGetPipeline(config *config) *cobra.Command {
 				g, gctx := errgroup.WithContext(config.ctx)
 				g.Go(func() error {
 					var err error
-					pip, err = config.cloud.Pipeline(config.ctx, pipelineID, cloud.PipelineParams{})
+					pip, err = config.cloud.Pipeline(config.ctx, pipelineID, cloud.PipelineParams{
+						RenderWithConfigSections: renderWithConfigSections,
+					})
 					if err != nil {
 						return fmt.Errorf("could not fetch your pipeline: %w", err)
 					}
@@ -168,14 +174,16 @@ func newCmdGetPipeline(config *config) *cobra.Command {
 				}
 			} else {
 				var err error
-				pip, err = config.cloud.Pipeline(config.ctx, pipelineID, cloud.PipelineParams{})
+				pip, err = config.cloud.Pipeline(config.ctx, pipelineID, cloud.PipelineParams{
+					RenderWithConfigSections: renderWithConfigSections,
+				})
 				if err != nil {
 					return fmt.Errorf("could not fetch your pipeline: %w", err)
 				}
 			}
 
 			if onlyConfig {
-				fmt.Fprintln(cmd.OutOrStdout(), strings.TrimSpace(pip.Config.RawConfig))
+				fmt.Println(strings.TrimSpace(pip.Config.RawConfig))
 				return nil
 			}
 
@@ -228,6 +236,7 @@ func newCmdGetPipeline(config *config) *cobra.Command {
 	fs.UintVar(&lastEndpoints, "last-endpoints", 0, "Last `N` pipeline endpoints if included. 0 means no limit")
 	fs.UintVar(&lastConfigHistory, "last-config-history", 0, "Last `N` pipeline config history if included. 0 means no limit")
 	fs.UintVar(&lastSecrets, "last-secrets", 0, "Last `N` pipeline secrets if included. 0 means no limit")
+	fs.BoolVar(&renderWithConfigSections, "render-with-config-sections", false, "Render the pipeline config with the attached config sections; if any")
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
@@ -287,6 +296,7 @@ func (config *config) fetchAllPipelines() ([]cloud.Pipeline, error) {
 func (config *config) completePipelines(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	pp, err := config.fetchAllPipelines()
 	if err != nil {
+		cobra.CompError(err.Error())
 		return nil, cobra.ShellCompDirectiveError
 	}
 

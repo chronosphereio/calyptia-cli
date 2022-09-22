@@ -295,7 +295,7 @@ func agentMetricsToTableRows(metrics cloud.AgentMetrics) []table.Row {
 	var rows []table.Row
 	for _, measurementName := range measurementNames(metrics.Measurements) {
 		measurement := metrics.Measurements[measurementName]
-		for _, pluginName := range pluginNames(measurement.Plugins) {
+		for _, pluginName := range metricPluginNames(measurement.Plugins) {
 			// skip internal metrics.
 			if strings.HasPrefix(pluginName, "fluentbit_metrics.") || strings.HasPrefix(pluginName, "calyptia.") {
 				continue

@@ -17,6 +17,8 @@ func newCmdUpdate(config *config) *cobra.Command {
 		newCmdUpdateEndpoint(config),
 		newCmdUpdateCoreInstance(config),
 		newCmdUpdateEnvironment(config),
+		newCmdUpdateConfigSection(config),
+		newCmdUpdateConfigSectionSet(config),
 	)
 
 	return cmd
