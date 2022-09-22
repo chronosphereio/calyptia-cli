@@ -1,9 +1,7 @@
 package main
 
 import (
-	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"strings"
 
@@ -70,93 +68,4 @@ func newCmdUpdateConfigSection(config *config) *cobra.Command {
 	_ = cmd.RegisterFlagCompletionFunc("prop", config.completePluginProps)
 
 	return cmd
-}
-
-func (config *config) loadConfigSectionID(ctx context.Context, key string) (string, error) {
-	cc, err := config.cloud.ConfigSections(ctx, config.projectID, types.ConfigSectionsParams{})
-	if err != nil {
-		return "", fmt.Errorf("cloud: %w", err)
-	}
-
-	if len(cc.Items) == 0 {
-		return "", errors.New("cloud: no config sections yet")
-	}
-
-	for _, cs := range cc.Items {
-		if key == cs.ID {
-			return cs.ID, nil
-		}
-	}
-
-	var foundID string
-	var foundCount uint
-
-	for _, cs := range cc.Items {
-		kindName := configSectionKindName(cs)
-		if kindName == key {
-			foundID = cs.ID
-			foundCount++
-		}
-	}
-
-	if foundCount > 1 {
-		return "", fmt.Errorf("ambiguous config section %q, try using the ID", key)
-	}
-
-	if foundCount == 0 {
-		return "", fmt.Errorf("could not find config section with key %q", key)
-	}
-
-	return foundID, nil
-}
-
-func (config *config) completeConfigSections(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	ctx := cmd.Context()
-	cc, err := config.cloud.ConfigSections(ctx, config.projectID, types.ConfigSectionsParams{})
-	if err != nil {
-		cobra.CompErrorln(fmt.Sprintf("cloud: %v", err))
-		return nil, cobra.ShellCompDirectiveError
-	}
-
-	if len(cc.Items) == 0 {
-		return nil, cobra.ShellCompDirectiveNoFileComp
-	}
-
-	return configSectionKeys(cc.Items), cobra.ShellCompDirectiveNoFileComp
-}
-
-func configSectionKeys(cc []types.ConfigSection) []string {
-	kindNameCounts := map[string]uint{}
-	for _, cs := range cc {
-		kindName := configSectionKindName(cs)
-		if _, ok := kindNameCounts[kindName]; ok {
-			kindNameCounts[kindName]++
-			continue
-		}
-
-		kindNameCounts[kindName] = 1
-	}
-
-	var out []string
-	for _, cs := range cc {
-		kindName := configSectionKindName(cs)
-		if count, ok := kindNameCounts[kindName]; ok && count == 1 {
-			out = append(out, kindName)
-		} else {
-			out = append(out, cs.ID)
-		}
-	}
-
-	return out
-}
-
-func configSectionKindName(cs types.ConfigSection) string {
-	return fmt.Sprintf("%s:%s", cs.Kind, pairsName(cs.Properties))
-}
-
-func pairsName(pp types.Pairs) string {
-	if v, ok := pp.Get("Name"); ok {
-		return fmt.Sprintf("%v", v)
-	}
-	return ""
 }
