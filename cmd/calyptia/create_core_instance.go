@@ -7,7 +7,7 @@ import (
 func newCmdCreateCoreInstance(config *config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "core_instance",
-		Short: "Setup a new core instance on either Kubernetes, Amazon EC2 (TODO), or Google Compute Engine (TODO)",
+		Short: "Setup a new core instance on either Kubernetes, Amazon EC2, or Google Compute Engine",
 	}
 	cmd.AddCommand(newCmdCreateCoreInstanceOnK8s(config, nil))
 	cmd.AddCommand(newCmdCreateCoreInstanceOnAWS(config, nil, nil))
