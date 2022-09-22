@@ -27,7 +27,7 @@ func newCmdDeleteCoreInstanceOnAWS(config *config, client awsclient.Client) *cob
 	cmd := &cobra.Command{
 		Use:               "aws CORE_INSTANCE",
 		Aliases:           []string{"ec2", "amazon"},
-		Short:             "Delete a core instance from Amazon EC2 (TODO)",
+		Short:             "Delete a core instance from Amazon EC2",
 		Args:              cobra.ExactValidArgs(1),
 		ValidArgsFunction: config.completeAggregators,
 		RunE: func(cmd *cobra.Command, args []string) error {

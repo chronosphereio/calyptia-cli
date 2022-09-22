@@ -169,7 +169,7 @@ func (c *Config) SetTags(tags []string) *Config {
 }
 
 func (c *Config) SetImage(version string) *Config {
-	if version == "" {
+	if version == "" || version == "latest" {
 		return c
 	}
 	c.Resources[0].Properties.Disks[0].InitializeParams.SourceImage = fmt.Sprintf("projects/%s/global/images/%s", c.projectID, version)
