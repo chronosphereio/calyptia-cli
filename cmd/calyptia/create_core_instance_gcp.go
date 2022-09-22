@@ -3,7 +3,9 @@ package main
 import (
 	"errors"
 	"fmt"
+	rateLimiter "golang.org/x/time/rate"
 	"regexp"
+	"time"
 
 	"github.com/spf13/cobra"
 
@@ -34,6 +36,7 @@ func newCmdCreateCoreInstanceOnGCP(config *config, client gcp.Client) *cobra.Com
 		githubToken           string
 		useTestImages         bool
 		credentials           string
+		rateLimit             time.Duration
 	)
 	cmd := &cobra.Command{
 		Use:     "gcp",
@@ -103,7 +106,10 @@ func newCmdCreateCoreInstanceOnGCP(config *config, client gcp.Client) *cobra.Com
 
 			cmd.Printf("[*] Waiting for create operation...")
 
+			rateLimit := rateLimiter.Every(1 * time.Minute / rateLimit)
+			limiter := rateLimiter.NewLimiter(rateLimit, burstNumber)
 			for {
+				limiter.Wait(ctx)
 				operation, err := client.FollowOperations(ctx)
 				if err != nil {
 					cmd.PrintErr(err)
@@ -156,6 +162,8 @@ func newCmdCreateCoreInstanceOnGCP(config *config, client gcp.Client) *cobra.Com
 	fs.StringVar(&githubToken, "github-token", os.Getenv("GITHUB_TOKEN"), "GitHub token for test purposes")
 	fs.BoolVar(&useTestImages, "use-test-images", envBool("CALYPTIA_USE_TEST_IMAGES"), "Use GCP test images instead of released channel (only for testing/development).")
 	fs.StringVar(&credentials, "credentials", os.Getenv("GOOGLE_APPLICATION_CREDENTIALS"), "Path to GCP credentials file. (default is $GOOGLE_APPLICATION_CREDENTIALS)")
+	fs.DurationVar(&rateLimit, "request-per-minute", 20, "Rate limit for operations")
+	fs.MarkHidden("request-per-minute")
 	fs.MarkHidden("github-token")
 	fs.MarkHidden("use-test-images")
 

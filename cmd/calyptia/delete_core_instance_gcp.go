@@ -3,17 +3,23 @@ package main
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/calyptia/cli/gcp"
 
+	rateLimiter "golang.org/x/time/rate"
+
 	"github.com/spf13/cobra"
 )
+
+const burstNumber = 1
 
 func newCmdDeleteCoreInstanceOnGCP(config *config, client gcp.Client) *cobra.Command {
 	var (
 		environment string
 		projectID   string
 		credentials string
+		rateLimit   time.Duration
 	)
 	cmd := &cobra.Command{
 		Use:               "gcp CORE_INSTANCE",
@@ -43,7 +49,10 @@ func newCmdDeleteCoreInstanceOnGCP(config *config, client gcp.Client) *cobra.Com
 
 			cmd.Printf("[*] Waiting for delete operation...")
 
+			rateLimit := rateLimiter.Every(1 * time.Minute / rateLimit)
+			limiter := rateLimiter.NewLimiter(rateLimit, burstNumber)
 			for {
+				limiter.Wait(ctx)
 				operation, err := client.FollowOperations(ctx)
 
 				if err != nil {
@@ -66,5 +75,7 @@ func newCmdDeleteCoreInstanceOnGCP(config *config, client gcp.Client) *cobra.Com
 	fs.StringVar(&projectID, "project-id", "", "GCP project ID")
 	fs.StringVar(&environment, "environment", "default", "Calyptia environment name")
 	fs.StringVar(&credentials, "credentials", os.Getenv("GOOGLE_APPLICATION_CREDENTIALS"), "Path to GCP credentials file. (default is $GOOGLE_APPLICATION_CREDENTIALS)")
+	fs.DurationVar(&rateLimit, "request-per-minute", 20, "Rate limit for operations")
+	fs.MarkHidden("request-per-minute")
 	return cmd
 }

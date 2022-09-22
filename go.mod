@@ -29,6 +29,7 @@ require (
 	golang.org/x/exp v0.0.0-20220921164117-439092de6870
 	golang.org/x/sync v0.0.0-20220907140024-f12130a52804
 	golang.org/x/term v0.0.0-20220919170432-7a66f970e087
+	golang.org/x/time v0.0.0-20220920022843-2ce7c2934d45
 	google.golang.org/api v0.96.0
 	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/api v0.25.1
