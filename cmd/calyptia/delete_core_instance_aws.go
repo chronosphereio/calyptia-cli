@@ -97,7 +97,7 @@ func newCmdDeleteCoreInstanceOnAWS(config *config, client awsclient.Client) *cob
 				}
 
 				if !confirmDelete {
-					cmd.Println("Aborting...")
+					cmd.Println("Aborted")
 					return nil
 				}
 			}

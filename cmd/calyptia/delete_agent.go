@@ -48,6 +48,7 @@ func newCmdDeleteAgent(config *config) *cobra.Command {
 
 				if !confirmed {
 					cmd.Println("Aborted")
+					return nil
 				}
 			}
 

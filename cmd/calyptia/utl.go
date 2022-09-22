@@ -312,3 +312,14 @@ func renderCreatedTable(w io.Writer, createdID string, createdAt time.Time) erro
 
 	return tw.Flush()
 }
+
+func renderUpdatedTable(w io.Writer, updatedAt time.Time) error {
+	tw := tabwriter.NewWriter(w, 0, 4, 1, ' ', 0)
+	fmt.Fprintln(tw, "UPDATED-AT")
+	_, err := fmt.Fprintln(tw, updatedAt.Local().Format(time.RFC822))
+	if err != nil {
+		return err
+	}
+
+	return tw.Flush()
+}

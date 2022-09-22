@@ -86,7 +86,7 @@ func renderConfigSectionsTable(w io.Writer, cc types.ConfigSections, showIDs boo
 			return err
 		}
 
-		name, _ := cs.Properties.Get("Name")
+		name := pairsName(cs.Properties)
 
 		_, err = fmt.Fprintf(tw, "%s\t%s\t%s\t%s\n", cs.Kind, name, props, fmtTime(cs.CreatedAt))
 		if err != nil {

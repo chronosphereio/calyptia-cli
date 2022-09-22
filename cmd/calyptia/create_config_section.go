@@ -66,7 +66,7 @@ func newCmdCreateConfigSection(config *config) *cobra.Command {
 
 	_ = cmd.RegisterFlagCompletionFunc("kind", completePluginKinds)
 	_ = cmd.RegisterFlagCompletionFunc("name", completePluginNames)
-	_ = cmd.RegisterFlagCompletionFunc("prop", completePluginProps)
+	_ = cmd.RegisterFlagCompletionFunc("prop", config.completePluginProps)
 
 	return cmd
 }
@@ -79,15 +79,37 @@ func completePluginKinds(cmd *cobra.Command, args []string, toComplete string) (
 	}, cobra.ShellCompDirectiveNoFileComp
 }
 
-func completePluginProps(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	kind, err := cmd.Flags().GetString("kind")
-	if err != nil {
-		kind = ""
-	}
+func (config *config) completePluginProps(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	var kind, name string
 
-	name, err := cmd.Flags().GetString("name")
-	if err != nil {
-		name = ""
+	if len(args) == 1 {
+		ctx := cmd.Context()
+		key := args[0]
+		id, err := config.loadConfigSectionID(ctx, key)
+		if err != nil {
+			cobra.CompError(err.Error())
+			return nil, cobra.ShellCompDirectiveError
+		}
+
+		cs, err := config.cloud.ConfigSection(ctx, id)
+		if err != nil {
+			cobra.CompError(fmt.Sprintf("cloud: %v", err))
+			return nil, cobra.ShellCompDirectiveError
+		}
+
+		kind = string(cs.Kind)
+		name = pairsName(cs.Properties)
+	} else {
+		var err error
+		kind, err = cmd.Flags().GetString("kind")
+		if err != nil {
+			kind = ""
+		}
+
+		name, err = cmd.Flags().GetString("name")
+		if err != nil {
+			name = ""
+		}
 	}
 
 	return pluginProps(kind, name), cobra.ShellCompDirectiveNoFileComp

@@ -3,10 +3,12 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"strings"
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
+	"golang.org/x/term"
 	"gopkg.in/yaml.v2"
 )
 
@@ -29,6 +31,7 @@ func newCmdDeleteTraceSession(config *config) *cobra.Command {
 				}
 
 				if !ok {
+					cmd.Println("Aborted")
 					return nil
 				}
 			}
@@ -63,8 +66,10 @@ func newCmdDeleteTraceSession(config *config) *cobra.Command {
 		},
 	}
 
+	isNonInteractive := os.Stdin == nil || !term.IsTerminal(int(os.Stdin.Fd()))
+
 	fs := cmd.Flags()
-	fs.BoolVarP(&confirmed, "yes", "y", false, "Confirm deletion")
+	fs.BoolVarP(&confirmed, "yes", "y", isNonInteractive, "Confirm deletion")
 	fs.StringVar(&pipelineKey, "pipeline", "", "Parent pipeline ID or name")
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
