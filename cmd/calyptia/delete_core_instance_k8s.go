@@ -129,6 +129,15 @@ func newCmdDeleteCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 					}
 				}
 
+				err = k8sClient.DeleteDaemonSetByLabel(ctx, label, ns.Name)
+				if err != nil {
+					if !skipError {
+						return err
+					} else {
+						cmd.PrintErrf("Error: could not delete daemonSets: %v\n", err)
+					}
+				}
+
 				services, err := k8sClient.FindServicesByLabel(ctx, label, ns.Name)
 				if err != nil {
 					return err
@@ -217,7 +226,12 @@ func listDeletionsByLabel(ctx context.Context, k8sClient *k8s.Client, cmd *cobra
 
 	var itemsToDelete int
 	for _, ns := range namespaces.Items {
-		count, err := listDeployments(ctx, k8sClient, cmd, label, ns.Name)
+		count, err := listDaemonSets(ctx, k8sClient, cmd, label, ns.Name)
+		itemsToDelete += count
+		if err != nil {
+			return 0, err
+		}
+		count, err = listDeployments(ctx, k8sClient, cmd, label, ns.Name)
 		itemsToDelete += count
 		if err != nil {
 			return 0, err
@@ -370,4 +384,24 @@ func listDeployments(ctx context.Context, k8sClient *k8s.Client, cmd *cobra.Comm
 	}
 
 	return len(deployments.Items), nil
+}
+
+func listDaemonSets(ctx context.Context, k8sClient *k8s.Client, cmd *cobra.Command, label string, ns string) (int, error) {
+	daemonSets, err := k8sClient.AppsV1().DaemonSets(ns).List(ctx, metav1.ListOptions{
+		LabelSelector: label,
+	})
+	if err != nil {
+		return 0, err
+	}
+
+	if len(daemonSets.Items) == 0 {
+		return 0, nil
+	}
+
+	cmd.Println("DaemonSets:")
+	for _, item := range daemonSets.Items {
+		cmd.Printf(itemToDeleteFormat, ns, item.Name)
+	}
+
+	return len(daemonSets.Items), nil
 }

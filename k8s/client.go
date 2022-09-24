@@ -108,6 +108,7 @@ func (client *Client) CreateClusterRole(ctx context.Context, agg cloud.CreatedAg
 				Resources: []string{
 					"namespaces",
 					"deployments",
+					"daemonsets",
 					"replicasets",
 					"pods",
 					"services",
@@ -216,6 +217,13 @@ func (client *Client) CreateDeployment(
 func (client *Client) DeleteDeploymentByLabel(ctx context.Context, label, ns string) error {
 	foreground := metav1.DeletePropagationForeground
 	return client.AppsV1().Deployments(ns).DeleteCollection(ctx, metav1.DeleteOptions{
+		PropagationPolicy: &foreground,
+	}, metav1.ListOptions{LabelSelector: label})
+}
+
+func (client *Client) DeleteDaemonSetByLabel(ctx context.Context, label, ns string) error {
+	foreground := metav1.DeletePropagationForeground
+	return client.AppsV1().DaemonSets(ns).DeleteCollection(ctx, metav1.DeleteOptions{
 		PropagationPolicy: &foreground,
 	}, metav1.ListOptions{LabelSelector: label})
 }
