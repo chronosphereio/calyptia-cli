@@ -65,9 +65,12 @@ func newCmdGetAggregators(config *config) *cobra.Command {
 						fmt.Fprintf(tw, "%s\t", a.ID)
 					}
 					fmt.Fprintf(tw, "%s\t%s\t%s\t%d\t%s\t%s\t%s", a.Name, a.Version, a.EnvironmentName, a.PipelinesCount, strings.Join(a.Tags, ","), a.Status, fmtTime(a.CreatedAt))
-					if showMetadata && a.Metadata != nil {
-						filterOutEmptyMetadata(a.Metadata)
-						fmt.Fprintf(tw, "\t%s\n", *a.Metadata)
+					if showMetadata {
+						metadata, err := filterOutEmptyMetadata(a.Metadata)
+						if err != nil {
+							continue
+						}
+						fmt.Fprintf(tw, "\t%s\n", string(metadata))
 					} else {
 						fmt.Fprintln(tw, "")
 					}

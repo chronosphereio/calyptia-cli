@@ -110,8 +110,8 @@ github.com/aws/aws-sdk-go-v2/service/sts v1.16.19/go.mod h1:h4J3oPZQbxLhzGnk+j9d
 github.com/aws/smithy-go v1.13.3 h1:l7LYxGuzK6/K+NzJ2mC+VvLUbae0sL3bXU//04MkmnA=
 github.com/aws/smithy-go v1.13.3/go.mod h1:Tg+OJXh4MB2R/uN61Ko2f6hTZwB/ZYGOtib8J3gBHzA=
 github.com/buger/jsonparser v1.1.1/go.mod h1:6RYKKt7H4d4+iWqouImQ9R2FZql3VbhNgx27UK13J/0=
-github.com/calyptia/api v0.12.0 h1:7W5p0FWixQzThp5kUzYXBiwb23cNcmj5YQ2kmVU4Pcg=
-github.com/calyptia/api v0.12.0/go.mod h1:UW3QjjiHwgCaEmEsg7qddOBcroK83jqBhIH7A9ndW1I=
+github.com/calyptia/api v0.14.0 h1:nctO7AMKCHMen09ObK/zZcwuLRi03Pa1dP9MOChpG2w=
+github.com/calyptia/api v0.14.0/go.mod h1:F7ZRXLSzeXZqYq4kzYgaUUNO7z4CIL5i17uRee2L+aU=
 github.com/calyptia/core-images-index/go-index v0.0.0-20220920114028-a0b0d274f5d2 h1:FzWp774UFDkU1xO/hKN3+RQVEz3bzj8vX3ye0w/Bp7A=
 github.com/calyptia/core-images-index/go-index v0.0.0-20220920114028-a0b0d274f5d2/go.mod h1:9+aUlL+o9dpq2wcF4CLEQlPAcjlmuwohVRvOxNN6TWk=
 github.com/calyptia/go-bubble-table v0.2.1 h1:NWcVRyGCLuP7QIA29uUFSY+IjmWcmUWHjy5J/CPb0Rk=

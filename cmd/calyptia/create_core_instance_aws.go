@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
@@ -195,13 +194,11 @@ func newCmdCreateCoreInstanceOnAWS(config *config, client awsclient.Client, poll
 				return fmt.Errorf("calyptia core instance not ready: %w", err)
 			}
 
-			metadata, err := json.Marshal(awsInstance)
-			if err != nil {
-				return fmt.Errorf("could not encode metadata: %w", err)
+			metadata := types.AggregatorMetadata{
+				MetadataAWS: awsInstance.MetadataAWS,
 			}
-
 			err = config.cloud.UpdateAggregator(ctx, coreInstanceID, types.UpdateAggregator{
-				Metadata: (*json.RawMessage)(&metadata),
+				Metadata: &metadata,
 			})
 
 			if err != nil {
