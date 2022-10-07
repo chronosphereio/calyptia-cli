@@ -13,7 +13,12 @@ import (
 )
 
 func Test_newCmdGetAggregators(t *testing.T) {
-	metadata := json.RawMessage(`{"k8s.cluster_version":"1.21.1","k8s.cluster_platform":"linux/arm64"}`)
+	metadata := cloud.AggregatorMetadata{
+		MetadataK8S: cloud.MetadataK8S{
+			ClusterVersion:  "1.21.1",
+			ClusterPlatform: "linux/arm64",
+		},
+	}
 
 	t.Run("empty", func(t *testing.T) {
 		got := &bytes.Buffer{}
@@ -60,7 +65,7 @@ func Test_newCmdGetAggregators(t *testing.T) {
 				PipelinesCount:  1,
 				Status:          cloud.AggregatorStatusRunning,
 				CreatedAt:       now.Add(-time.Hour),
-				Metadata:        &metadata,
+				Metadata:        metadata,
 			}, {
 				ID:              "id_2",
 				Name:            "name_2",
@@ -70,7 +75,7 @@ func Test_newCmdGetAggregators(t *testing.T) {
 				Status:          cloud.AggregatorStatusRunning,
 				Tags:            []string{"three", "four"},
 				CreatedAt:       now.Add(time.Minute * -10),
-				Metadata:        &metadata,
+				Metadata:        metadata,
 			}},
 		}
 		got := &bytes.Buffer{}
