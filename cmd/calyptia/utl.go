@@ -194,11 +194,16 @@ func measurementNames(measurements map[string]cloud.AgentMeasurement) []string {
 
 func ptr[T any](p T) *T { return &p }
 
-func filterOutEmptyMetadata(in *json.RawMessage) {
-	var o map[string]any
-	err := json.Unmarshal(*in, &o)
+func filterOutEmptyMetadata(metadata cloud.AggregatorMetadata) ([]byte, error) {
+	b, err := json.Marshal(metadata)
 	if err != nil {
-		return
+		return nil, err
+	}
+
+	var o map[string]any
+	err = json.Unmarshal(b, &o)
+	if err != nil {
+		return nil, err
 	}
 	for k, v := range o {
 		switch v.(type) {
@@ -220,12 +225,8 @@ func filterOutEmptyMetadata(in *json.RawMessage) {
 			}
 		}
 	}
-	b, err := json.Marshal(o)
-	if err != nil {
-		return
-	}
-	c := json.RawMessage(b)
-	*in = c
+
+	return json.Marshal(o)
 }
 
 func readConfirm(r io.Reader) (bool, error) {
