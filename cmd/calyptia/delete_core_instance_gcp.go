@@ -52,12 +52,13 @@ func newCmdDeleteCoreInstanceOnGCP(config *config, client gcp.Client) *cobra.Com
 			rateLimit := rateLimiter.Every(1 * time.Minute / rateLimit)
 			limiter := rateLimiter.NewLimiter(rateLimit, burstNumber)
 			for {
-				limiter.Wait(ctx)
-				operation, err := client.FollowOperations(ctx)
+				if err := limiter.Wait(ctx); err != nil {
+					return err
+				}
 
+				operation, err := client.FollowOperations(ctx)
 				if err != nil {
-					cmd.PrintErr(err)
-					return nil
+					return err
 				}
 
 				if operation.Status == OperationConcluded {
@@ -76,6 +77,8 @@ func newCmdDeleteCoreInstanceOnGCP(config *config, client gcp.Client) *cobra.Com
 	fs.StringVar(&environment, "environment", "default", "Calyptia environment name")
 	fs.StringVar(&credentials, "credentials", os.Getenv("GOOGLE_APPLICATION_CREDENTIALS"), "Path to GCP credentials file. (default is $GOOGLE_APPLICATION_CREDENTIALS)")
 	fs.DurationVar(&rateLimit, "request-per-minute", 20, "Rate limit for operations")
-	fs.MarkHidden("request-per-minute")
+
+	_ = fs.MarkHidden("request-per-minute")
+
 	return cmd
 }

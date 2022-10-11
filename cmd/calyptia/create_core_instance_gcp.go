@@ -3,9 +3,10 @@ package main
 import (
 	"errors"
 	"fmt"
-	rateLimiter "golang.org/x/time/rate"
 	"regexp"
 	"time"
+
+	rateLimiter "golang.org/x/time/rate"
 
 	"github.com/spf13/cobra"
 
@@ -109,16 +110,19 @@ func newCmdCreateCoreInstanceOnGCP(config *config, client gcp.Client) *cobra.Com
 			rateLimit := rateLimiter.Every(1 * time.Minute / rateLimit)
 			limiter := rateLimiter.NewLimiter(rateLimit, burstNumber)
 			for {
-				limiter.Wait(ctx)
+				if err := limiter.Wait(ctx); err != nil {
+					return err
+				}
+
 				operation, err := client.FollowOperations(ctx)
 				if err != nil {
 					cmd.PrintErr(err)
 					cmd.Println("A problem occurred while creating the instance, a rollback will be performed...")
 					err = client.Rollback(ctx)
 					if err != nil {
-						cmd.PrintErrf("an error occurred with the operation and the rollback was not successful")
-						return nil
+						return fmt.Errorf("rollback operation: %w", err)
 					}
+
 					cmd.Println("Rollback successful")
 					return nil
 				}
@@ -128,6 +132,7 @@ func newCmdCreateCoreInstanceOnGCP(config *config, client gcp.Client) *cobra.Com
 					break
 				}
 			}
+
 			instance, err := client.GetInstance(ctx, zone, coreInstanceName)
 			if err != nil {
 				cmd.PrintErrf("could not find the created instance")
@@ -163,9 +168,10 @@ func newCmdCreateCoreInstanceOnGCP(config *config, client gcp.Client) *cobra.Com
 	fs.BoolVar(&useTestImages, "use-test-images", envBool("CALYPTIA_USE_TEST_IMAGES"), "Use GCP test images instead of released channel (only for testing/development).")
 	fs.StringVar(&credentials, "credentials", os.Getenv("GOOGLE_APPLICATION_CREDENTIALS"), "Path to GCP credentials file. (default is $GOOGLE_APPLICATION_CREDENTIALS)")
 	fs.DurationVar(&rateLimit, "request-per-minute", 20, "Rate limit for operations")
-	fs.MarkHidden("request-per-minute")
-	fs.MarkHidden("github-token")
-	fs.MarkHidden("use-test-images")
+
+	_ = fs.MarkHidden("request-per-minute")
+	_ = fs.MarkHidden("github-token")
+	_ = fs.MarkHidden("use-test-images")
 
 	return cmd
 }

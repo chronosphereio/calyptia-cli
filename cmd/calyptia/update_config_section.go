@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/calyptia/api/types"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v2"
+
+	"github.com/calyptia/api/types"
 )
 
 func newCmdUpdateConfigSection(config *config) *cobra.Command {

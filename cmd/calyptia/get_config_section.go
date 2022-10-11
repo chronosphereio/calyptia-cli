@@ -10,10 +10,11 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/calyptia/api/types"
 	"github.com/go-logfmt/logfmt"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v2"
+
+	"github.com/calyptia/api/types"
 )
 
 func newCmdGetConfigSections(config *config) *cobra.Command {

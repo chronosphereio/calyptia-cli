@@ -233,8 +233,9 @@ func newCmdCreateCoreInstanceOnAWS(config *config, client awsclient.Client, poll
 
 	fs.StringVar(&githubToken, "github-token", os.Getenv("GITHUB_TOKEN"), "GitHub token for test purposes")
 	fs.BoolVar(&useTestImages, "use-test-images", envBool("CALYPTIA_USE_TEST_IMAGES"), "Use GCP test images instead of released channel (only for testing/development).")
-	fs.MarkHidden("github-token")
-	fs.MarkHidden("use-test-images")
+
+	_ = fs.MarkHidden("github-token")
+	_ = fs.MarkHidden("use-test-images")
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
 
