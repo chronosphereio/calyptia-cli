@@ -23,7 +23,6 @@ type Client interface {
 type DefaultClient struct {
 	projectName      string
 	config           Config
-	deploymentName   string
 	manager          *deploymentmanager.Service
 	environment      string
 	compute          *compute.Service
