@@ -33,8 +33,8 @@ require (
 	golang.org/x/time v0.0.0-20220922220347-f3bd1da661af
 	google.golang.org/api v0.98.0
 	gopkg.in/yaml.v2 v2.4.0
-	k8s.io/api v0.25.2
-	k8s.io/apimachinery v0.25.2
+	k8s.io/api v0.25.3
+	k8s.io/apimachinery v0.25.3
 	k8s.io/client-go v0.25.2
 )
 
