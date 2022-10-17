@@ -74,6 +74,7 @@ func newCmd(ctx context.Context) *cobra.Command {
 		SilenceErrors: true,
 		SilenceUsage:  true,
 	}
+	cmd.SetOut(os.Stdout)
 
 	fs := cmd.PersistentFlags()
 	fs.StringVar(&cloudURLStr, "cloud-url", env("CALYPTIA_CLOUD_URL", defaultCloudURLStr), "Calyptia Cloud URL")
