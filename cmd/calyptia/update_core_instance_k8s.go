@@ -31,8 +31,6 @@ func newCmdUpdateCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 			ctx := context.Background()
 			aggregatorKey := args[0]
 
-			coreDockerImage := fmt.Sprintf("%s:%s", defaultCoreDockerImage, newVersion)
-
 			var environmentID string
 			if environment != "" {
 				var err error
@@ -69,7 +67,7 @@ func newCmdUpdateCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 
 			err = config.cloud.UpdateAggregator(config.ctx, aggregatorID, opts)
 			if err != nil {
-				return fmt.Errorf("could not update core instance: %w", err)
+				return fmt.Errorf("could not update core instance at calyptia cloud: %w", err)
 			}
 
 			agg, err := config.cloud.Aggregator(ctx, aggregatorID)
@@ -81,42 +79,48 @@ func newCmdUpdateCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 				configOverrides.Context.Namespace = apiv1.NamespaceDefault
 			}
 
-			var clientSet kubernetes.Interface
-			if testClientSet != nil {
-				clientSet = testClientSet
-			} else {
-				kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
-				kubeClientConfig, err := kubeConfig.ClientConfig()
+			if newVersion != "" {
+				coreDockerImage := fmt.Sprintf("%s:%s", defaultCoreDockerImage, newVersion)
+				var clientSet kubernetes.Interface
+				if testClientSet != nil {
+					clientSet = testClientSet
+				} else {
+					kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
+					kubeClientConfig, err := kubeConfig.ClientConfig()
+					if err != nil {
+						return err
+					}
+
+					clientSet, err = kubernetes.NewForConfig(kubeClientConfig)
+					if err != nil {
+						return err
+					}
+
+				}
+
+				k8sClient := &k8s.Client{
+					Interface:    clientSet,
+					Namespace:    configOverrides.Context.Namespace,
+					ProjectToken: config.projectToken,
+					CloudBaseURL: config.baseURL,
+				}
+
+				if err := k8sClient.EnsureOwnNamespace(ctx); err != nil {
+					return fmt.Errorf("could not ensure kubernetes namespace exists: %w", err)
+				}
+				label := fmt.Sprintf("%s=%s,!%s", k8s.LabelAggregatorID, agg.ID, k8s.LabelPipelineID)
+				if err := k8sClient.UpdateDeploymentByLabel(ctx, label, coreDockerImage); err != nil {
+					return fmt.Errorf("could not update kubernetes deployment: %w", err)
+				}
+
 				if err != nil {
 					return err
 				}
-
-				clientSet, err = kubernetes.NewForConfig(kubeClientConfig)
-				if err != nil {
-					return err
-				}
+				cmd.Printf("calyptia-core instance version updated to version %s\n", newVersion)
 
 			}
 
-			k8sClient := &k8s.Client{
-				Interface:    clientSet,
-				Namespace:    configOverrides.Context.Namespace,
-				ProjectToken: config.projectToken,
-				CloudBaseURL: config.baseURL,
-			}
-
-			if err := k8sClient.EnsureOwnNamespace(ctx); err != nil {
-				return fmt.Errorf("could not ensure kubernetes namespace exists: %w", err)
-			}
-			label := fmt.Sprintf("%s=%s,!%s", k8s.LabelAggregatorID, agg.ID, k8s.LabelPipelineID)
-			if err := k8sClient.UpdateDeploymentByLabel(ctx, label, coreDockerImage); err != nil {
-				return fmt.Errorf("could not update kubernetes deployment: %w", err)
-			}
-
-			if err != nil {
-				return err
-			}
-			cmd.Printf("calyptia-core instance %q was successfully updated to version %s\n", agg.Name, newVersion)
+			cmd.Printf("calyptia-core instance successfully updated\n")
 			return nil
 		},
 	}
