@@ -96,7 +96,7 @@ func newCmdUpdatePipeline(config *config) *cobra.Command {
 
 			update := cloud.UpdatePipeline{
 				AutoCreatePortsFromConfig: &autoCreatePortsFromConfig,
-				SkipConfigValidation: &skipConfigValidation,
+				SkipConfigValidation:      skipConfigValidation,
 				Secrets:                   secrets,
 				Files:                     updatePipelineFiles,
 				Metadata:                  metadata,
@@ -147,7 +147,7 @@ func newCmdUpdatePipeline(config *config) *cobra.Command {
 	fs.StringVar(&newConfigFile, "config-file", "", "New Fluent Bit config file used by pipeline")
 	fs.UintVar(&newReplicasCount, "replicas", 0, "New pipeline replica size")
 	fs.BoolVar(&autoCreatePortsFromConfig, "auto-create-ports", true, "Automatically create pipeline ports from config if updated")
-	fs.BoolVar(&skipConfigValidation, "skip-config-validation", true, "Skip Config Validation")
+	fs.BoolVar(&skipConfigValidation, "skip-config-validation", false, "Opt-in to skip config validation (Use with caution as this option might be removed soon)")
 	fs.StringVar(&secretsFile, "secrets-file", "", "Optional file containing a full definition of all secrets.\nThe format is derived either from the extension or the --secrets-format argument.\nThese can be referenced in pipeline files as such:\n{{ secrets.name }}\nThe prefix is the same for all secrets, the name is defined in the secrets file.")
 	fs.StringVar(&secretsFormat, "secrets-format", "auto", "Secrets file format. Allowed: auto, env, json, yaml. If not set it is derived from secrets file extension")
 	fs.StringArrayVar(&files, "file", nil, "Optional file. You can reference this file contents from your config like so:\n{{ files.myfile }}\nPass as many as you want; bear in mind the file name can only contain alphanumeric characters.")

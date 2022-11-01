@@ -4,10 +4,12 @@ import (
 	"bytes"
 	"context"
 	"errors"
-	"github.com/calyptia/api/types"
 	"io"
-	"k8s.io/client-go/kubernetes/fake"
 	"testing"
+
+	"k8s.io/client-go/kubernetes/fake"
+
+	"github.com/calyptia/api/types"
 )
 
 func Test_newCmdUpdateCoreInstanceK8s(t *testing.T) {
