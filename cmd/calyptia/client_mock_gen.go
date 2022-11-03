@@ -5,9 +5,8 @@ package main
 
 import (
 	"context"
-	"sync"
-
 	cloud "github.com/calyptia/api/types"
+	"sync"
 )
 
 // Ensure, that ClientMock does implement Client.
@@ -56,6 +55,9 @@ var _ Client = &ClientMock{}
 //			CreateEnvironmentFunc: func(ctx context.Context, projectID string, payload cloud.CreateEnvironment) (cloud.CreatedEnvironment, error) {
 //				panic("mock out the CreateEnvironment method")
 //			},
+//			CreateIngestCheckFunc: func(ctx context.Context, coreInstanceID string, payload cloud.CreateIngestCheck) (cloud.CreatedIngestCheck, error) {
+//				panic("mock out the CreateIngestCheck method")
+//			},
 //			CreateInvitationFunc: func(ctx context.Context, projectID string, payload cloud.CreateInvitation) error {
 //				panic("mock out the CreateInvitation method")
 //			},
@@ -95,6 +97,9 @@ var _ Client = &ClientMock{}
 //			DeleteEnvironmentFunc: func(ctx context.Context, environmentID string) error {
 //				panic("mock out the DeleteEnvironment method")
 //			},
+//			DeleteIngestCheckFunc: func(ctx context.Context, checkID string) error {
+//				panic("mock out the DeleteIngestCheck method")
+//			},
 //			DeletePipelineFunc: func(ctx context.Context, pipelineID string) error {
 //				panic("mock out the DeletePipeline method")
 //			},
@@ -118,6 +123,12 @@ var _ Client = &ClientMock{}
 //			},
 //			EnvironmentsFunc: func(ctx context.Context, projectID string, params cloud.EnvironmentsParams) (cloud.Environments, error) {
 //				panic("mock out the Environments method")
+//			},
+//			IngestCheckFunc: func(ctx context.Context, checkID string) (cloud.IngestCheck, error) {
+//				panic("mock out the IngestCheck method")
+//			},
+//			IngestChecksFunc: func(ctx context.Context, coreInstanceID string, params cloud.IngestChecksParams) (cloud.IngestChecks, error) {
+//				panic("mock out the IngestChecks method")
 //			},
 //			MembersFunc: func(ctx context.Context, projectID string, params cloud.MembersParams) (cloud.Memberships, error) {
 //				panic("mock out the Members method")
@@ -273,6 +284,9 @@ type ClientMock struct {
 	// CreateEnvironmentFunc mocks the CreateEnvironment method.
 	CreateEnvironmentFunc func(ctx context.Context, projectID string, payload cloud.CreateEnvironment) (cloud.CreatedEnvironment, error)
 
+	// CreateIngestCheckFunc mocks the CreateIngestCheck method.
+	CreateIngestCheckFunc func(ctx context.Context, coreInstanceID string, payload cloud.CreateIngestCheck) (cloud.CreatedIngestCheck, error)
+
 	// CreateInvitationFunc mocks the CreateInvitation method.
 	CreateInvitationFunc func(ctx context.Context, projectID string, payload cloud.CreateInvitation) error
 
@@ -312,6 +326,9 @@ type ClientMock struct {
 	// DeleteEnvironmentFunc mocks the DeleteEnvironment method.
 	DeleteEnvironmentFunc func(ctx context.Context, environmentID string) error
 
+	// DeleteIngestCheckFunc mocks the DeleteIngestCheck method.
+	DeleteIngestCheckFunc func(ctx context.Context, checkID string) error
+
 	// DeletePipelineFunc mocks the DeletePipeline method.
 	DeletePipelineFunc func(ctx context.Context, pipelineID string) error
 
@@ -335,6 +352,12 @@ type ClientMock struct {
 
 	// EnvironmentsFunc mocks the Environments method.
 	EnvironmentsFunc func(ctx context.Context, projectID string, params cloud.EnvironmentsParams) (cloud.Environments, error)
+
+	// IngestCheckFunc mocks the IngestCheck method.
+	IngestCheckFunc func(ctx context.Context, checkID string) (cloud.IngestCheck, error)
+
+	// IngestChecksFunc mocks the IngestChecks method.
+	IngestChecksFunc func(ctx context.Context, coreInstanceID string, params cloud.IngestChecksParams) (cloud.IngestChecks, error)
 
 	// MembersFunc mocks the Members method.
 	MembersFunc func(ctx context.Context, projectID string, params cloud.MembersParams) (cloud.Memberships, error)
@@ -547,6 +570,15 @@ type ClientMock struct {
 			// Payload is the payload argument value.
 			Payload cloud.CreateEnvironment
 		}
+		// CreateIngestCheck holds details about calls to the CreateIngestCheck method.
+		CreateIngestCheck []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// CoreInstanceID is the coreInstanceID argument value.
+			CoreInstanceID string
+			// Payload is the payload argument value.
+			Payload cloud.CreateIngestCheck
+		}
 		// CreateInvitation holds details about calls to the CreateInvitation method.
 		CreateInvitation []struct {
 			// Ctx is the ctx argument value.
@@ -656,6 +688,13 @@ type ClientMock struct {
 			// EnvironmentID is the environmentID argument value.
 			EnvironmentID string
 		}
+		// DeleteIngestCheck holds details about calls to the DeleteIngestCheck method.
+		DeleteIngestCheck []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// CheckID is the checkID argument value.
+			CheckID string
+		}
 		// DeletePipeline holds details about calls to the DeletePipeline method.
 		DeletePipeline []struct {
 			// Ctx is the ctx argument value.
@@ -715,6 +754,22 @@ type ClientMock struct {
 			ProjectID string
 			// Params is the params argument value.
 			Params cloud.EnvironmentsParams
+		}
+		// IngestCheck holds details about calls to the IngestCheck method.
+		IngestCheck []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// CheckID is the checkID argument value.
+			CheckID string
+		}
+		// IngestChecks holds details about calls to the IngestChecks method.
+		IngestChecks []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// CoreInstanceID is the coreInstanceID argument value.
+			CoreInstanceID string
+			// Params is the params argument value.
+			Params cloud.IngestChecksParams
 		}
 		// Members holds details about calls to the Members method.
 		Members []struct {
@@ -1044,6 +1099,7 @@ type ClientMock struct {
 	lockCreateAggregator            sync.RWMutex
 	lockCreateConfigSection         sync.RWMutex
 	lockCreateEnvironment           sync.RWMutex
+	lockCreateIngestCheck           sync.RWMutex
 	lockCreateInvitation            sync.RWMutex
 	lockCreatePipeline              sync.RWMutex
 	lockCreatePipelineFile          sync.RWMutex
@@ -1057,6 +1113,7 @@ type ClientMock struct {
 	lockDeleteAggregators           sync.RWMutex
 	lockDeleteConfigSection         sync.RWMutex
 	lockDeleteEnvironment           sync.RWMutex
+	lockDeleteIngestCheck           sync.RWMutex
 	lockDeletePipeline              sync.RWMutex
 	lockDeletePipelineFile          sync.RWMutex
 	lockDeletePipelinePort          sync.RWMutex
@@ -1065,6 +1122,8 @@ type ClientMock struct {
 	lockDeleteResourceProfile       sync.RWMutex
 	lockDeleteToken                 sync.RWMutex
 	lockEnvironments                sync.RWMutex
+	lockIngestCheck                 sync.RWMutex
+	lockIngestChecks                sync.RWMutex
 	lockMembers                     sync.RWMutex
 	lockPipeline                    sync.RWMutex
 	lockPipelineConfigHistory       sync.RWMutex
@@ -1609,6 +1668,50 @@ func (mock *ClientMock) CreateEnvironmentCalls() []struct {
 	mock.lockCreateEnvironment.RLock()
 	calls = mock.calls.CreateEnvironment
 	mock.lockCreateEnvironment.RUnlock()
+	return calls
+}
+
+// CreateIngestCheck calls CreateIngestCheckFunc.
+func (mock *ClientMock) CreateIngestCheck(ctx context.Context, coreInstanceID string, payload cloud.CreateIngestCheck) (cloud.CreatedIngestCheck, error) {
+	callInfo := struct {
+		Ctx            context.Context
+		CoreInstanceID string
+		Payload        cloud.CreateIngestCheck
+	}{
+		Ctx:            ctx,
+		CoreInstanceID: coreInstanceID,
+		Payload:        payload,
+	}
+	mock.lockCreateIngestCheck.Lock()
+	mock.calls.CreateIngestCheck = append(mock.calls.CreateIngestCheck, callInfo)
+	mock.lockCreateIngestCheck.Unlock()
+	if mock.CreateIngestCheckFunc == nil {
+		var (
+			createdIngestCheckOut cloud.CreatedIngestCheck
+			errOut                error
+		)
+		return createdIngestCheckOut, errOut
+	}
+	return mock.CreateIngestCheckFunc(ctx, coreInstanceID, payload)
+}
+
+// CreateIngestCheckCalls gets all the calls that were made to CreateIngestCheck.
+// Check the length with:
+//
+//	len(mockedClient.CreateIngestCheckCalls())
+func (mock *ClientMock) CreateIngestCheckCalls() []struct {
+	Ctx            context.Context
+	CoreInstanceID string
+	Payload        cloud.CreateIngestCheck
+} {
+	var calls []struct {
+		Ctx            context.Context
+		CoreInstanceID string
+		Payload        cloud.CreateIngestCheck
+	}
+	mock.lockCreateIngestCheck.RLock()
+	calls = mock.calls.CreateIngestCheck
+	mock.lockCreateIngestCheck.RUnlock()
 	return calls
 }
 
@@ -2161,6 +2264,45 @@ func (mock *ClientMock) DeleteEnvironmentCalls() []struct {
 	return calls
 }
 
+// DeleteIngestCheck calls DeleteIngestCheckFunc.
+func (mock *ClientMock) DeleteIngestCheck(ctx context.Context, checkID string) error {
+	callInfo := struct {
+		Ctx     context.Context
+		CheckID string
+	}{
+		Ctx:     ctx,
+		CheckID: checkID,
+	}
+	mock.lockDeleteIngestCheck.Lock()
+	mock.calls.DeleteIngestCheck = append(mock.calls.DeleteIngestCheck, callInfo)
+	mock.lockDeleteIngestCheck.Unlock()
+	if mock.DeleteIngestCheckFunc == nil {
+		var (
+			errOut error
+		)
+		return errOut
+	}
+	return mock.DeleteIngestCheckFunc(ctx, checkID)
+}
+
+// DeleteIngestCheckCalls gets all the calls that were made to DeleteIngestCheck.
+// Check the length with:
+//
+//	len(mockedClient.DeleteIngestCheckCalls())
+func (mock *ClientMock) DeleteIngestCheckCalls() []struct {
+	Ctx     context.Context
+	CheckID string
+} {
+	var calls []struct {
+		Ctx     context.Context
+		CheckID string
+	}
+	mock.lockDeleteIngestCheck.RLock()
+	calls = mock.calls.DeleteIngestCheck
+	mock.lockDeleteIngestCheck.RUnlock()
+	return calls
+}
+
 // DeletePipeline calls DeletePipelineFunc.
 func (mock *ClientMock) DeletePipeline(ctx context.Context, pipelineID string) error {
 	callInfo := struct {
@@ -2479,6 +2621,90 @@ func (mock *ClientMock) EnvironmentsCalls() []struct {
 	mock.lockEnvironments.RLock()
 	calls = mock.calls.Environments
 	mock.lockEnvironments.RUnlock()
+	return calls
+}
+
+// IngestCheck calls IngestCheckFunc.
+func (mock *ClientMock) IngestCheck(ctx context.Context, checkID string) (cloud.IngestCheck, error) {
+	callInfo := struct {
+		Ctx     context.Context
+		CheckID string
+	}{
+		Ctx:     ctx,
+		CheckID: checkID,
+	}
+	mock.lockIngestCheck.Lock()
+	mock.calls.IngestCheck = append(mock.calls.IngestCheck, callInfo)
+	mock.lockIngestCheck.Unlock()
+	if mock.IngestCheckFunc == nil {
+		var (
+			ingestCheckOut cloud.IngestCheck
+			errOut         error
+		)
+		return ingestCheckOut, errOut
+	}
+	return mock.IngestCheckFunc(ctx, checkID)
+}
+
+// IngestCheckCalls gets all the calls that were made to IngestCheck.
+// Check the length with:
+//
+//	len(mockedClient.IngestCheckCalls())
+func (mock *ClientMock) IngestCheckCalls() []struct {
+	Ctx     context.Context
+	CheckID string
+} {
+	var calls []struct {
+		Ctx     context.Context
+		CheckID string
+	}
+	mock.lockIngestCheck.RLock()
+	calls = mock.calls.IngestCheck
+	mock.lockIngestCheck.RUnlock()
+	return calls
+}
+
+// IngestChecks calls IngestChecksFunc.
+func (mock *ClientMock) IngestChecks(ctx context.Context, coreInstanceID string, params cloud.IngestChecksParams) (cloud.IngestChecks, error) {
+	callInfo := struct {
+		Ctx            context.Context
+		CoreInstanceID string
+		Params         cloud.IngestChecksParams
+	}{
+		Ctx:            ctx,
+		CoreInstanceID: coreInstanceID,
+		Params:         params,
+	}
+	mock.lockIngestChecks.Lock()
+	mock.calls.IngestChecks = append(mock.calls.IngestChecks, callInfo)
+	mock.lockIngestChecks.Unlock()
+	if mock.IngestChecksFunc == nil {
+		var (
+			ingestChecksOut cloud.IngestChecks
+			errOut          error
+		)
+		return ingestChecksOut, errOut
+	}
+	return mock.IngestChecksFunc(ctx, coreInstanceID, params)
+}
+
+// IngestChecksCalls gets all the calls that were made to IngestChecks.
+// Check the length with:
+//
+//	len(mockedClient.IngestChecksCalls())
+func (mock *ClientMock) IngestChecksCalls() []struct {
+	Ctx            context.Context
+	CoreInstanceID string
+	Params         cloud.IngestChecksParams
+} {
+	var calls []struct {
+		Ctx            context.Context
+		CoreInstanceID string
+		Params         cloud.IngestChecksParams
+	}
+	mock.lockIngestChecks.RLock()
+	calls = mock.calls.IngestChecks
+	mock.lockIngestChecks.RUnlock()
 	return calls
 }
 

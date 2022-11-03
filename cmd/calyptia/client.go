@@ -97,4 +97,9 @@ type Client interface {
 	UpdateConfigSection(ctx context.Context, configSectionID string, in types.UpdateConfigSection) (types.UpdatedConfigSection, error)
 	DeleteConfigSection(ctx context.Context, configSectionID string) error
 	UpdateConfigSectionSet(ctx context.Context, pipelineID string, configSectionIDs ...string) error
+
+	CreateIngestCheck(ctx context.Context, coreInstanceID string, payload types.CreateIngestCheck) (types.CreatedIngestCheck, error)
+	DeleteIngestCheck(ctx context.Context, checkID string) error
+	IngestCheck(ctx context.Context, checkID string) (types.IngestCheck, error)
+	IngestChecks(ctx context.Context, coreInstanceID string, params types.IngestChecksParams) (types.IngestChecks, error)
 }

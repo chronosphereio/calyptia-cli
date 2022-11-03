@@ -20,6 +20,7 @@ func newCmdDelete(config *config) *cobra.Command {
 		newCmdDeleteEnvironment(config),
 		newCmdDeleteTraceSession(config),
 		newCmdDeleteConfigSection(config),
+		newCmdDeleteIngestCheck(config),
 	)
 
 	return cmd
