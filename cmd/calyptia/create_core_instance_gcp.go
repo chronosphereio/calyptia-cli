@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	"strconv"
 	"time"
 
 	rateLimiter "golang.org/x/time/rate"
@@ -29,6 +30,7 @@ func newCmdCreateCoreInstanceOnGCP(config *config, client gcp.Client) *cobra.Com
 		environment           string
 		tags                  []string
 		noHealthCheckPipeline bool
+		noTLSVerify           bool
 		coreInstanceVersion   string
 		externalIP            string
 		sshKeyPath            string
@@ -85,6 +87,7 @@ func newCmdCreateCoreInstanceOnGCP(config *config, client gcp.Client) *cobra.Com
 				SetMachineType(machineType).
 				SetName(coreInstanceName).
 				SetTags(tags).
+				SetMetadata("CALYPTIA_CORE_TLS_VERIFY", strconv.FormatBool(!noTLSVerify)).
 				SetImage(coreInstanceVersion).
 				SetEnvironment(environment).
 				SetProjectToken(config.projectToken).
@@ -168,6 +171,7 @@ func newCmdCreateCoreInstanceOnGCP(config *config, client gcp.Client) *cobra.Com
 	fs.BoolVar(&useTestImages, "use-test-images", envBool("CALYPTIA_USE_TEST_IMAGES"), "Use GCP test images instead of released channel (only for testing/development).")
 	fs.StringVar(&credentials, "credentials", os.Getenv("GOOGLE_APPLICATION_CREDENTIALS"), "Path to GCP credentials file. (default is $GOOGLE_APPLICATION_CREDENTIALS)")
 	fs.DurationVar(&rateLimit, "request-per-minute", 20, "Rate limit for operations")
+	fs.BoolVar(&noTLSVerify, "no-tls-verify", false, "Disable TLS verification when connecting to Calyptia Cloud API.")
 
 	_ = fs.MarkHidden("request-per-minute")
 	_ = fs.MarkHidden("github-token")

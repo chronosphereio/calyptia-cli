@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -94,6 +95,7 @@ func newCmdCreateCoreInstanceOnAWS(config *config, client awsclient.Client, poll
 		tags                   []string
 		noHealthCheckPipeline  bool
 		noElasticIPv4Address   bool
+		noTLSVerify            bool
 		debug                  bool
 		coreInstanceVersion    string
 		coreInstanceName       string
@@ -175,6 +177,9 @@ func newCmdCreateCoreInstanceOnAWS(config *config, client awsclient.Client, poll
 				params.UserData.CoreInstanceTags = strings.Join(tags, ",")
 			}
 
+			// if no tls verify is set, use it as part of the user data.
+			params.UserData.CoreInstanceTLSVerify = strconv.FormatBool(!noTLSVerify)
+
 			if !noElasticIPv4Address {
 				params.PublicIPAddress = &awsclient.ElasticIPAddressParams{
 					Pool:    elasticIPv4AddressPool,
@@ -228,6 +233,8 @@ func newCmdCreateCoreInstanceOnAWS(config *config, client awsclient.Client, poll
 	fs.StringVar(&subnetID, "subnet-id", "", "AWS subnet name to use.If you don't specify a subnet ID, we choose a default subnet from your default VPC for you. If you don't have a default VPC, you MUST specify a subnet.")
 	fs.BoolVar(&noElasticIPv4Address, "no-elastic-ip", false, "Don't allocate a floating ip address for the instance.")
 	fs.BoolVar(&debug, "debug", false, "Enable debug logging")
+	fs.BoolVar(&noTLSVerify, "no-tls-verify", false, "Disable TLS verification when connecting to Calyptia Cloud API.")
+
 	fs.StringVar(&elasticIPv4Address, "elastic-ip", "", "IPv4 formatted address of an existing elastic ip address allocation to associate to this instance. If not provided, a new one will be allocated for the created VM.")
 	fs.StringVar(&elasticIPv4AddressPool, "elastic-ip-address-pool", "", "IP address pool to allocate the elastic ip address from.")
 

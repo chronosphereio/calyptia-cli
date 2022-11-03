@@ -175,6 +175,7 @@ func (c *Config) SetImage(version string) *Config {
 	c.Resources[0].Properties.Disks[0].InitializeParams.SourceImage = fmt.Sprintf("projects/%s/global/images/%s", c.projectID, version)
 	return c
 }
+
 func (c *Config) SetAggregator(name string) *Config {
 	if name == "" {
 		return c
@@ -185,6 +186,18 @@ func (c *Config) SetAggregator(name string) *Config {
 	})
 	return c
 }
+
+func (c *Config) SetMetadata(key, value string) *Config {
+	if key == "" {
+		return c
+	}
+	c.Resources[0].Properties.Metadata.Items = append(c.Resources[0].Properties.Metadata.Items, item{
+		Key:   key,
+		Value: value,
+	})
+	return c
+}
+
 func (c *Config) SetEnvironment(environment string) *Config {
 	if environment == "" {
 		return c

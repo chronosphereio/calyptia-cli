@@ -40,6 +40,9 @@ CALYPTIA_CORE_INSTANCE_ENVIRONMENT={{.CoreInstanceEnvironment}}
 {{if .CoreInstanceGitHubToken }}
 GITHUB_TOKEN={{.CoreInstanceGitHubToken}}
 {{end}}
+{{if .CoreInstanceTLSVerify }}
+CALYPTIA_CORE_TLS_VERIFY={{.CoreInstanceTLSVerify}}
+{{end}}
 `
 	instanceUpCheckTimeout = 10 * time.Minute
 	instanceUpCheckBackOff = 5 * time.Second
@@ -94,6 +97,7 @@ type (
 		CoreInstanceTags        string
 		CoreInstanceEnvironment string
 		CoreInstanceGitHubToken string
+		CoreInstanceTLSVerify   string
 	}
 
 	ElasticIPAddressParams struct {
@@ -661,7 +665,6 @@ func (c *DefaultClient) CreateInstance(ctx context.Context, params *CreateInstan
 	}
 
 	runInstancesInput := &ec2.RunInstancesInput{
-
 		MaxCount:          aws.Int32(1),
 		MinCount:          aws.Int32(1),
 		ImageId:           aws.String(imageID),

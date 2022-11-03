@@ -11,6 +11,7 @@ import (
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
+	"strconv"
 
 	cloud "github.com/calyptia/api/types"
 )
@@ -165,6 +166,7 @@ func (client *Client) CreateDeployment(
 	image string,
 	agg cloud.CreatedAggregator,
 	serviceAccount *apiv1.ServiceAccount,
+	tlsVerify bool,
 ) (*appsv1.Deployment, error) {
 	labels := client.LabelsFunc()
 
@@ -204,6 +206,10 @@ func (client *Client) CreateDeployment(
 								{
 									Name:  "NATS_URL",
 									Value: fmt.Sprintf("nats://tcp-4222-nats-messaging.%s.svc.cluster.local:4222", client.Namespace),
+								},
+								{
+									Name:  "CORE_TLS_VERIFY",
+									Value: strconv.FormatBool(tlsVerify),
 								},
 							},
 						},
