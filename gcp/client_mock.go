@@ -5,10 +5,9 @@ package gcp
 
 import (
 	"context"
-	"sync"
-
 	"google.golang.org/api/compute/v1"
 	"google.golang.org/api/deploymentmanager/v2"
+	"sync"
 )
 
 // Ensure, that ClientMock does implement Client.
@@ -17,34 +16,34 @@ var _ Client = &ClientMock{}
 
 // ClientMock is a mock implementation of Client.
 //
-// 	func TestSomethingThatUsesClient(t *testing.T) {
+//	func TestSomethingThatUsesClient(t *testing.T) {
 //
-// 		// make and configure a mocked Client
-// 		mockedClient := &ClientMock{
-// 			DeleteFunc: func(ctx context.Context, coreInstanceName string) error {
-// 				panic("mock out the Delete method")
-// 			},
-// 			DeployFunc: func(contextMoqParam context.Context) error {
-// 				panic("mock out the Deploy method")
-// 			},
-// 			FollowOperationsFunc: func(contextMoqParam context.Context) (*deploymentmanager.Operation, error) {
-// 				panic("mock out the FollowOperations method")
-// 			},
-// 			GetInstanceFunc: func(ctx context.Context, zone string, instance string) (*compute.Instance, error) {
-// 				panic("mock out the GetInstance method")
-// 			},
-// 			RollbackFunc: func(contextMoqParam context.Context) error {
-// 				panic("mock out the Rollback method")
-// 			},
-// 			SetConfigFunc: func(newConfig Config)  {
-// 				panic("mock out the SetConfig method")
-// 			},
-// 		}
+//		// make and configure a mocked Client
+//		mockedClient := &ClientMock{
+//			DeleteFunc: func(ctx context.Context, coreInstanceName string) error {
+//				panic("mock out the Delete method")
+//			},
+//			DeployFunc: func(contextMoqParam context.Context) error {
+//				panic("mock out the Deploy method")
+//			},
+//			FollowOperationsFunc: func(contextMoqParam context.Context) (*deploymentmanager.Operation, error) {
+//				panic("mock out the FollowOperations method")
+//			},
+//			GetInstanceFunc: func(ctx context.Context, zone string, instance string) (*compute.Instance, error) {
+//				panic("mock out the GetInstance method")
+//			},
+//			RollbackFunc: func(contextMoqParam context.Context) error {
+//				panic("mock out the Rollback method")
+//			},
+//			SetConfigFunc: func(newConfig Config)  {
+//				panic("mock out the SetConfig method")
+//			},
+//		}
 //
-// 		// use mockedClient in code that requires Client
-// 		// and then make assertions.
+//		// use mockedClient in code that requires Client
+//		// and then make assertions.
 //
-// 	}
+//	}
 type ClientMock struct {
 	// DeleteFunc mocks the Delete method.
 	DeleteFunc func(ctx context.Context, coreInstanceName string) error
@@ -131,7 +130,8 @@ func (mock *ClientMock) Delete(ctx context.Context, coreInstanceName string) err
 
 // DeleteCalls gets all the calls that were made to Delete.
 // Check the length with:
-//     len(mockedClient.DeleteCalls())
+//
+//	len(mockedClient.DeleteCalls())
 func (mock *ClientMock) DeleteCalls() []struct {
 	Ctx              context.Context
 	CoreInstanceName string
@@ -164,7 +164,8 @@ func (mock *ClientMock) Deploy(contextMoqParam context.Context) error {
 
 // DeployCalls gets all the calls that were made to Deploy.
 // Check the length with:
-//     len(mockedClient.DeployCalls())
+//
+//	len(mockedClient.DeployCalls())
 func (mock *ClientMock) DeployCalls() []struct {
 	ContextMoqParam context.Context
 } {
@@ -195,7 +196,8 @@ func (mock *ClientMock) FollowOperations(contextMoqParam context.Context) (*depl
 
 // FollowOperationsCalls gets all the calls that were made to FollowOperations.
 // Check the length with:
-//     len(mockedClient.FollowOperationsCalls())
+//
+//	len(mockedClient.FollowOperationsCalls())
 func (mock *ClientMock) FollowOperationsCalls() []struct {
 	ContextMoqParam context.Context
 } {
@@ -230,7 +232,8 @@ func (mock *ClientMock) GetInstance(ctx context.Context, zone string, instance s
 
 // GetInstanceCalls gets all the calls that were made to GetInstance.
 // Check the length with:
-//     len(mockedClient.GetInstanceCalls())
+//
+//	len(mockedClient.GetInstanceCalls())
 func (mock *ClientMock) GetInstanceCalls() []struct {
 	Ctx      context.Context
 	Zone     string
@@ -265,7 +268,8 @@ func (mock *ClientMock) Rollback(contextMoqParam context.Context) error {
 
 // RollbackCalls gets all the calls that were made to Rollback.
 // Check the length with:
-//     len(mockedClient.RollbackCalls())
+//
+//	len(mockedClient.RollbackCalls())
 func (mock *ClientMock) RollbackCalls() []struct {
 	ContextMoqParam context.Context
 } {
@@ -296,7 +300,8 @@ func (mock *ClientMock) SetConfig(newConfig Config) {
 
 // SetConfigCalls gets all the calls that were made to SetConfig.
 // Check the length with:
-//     len(mockedClient.SetConfigCalls())
+//
+//	len(mockedClient.SetConfigCalls())
 func (mock *ClientMock) SetConfigCalls() []struct {
 	NewConfig Config
 } {

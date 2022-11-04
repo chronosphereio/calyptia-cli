@@ -66,9 +66,6 @@ func newCmdGetEnvironment(c *config) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			if err != nil {
-				return fmt.Errorf("could not fetch your project members: %w", err)
-			}
 
 			if strings.HasPrefix(outputFormat, "go-template") {
 				return applyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, ee.Items)

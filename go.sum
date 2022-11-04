@@ -20,8 +20,6 @@ github.com/alecthomas/assert/v2 v2.2.0 h1:f6L/b7KE2bfA+9O4FL3CM/xJccDEwPVYd5fALB
 github.com/alecthomas/assert/v2 v2.2.0/go.mod h1:b/+1DI2Q6NckYi+3mXyH3wFb8qG37K/DuK80n7WefXA=
 github.com/alecthomas/participle/v2 v2.0.0-alpha9 h1:TnflwDbtf5/aG6JMbmdiA+YB3bLg0sc6yRtmAfedfN4=
 github.com/alecthomas/participle/v2 v2.0.0-alpha9/go.mod h1:NumScqsC42o9x+dGj8/YqsIfhrIQjFEOFovxotbBirA=
-github.com/alecthomas/participle/v2 v2.0.0-beta.5 h1:y6dsSYVb1G5eK6mgmy+BgI3Mw35a3WghArZ/Hbebrjo=
-github.com/alecthomas/participle/v2 v2.0.0-beta.5/go.mod h1:RC764t6n4L8D8ITAJv0qdokritYSNR3wV5cVwmIEaMM=
 github.com/alecthomas/repr v0.0.0-20181024024818-d37bc2a10ba1/go.mod h1:xTS7Pm1pD1mvyM075QCDSRqH6qRLXylzS24ZTpRiSzQ=
 github.com/alecthomas/repr v0.1.1 h1:87P60cSmareLAxMc4Hro0r2RBY4ROm0dYwkJNpS4pPs=
 github.com/alecthomas/repr v0.1.1/go.mod h1:Fr0507jx4eOXV7AlPV6AVZLYrLIuIeSOWtW57eE/O/4=

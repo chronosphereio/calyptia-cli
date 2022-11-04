@@ -160,13 +160,13 @@ func newCmdCreateCoreInstanceOnK8s(config *config, testClientSet kubernetes.Inte
 	return cmd
 }
 
-func (c *config) completeCoreContainerVersion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+func (config *config) completeCoreContainerVersion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	containerIndex, err := index.NewContainer()
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveError
 	}
 
-	vv, err := containerIndex.All(c.ctx)
+	vv, err := containerIndex.All(config.ctx)
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveError
 	}
