@@ -21,14 +21,21 @@ func newCmdCreateIngestCheck(config *config) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			coreInstance := args[0]
 			ctx := context.Background()
-			if ok := types.ValidCheckStatus(types.CheckStatus(status)); !ok {
-				return fmt.Errorf("invalid status: %s", status)
+
+			params := types.CreateIngestCheck{}
+			if configSectionID == "" {
+				return fmt.Errorf("invalid config section id")
 			}
-			ingestCheck := types.CreateIngestCheck{
-				Status:          types.CheckStatus(status),
-				Retries:         retries,
-				ConfigSectionID: configSectionID,
+
+			params.ConfigSectionID = configSectionID
+			if retries > 0 {
+				params.Retries = retries
 			}
+
+			if status != "" && !types.ValidCheckStatus(types.CheckStatus(status)) {
+				return fmt.Errorf("invalid check status")
+			}
+
 			var environmentID string
 			if environment != "" {
 				var err error
@@ -38,7 +45,7 @@ func newCmdCreateIngestCheck(config *config) *cobra.Command {
 				}
 			}
 			coreInstanceID, err := config.loadAggregatorID(coreInstance, environmentID)
-			check, err := config.cloud.CreateIngestCheck(ctx, coreInstanceID, ingestCheck)
+			check, err := config.cloud.CreateIngestCheck(ctx, coreInstanceID, params)
 			if err != nil {
 				return err
 			}
@@ -47,7 +54,7 @@ func newCmdCreateIngestCheck(config *config) *cobra.Command {
 		},
 	}
 	flags := cmd.Flags()
-	flags.UintVar(&retries, "retires", 0, "number of retries")
+	flags.UintVar(&retries, "retries", 0, "number of retries")
 	flags.StringVar(&configSectionID, "config-section-id", "", "config section ID")
 	flags.StringVar(&status, "status", "", "status")
 	flags.StringVar(&environment, "environment", "default", "calyptia environment name")

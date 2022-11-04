@@ -37,7 +37,7 @@ func newCmdGetIngestCheck(c *config) *cobra.Command {
 				if showIDs {
 					fmt.Fprintf(tw, "ID\t")
 				}
-				fmt.Fprint(tw, "STATUS\tRETRIES\tCONFIG\t")
+				fmt.Fprint(tw, "STATUS\tRETRIES\t")
 				fmt.Fprintln(tw, "AGE")
 				if showIDs {
 					fmt.Fprintf(tw, "%s\t", check.ID)
@@ -45,7 +45,6 @@ func newCmdGetIngestCheck(c *config) *cobra.Command {
 
 				fmt.Fprintf(tw, "%s\t", check.Status)
 				fmt.Fprintf(tw, "%d\t", check.Retries)
-				fmt.Fprintf(tw, "%s\t", check.Config)
 				fmt.Fprintln(tw, fmtTime(check.CreatedAt))
 				err := tw.Flush()
 				if err != nil {
@@ -111,7 +110,7 @@ func newCmdGetIngestChecks(c *config) *cobra.Command {
 				if showIDs {
 					fmt.Fprintf(tw, "ID\t")
 				}
-				fmt.Fprint(tw, "STATUS\tRETRIES\tCONFIG\t")
+				fmt.Fprint(tw, "STATUS\tRETRIES\t")
 				fmt.Fprintln(tw, "AGE")
 				for _, m := range check.Items {
 					if showIDs {
@@ -120,7 +119,6 @@ func newCmdGetIngestChecks(c *config) *cobra.Command {
 
 					fmt.Fprintf(tw, "%s\t", m.Status)
 					fmt.Fprintf(tw, "%d\t", m.Retries)
-					fmt.Fprintf(tw, "%s\t", m.Config)
 					fmt.Fprintln(tw, fmtTime(m.CreatedAt))
 				}
 				err := tw.Flush()
