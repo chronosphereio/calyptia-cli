@@ -10,7 +10,7 @@ require (
 	github.com/alecthomas/assert/v2 v2.2.0
 	github.com/aws/aws-sdk-go-v2 v1.17.1
 	github.com/aws/aws-sdk-go-v2/config v1.17.10
-	github.com/aws/aws-sdk-go-v2/service/ec2 v1.65.0
+	github.com/aws/aws-sdk-go-v2/service/ec2 v1.66.0
 	github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi v1.13.21
 	github.com/calyptia/api v0.16.0
 	github.com/calyptia/cli/k8s v0.0.0-00010101000000-000000000000
