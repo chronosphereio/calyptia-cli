@@ -39,7 +39,10 @@ func newCmd(ctx context.Context) *cobra.Command {
 		cobra.CheckErr(fmt.Errorf("could not retrive your stored token: %w", err))
 	}
 
-	var cloudURLStr string
+	cloudURLStr, err := savedUrl()
+	if err != nil && err != errUrlNotFound {
+		cobra.CheckErr(fmt.Errorf("could not retrive your stored url: %w", err))
+	}
 
 	cobra.OnInitialize(func() {
 		cloudURL, err := url.Parse(cloudURLStr)
