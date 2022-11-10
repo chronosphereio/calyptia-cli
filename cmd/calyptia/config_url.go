@@ -107,7 +107,7 @@ func deleteSavedUrl() error {
 	return nil
 }
 
-func savedUrl() (string, error) {
+func savedURL() (string, error) {
 	url, err := keyring.Get(serviceName, "base_url")
 	if err == keyring.ErrNotFound {
 		return "", errUrlNotFound
