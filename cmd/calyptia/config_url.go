@@ -15,7 +15,7 @@ var errUrlNotFound = errors.New("url not found")
 func newCmdConfigSetURL(config *config) *cobra.Command {
 	return &cobra.Command{
 		Use:   "set_url URL",
-		Short: "Set the default project url so you don't have to specify it on all commands",
+		Short: "Set the default cloud URL so you don't have to specify it on all commands",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			url := args[0]
