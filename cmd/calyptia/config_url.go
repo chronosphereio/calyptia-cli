@@ -83,7 +83,7 @@ func saveURL(url string) error {
 	return nil
 }
 
-func deleteSavedUrl() error {
+func deleteSavedURL() error {
 	err := keyring.Delete(serviceName, "base_url")
 	if err == nil {
 		return nil
