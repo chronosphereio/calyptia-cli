@@ -55,7 +55,7 @@ func newCmdConfigUnsetURL(config *config) *cobra.Command {
 	}
 }
 
-func saveUrl(url string) error {
+func saveURL(url string) error {
 	err := keyring.Set(serviceName, "base_url", url)
 	if err == nil {
 		return nil
