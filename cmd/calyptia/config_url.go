@@ -32,7 +32,7 @@ func newCmdConfigSetURL(config *config) *cobra.Command {
 func newCmdConfigCurrentURL(config *config) *cobra.Command {
 	return &cobra.Command{
 		Use:   "current_url",
-		Short: "Get the current configured default project url",
+		Short: "Get the current configured default cloud URL",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			fmt.Fprintln(cmd.OutOrStdout(), config.baseURL)
 			return nil
