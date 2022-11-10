@@ -43,7 +43,7 @@ func newCmdConfigCurrentURL(config *config) *cobra.Command {
 func newCmdConfigUnsetURL(config *config) *cobra.Command {
 	return &cobra.Command{
 		Use:   "unset_url",
-		Short: "Unset the current configured default project url",
+		Short: "Unset the current configured default cloud URL",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			err := deleteSavedUrl()
 			if err != nil {
