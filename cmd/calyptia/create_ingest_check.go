@@ -3,8 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/calyptia/api/types"
+
 	"github.com/spf13/cobra"
+
+	"github.com/calyptia/api/types"
 )
 
 func newCmdCreateIngestCheck(config *config) *cobra.Command {
@@ -45,6 +47,10 @@ func newCmdCreateIngestCheck(config *config) *cobra.Command {
 				}
 			}
 			coreInstanceID, err := config.loadAggregatorID(coreInstance, environmentID)
+			if err != nil {
+				return err
+			}
+
 			check, err := config.cloud.CreateIngestCheck(ctx, coreInstanceID, params)
 			if err != nil {
 				return err

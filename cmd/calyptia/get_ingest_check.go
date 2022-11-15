@@ -4,11 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/calyptia/api/types"
-	"github.com/spf13/cobra"
-	"gopkg.in/yaml.v2"
 	"strings"
 	"text/tabwriter"
+
+	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v2"
+
+	"github.com/calyptia/api/types"
 )
 
 func newCmdGetIngestCheck(c *config) *cobra.Command {

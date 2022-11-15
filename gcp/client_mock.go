@@ -5,9 +5,10 @@ package gcp
 
 import (
 	"context"
+	"sync"
+
 	"google.golang.org/api/compute/v1"
 	"google.golang.org/api/deploymentmanager/v2"
-	"sync"
 )
 
 // Ensure, that ClientMock does implement Client.
