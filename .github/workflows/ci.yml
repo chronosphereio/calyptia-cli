@@ -90,9 +90,7 @@ jobs:
 
       - id: image-tag
         run: |
-          echo "::set-output name=TAG::$(
-            echo $FULL_TAG | cut -d ":" -f2
-          )"
+          echo "TAG=$(echo $FULL_TAG | cut -d ":" -f2)" >> $GITHUB_OUTPUT
         env:
           FULL_TAG: ${{ steps.meta-github-image.outputs.tags }}
 
