@@ -11,7 +11,7 @@ import (
 	"github.com/zalando/go-keyring"
 )
 
-var errUrlNotFound = errors.New("url not found")
+var errURLNotFound = errors.New("url not found")
 
 func newCmdConfigSetURL(config *config) *cobra.Command {
 	return &cobra.Command{
@@ -20,7 +20,7 @@ func newCmdConfigSetURL(config *config) *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			url := args[0]
-			err := saveUrl(url)
+			err := saveURL(url)
 			if err != nil {
 				return err
 			}
@@ -35,7 +35,7 @@ func newCmdConfigCurrentURL(config *config) *cobra.Command {
 		Use:   "current_url",
 		Short: "Get the current configured default cloud URL",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			fmt.Fprintln(cmd.OutOrStdout(), config.baseURL)
+			cmd.Println(config.baseURL)
 			return nil
 		},
 	}
@@ -46,7 +46,7 @@ func newCmdConfigUnsetURL(config *config) *cobra.Command {
 		Use:   "unset_url",
 		Short: "Unset the current configured default cloud URL",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			err := deleteSavedUrl()
+			err := deleteSavedURL()
 			if err != nil {
 				return err
 			}
@@ -111,7 +111,7 @@ func deleteSavedURL() error {
 func savedURL() (string, error) {
 	url, err := keyring.Get(serviceName, "base_url")
 	if err == keyring.ErrNotFound {
-		return "", errUrlNotFound
+		return "", errURLNotFound
 	}
 
 	if err == nil {
@@ -125,7 +125,7 @@ func savedURL() (string, error) {
 
 	b, err := readFile(filepath.Join(home, ".calyptia", "base_url"))
 	if errors.Is(err, fs.ErrNotExist) {
-		return "", errUrlNotFound
+		return "", errURLNotFound
 	}
 
 	if err != nil {

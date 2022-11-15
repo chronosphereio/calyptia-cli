@@ -39,9 +39,13 @@ func newCmd(ctx context.Context) *cobra.Command {
 		cobra.CheckErr(fmt.Errorf("could not retrive your stored token: %w", err))
 	}
 
-	cloudURLStr, err := savedUrl()
-	if err != nil && err != errUrlNotFound {
+	cloudURLStr, err := savedURL()
+	if err != nil && err != errURLNotFound {
 		cobra.CheckErr(fmt.Errorf("could not retrive your stored url: %w", err))
+	}
+
+	if cloudURLStr == "" {
+		cloudURLStr = defaultCloudURLStr
 	}
 
 	cobra.OnInitialize(func() {
@@ -80,7 +84,7 @@ func newCmd(ctx context.Context) *cobra.Command {
 	cmd.SetOut(os.Stdout)
 
 	fs := cmd.PersistentFlags()
-	fs.StringVar(&cloudURLStr, "cloud-url", env("CALYPTIA_CLOUD_URL", defaultCloudURLStr), "Calyptia Cloud URL")
+	fs.StringVar(&cloudURLStr, "cloud-url", env("CALYPTIA_CLOUD_URL", cloudURLStr), "Calyptia Cloud URL")
 	fs.StringVar(&token, "token", env("CALYPTIA_CLOUD_TOKEN", token), "Calyptia Cloud Project token")
 
 	cmd.AddCommand(
