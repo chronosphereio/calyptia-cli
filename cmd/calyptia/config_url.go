@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
+	"net/url"
 	"os"
 	"path/filepath"
 
@@ -19,12 +20,22 @@ func newCmdConfigSetURL(config *config) *cobra.Command {
 		Short: "Set the default cloud URL so you don't have to specify it on all commands",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			url := args[0]
-			err := saveURL(url)
+			cloudURL, err := url.Parse(args[0])
+			if err != nil {
+				return fmt.Errorf("invalid cloud url: %w", err)
+			}
+
+			if cloudURL.Scheme != "http" && cloudURL.Scheme != "https" {
+				return fmt.Errorf("invalid cloud url scheme %q", cloudURL.Scheme)
+			}
+
+			err = saveURL(cloudURL.String())
 			if err != nil {
 				return err
 			}
-			config.baseURL = url
+
+			config.baseURL = cloudURL.String()
+
 			return nil
 		},
 	}
