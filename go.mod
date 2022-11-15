@@ -10,7 +10,7 @@ require (
 	github.com/alecthomas/assert/v2 v2.2.0
 	github.com/aws/aws-sdk-go-v2 v1.17.1
 	github.com/aws/aws-sdk-go-v2/config v1.17.10
-	github.com/aws/aws-sdk-go-v2/service/ec2 v1.65.0
+	github.com/aws/aws-sdk-go-v2/service/ec2 v1.66.0
 	github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi v1.13.21
 	github.com/calyptia/api v0.16.0
 	github.com/calyptia/cli/k8s v0.0.0-00010101000000-000000000000
@@ -31,7 +31,7 @@ require (
 	golang.org/x/sync v0.1.0
 	golang.org/x/term v0.1.0
 	golang.org/x/time v0.1.0
-	google.golang.org/api v0.101.0
+	google.golang.org/api v0.102.0
 	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/api v0.25.3
 	k8s.io/apimachinery v0.25.3

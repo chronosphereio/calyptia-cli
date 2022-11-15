@@ -127,14 +127,14 @@ jobs:
           CALYPTIA_CORE_IMAGE_TAG: main
 
       - name: Setup google credentials
-        uses: google-github-actions/auth@v0
+        uses: google-github-actions/auth@v1
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
           export_environment_variables: true
           create_credentials_file: true
 
       - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v0
+        uses: google-github-actions/setup-gcloud@v1
 
       - name: Run bats tests
         run: |
@@ -184,7 +184,7 @@ jobs:
           password: ${{ secrets.CI_PAT }}
 
       - name: Login to Google Cloud
-        uses: google-github-actions/setup-gcloud@v0.6.0
+        uses: google-github-actions/setup-gcloud@v1
         with:
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
