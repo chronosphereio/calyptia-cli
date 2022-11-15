@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+
 	"github.com/calyptia/core-images-index/go-index"
 
 	"github.com/spf13/cobra"

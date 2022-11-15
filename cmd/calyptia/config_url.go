@@ -3,11 +3,12 @@ package main
 import (
 	"errors"
 	"fmt"
-	"github.com/spf13/cobra"
-	"github.com/zalando/go-keyring"
 	"io/fs"
 	"os"
 	"path/filepath"
+
+	"github.com/spf13/cobra"
+	"github.com/zalando/go-keyring"
 )
 
 var errUrlNotFound = errors.New("url not found")
