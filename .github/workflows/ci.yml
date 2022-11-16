@@ -181,11 +181,13 @@ jobs:
           username: ${{ secrets.CI_USERNAME }}
           password: ${{ secrets.CI_PAT }}
 
-      - name: Login to Google Cloud
-        uses: google-github-actions/setup-gcloud@v1
+      - uses: 'google-github-actions/auth@v1'
         with:
-          service_account_key: ${{ secrets.GCP_SA_KEY }}
-          export_default_credentials: true
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          export_environment_variables: true
+          create_credentials_file: true
+
+      - uses: google-github-actions/setup-gcloud@v1
 
       - name: Extract image metadata
         id: meta-github-image
