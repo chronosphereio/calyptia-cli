@@ -185,7 +185,6 @@ jobs:
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
           export_environment_variables: true
-          create_credentials_file: true
 
       - uses: google-github-actions/setup-gcloud@v1
 
