@@ -153,8 +153,6 @@ jobs:
     permissions:
       contents: write
       packages: write
-    needs:
-      - cloud-e2e
     if: ${{ github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
