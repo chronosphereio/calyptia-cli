@@ -28,7 +28,8 @@ func newCmdTopAgent(config *config) *cobra.Command {
 		ValidArgsFunction: config.completeAgents,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			agentKey := args[0]
-			return tea.NewProgram(initialAgentModel(config.ctx, config.cloud, config.projectID, agentKey, start, interval), tea.WithAltScreen()).Start()
+			_, err := tea.NewProgram(initialAgentModel(config.ctx, config.cloud, config.projectID, agentKey, start, interval), tea.WithAltScreen()).Run()
+			return err
 		},
 	}
 
@@ -136,7 +137,7 @@ type GotAgentID struct {
 func (m AgentModel) loadData(ctx context.Context, withAgent, skipError bool) tea.Cmd {
 	return func() tea.Msg {
 		if !withAgent {
-			metrics, err := m.cloud.AgentMetrics(ctx, m.agentID, cloud.MetricsParams{
+			metrics, err := m.cloud.AgentMetricsV1(ctx, m.agentID, cloud.MetricsParams{
 				Start:    m.metricsStart,
 				Interval: m.metricsInterval,
 			})
@@ -169,7 +170,7 @@ func (m AgentModel) loadData(ctx context.Context, withAgent, skipError bool) tea
 		})
 		g.Go(func() error {
 			var err error
-			agentMetrics, err = m.cloud.AgentMetrics(gctx, m.agentID, cloud.MetricsParams{
+			agentMetrics, err = m.cloud.AgentMetricsV1(gctx, m.agentID, cloud.MetricsParams{
 				Start:    m.metricsStart,
 				Interval: m.metricsInterval,
 			})

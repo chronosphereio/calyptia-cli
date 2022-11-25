@@ -16,1615 +16,1615 @@ var _ Client = &ClientMock{}
 
 // ClientMock is a mock implementation of Client.
 //
-// 	func TestSomethingThatUsesClient(t *testing.T) {
+//	func TestSomethingThatUsesClient(t *testing.T) {
 //
-// 		// make and configure a mocked Client
-// 		mockedClient := &ClientMock{
-// 			AcceptReservedInstancesExchangeQuoteFunc: func(ctx context.Context, params *ec2.AcceptReservedInstancesExchangeQuoteInput, optFns ...func(*ec2.Options)) (*ec2.AcceptReservedInstancesExchangeQuoteOutput, error) {
-// 				panic("mock out the AcceptReservedInstancesExchangeQuote method")
-// 			},
-// 			AcceptTransitGatewayMulticastDomainAssociationsFunc: func(ctx context.Context, params *ec2.AcceptTransitGatewayMulticastDomainAssociationsInput, optFns ...func(*ec2.Options)) (*ec2.AcceptTransitGatewayMulticastDomainAssociationsOutput, error) {
-// 				panic("mock out the AcceptTransitGatewayMulticastDomainAssociations method")
-// 			},
-// 			AcceptTransitGatewayPeeringAttachmentFunc: func(ctx context.Context, params *ec2.AcceptTransitGatewayPeeringAttachmentInput, optFns ...func(*ec2.Options)) (*ec2.AcceptTransitGatewayPeeringAttachmentOutput, error) {
-// 				panic("mock out the AcceptTransitGatewayPeeringAttachment method")
-// 			},
-// 			AcceptTransitGatewayVpcAttachmentFunc: func(ctx context.Context, params *ec2.AcceptTransitGatewayVpcAttachmentInput, optFns ...func(*ec2.Options)) (*ec2.AcceptTransitGatewayVpcAttachmentOutput, error) {
-// 				panic("mock out the AcceptTransitGatewayVpcAttachment method")
-// 			},
-// 			AcceptVpcEndpointConnectionsFunc: func(ctx context.Context, params *ec2.AcceptVpcEndpointConnectionsInput, optFns ...func(*ec2.Options)) (*ec2.AcceptVpcEndpointConnectionsOutput, error) {
-// 				panic("mock out the AcceptVpcEndpointConnections method")
-// 			},
-// 			AcceptVpcPeeringConnectionFunc: func(ctx context.Context, params *ec2.AcceptVpcPeeringConnectionInput, optFns ...func(*ec2.Options)) (*ec2.AcceptVpcPeeringConnectionOutput, error) {
-// 				panic("mock out the AcceptVpcPeeringConnection method")
-// 			},
-// 			AdvertiseByoipCidrFunc: func(ctx context.Context, params *ec2.AdvertiseByoipCidrInput, optFns ...func(*ec2.Options)) (*ec2.AdvertiseByoipCidrOutput, error) {
-// 				panic("mock out the AdvertiseByoipCidr method")
-// 			},
-// 			AllocateAddressFunc: func(ctx context.Context, params *ec2.AllocateAddressInput, optFns ...func(*ec2.Options)) (*ec2.AllocateAddressOutput, error) {
-// 				panic("mock out the AllocateAddress method")
-// 			},
-// 			AllocateHostsFunc: func(ctx context.Context, params *ec2.AllocateHostsInput, optFns ...func(*ec2.Options)) (*ec2.AllocateHostsOutput, error) {
-// 				panic("mock out the AllocateHosts method")
-// 			},
-// 			AllocateIpamPoolCidrFunc: func(ctx context.Context, params *ec2.AllocateIpamPoolCidrInput, optFns ...func(*ec2.Options)) (*ec2.AllocateIpamPoolCidrOutput, error) {
-// 				panic("mock out the AllocateIpamPoolCidr method")
-// 			},
-// 			ApplySecurityGroupsToClientVpnTargetNetworkFunc: func(ctx context.Context, params *ec2.ApplySecurityGroupsToClientVpnTargetNetworkInput, optFns ...func(*ec2.Options)) (*ec2.ApplySecurityGroupsToClientVpnTargetNetworkOutput, error) {
-// 				panic("mock out the ApplySecurityGroupsToClientVpnTargetNetwork method")
-// 			},
-// 			AssignIpv6AddressesFunc: func(ctx context.Context, params *ec2.AssignIpv6AddressesInput, optFns ...func(*ec2.Options)) (*ec2.AssignIpv6AddressesOutput, error) {
-// 				panic("mock out the AssignIpv6Addresses method")
-// 			},
-// 			AssignPrivateIpAddressesFunc: func(ctx context.Context, params *ec2.AssignPrivateIpAddressesInput, optFns ...func(*ec2.Options)) (*ec2.AssignPrivateIpAddressesOutput, error) {
-// 				panic("mock out the AssignPrivateIpAddresses method")
-// 			},
-// 			AssociateAddressFunc: func(ctx context.Context, params *ec2.AssociateAddressInput, optFns ...func(*ec2.Options)) (*ec2.AssociateAddressOutput, error) {
-// 				panic("mock out the AssociateAddress method")
-// 			},
-// 			AssociateClientVpnTargetNetworkFunc: func(ctx context.Context, params *ec2.AssociateClientVpnTargetNetworkInput, optFns ...func(*ec2.Options)) (*ec2.AssociateClientVpnTargetNetworkOutput, error) {
-// 				panic("mock out the AssociateClientVpnTargetNetwork method")
-// 			},
-// 			AssociateDhcpOptionsFunc: func(ctx context.Context, params *ec2.AssociateDhcpOptionsInput, optFns ...func(*ec2.Options)) (*ec2.AssociateDhcpOptionsOutput, error) {
-// 				panic("mock out the AssociateDhcpOptions method")
-// 			},
-// 			AssociateEnclaveCertificateIamRoleFunc: func(ctx context.Context, params *ec2.AssociateEnclaveCertificateIamRoleInput, optFns ...func(*ec2.Options)) (*ec2.AssociateEnclaveCertificateIamRoleOutput, error) {
-// 				panic("mock out the AssociateEnclaveCertificateIamRole method")
-// 			},
-// 			AssociateIamInstanceProfileFunc: func(ctx context.Context, params *ec2.AssociateIamInstanceProfileInput, optFns ...func(*ec2.Options)) (*ec2.AssociateIamInstanceProfileOutput, error) {
-// 				panic("mock out the AssociateIamInstanceProfile method")
-// 			},
-// 			AssociateInstanceEventWindowFunc: func(ctx context.Context, params *ec2.AssociateInstanceEventWindowInput, optFns ...func(*ec2.Options)) (*ec2.AssociateInstanceEventWindowOutput, error) {
-// 				panic("mock out the AssociateInstanceEventWindow method")
-// 			},
-// 			AssociateRouteTableFunc: func(ctx context.Context, params *ec2.AssociateRouteTableInput, optFns ...func(*ec2.Options)) (*ec2.AssociateRouteTableOutput, error) {
-// 				panic("mock out the AssociateRouteTable method")
-// 			},
-// 			AssociateSubnetCidrBlockFunc: func(ctx context.Context, params *ec2.AssociateSubnetCidrBlockInput, optFns ...func(*ec2.Options)) (*ec2.AssociateSubnetCidrBlockOutput, error) {
-// 				panic("mock out the AssociateSubnetCidrBlock method")
-// 			},
-// 			AssociateTransitGatewayMulticastDomainFunc: func(ctx context.Context, params *ec2.AssociateTransitGatewayMulticastDomainInput, optFns ...func(*ec2.Options)) (*ec2.AssociateTransitGatewayMulticastDomainOutput, error) {
-// 				panic("mock out the AssociateTransitGatewayMulticastDomain method")
-// 			},
-// 			AssociateTransitGatewayPolicyTableFunc: func(ctx context.Context, params *ec2.AssociateTransitGatewayPolicyTableInput, optFns ...func(*ec2.Options)) (*ec2.AssociateTransitGatewayPolicyTableOutput, error) {
-// 				panic("mock out the AssociateTransitGatewayPolicyTable method")
-// 			},
-// 			AssociateTransitGatewayRouteTableFunc: func(ctx context.Context, params *ec2.AssociateTransitGatewayRouteTableInput, optFns ...func(*ec2.Options)) (*ec2.AssociateTransitGatewayRouteTableOutput, error) {
-// 				panic("mock out the AssociateTransitGatewayRouteTable method")
-// 			},
-// 			AssociateTrunkInterfaceFunc: func(ctx context.Context, params *ec2.AssociateTrunkInterfaceInput, optFns ...func(*ec2.Options)) (*ec2.AssociateTrunkInterfaceOutput, error) {
-// 				panic("mock out the AssociateTrunkInterface method")
-// 			},
-// 			AssociateVpcCidrBlockFunc: func(ctx context.Context, params *ec2.AssociateVpcCidrBlockInput, optFns ...func(*ec2.Options)) (*ec2.AssociateVpcCidrBlockOutput, error) {
-// 				panic("mock out the AssociateVpcCidrBlock method")
-// 			},
-// 			AttachClassicLinkVpcFunc: func(ctx context.Context, params *ec2.AttachClassicLinkVpcInput, optFns ...func(*ec2.Options)) (*ec2.AttachClassicLinkVpcOutput, error) {
-// 				panic("mock out the AttachClassicLinkVpc method")
-// 			},
-// 			AttachInternetGatewayFunc: func(ctx context.Context, params *ec2.AttachInternetGatewayInput, optFns ...func(*ec2.Options)) (*ec2.AttachInternetGatewayOutput, error) {
-// 				panic("mock out the AttachInternetGateway method")
-// 			},
-// 			AttachNetworkInterfaceFunc: func(ctx context.Context, params *ec2.AttachNetworkInterfaceInput, optFns ...func(*ec2.Options)) (*ec2.AttachNetworkInterfaceOutput, error) {
-// 				panic("mock out the AttachNetworkInterface method")
-// 			},
-// 			AttachVolumeFunc: func(ctx context.Context, params *ec2.AttachVolumeInput, optFns ...func(*ec2.Options)) (*ec2.AttachVolumeOutput, error) {
-// 				panic("mock out the AttachVolume method")
-// 			},
-// 			AttachVpnGatewayFunc: func(ctx context.Context, params *ec2.AttachVpnGatewayInput, optFns ...func(*ec2.Options)) (*ec2.AttachVpnGatewayOutput, error) {
-// 				panic("mock out the AttachVpnGateway method")
-// 			},
-// 			AuthorizeClientVpnIngressFunc: func(ctx context.Context, params *ec2.AuthorizeClientVpnIngressInput, optFns ...func(*ec2.Options)) (*ec2.AuthorizeClientVpnIngressOutput, error) {
-// 				panic("mock out the AuthorizeClientVpnIngress method")
-// 			},
-// 			AuthorizeSecurityGroupEgressFunc: func(ctx context.Context, params *ec2.AuthorizeSecurityGroupEgressInput, optFns ...func(*ec2.Options)) (*ec2.AuthorizeSecurityGroupEgressOutput, error) {
-// 				panic("mock out the AuthorizeSecurityGroupEgress method")
-// 			},
-// 			AuthorizeSecurityGroupIngressFunc: func(ctx context.Context, params *ec2.AuthorizeSecurityGroupIngressInput, optFns ...func(*ec2.Options)) (*ec2.AuthorizeSecurityGroupIngressOutput, error) {
-// 				panic("mock out the AuthorizeSecurityGroupIngress method")
-// 			},
-// 			BundleInstanceFunc: func(ctx context.Context, params *ec2.BundleInstanceInput, optFns ...func(*ec2.Options)) (*ec2.BundleInstanceOutput, error) {
-// 				panic("mock out the BundleInstance method")
-// 			},
-// 			CancelBundleTaskFunc: func(ctx context.Context, params *ec2.CancelBundleTaskInput, optFns ...func(*ec2.Options)) (*ec2.CancelBundleTaskOutput, error) {
-// 				panic("mock out the CancelBundleTask method")
-// 			},
-// 			CancelCapacityReservationFunc: func(ctx context.Context, params *ec2.CancelCapacityReservationInput, optFns ...func(*ec2.Options)) (*ec2.CancelCapacityReservationOutput, error) {
-// 				panic("mock out the CancelCapacityReservation method")
-// 			},
-// 			CancelCapacityReservationFleetsFunc: func(ctx context.Context, params *ec2.CancelCapacityReservationFleetsInput, optFns ...func(*ec2.Options)) (*ec2.CancelCapacityReservationFleetsOutput, error) {
-// 				panic("mock out the CancelCapacityReservationFleets method")
-// 			},
-// 			CancelConversionTaskFunc: func(ctx context.Context, params *ec2.CancelConversionTaskInput, optFns ...func(*ec2.Options)) (*ec2.CancelConversionTaskOutput, error) {
-// 				panic("mock out the CancelConversionTask method")
-// 			},
-// 			CancelExportTaskFunc: func(ctx context.Context, params *ec2.CancelExportTaskInput, optFns ...func(*ec2.Options)) (*ec2.CancelExportTaskOutput, error) {
-// 				panic("mock out the CancelExportTask method")
-// 			},
-// 			CancelImportTaskFunc: func(ctx context.Context, params *ec2.CancelImportTaskInput, optFns ...func(*ec2.Options)) (*ec2.CancelImportTaskOutput, error) {
-// 				panic("mock out the CancelImportTask method")
-// 			},
-// 			CancelReservedInstancesListingFunc: func(ctx context.Context, params *ec2.CancelReservedInstancesListingInput, optFns ...func(*ec2.Options)) (*ec2.CancelReservedInstancesListingOutput, error) {
-// 				panic("mock out the CancelReservedInstancesListing method")
-// 			},
-// 			CancelSpotFleetRequestsFunc: func(ctx context.Context, params *ec2.CancelSpotFleetRequestsInput, optFns ...func(*ec2.Options)) (*ec2.CancelSpotFleetRequestsOutput, error) {
-// 				panic("mock out the CancelSpotFleetRequests method")
-// 			},
-// 			CancelSpotInstanceRequestsFunc: func(ctx context.Context, params *ec2.CancelSpotInstanceRequestsInput, optFns ...func(*ec2.Options)) (*ec2.CancelSpotInstanceRequestsOutput, error) {
-// 				panic("mock out the CancelSpotInstanceRequests method")
-// 			},
-// 			ConfirmProductInstanceFunc: func(ctx context.Context, params *ec2.ConfirmProductInstanceInput, optFns ...func(*ec2.Options)) (*ec2.ConfirmProductInstanceOutput, error) {
-// 				panic("mock out the ConfirmProductInstance method")
-// 			},
-// 			CopyFpgaImageFunc: func(ctx context.Context, params *ec2.CopyFpgaImageInput, optFns ...func(*ec2.Options)) (*ec2.CopyFpgaImageOutput, error) {
-// 				panic("mock out the CopyFpgaImage method")
-// 			},
-// 			CopyImageFunc: func(ctx context.Context, params *ec2.CopyImageInput, optFns ...func(*ec2.Options)) (*ec2.CopyImageOutput, error) {
-// 				panic("mock out the CopyImage method")
-// 			},
-// 			CopySnapshotFunc: func(ctx context.Context, params *ec2.CopySnapshotInput, optFns ...func(*ec2.Options)) (*ec2.CopySnapshotOutput, error) {
-// 				panic("mock out the CopySnapshot method")
-// 			},
-// 			CreateCapacityReservationFunc: func(ctx context.Context, params *ec2.CreateCapacityReservationInput, optFns ...func(*ec2.Options)) (*ec2.CreateCapacityReservationOutput, error) {
-// 				panic("mock out the CreateCapacityReservation method")
-// 			},
-// 			CreateCapacityReservationFleetFunc: func(ctx context.Context, params *ec2.CreateCapacityReservationFleetInput, optFns ...func(*ec2.Options)) (*ec2.CreateCapacityReservationFleetOutput, error) {
-// 				panic("mock out the CreateCapacityReservationFleet method")
-// 			},
-// 			CreateCarrierGatewayFunc: func(ctx context.Context, params *ec2.CreateCarrierGatewayInput, optFns ...func(*ec2.Options)) (*ec2.CreateCarrierGatewayOutput, error) {
-// 				panic("mock out the CreateCarrierGateway method")
-// 			},
-// 			CreateClientVpnEndpointFunc: func(ctx context.Context, params *ec2.CreateClientVpnEndpointInput, optFns ...func(*ec2.Options)) (*ec2.CreateClientVpnEndpointOutput, error) {
-// 				panic("mock out the CreateClientVpnEndpoint method")
-// 			},
-// 			CreateClientVpnRouteFunc: func(ctx context.Context, params *ec2.CreateClientVpnRouteInput, optFns ...func(*ec2.Options)) (*ec2.CreateClientVpnRouteOutput, error) {
-// 				panic("mock out the CreateClientVpnRoute method")
-// 			},
-// 			CreateCustomerGatewayFunc: func(ctx context.Context, params *ec2.CreateCustomerGatewayInput, optFns ...func(*ec2.Options)) (*ec2.CreateCustomerGatewayOutput, error) {
-// 				panic("mock out the CreateCustomerGateway method")
-// 			},
-// 			CreateDefaultSubnetFunc: func(ctx context.Context, params *ec2.CreateDefaultSubnetInput, optFns ...func(*ec2.Options)) (*ec2.CreateDefaultSubnetOutput, error) {
-// 				panic("mock out the CreateDefaultSubnet method")
-// 			},
-// 			CreateDefaultVpcFunc: func(ctx context.Context, params *ec2.CreateDefaultVpcInput, optFns ...func(*ec2.Options)) (*ec2.CreateDefaultVpcOutput, error) {
-// 				panic("mock out the CreateDefaultVpc method")
-// 			},
-// 			CreateDhcpOptionsFunc: func(ctx context.Context, params *ec2.CreateDhcpOptionsInput, optFns ...func(*ec2.Options)) (*ec2.CreateDhcpOptionsOutput, error) {
-// 				panic("mock out the CreateDhcpOptions method")
-// 			},
-// 			CreateEgressOnlyInternetGatewayFunc: func(ctx context.Context, params *ec2.CreateEgressOnlyInternetGatewayInput, optFns ...func(*ec2.Options)) (*ec2.CreateEgressOnlyInternetGatewayOutput, error) {
-// 				panic("mock out the CreateEgressOnlyInternetGateway method")
-// 			},
-// 			CreateFleetFunc: func(ctx context.Context, params *ec2.CreateFleetInput, optFns ...func(*ec2.Options)) (*ec2.CreateFleetOutput, error) {
-// 				panic("mock out the CreateFleet method")
-// 			},
-// 			CreateFlowLogsFunc: func(ctx context.Context, params *ec2.CreateFlowLogsInput, optFns ...func(*ec2.Options)) (*ec2.CreateFlowLogsOutput, error) {
-// 				panic("mock out the CreateFlowLogs method")
-// 			},
-// 			CreateFpgaImageFunc: func(ctx context.Context, params *ec2.CreateFpgaImageInput, optFns ...func(*ec2.Options)) (*ec2.CreateFpgaImageOutput, error) {
-// 				panic("mock out the CreateFpgaImage method")
-// 			},
-// 			CreateImageFunc: func(ctx context.Context, params *ec2.CreateImageInput, optFns ...func(*ec2.Options)) (*ec2.CreateImageOutput, error) {
-// 				panic("mock out the CreateImage method")
-// 			},
-// 			CreateInstanceEventWindowFunc: func(ctx context.Context, params *ec2.CreateInstanceEventWindowInput, optFns ...func(*ec2.Options)) (*ec2.CreateInstanceEventWindowOutput, error) {
-// 				panic("mock out the CreateInstanceEventWindow method")
-// 			},
-// 			CreateInstanceExportTaskFunc: func(ctx context.Context, params *ec2.CreateInstanceExportTaskInput, optFns ...func(*ec2.Options)) (*ec2.CreateInstanceExportTaskOutput, error) {
-// 				panic("mock out the CreateInstanceExportTask method")
-// 			},
-// 			CreateInternetGatewayFunc: func(ctx context.Context, params *ec2.CreateInternetGatewayInput, optFns ...func(*ec2.Options)) (*ec2.CreateInternetGatewayOutput, error) {
-// 				panic("mock out the CreateInternetGateway method")
-// 			},
-// 			CreateIpamFunc: func(ctx context.Context, params *ec2.CreateIpamInput, optFns ...func(*ec2.Options)) (*ec2.CreateIpamOutput, error) {
-// 				panic("mock out the CreateIpam method")
-// 			},
-// 			CreateIpamPoolFunc: func(ctx context.Context, params *ec2.CreateIpamPoolInput, optFns ...func(*ec2.Options)) (*ec2.CreateIpamPoolOutput, error) {
-// 				panic("mock out the CreateIpamPool method")
-// 			},
-// 			CreateIpamScopeFunc: func(ctx context.Context, params *ec2.CreateIpamScopeInput, optFns ...func(*ec2.Options)) (*ec2.CreateIpamScopeOutput, error) {
-// 				panic("mock out the CreateIpamScope method")
-// 			},
-// 			CreateKeyPairFunc: func(ctx context.Context, params *ec2.CreateKeyPairInput, optFns ...func(*ec2.Options)) (*ec2.CreateKeyPairOutput, error) {
-// 				panic("mock out the CreateKeyPair method")
-// 			},
-// 			CreateLaunchTemplateFunc: func(ctx context.Context, params *ec2.CreateLaunchTemplateInput, optFns ...func(*ec2.Options)) (*ec2.CreateLaunchTemplateOutput, error) {
-// 				panic("mock out the CreateLaunchTemplate method")
-// 			},
-// 			CreateLaunchTemplateVersionFunc: func(ctx context.Context, params *ec2.CreateLaunchTemplateVersionInput, optFns ...func(*ec2.Options)) (*ec2.CreateLaunchTemplateVersionOutput, error) {
-// 				panic("mock out the CreateLaunchTemplateVersion method")
-// 			},
-// 			CreateLocalGatewayRouteFunc: func(ctx context.Context, params *ec2.CreateLocalGatewayRouteInput, optFns ...func(*ec2.Options)) (*ec2.CreateLocalGatewayRouteOutput, error) {
-// 				panic("mock out the CreateLocalGatewayRoute method")
-// 			},
-// 			CreateLocalGatewayRouteTableVpcAssociationFunc: func(ctx context.Context, params *ec2.CreateLocalGatewayRouteTableVpcAssociationInput, optFns ...func(*ec2.Options)) (*ec2.CreateLocalGatewayRouteTableVpcAssociationOutput, error) {
-// 				panic("mock out the CreateLocalGatewayRouteTableVpcAssociation method")
-// 			},
-// 			CreateManagedPrefixListFunc: func(ctx context.Context, params *ec2.CreateManagedPrefixListInput, optFns ...func(*ec2.Options)) (*ec2.CreateManagedPrefixListOutput, error) {
-// 				panic("mock out the CreateManagedPrefixList method")
-// 			},
-// 			CreateNatGatewayFunc: func(ctx context.Context, params *ec2.CreateNatGatewayInput, optFns ...func(*ec2.Options)) (*ec2.CreateNatGatewayOutput, error) {
-// 				panic("mock out the CreateNatGateway method")
-// 			},
-// 			CreateNetworkAclFunc: func(ctx context.Context, params *ec2.CreateNetworkAclInput, optFns ...func(*ec2.Options)) (*ec2.CreateNetworkAclOutput, error) {
-// 				panic("mock out the CreateNetworkAcl method")
-// 			},
-// 			CreateNetworkAclEntryFunc: func(ctx context.Context, params *ec2.CreateNetworkAclEntryInput, optFns ...func(*ec2.Options)) (*ec2.CreateNetworkAclEntryOutput, error) {
-// 				panic("mock out the CreateNetworkAclEntry method")
-// 			},
-// 			CreateNetworkInsightsAccessScopeFunc: func(ctx context.Context, params *ec2.CreateNetworkInsightsAccessScopeInput, optFns ...func(*ec2.Options)) (*ec2.CreateNetworkInsightsAccessScopeOutput, error) {
-// 				panic("mock out the CreateNetworkInsightsAccessScope method")
-// 			},
-// 			CreateNetworkInsightsPathFunc: func(ctx context.Context, params *ec2.CreateNetworkInsightsPathInput, optFns ...func(*ec2.Options)) (*ec2.CreateNetworkInsightsPathOutput, error) {
-// 				panic("mock out the CreateNetworkInsightsPath method")
-// 			},
-// 			CreateNetworkInterfaceFunc: func(ctx context.Context, params *ec2.CreateNetworkInterfaceInput, optFns ...func(*ec2.Options)) (*ec2.CreateNetworkInterfaceOutput, error) {
-// 				panic("mock out the CreateNetworkInterface method")
-// 			},
-// 			CreateNetworkInterfacePermissionFunc: func(ctx context.Context, params *ec2.CreateNetworkInterfacePermissionInput, optFns ...func(*ec2.Options)) (*ec2.CreateNetworkInterfacePermissionOutput, error) {
-// 				panic("mock out the CreateNetworkInterfacePermission method")
-// 			},
-// 			CreatePlacementGroupFunc: func(ctx context.Context, params *ec2.CreatePlacementGroupInput, optFns ...func(*ec2.Options)) (*ec2.CreatePlacementGroupOutput, error) {
-// 				panic("mock out the CreatePlacementGroup method")
-// 			},
-// 			CreatePublicIpv4PoolFunc: func(ctx context.Context, params *ec2.CreatePublicIpv4PoolInput, optFns ...func(*ec2.Options)) (*ec2.CreatePublicIpv4PoolOutput, error) {
-// 				panic("mock out the CreatePublicIpv4Pool method")
-// 			},
-// 			CreateReplaceRootVolumeTaskFunc: func(ctx context.Context, params *ec2.CreateReplaceRootVolumeTaskInput, optFns ...func(*ec2.Options)) (*ec2.CreateReplaceRootVolumeTaskOutput, error) {
-// 				panic("mock out the CreateReplaceRootVolumeTask method")
-// 			},
-// 			CreateReservedInstancesListingFunc: func(ctx context.Context, params *ec2.CreateReservedInstancesListingInput, optFns ...func(*ec2.Options)) (*ec2.CreateReservedInstancesListingOutput, error) {
-// 				panic("mock out the CreateReservedInstancesListing method")
-// 			},
-// 			CreateRestoreImageTaskFunc: func(ctx context.Context, params *ec2.CreateRestoreImageTaskInput, optFns ...func(*ec2.Options)) (*ec2.CreateRestoreImageTaskOutput, error) {
-// 				panic("mock out the CreateRestoreImageTask method")
-// 			},
-// 			CreateRouteFunc: func(ctx context.Context, params *ec2.CreateRouteInput, optFns ...func(*ec2.Options)) (*ec2.CreateRouteOutput, error) {
-// 				panic("mock out the CreateRoute method")
-// 			},
-// 			CreateRouteTableFunc: func(ctx context.Context, params *ec2.CreateRouteTableInput, optFns ...func(*ec2.Options)) (*ec2.CreateRouteTableOutput, error) {
-// 				panic("mock out the CreateRouteTable method")
-// 			},
-// 			CreateSecurityGroupFunc: func(ctx context.Context, params *ec2.CreateSecurityGroupInput, optFns ...func(*ec2.Options)) (*ec2.CreateSecurityGroupOutput, error) {
-// 				panic("mock out the CreateSecurityGroup method")
-// 			},
-// 			CreateSnapshotFunc: func(ctx context.Context, params *ec2.CreateSnapshotInput, optFns ...func(*ec2.Options)) (*ec2.CreateSnapshotOutput, error) {
-// 				panic("mock out the CreateSnapshot method")
-// 			},
-// 			CreateSnapshotsFunc: func(ctx context.Context, params *ec2.CreateSnapshotsInput, optFns ...func(*ec2.Options)) (*ec2.CreateSnapshotsOutput, error) {
-// 				panic("mock out the CreateSnapshots method")
-// 			},
-// 			CreateSpotDatafeedSubscriptionFunc: func(ctx context.Context, params *ec2.CreateSpotDatafeedSubscriptionInput, optFns ...func(*ec2.Options)) (*ec2.CreateSpotDatafeedSubscriptionOutput, error) {
-// 				panic("mock out the CreateSpotDatafeedSubscription method")
-// 			},
-// 			CreateStoreImageTaskFunc: func(ctx context.Context, params *ec2.CreateStoreImageTaskInput, optFns ...func(*ec2.Options)) (*ec2.CreateStoreImageTaskOutput, error) {
-// 				panic("mock out the CreateStoreImageTask method")
-// 			},
-// 			CreateSubnetFunc: func(ctx context.Context, params *ec2.CreateSubnetInput, optFns ...func(*ec2.Options)) (*ec2.CreateSubnetOutput, error) {
-// 				panic("mock out the CreateSubnet method")
-// 			},
-// 			CreateSubnetCidrReservationFunc: func(ctx context.Context, params *ec2.CreateSubnetCidrReservationInput, optFns ...func(*ec2.Options)) (*ec2.CreateSubnetCidrReservationOutput, error) {
-// 				panic("mock out the CreateSubnetCidrReservation method")
-// 			},
-// 			CreateTagsFunc: func(ctx context.Context, params *ec2.CreateTagsInput, optFns ...func(*ec2.Options)) (*ec2.CreateTagsOutput, error) {
-// 				panic("mock out the CreateTags method")
-// 			},
-// 			CreateTrafficMirrorFilterFunc: func(ctx context.Context, params *ec2.CreateTrafficMirrorFilterInput, optFns ...func(*ec2.Options)) (*ec2.CreateTrafficMirrorFilterOutput, error) {
-// 				panic("mock out the CreateTrafficMirrorFilter method")
-// 			},
-// 			CreateTrafficMirrorFilterRuleFunc: func(ctx context.Context, params *ec2.CreateTrafficMirrorFilterRuleInput, optFns ...func(*ec2.Options)) (*ec2.CreateTrafficMirrorFilterRuleOutput, error) {
-// 				panic("mock out the CreateTrafficMirrorFilterRule method")
-// 			},
-// 			CreateTrafficMirrorSessionFunc: func(ctx context.Context, params *ec2.CreateTrafficMirrorSessionInput, optFns ...func(*ec2.Options)) (*ec2.CreateTrafficMirrorSessionOutput, error) {
-// 				panic("mock out the CreateTrafficMirrorSession method")
-// 			},
-// 			CreateTrafficMirrorTargetFunc: func(ctx context.Context, params *ec2.CreateTrafficMirrorTargetInput, optFns ...func(*ec2.Options)) (*ec2.CreateTrafficMirrorTargetOutput, error) {
-// 				panic("mock out the CreateTrafficMirrorTarget method")
-// 			},
-// 			CreateTransitGatewayFunc: func(ctx context.Context, params *ec2.CreateTransitGatewayInput, optFns ...func(*ec2.Options)) (*ec2.CreateTransitGatewayOutput, error) {
-// 				panic("mock out the CreateTransitGateway method")
-// 			},
-// 			CreateTransitGatewayConnectFunc: func(ctx context.Context, params *ec2.CreateTransitGatewayConnectInput, optFns ...func(*ec2.Options)) (*ec2.CreateTransitGatewayConnectOutput, error) {
-// 				panic("mock out the CreateTransitGatewayConnect method")
-// 			},
-// 			CreateTransitGatewayConnectPeerFunc: func(ctx context.Context, params *ec2.CreateTransitGatewayConnectPeerInput, optFns ...func(*ec2.Options)) (*ec2.CreateTransitGatewayConnectPeerOutput, error) {
-// 				panic("mock out the CreateTransitGatewayConnectPeer method")
-// 			},
-// 			CreateTransitGatewayMulticastDomainFunc: func(ctx context.Context, params *ec2.CreateTransitGatewayMulticastDomainInput, optFns ...func(*ec2.Options)) (*ec2.CreateTransitGatewayMulticastDomainOutput, error) {
-// 				panic("mock out the CreateTransitGatewayMulticastDomain method")
-// 			},
-// 			CreateTransitGatewayPeeringAttachmentFunc: func(ctx context.Context, params *ec2.CreateTransitGatewayPeeringAttachmentInput, optFns ...func(*ec2.Options)) (*ec2.CreateTransitGatewayPeeringAttachmentOutput, error) {
-// 				panic("mock out the CreateTransitGatewayPeeringAttachment method")
-// 			},
-// 			CreateTransitGatewayPolicyTableFunc: func(ctx context.Context, params *ec2.CreateTransitGatewayPolicyTableInput, optFns ...func(*ec2.Options)) (*ec2.CreateTransitGatewayPolicyTableOutput, error) {
-// 				panic("mock out the CreateTransitGatewayPolicyTable method")
-// 			},
-// 			CreateTransitGatewayPrefixListReferenceFunc: func(ctx context.Context, params *ec2.CreateTransitGatewayPrefixListReferenceInput, optFns ...func(*ec2.Options)) (*ec2.CreateTransitGatewayPrefixListReferenceOutput, error) {
-// 				panic("mock out the CreateTransitGatewayPrefixListReference method")
-// 			},
-// 			CreateTransitGatewayRouteFunc: func(ctx context.Context, params *ec2.CreateTransitGatewayRouteInput, optFns ...func(*ec2.Options)) (*ec2.CreateTransitGatewayRouteOutput, error) {
-// 				panic("mock out the CreateTransitGatewayRoute method")
-// 			},
-// 			CreateTransitGatewayRouteTableFunc: func(ctx context.Context, params *ec2.CreateTransitGatewayRouteTableInput, optFns ...func(*ec2.Options)) (*ec2.CreateTransitGatewayRouteTableOutput, error) {
-// 				panic("mock out the CreateTransitGatewayRouteTable method")
-// 			},
-// 			CreateTransitGatewayRouteTableAnnouncementFunc: func(ctx context.Context, params *ec2.CreateTransitGatewayRouteTableAnnouncementInput, optFns ...func(*ec2.Options)) (*ec2.CreateTransitGatewayRouteTableAnnouncementOutput, error) {
-// 				panic("mock out the CreateTransitGatewayRouteTableAnnouncement method")
-// 			},
-// 			CreateTransitGatewayVpcAttachmentFunc: func(ctx context.Context, params *ec2.CreateTransitGatewayVpcAttachmentInput, optFns ...func(*ec2.Options)) (*ec2.CreateTransitGatewayVpcAttachmentOutput, error) {
-// 				panic("mock out the CreateTransitGatewayVpcAttachment method")
-// 			},
-// 			CreateVolumeFunc: func(ctx context.Context, params *ec2.CreateVolumeInput, optFns ...func(*ec2.Options)) (*ec2.CreateVolumeOutput, error) {
-// 				panic("mock out the CreateVolume method")
-// 			},
-// 			CreateVpcFunc: func(ctx context.Context, params *ec2.CreateVpcInput, optFns ...func(*ec2.Options)) (*ec2.CreateVpcOutput, error) {
-// 				panic("mock out the CreateVpc method")
-// 			},
-// 			CreateVpcEndpointFunc: func(ctx context.Context, params *ec2.CreateVpcEndpointInput, optFns ...func(*ec2.Options)) (*ec2.CreateVpcEndpointOutput, error) {
-// 				panic("mock out the CreateVpcEndpoint method")
-// 			},
-// 			CreateVpcEndpointConnectionNotificationFunc: func(ctx context.Context, params *ec2.CreateVpcEndpointConnectionNotificationInput, optFns ...func(*ec2.Options)) (*ec2.CreateVpcEndpointConnectionNotificationOutput, error) {
-// 				panic("mock out the CreateVpcEndpointConnectionNotification method")
-// 			},
-// 			CreateVpcEndpointServiceConfigurationFunc: func(ctx context.Context, params *ec2.CreateVpcEndpointServiceConfigurationInput, optFns ...func(*ec2.Options)) (*ec2.CreateVpcEndpointServiceConfigurationOutput, error) {
-// 				panic("mock out the CreateVpcEndpointServiceConfiguration method")
-// 			},
-// 			CreateVpcPeeringConnectionFunc: func(ctx context.Context, params *ec2.CreateVpcPeeringConnectionInput, optFns ...func(*ec2.Options)) (*ec2.CreateVpcPeeringConnectionOutput, error) {
-// 				panic("mock out the CreateVpcPeeringConnection method")
-// 			},
-// 			CreateVpnConnectionFunc: func(ctx context.Context, params *ec2.CreateVpnConnectionInput, optFns ...func(*ec2.Options)) (*ec2.CreateVpnConnectionOutput, error) {
-// 				panic("mock out the CreateVpnConnection method")
-// 			},
-// 			CreateVpnConnectionRouteFunc: func(ctx context.Context, params *ec2.CreateVpnConnectionRouteInput, optFns ...func(*ec2.Options)) (*ec2.CreateVpnConnectionRouteOutput, error) {
-// 				panic("mock out the CreateVpnConnectionRoute method")
-// 			},
-// 			CreateVpnGatewayFunc: func(ctx context.Context, params *ec2.CreateVpnGatewayInput, optFns ...func(*ec2.Options)) (*ec2.CreateVpnGatewayOutput, error) {
-// 				panic("mock out the CreateVpnGateway method")
-// 			},
-// 			DeleteCarrierGatewayFunc: func(ctx context.Context, params *ec2.DeleteCarrierGatewayInput, optFns ...func(*ec2.Options)) (*ec2.DeleteCarrierGatewayOutput, error) {
-// 				panic("mock out the DeleteCarrierGateway method")
-// 			},
-// 			DeleteClientVpnEndpointFunc: func(ctx context.Context, params *ec2.DeleteClientVpnEndpointInput, optFns ...func(*ec2.Options)) (*ec2.DeleteClientVpnEndpointOutput, error) {
-// 				panic("mock out the DeleteClientVpnEndpoint method")
-// 			},
-// 			DeleteClientVpnRouteFunc: func(ctx context.Context, params *ec2.DeleteClientVpnRouteInput, optFns ...func(*ec2.Options)) (*ec2.DeleteClientVpnRouteOutput, error) {
-// 				panic("mock out the DeleteClientVpnRoute method")
-// 			},
-// 			DeleteCustomerGatewayFunc: func(ctx context.Context, params *ec2.DeleteCustomerGatewayInput, optFns ...func(*ec2.Options)) (*ec2.DeleteCustomerGatewayOutput, error) {
-// 				panic("mock out the DeleteCustomerGateway method")
-// 			},
-// 			DeleteDhcpOptionsFunc: func(ctx context.Context, params *ec2.DeleteDhcpOptionsInput, optFns ...func(*ec2.Options)) (*ec2.DeleteDhcpOptionsOutput, error) {
-// 				panic("mock out the DeleteDhcpOptions method")
-// 			},
-// 			DeleteEgressOnlyInternetGatewayFunc: func(ctx context.Context, params *ec2.DeleteEgressOnlyInternetGatewayInput, optFns ...func(*ec2.Options)) (*ec2.DeleteEgressOnlyInternetGatewayOutput, error) {
-// 				panic("mock out the DeleteEgressOnlyInternetGateway method")
-// 			},
-// 			DeleteFleetsFunc: func(ctx context.Context, params *ec2.DeleteFleetsInput, optFns ...func(*ec2.Options)) (*ec2.DeleteFleetsOutput, error) {
-// 				panic("mock out the DeleteFleets method")
-// 			},
-// 			DeleteFlowLogsFunc: func(ctx context.Context, params *ec2.DeleteFlowLogsInput, optFns ...func(*ec2.Options)) (*ec2.DeleteFlowLogsOutput, error) {
-// 				panic("mock out the DeleteFlowLogs method")
-// 			},
-// 			DeleteFpgaImageFunc: func(ctx context.Context, params *ec2.DeleteFpgaImageInput, optFns ...func(*ec2.Options)) (*ec2.DeleteFpgaImageOutput, error) {
-// 				panic("mock out the DeleteFpgaImage method")
-// 			},
-// 			DeleteInstanceEventWindowFunc: func(ctx context.Context, params *ec2.DeleteInstanceEventWindowInput, optFns ...func(*ec2.Options)) (*ec2.DeleteInstanceEventWindowOutput, error) {
-// 				panic("mock out the DeleteInstanceEventWindow method")
-// 			},
-// 			DeleteInternetGatewayFunc: func(ctx context.Context, params *ec2.DeleteInternetGatewayInput, optFns ...func(*ec2.Options)) (*ec2.DeleteInternetGatewayOutput, error) {
-// 				panic("mock out the DeleteInternetGateway method")
-// 			},
-// 			DeleteIpamFunc: func(ctx context.Context, params *ec2.DeleteIpamInput, optFns ...func(*ec2.Options)) (*ec2.DeleteIpamOutput, error) {
-// 				panic("mock out the DeleteIpam method")
-// 			},
-// 			DeleteIpamPoolFunc: func(ctx context.Context, params *ec2.DeleteIpamPoolInput, optFns ...func(*ec2.Options)) (*ec2.DeleteIpamPoolOutput, error) {
-// 				panic("mock out the DeleteIpamPool method")
-// 			},
-// 			DeleteIpamScopeFunc: func(ctx context.Context, params *ec2.DeleteIpamScopeInput, optFns ...func(*ec2.Options)) (*ec2.DeleteIpamScopeOutput, error) {
-// 				panic("mock out the DeleteIpamScope method")
-// 			},
-// 			DeleteKeyPairFunc: func(ctx context.Context, params *ec2.DeleteKeyPairInput, optFns ...func(*ec2.Options)) (*ec2.DeleteKeyPairOutput, error) {
-// 				panic("mock out the DeleteKeyPair method")
-// 			},
-// 			DeleteLaunchTemplateFunc: func(ctx context.Context, params *ec2.DeleteLaunchTemplateInput, optFns ...func(*ec2.Options)) (*ec2.DeleteLaunchTemplateOutput, error) {
-// 				panic("mock out the DeleteLaunchTemplate method")
-// 			},
-// 			DeleteLaunchTemplateVersionsFunc: func(ctx context.Context, params *ec2.DeleteLaunchTemplateVersionsInput, optFns ...func(*ec2.Options)) (*ec2.DeleteLaunchTemplateVersionsOutput, error) {
-// 				panic("mock out the DeleteLaunchTemplateVersions method")
-// 			},
-// 			DeleteLocalGatewayRouteFunc: func(ctx context.Context, params *ec2.DeleteLocalGatewayRouteInput, optFns ...func(*ec2.Options)) (*ec2.DeleteLocalGatewayRouteOutput, error) {
-// 				panic("mock out the DeleteLocalGatewayRoute method")
-// 			},
-// 			DeleteLocalGatewayRouteTableVpcAssociationFunc: func(ctx context.Context, params *ec2.DeleteLocalGatewayRouteTableVpcAssociationInput, optFns ...func(*ec2.Options)) (*ec2.DeleteLocalGatewayRouteTableVpcAssociationOutput, error) {
-// 				panic("mock out the DeleteLocalGatewayRouteTableVpcAssociation method")
-// 			},
-// 			DeleteManagedPrefixListFunc: func(ctx context.Context, params *ec2.DeleteManagedPrefixListInput, optFns ...func(*ec2.Options)) (*ec2.DeleteManagedPrefixListOutput, error) {
-// 				panic("mock out the DeleteManagedPrefixList method")
-// 			},
-// 			DeleteNatGatewayFunc: func(ctx context.Context, params *ec2.DeleteNatGatewayInput, optFns ...func(*ec2.Options)) (*ec2.DeleteNatGatewayOutput, error) {
-// 				panic("mock out the DeleteNatGateway method")
-// 			},
-// 			DeleteNetworkAclFunc: func(ctx context.Context, params *ec2.DeleteNetworkAclInput, optFns ...func(*ec2.Options)) (*ec2.DeleteNetworkAclOutput, error) {
-// 				panic("mock out the DeleteNetworkAcl method")
-// 			},
-// 			DeleteNetworkAclEntryFunc: func(ctx context.Context, params *ec2.DeleteNetworkAclEntryInput, optFns ...func(*ec2.Options)) (*ec2.DeleteNetworkAclEntryOutput, error) {
-// 				panic("mock out the DeleteNetworkAclEntry method")
-// 			},
-// 			DeleteNetworkInsightsAccessScopeFunc: func(ctx context.Context, params *ec2.DeleteNetworkInsightsAccessScopeInput, optFns ...func(*ec2.Options)) (*ec2.DeleteNetworkInsightsAccessScopeOutput, error) {
-// 				panic("mock out the DeleteNetworkInsightsAccessScope method")
-// 			},
-// 			DeleteNetworkInsightsAccessScopeAnalysisFunc: func(ctx context.Context, params *ec2.DeleteNetworkInsightsAccessScopeAnalysisInput, optFns ...func(*ec2.Options)) (*ec2.DeleteNetworkInsightsAccessScopeAnalysisOutput, error) {
-// 				panic("mock out the DeleteNetworkInsightsAccessScopeAnalysis method")
-// 			},
-// 			DeleteNetworkInsightsAnalysisFunc: func(ctx context.Context, params *ec2.DeleteNetworkInsightsAnalysisInput, optFns ...func(*ec2.Options)) (*ec2.DeleteNetworkInsightsAnalysisOutput, error) {
-// 				panic("mock out the DeleteNetworkInsightsAnalysis method")
-// 			},
-// 			DeleteNetworkInsightsPathFunc: func(ctx context.Context, params *ec2.DeleteNetworkInsightsPathInput, optFns ...func(*ec2.Options)) (*ec2.DeleteNetworkInsightsPathOutput, error) {
-// 				panic("mock out the DeleteNetworkInsightsPath method")
-// 			},
-// 			DeleteNetworkInterfaceFunc: func(ctx context.Context, params *ec2.DeleteNetworkInterfaceInput, optFns ...func(*ec2.Options)) (*ec2.DeleteNetworkInterfaceOutput, error) {
-// 				panic("mock out the DeleteNetworkInterface method")
-// 			},
-// 			DeleteNetworkInterfacePermissionFunc: func(ctx context.Context, params *ec2.DeleteNetworkInterfacePermissionInput, optFns ...func(*ec2.Options)) (*ec2.DeleteNetworkInterfacePermissionOutput, error) {
-// 				panic("mock out the DeleteNetworkInterfacePermission method")
-// 			},
-// 			DeletePlacementGroupFunc: func(ctx context.Context, params *ec2.DeletePlacementGroupInput, optFns ...func(*ec2.Options)) (*ec2.DeletePlacementGroupOutput, error) {
-// 				panic("mock out the DeletePlacementGroup method")
-// 			},
-// 			DeletePublicIpv4PoolFunc: func(ctx context.Context, params *ec2.DeletePublicIpv4PoolInput, optFns ...func(*ec2.Options)) (*ec2.DeletePublicIpv4PoolOutput, error) {
-// 				panic("mock out the DeletePublicIpv4Pool method")
-// 			},
-// 			DeleteQueuedReservedInstancesFunc: func(ctx context.Context, params *ec2.DeleteQueuedReservedInstancesInput, optFns ...func(*ec2.Options)) (*ec2.DeleteQueuedReservedInstancesOutput, error) {
-// 				panic("mock out the DeleteQueuedReservedInstances method")
-// 			},
-// 			DeleteRouteFunc: func(ctx context.Context, params *ec2.DeleteRouteInput, optFns ...func(*ec2.Options)) (*ec2.DeleteRouteOutput, error) {
-// 				panic("mock out the DeleteRoute method")
-// 			},
-// 			DeleteRouteTableFunc: func(ctx context.Context, params *ec2.DeleteRouteTableInput, optFns ...func(*ec2.Options)) (*ec2.DeleteRouteTableOutput, error) {
-// 				panic("mock out the DeleteRouteTable method")
-// 			},
-// 			DeleteSecurityGroupFunc: func(ctx context.Context, params *ec2.DeleteSecurityGroupInput, optFns ...func(*ec2.Options)) (*ec2.DeleteSecurityGroupOutput, error) {
-// 				panic("mock out the DeleteSecurityGroup method")
-// 			},
-// 			DeleteSnapshotFunc: func(ctx context.Context, params *ec2.DeleteSnapshotInput, optFns ...func(*ec2.Options)) (*ec2.DeleteSnapshotOutput, error) {
-// 				panic("mock out the DeleteSnapshot method")
-// 			},
-// 			DeleteSpotDatafeedSubscriptionFunc: func(ctx context.Context, params *ec2.DeleteSpotDatafeedSubscriptionInput, optFns ...func(*ec2.Options)) (*ec2.DeleteSpotDatafeedSubscriptionOutput, error) {
-// 				panic("mock out the DeleteSpotDatafeedSubscription method")
-// 			},
-// 			DeleteSubnetFunc: func(ctx context.Context, params *ec2.DeleteSubnetInput, optFns ...func(*ec2.Options)) (*ec2.DeleteSubnetOutput, error) {
-// 				panic("mock out the DeleteSubnet method")
-// 			},
-// 			DeleteSubnetCidrReservationFunc: func(ctx context.Context, params *ec2.DeleteSubnetCidrReservationInput, optFns ...func(*ec2.Options)) (*ec2.DeleteSubnetCidrReservationOutput, error) {
-// 				panic("mock out the DeleteSubnetCidrReservation method")
-// 			},
-// 			DeleteTagsFunc: func(ctx context.Context, params *ec2.DeleteTagsInput, optFns ...func(*ec2.Options)) (*ec2.DeleteTagsOutput, error) {
-// 				panic("mock out the DeleteTags method")
-// 			},
-// 			DeleteTrafficMirrorFilterFunc: func(ctx context.Context, params *ec2.DeleteTrafficMirrorFilterInput, optFns ...func(*ec2.Options)) (*ec2.DeleteTrafficMirrorFilterOutput, error) {
-// 				panic("mock out the DeleteTrafficMirrorFilter method")
-// 			},
-// 			DeleteTrafficMirrorFilterRuleFunc: func(ctx context.Context, params *ec2.DeleteTrafficMirrorFilterRuleInput, optFns ...func(*ec2.Options)) (*ec2.DeleteTrafficMirrorFilterRuleOutput, error) {
-// 				panic("mock out the DeleteTrafficMirrorFilterRule method")
-// 			},
-// 			DeleteTrafficMirrorSessionFunc: func(ctx context.Context, params *ec2.DeleteTrafficMirrorSessionInput, optFns ...func(*ec2.Options)) (*ec2.DeleteTrafficMirrorSessionOutput, error) {
-// 				panic("mock out the DeleteTrafficMirrorSession method")
-// 			},
-// 			DeleteTrafficMirrorTargetFunc: func(ctx context.Context, params *ec2.DeleteTrafficMirrorTargetInput, optFns ...func(*ec2.Options)) (*ec2.DeleteTrafficMirrorTargetOutput, error) {
-// 				panic("mock out the DeleteTrafficMirrorTarget method")
-// 			},
-// 			DeleteTransitGatewayFunc: func(ctx context.Context, params *ec2.DeleteTransitGatewayInput, optFns ...func(*ec2.Options)) (*ec2.DeleteTransitGatewayOutput, error) {
-// 				panic("mock out the DeleteTransitGateway method")
-// 			},
-// 			DeleteTransitGatewayConnectFunc: func(ctx context.Context, params *ec2.DeleteTransitGatewayConnectInput, optFns ...func(*ec2.Options)) (*ec2.DeleteTransitGatewayConnectOutput, error) {
-// 				panic("mock out the DeleteTransitGatewayConnect method")
-// 			},
-// 			DeleteTransitGatewayConnectPeerFunc: func(ctx context.Context, params *ec2.DeleteTransitGatewayConnectPeerInput, optFns ...func(*ec2.Options)) (*ec2.DeleteTransitGatewayConnectPeerOutput, error) {
-// 				panic("mock out the DeleteTransitGatewayConnectPeer method")
-// 			},
-// 			DeleteTransitGatewayMulticastDomainFunc: func(ctx context.Context, params *ec2.DeleteTransitGatewayMulticastDomainInput, optFns ...func(*ec2.Options)) (*ec2.DeleteTransitGatewayMulticastDomainOutput, error) {
-// 				panic("mock out the DeleteTransitGatewayMulticastDomain method")
-// 			},
-// 			DeleteTransitGatewayPeeringAttachmentFunc: func(ctx context.Context, params *ec2.DeleteTransitGatewayPeeringAttachmentInput, optFns ...func(*ec2.Options)) (*ec2.DeleteTransitGatewayPeeringAttachmentOutput, error) {
-// 				panic("mock out the DeleteTransitGatewayPeeringAttachment method")
-// 			},
-// 			DeleteTransitGatewayPolicyTableFunc: func(ctx context.Context, params *ec2.DeleteTransitGatewayPolicyTableInput, optFns ...func(*ec2.Options)) (*ec2.DeleteTransitGatewayPolicyTableOutput, error) {
-// 				panic("mock out the DeleteTransitGatewayPolicyTable method")
-// 			},
-// 			DeleteTransitGatewayPrefixListReferenceFunc: func(ctx context.Context, params *ec2.DeleteTransitGatewayPrefixListReferenceInput, optFns ...func(*ec2.Options)) (*ec2.DeleteTransitGatewayPrefixListReferenceOutput, error) {
-// 				panic("mock out the DeleteTransitGatewayPrefixListReference method")
-// 			},
-// 			DeleteTransitGatewayRouteFunc: func(ctx context.Context, params *ec2.DeleteTransitGatewayRouteInput, optFns ...func(*ec2.Options)) (*ec2.DeleteTransitGatewayRouteOutput, error) {
-// 				panic("mock out the DeleteTransitGatewayRoute method")
-// 			},
-// 			DeleteTransitGatewayRouteTableFunc: func(ctx context.Context, params *ec2.DeleteTransitGatewayRouteTableInput, optFns ...func(*ec2.Options)) (*ec2.DeleteTransitGatewayRouteTableOutput, error) {
-// 				panic("mock out the DeleteTransitGatewayRouteTable method")
-// 			},
-// 			DeleteTransitGatewayRouteTableAnnouncementFunc: func(ctx context.Context, params *ec2.DeleteTransitGatewayRouteTableAnnouncementInput, optFns ...func(*ec2.Options)) (*ec2.DeleteTransitGatewayRouteTableAnnouncementOutput, error) {
-// 				panic("mock out the DeleteTransitGatewayRouteTableAnnouncement method")
-// 			},
-// 			DeleteTransitGatewayVpcAttachmentFunc: func(ctx context.Context, params *ec2.DeleteTransitGatewayVpcAttachmentInput, optFns ...func(*ec2.Options)) (*ec2.DeleteTransitGatewayVpcAttachmentOutput, error) {
-// 				panic("mock out the DeleteTransitGatewayVpcAttachment method")
-// 			},
-// 			DeleteVolumeFunc: func(ctx context.Context, params *ec2.DeleteVolumeInput, optFns ...func(*ec2.Options)) (*ec2.DeleteVolumeOutput, error) {
-// 				panic("mock out the DeleteVolume method")
-// 			},
-// 			DeleteVpcFunc: func(ctx context.Context, params *ec2.DeleteVpcInput, optFns ...func(*ec2.Options)) (*ec2.DeleteVpcOutput, error) {
-// 				panic("mock out the DeleteVpc method")
-// 			},
-// 			DeleteVpcEndpointConnectionNotificationsFunc: func(ctx context.Context, params *ec2.DeleteVpcEndpointConnectionNotificationsInput, optFns ...func(*ec2.Options)) (*ec2.DeleteVpcEndpointConnectionNotificationsOutput, error) {
-// 				panic("mock out the DeleteVpcEndpointConnectionNotifications method")
-// 			},
-// 			DeleteVpcEndpointServiceConfigurationsFunc: func(ctx context.Context, params *ec2.DeleteVpcEndpointServiceConfigurationsInput, optFns ...func(*ec2.Options)) (*ec2.DeleteVpcEndpointServiceConfigurationsOutput, error) {
-// 				panic("mock out the DeleteVpcEndpointServiceConfigurations method")
-// 			},
-// 			DeleteVpcEndpointsFunc: func(ctx context.Context, params *ec2.DeleteVpcEndpointsInput, optFns ...func(*ec2.Options)) (*ec2.DeleteVpcEndpointsOutput, error) {
-// 				panic("mock out the DeleteVpcEndpoints method")
-// 			},
-// 			DeleteVpcPeeringConnectionFunc: func(ctx context.Context, params *ec2.DeleteVpcPeeringConnectionInput, optFns ...func(*ec2.Options)) (*ec2.DeleteVpcPeeringConnectionOutput, error) {
-// 				panic("mock out the DeleteVpcPeeringConnection method")
-// 			},
-// 			DeleteVpnConnectionFunc: func(ctx context.Context, params *ec2.DeleteVpnConnectionInput, optFns ...func(*ec2.Options)) (*ec2.DeleteVpnConnectionOutput, error) {
-// 				panic("mock out the DeleteVpnConnection method")
-// 			},
-// 			DeleteVpnConnectionRouteFunc: func(ctx context.Context, params *ec2.DeleteVpnConnectionRouteInput, optFns ...func(*ec2.Options)) (*ec2.DeleteVpnConnectionRouteOutput, error) {
-// 				panic("mock out the DeleteVpnConnectionRoute method")
-// 			},
-// 			DeleteVpnGatewayFunc: func(ctx context.Context, params *ec2.DeleteVpnGatewayInput, optFns ...func(*ec2.Options)) (*ec2.DeleteVpnGatewayOutput, error) {
-// 				panic("mock out the DeleteVpnGateway method")
-// 			},
-// 			DeprovisionByoipCidrFunc: func(ctx context.Context, params *ec2.DeprovisionByoipCidrInput, optFns ...func(*ec2.Options)) (*ec2.DeprovisionByoipCidrOutput, error) {
-// 				panic("mock out the DeprovisionByoipCidr method")
-// 			},
-// 			DeprovisionIpamPoolCidrFunc: func(ctx context.Context, params *ec2.DeprovisionIpamPoolCidrInput, optFns ...func(*ec2.Options)) (*ec2.DeprovisionIpamPoolCidrOutput, error) {
-// 				panic("mock out the DeprovisionIpamPoolCidr method")
-// 			},
-// 			DeprovisionPublicIpv4PoolCidrFunc: func(ctx context.Context, params *ec2.DeprovisionPublicIpv4PoolCidrInput, optFns ...func(*ec2.Options)) (*ec2.DeprovisionPublicIpv4PoolCidrOutput, error) {
-// 				panic("mock out the DeprovisionPublicIpv4PoolCidr method")
-// 			},
-// 			DeregisterImageFunc: func(ctx context.Context, params *ec2.DeregisterImageInput, optFns ...func(*ec2.Options)) (*ec2.DeregisterImageOutput, error) {
-// 				panic("mock out the DeregisterImage method")
-// 			},
-// 			DeregisterInstanceEventNotificationAttributesFunc: func(ctx context.Context, params *ec2.DeregisterInstanceEventNotificationAttributesInput, optFns ...func(*ec2.Options)) (*ec2.DeregisterInstanceEventNotificationAttributesOutput, error) {
-// 				panic("mock out the DeregisterInstanceEventNotificationAttributes method")
-// 			},
-// 			DeregisterTransitGatewayMulticastGroupMembersFunc: func(ctx context.Context, params *ec2.DeregisterTransitGatewayMulticastGroupMembersInput, optFns ...func(*ec2.Options)) (*ec2.DeregisterTransitGatewayMulticastGroupMembersOutput, error) {
-// 				panic("mock out the DeregisterTransitGatewayMulticastGroupMembers method")
-// 			},
-// 			DeregisterTransitGatewayMulticastGroupSourcesFunc: func(ctx context.Context, params *ec2.DeregisterTransitGatewayMulticastGroupSourcesInput, optFns ...func(*ec2.Options)) (*ec2.DeregisterTransitGatewayMulticastGroupSourcesOutput, error) {
-// 				panic("mock out the DeregisterTransitGatewayMulticastGroupSources method")
-// 			},
-// 			DescribeAccountAttributesFunc: func(ctx context.Context, params *ec2.DescribeAccountAttributesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeAccountAttributesOutput, error) {
-// 				panic("mock out the DescribeAccountAttributes method")
-// 			},
-// 			DescribeAddressesFunc: func(ctx context.Context, params *ec2.DescribeAddressesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeAddressesOutput, error) {
-// 				panic("mock out the DescribeAddresses method")
-// 			},
-// 			DescribeAddressesAttributeFunc: func(ctx context.Context, params *ec2.DescribeAddressesAttributeInput, optFns ...func(*ec2.Options)) (*ec2.DescribeAddressesAttributeOutput, error) {
-// 				panic("mock out the DescribeAddressesAttribute method")
-// 			},
-// 			DescribeAggregateIdFormatFunc: func(ctx context.Context, params *ec2.DescribeAggregateIdFormatInput, optFns ...func(*ec2.Options)) (*ec2.DescribeAggregateIdFormatOutput, error) {
-// 				panic("mock out the DescribeAggregateIdFormat method")
-// 			},
-// 			DescribeAvailabilityZonesFunc: func(ctx context.Context, params *ec2.DescribeAvailabilityZonesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeAvailabilityZonesOutput, error) {
-// 				panic("mock out the DescribeAvailabilityZones method")
-// 			},
-// 			DescribeBundleTasksFunc: func(ctx context.Context, params *ec2.DescribeBundleTasksInput, optFns ...func(*ec2.Options)) (*ec2.DescribeBundleTasksOutput, error) {
-// 				panic("mock out the DescribeBundleTasks method")
-// 			},
-// 			DescribeByoipCidrsFunc: func(ctx context.Context, params *ec2.DescribeByoipCidrsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeByoipCidrsOutput, error) {
-// 				panic("mock out the DescribeByoipCidrs method")
-// 			},
-// 			DescribeCapacityReservationFleetsFunc: func(ctx context.Context, params *ec2.DescribeCapacityReservationFleetsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeCapacityReservationFleetsOutput, error) {
-// 				panic("mock out the DescribeCapacityReservationFleets method")
-// 			},
-// 			DescribeCapacityReservationsFunc: func(ctx context.Context, params *ec2.DescribeCapacityReservationsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeCapacityReservationsOutput, error) {
-// 				panic("mock out the DescribeCapacityReservations method")
-// 			},
-// 			DescribeCarrierGatewaysFunc: func(ctx context.Context, params *ec2.DescribeCarrierGatewaysInput, optFns ...func(*ec2.Options)) (*ec2.DescribeCarrierGatewaysOutput, error) {
-// 				panic("mock out the DescribeCarrierGateways method")
-// 			},
-// 			DescribeClassicLinkInstancesFunc: func(ctx context.Context, params *ec2.DescribeClassicLinkInstancesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeClassicLinkInstancesOutput, error) {
-// 				panic("mock out the DescribeClassicLinkInstances method")
-// 			},
-// 			DescribeClientVpnAuthorizationRulesFunc: func(ctx context.Context, params *ec2.DescribeClientVpnAuthorizationRulesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeClientVpnAuthorizationRulesOutput, error) {
-// 				panic("mock out the DescribeClientVpnAuthorizationRules method")
-// 			},
-// 			DescribeClientVpnConnectionsFunc: func(ctx context.Context, params *ec2.DescribeClientVpnConnectionsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeClientVpnConnectionsOutput, error) {
-// 				panic("mock out the DescribeClientVpnConnections method")
-// 			},
-// 			DescribeClientVpnEndpointsFunc: func(ctx context.Context, params *ec2.DescribeClientVpnEndpointsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeClientVpnEndpointsOutput, error) {
-// 				panic("mock out the DescribeClientVpnEndpoints method")
-// 			},
-// 			DescribeClientVpnRoutesFunc: func(ctx context.Context, params *ec2.DescribeClientVpnRoutesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeClientVpnRoutesOutput, error) {
-// 				panic("mock out the DescribeClientVpnRoutes method")
-// 			},
-// 			DescribeClientVpnTargetNetworksFunc: func(ctx context.Context, params *ec2.DescribeClientVpnTargetNetworksInput, optFns ...func(*ec2.Options)) (*ec2.DescribeClientVpnTargetNetworksOutput, error) {
-// 				panic("mock out the DescribeClientVpnTargetNetworks method")
-// 			},
-// 			DescribeCoipPoolsFunc: func(ctx context.Context, params *ec2.DescribeCoipPoolsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeCoipPoolsOutput, error) {
-// 				panic("mock out the DescribeCoipPools method")
-// 			},
-// 			DescribeConversionTasksFunc: func(ctx context.Context, params *ec2.DescribeConversionTasksInput, optFns ...func(*ec2.Options)) (*ec2.DescribeConversionTasksOutput, error) {
-// 				panic("mock out the DescribeConversionTasks method")
-// 			},
-// 			DescribeCustomerGatewaysFunc: func(ctx context.Context, params *ec2.DescribeCustomerGatewaysInput, optFns ...func(*ec2.Options)) (*ec2.DescribeCustomerGatewaysOutput, error) {
-// 				panic("mock out the DescribeCustomerGateways method")
-// 			},
-// 			DescribeDhcpOptionsFunc: func(ctx context.Context, params *ec2.DescribeDhcpOptionsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeDhcpOptionsOutput, error) {
-// 				panic("mock out the DescribeDhcpOptions method")
-// 			},
-// 			DescribeEgressOnlyInternetGatewaysFunc: func(ctx context.Context, params *ec2.DescribeEgressOnlyInternetGatewaysInput, optFns ...func(*ec2.Options)) (*ec2.DescribeEgressOnlyInternetGatewaysOutput, error) {
-// 				panic("mock out the DescribeEgressOnlyInternetGateways method")
-// 			},
-// 			DescribeElasticGpusFunc: func(ctx context.Context, params *ec2.DescribeElasticGpusInput, optFns ...func(*ec2.Options)) (*ec2.DescribeElasticGpusOutput, error) {
-// 				panic("mock out the DescribeElasticGpus method")
-// 			},
-// 			DescribeExportImageTasksFunc: func(ctx context.Context, params *ec2.DescribeExportImageTasksInput, optFns ...func(*ec2.Options)) (*ec2.DescribeExportImageTasksOutput, error) {
-// 				panic("mock out the DescribeExportImageTasks method")
-// 			},
-// 			DescribeExportTasksFunc: func(ctx context.Context, params *ec2.DescribeExportTasksInput, optFns ...func(*ec2.Options)) (*ec2.DescribeExportTasksOutput, error) {
-// 				panic("mock out the DescribeExportTasks method")
-// 			},
-// 			DescribeFastLaunchImagesFunc: func(ctx context.Context, params *ec2.DescribeFastLaunchImagesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeFastLaunchImagesOutput, error) {
-// 				panic("mock out the DescribeFastLaunchImages method")
-// 			},
-// 			DescribeFastSnapshotRestoresFunc: func(ctx context.Context, params *ec2.DescribeFastSnapshotRestoresInput, optFns ...func(*ec2.Options)) (*ec2.DescribeFastSnapshotRestoresOutput, error) {
-// 				panic("mock out the DescribeFastSnapshotRestores method")
-// 			},
-// 			DescribeFleetHistoryFunc: func(ctx context.Context, params *ec2.DescribeFleetHistoryInput, optFns ...func(*ec2.Options)) (*ec2.DescribeFleetHistoryOutput, error) {
-// 				panic("mock out the DescribeFleetHistory method")
-// 			},
-// 			DescribeFleetInstancesFunc: func(ctx context.Context, params *ec2.DescribeFleetInstancesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeFleetInstancesOutput, error) {
-// 				panic("mock out the DescribeFleetInstances method")
-// 			},
-// 			DescribeFleetsFunc: func(ctx context.Context, params *ec2.DescribeFleetsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeFleetsOutput, error) {
-// 				panic("mock out the DescribeFleets method")
-// 			},
-// 			DescribeFlowLogsFunc: func(ctx context.Context, params *ec2.DescribeFlowLogsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeFlowLogsOutput, error) {
-// 				panic("mock out the DescribeFlowLogs method")
-// 			},
-// 			DescribeFpgaImageAttributeFunc: func(ctx context.Context, params *ec2.DescribeFpgaImageAttributeInput, optFns ...func(*ec2.Options)) (*ec2.DescribeFpgaImageAttributeOutput, error) {
-// 				panic("mock out the DescribeFpgaImageAttribute method")
-// 			},
-// 			DescribeFpgaImagesFunc: func(ctx context.Context, params *ec2.DescribeFpgaImagesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeFpgaImagesOutput, error) {
-// 				panic("mock out the DescribeFpgaImages method")
-// 			},
-// 			DescribeHostReservationOfferingsFunc: func(ctx context.Context, params *ec2.DescribeHostReservationOfferingsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeHostReservationOfferingsOutput, error) {
-// 				panic("mock out the DescribeHostReservationOfferings method")
-// 			},
-// 			DescribeHostReservationsFunc: func(ctx context.Context, params *ec2.DescribeHostReservationsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeHostReservationsOutput, error) {
-// 				panic("mock out the DescribeHostReservations method")
-// 			},
-// 			DescribeHostsFunc: func(ctx context.Context, params *ec2.DescribeHostsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeHostsOutput, error) {
-// 				panic("mock out the DescribeHosts method")
-// 			},
-// 			DescribeIamInstanceProfileAssociationsFunc: func(ctx context.Context, params *ec2.DescribeIamInstanceProfileAssociationsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeIamInstanceProfileAssociationsOutput, error) {
-// 				panic("mock out the DescribeIamInstanceProfileAssociations method")
-// 			},
-// 			DescribeIdFormatFunc: func(ctx context.Context, params *ec2.DescribeIdFormatInput, optFns ...func(*ec2.Options)) (*ec2.DescribeIdFormatOutput, error) {
-// 				panic("mock out the DescribeIdFormat method")
-// 			},
-// 			DescribeIdentityIdFormatFunc: func(ctx context.Context, params *ec2.DescribeIdentityIdFormatInput, optFns ...func(*ec2.Options)) (*ec2.DescribeIdentityIdFormatOutput, error) {
-// 				panic("mock out the DescribeIdentityIdFormat method")
-// 			},
-// 			DescribeImageAttributeFunc: func(ctx context.Context, params *ec2.DescribeImageAttributeInput, optFns ...func(*ec2.Options)) (*ec2.DescribeImageAttributeOutput, error) {
-// 				panic("mock out the DescribeImageAttribute method")
-// 			},
-// 			DescribeImagesFunc: func(ctx context.Context, params *ec2.DescribeImagesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeImagesOutput, error) {
-// 				panic("mock out the DescribeImages method")
-// 			},
-// 			DescribeImportImageTasksFunc: func(ctx context.Context, params *ec2.DescribeImportImageTasksInput, optFns ...func(*ec2.Options)) (*ec2.DescribeImportImageTasksOutput, error) {
-// 				panic("mock out the DescribeImportImageTasks method")
-// 			},
-// 			DescribeImportSnapshotTasksFunc: func(ctx context.Context, params *ec2.DescribeImportSnapshotTasksInput, optFns ...func(*ec2.Options)) (*ec2.DescribeImportSnapshotTasksOutput, error) {
-// 				panic("mock out the DescribeImportSnapshotTasks method")
-// 			},
-// 			DescribeInstanceAttributeFunc: func(ctx context.Context, params *ec2.DescribeInstanceAttributeInput, optFns ...func(*ec2.Options)) (*ec2.DescribeInstanceAttributeOutput, error) {
-// 				panic("mock out the DescribeInstanceAttribute method")
-// 			},
-// 			DescribeInstanceCreditSpecificationsFunc: func(ctx context.Context, params *ec2.DescribeInstanceCreditSpecificationsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeInstanceCreditSpecificationsOutput, error) {
-// 				panic("mock out the DescribeInstanceCreditSpecifications method")
-// 			},
-// 			DescribeInstanceEventNotificationAttributesFunc: func(ctx context.Context, params *ec2.DescribeInstanceEventNotificationAttributesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeInstanceEventNotificationAttributesOutput, error) {
-// 				panic("mock out the DescribeInstanceEventNotificationAttributes method")
-// 			},
-// 			DescribeInstanceEventWindowsFunc: func(ctx context.Context, params *ec2.DescribeInstanceEventWindowsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeInstanceEventWindowsOutput, error) {
-// 				panic("mock out the DescribeInstanceEventWindows method")
-// 			},
-// 			DescribeInstanceStatusFunc: func(ctx context.Context, params *ec2.DescribeInstanceStatusInput, optFns ...func(*ec2.Options)) (*ec2.DescribeInstanceStatusOutput, error) {
-// 				panic("mock out the DescribeInstanceStatus method")
-// 			},
-// 			DescribeInstanceTypeOfferingsFunc: func(ctx context.Context, params *ec2.DescribeInstanceTypeOfferingsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeInstanceTypeOfferingsOutput, error) {
-// 				panic("mock out the DescribeInstanceTypeOfferings method")
-// 			},
-// 			DescribeInstanceTypesFunc: func(ctx context.Context, params *ec2.DescribeInstanceTypesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeInstanceTypesOutput, error) {
-// 				panic("mock out the DescribeInstanceTypes method")
-// 			},
-// 			DescribeInstancesFunc: func(ctx context.Context, params *ec2.DescribeInstancesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeInstancesOutput, error) {
-// 				panic("mock out the DescribeInstances method")
-// 			},
-// 			DescribeInternetGatewaysFunc: func(ctx context.Context, params *ec2.DescribeInternetGatewaysInput, optFns ...func(*ec2.Options)) (*ec2.DescribeInternetGatewaysOutput, error) {
-// 				panic("mock out the DescribeInternetGateways method")
-// 			},
-// 			DescribeIpamPoolsFunc: func(ctx context.Context, params *ec2.DescribeIpamPoolsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeIpamPoolsOutput, error) {
-// 				panic("mock out the DescribeIpamPools method")
-// 			},
-// 			DescribeIpamScopesFunc: func(ctx context.Context, params *ec2.DescribeIpamScopesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeIpamScopesOutput, error) {
-// 				panic("mock out the DescribeIpamScopes method")
-// 			},
-// 			DescribeIpamsFunc: func(ctx context.Context, params *ec2.DescribeIpamsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeIpamsOutput, error) {
-// 				panic("mock out the DescribeIpams method")
-// 			},
-// 			DescribeIpv6PoolsFunc: func(ctx context.Context, params *ec2.DescribeIpv6PoolsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeIpv6PoolsOutput, error) {
-// 				panic("mock out the DescribeIpv6Pools method")
-// 			},
-// 			DescribeKeyPairsFunc: func(ctx context.Context, params *ec2.DescribeKeyPairsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeKeyPairsOutput, error) {
-// 				panic("mock out the DescribeKeyPairs method")
-// 			},
-// 			DescribeLaunchTemplateVersionsFunc: func(ctx context.Context, params *ec2.DescribeLaunchTemplateVersionsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeLaunchTemplateVersionsOutput, error) {
-// 				panic("mock out the DescribeLaunchTemplateVersions method")
-// 			},
-// 			DescribeLaunchTemplatesFunc: func(ctx context.Context, params *ec2.DescribeLaunchTemplatesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeLaunchTemplatesOutput, error) {
-// 				panic("mock out the DescribeLaunchTemplates method")
-// 			},
-// 			DescribeLocalGatewayRouteTableVirtualInterfaceGroupAssociationsFunc: func(ctx context.Context, params *ec2.DescribeLocalGatewayRouteTableVirtualInterfaceGroupAssociationsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeLocalGatewayRouteTableVirtualInterfaceGroupAssociationsOutput, error) {
-// 				panic("mock out the DescribeLocalGatewayRouteTableVirtualInterfaceGroupAssociations method")
-// 			},
-// 			DescribeLocalGatewayRouteTableVpcAssociationsFunc: func(ctx context.Context, params *ec2.DescribeLocalGatewayRouteTableVpcAssociationsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeLocalGatewayRouteTableVpcAssociationsOutput, error) {
-// 				panic("mock out the DescribeLocalGatewayRouteTableVpcAssociations method")
-// 			},
-// 			DescribeLocalGatewayRouteTablesFunc: func(ctx context.Context, params *ec2.DescribeLocalGatewayRouteTablesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeLocalGatewayRouteTablesOutput, error) {
-// 				panic("mock out the DescribeLocalGatewayRouteTables method")
-// 			},
-// 			DescribeLocalGatewayVirtualInterfaceGroupsFunc: func(ctx context.Context, params *ec2.DescribeLocalGatewayVirtualInterfaceGroupsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeLocalGatewayVirtualInterfaceGroupsOutput, error) {
-// 				panic("mock out the DescribeLocalGatewayVirtualInterfaceGroups method")
-// 			},
-// 			DescribeLocalGatewayVirtualInterfacesFunc: func(ctx context.Context, params *ec2.DescribeLocalGatewayVirtualInterfacesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeLocalGatewayVirtualInterfacesOutput, error) {
-// 				panic("mock out the DescribeLocalGatewayVirtualInterfaces method")
-// 			},
-// 			DescribeLocalGatewaysFunc: func(ctx context.Context, params *ec2.DescribeLocalGatewaysInput, optFns ...func(*ec2.Options)) (*ec2.DescribeLocalGatewaysOutput, error) {
-// 				panic("mock out the DescribeLocalGateways method")
-// 			},
-// 			DescribeManagedPrefixListsFunc: func(ctx context.Context, params *ec2.DescribeManagedPrefixListsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeManagedPrefixListsOutput, error) {
-// 				panic("mock out the DescribeManagedPrefixLists method")
-// 			},
-// 			DescribeMovingAddressesFunc: func(ctx context.Context, params *ec2.DescribeMovingAddressesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeMovingAddressesOutput, error) {
-// 				panic("mock out the DescribeMovingAddresses method")
-// 			},
-// 			DescribeNatGatewaysFunc: func(ctx context.Context, params *ec2.DescribeNatGatewaysInput, optFns ...func(*ec2.Options)) (*ec2.DescribeNatGatewaysOutput, error) {
-// 				panic("mock out the DescribeNatGateways method")
-// 			},
-// 			DescribeNetworkAclsFunc: func(ctx context.Context, params *ec2.DescribeNetworkAclsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeNetworkAclsOutput, error) {
-// 				panic("mock out the DescribeNetworkAcls method")
-// 			},
-// 			DescribeNetworkInsightsAccessScopeAnalysesFunc: func(ctx context.Context, params *ec2.DescribeNetworkInsightsAccessScopeAnalysesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeNetworkInsightsAccessScopeAnalysesOutput, error) {
-// 				panic("mock out the DescribeNetworkInsightsAccessScopeAnalyses method")
-// 			},
-// 			DescribeNetworkInsightsAccessScopesFunc: func(ctx context.Context, params *ec2.DescribeNetworkInsightsAccessScopesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeNetworkInsightsAccessScopesOutput, error) {
-// 				panic("mock out the DescribeNetworkInsightsAccessScopes method")
-// 			},
-// 			DescribeNetworkInsightsAnalysesFunc: func(ctx context.Context, params *ec2.DescribeNetworkInsightsAnalysesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeNetworkInsightsAnalysesOutput, error) {
-// 				panic("mock out the DescribeNetworkInsightsAnalyses method")
-// 			},
-// 			DescribeNetworkInsightsPathsFunc: func(ctx context.Context, params *ec2.DescribeNetworkInsightsPathsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeNetworkInsightsPathsOutput, error) {
-// 				panic("mock out the DescribeNetworkInsightsPaths method")
-// 			},
-// 			DescribeNetworkInterfaceAttributeFunc: func(ctx context.Context, params *ec2.DescribeNetworkInterfaceAttributeInput, optFns ...func(*ec2.Options)) (*ec2.DescribeNetworkInterfaceAttributeOutput, error) {
-// 				panic("mock out the DescribeNetworkInterfaceAttribute method")
-// 			},
-// 			DescribeNetworkInterfacePermissionsFunc: func(ctx context.Context, params *ec2.DescribeNetworkInterfacePermissionsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeNetworkInterfacePermissionsOutput, error) {
-// 				panic("mock out the DescribeNetworkInterfacePermissions method")
-// 			},
-// 			DescribeNetworkInterfacesFunc: func(ctx context.Context, params *ec2.DescribeNetworkInterfacesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeNetworkInterfacesOutput, error) {
-// 				panic("mock out the DescribeNetworkInterfaces method")
-// 			},
-// 			DescribePlacementGroupsFunc: func(ctx context.Context, params *ec2.DescribePlacementGroupsInput, optFns ...func(*ec2.Options)) (*ec2.DescribePlacementGroupsOutput, error) {
-// 				panic("mock out the DescribePlacementGroups method")
-// 			},
-// 			DescribePrefixListsFunc: func(ctx context.Context, params *ec2.DescribePrefixListsInput, optFns ...func(*ec2.Options)) (*ec2.DescribePrefixListsOutput, error) {
-// 				panic("mock out the DescribePrefixLists method")
-// 			},
-// 			DescribePrincipalIdFormatFunc: func(ctx context.Context, params *ec2.DescribePrincipalIdFormatInput, optFns ...func(*ec2.Options)) (*ec2.DescribePrincipalIdFormatOutput, error) {
-// 				panic("mock out the DescribePrincipalIdFormat method")
-// 			},
-// 			DescribePublicIpv4PoolsFunc: func(ctx context.Context, params *ec2.DescribePublicIpv4PoolsInput, optFns ...func(*ec2.Options)) (*ec2.DescribePublicIpv4PoolsOutput, error) {
-// 				panic("mock out the DescribePublicIpv4Pools method")
-// 			},
-// 			DescribeRegionsFunc: func(ctx context.Context, params *ec2.DescribeRegionsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeRegionsOutput, error) {
-// 				panic("mock out the DescribeRegions method")
-// 			},
-// 			DescribeReplaceRootVolumeTasksFunc: func(ctx context.Context, params *ec2.DescribeReplaceRootVolumeTasksInput, optFns ...func(*ec2.Options)) (*ec2.DescribeReplaceRootVolumeTasksOutput, error) {
-// 				panic("mock out the DescribeReplaceRootVolumeTasks method")
-// 			},
-// 			DescribeReservedInstancesFunc: func(ctx context.Context, params *ec2.DescribeReservedInstancesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeReservedInstancesOutput, error) {
-// 				panic("mock out the DescribeReservedInstances method")
-// 			},
-// 			DescribeReservedInstancesListingsFunc: func(ctx context.Context, params *ec2.DescribeReservedInstancesListingsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeReservedInstancesListingsOutput, error) {
-// 				panic("mock out the DescribeReservedInstancesListings method")
-// 			},
-// 			DescribeReservedInstancesModificationsFunc: func(ctx context.Context, params *ec2.DescribeReservedInstancesModificationsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeReservedInstancesModificationsOutput, error) {
-// 				panic("mock out the DescribeReservedInstancesModifications method")
-// 			},
-// 			DescribeReservedInstancesOfferingsFunc: func(ctx context.Context, params *ec2.DescribeReservedInstancesOfferingsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeReservedInstancesOfferingsOutput, error) {
-// 				panic("mock out the DescribeReservedInstancesOfferings method")
-// 			},
-// 			DescribeRouteTablesFunc: func(ctx context.Context, params *ec2.DescribeRouteTablesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeRouteTablesOutput, error) {
-// 				panic("mock out the DescribeRouteTables method")
-// 			},
-// 			DescribeScheduledInstanceAvailabilityFunc: func(ctx context.Context, params *ec2.DescribeScheduledInstanceAvailabilityInput, optFns ...func(*ec2.Options)) (*ec2.DescribeScheduledInstanceAvailabilityOutput, error) {
-// 				panic("mock out the DescribeScheduledInstanceAvailability method")
-// 			},
-// 			DescribeScheduledInstancesFunc: func(ctx context.Context, params *ec2.DescribeScheduledInstancesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeScheduledInstancesOutput, error) {
-// 				panic("mock out the DescribeScheduledInstances method")
-// 			},
-// 			DescribeSecurityGroupReferencesFunc: func(ctx context.Context, params *ec2.DescribeSecurityGroupReferencesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeSecurityGroupReferencesOutput, error) {
-// 				panic("mock out the DescribeSecurityGroupReferences method")
-// 			},
-// 			DescribeSecurityGroupRulesFunc: func(ctx context.Context, params *ec2.DescribeSecurityGroupRulesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeSecurityGroupRulesOutput, error) {
-// 				panic("mock out the DescribeSecurityGroupRules method")
-// 			},
-// 			DescribeSecurityGroupsFunc: func(ctx context.Context, params *ec2.DescribeSecurityGroupsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeSecurityGroupsOutput, error) {
-// 				panic("mock out the DescribeSecurityGroups method")
-// 			},
-// 			DescribeSnapshotAttributeFunc: func(ctx context.Context, params *ec2.DescribeSnapshotAttributeInput, optFns ...func(*ec2.Options)) (*ec2.DescribeSnapshotAttributeOutput, error) {
-// 				panic("mock out the DescribeSnapshotAttribute method")
-// 			},
-// 			DescribeSnapshotTierStatusFunc: func(ctx context.Context, params *ec2.DescribeSnapshotTierStatusInput, optFns ...func(*ec2.Options)) (*ec2.DescribeSnapshotTierStatusOutput, error) {
-// 				panic("mock out the DescribeSnapshotTierStatus method")
-// 			},
-// 			DescribeSnapshotsFunc: func(ctx context.Context, params *ec2.DescribeSnapshotsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeSnapshotsOutput, error) {
-// 				panic("mock out the DescribeSnapshots method")
-// 			},
-// 			DescribeSpotDatafeedSubscriptionFunc: func(ctx context.Context, params *ec2.DescribeSpotDatafeedSubscriptionInput, optFns ...func(*ec2.Options)) (*ec2.DescribeSpotDatafeedSubscriptionOutput, error) {
-// 				panic("mock out the DescribeSpotDatafeedSubscription method")
-// 			},
-// 			DescribeSpotFleetInstancesFunc: func(ctx context.Context, params *ec2.DescribeSpotFleetInstancesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeSpotFleetInstancesOutput, error) {
-// 				panic("mock out the DescribeSpotFleetInstances method")
-// 			},
-// 			DescribeSpotFleetRequestHistoryFunc: func(ctx context.Context, params *ec2.DescribeSpotFleetRequestHistoryInput, optFns ...func(*ec2.Options)) (*ec2.DescribeSpotFleetRequestHistoryOutput, error) {
-// 				panic("mock out the DescribeSpotFleetRequestHistory method")
-// 			},
-// 			DescribeSpotFleetRequestsFunc: func(ctx context.Context, params *ec2.DescribeSpotFleetRequestsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeSpotFleetRequestsOutput, error) {
-// 				panic("mock out the DescribeSpotFleetRequests method")
-// 			},
-// 			DescribeSpotInstanceRequestsFunc: func(ctx context.Context, params *ec2.DescribeSpotInstanceRequestsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeSpotInstanceRequestsOutput, error) {
-// 				panic("mock out the DescribeSpotInstanceRequests method")
-// 			},
-// 			DescribeSpotPriceHistoryFunc: func(ctx context.Context, params *ec2.DescribeSpotPriceHistoryInput, optFns ...func(*ec2.Options)) (*ec2.DescribeSpotPriceHistoryOutput, error) {
-// 				panic("mock out the DescribeSpotPriceHistory method")
-// 			},
-// 			DescribeStaleSecurityGroupsFunc: func(ctx context.Context, params *ec2.DescribeStaleSecurityGroupsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeStaleSecurityGroupsOutput, error) {
-// 				panic("mock out the DescribeStaleSecurityGroups method")
-// 			},
-// 			DescribeStoreImageTasksFunc: func(ctx context.Context, params *ec2.DescribeStoreImageTasksInput, optFns ...func(*ec2.Options)) (*ec2.DescribeStoreImageTasksOutput, error) {
-// 				panic("mock out the DescribeStoreImageTasks method")
-// 			},
-// 			DescribeSubnetsFunc: func(ctx context.Context, params *ec2.DescribeSubnetsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeSubnetsOutput, error) {
-// 				panic("mock out the DescribeSubnets method")
-// 			},
-// 			DescribeTagsFunc: func(ctx context.Context, params *ec2.DescribeTagsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeTagsOutput, error) {
-// 				panic("mock out the DescribeTags method")
-// 			},
-// 			DescribeTrafficMirrorFiltersFunc: func(ctx context.Context, params *ec2.DescribeTrafficMirrorFiltersInput, optFns ...func(*ec2.Options)) (*ec2.DescribeTrafficMirrorFiltersOutput, error) {
-// 				panic("mock out the DescribeTrafficMirrorFilters method")
-// 			},
-// 			DescribeTrafficMirrorSessionsFunc: func(ctx context.Context, params *ec2.DescribeTrafficMirrorSessionsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeTrafficMirrorSessionsOutput, error) {
-// 				panic("mock out the DescribeTrafficMirrorSessions method")
-// 			},
-// 			DescribeTrafficMirrorTargetsFunc: func(ctx context.Context, params *ec2.DescribeTrafficMirrorTargetsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeTrafficMirrorTargetsOutput, error) {
-// 				panic("mock out the DescribeTrafficMirrorTargets method")
-// 			},
-// 			DescribeTransitGatewayAttachmentsFunc: func(ctx context.Context, params *ec2.DescribeTransitGatewayAttachmentsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeTransitGatewayAttachmentsOutput, error) {
-// 				panic("mock out the DescribeTransitGatewayAttachments method")
-// 			},
-// 			DescribeTransitGatewayConnectPeersFunc: func(ctx context.Context, params *ec2.DescribeTransitGatewayConnectPeersInput, optFns ...func(*ec2.Options)) (*ec2.DescribeTransitGatewayConnectPeersOutput, error) {
-// 				panic("mock out the DescribeTransitGatewayConnectPeers method")
-// 			},
-// 			DescribeTransitGatewayConnectsFunc: func(ctx context.Context, params *ec2.DescribeTransitGatewayConnectsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeTransitGatewayConnectsOutput, error) {
-// 				panic("mock out the DescribeTransitGatewayConnects method")
-// 			},
-// 			DescribeTransitGatewayMulticastDomainsFunc: func(ctx context.Context, params *ec2.DescribeTransitGatewayMulticastDomainsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeTransitGatewayMulticastDomainsOutput, error) {
-// 				panic("mock out the DescribeTransitGatewayMulticastDomains method")
-// 			},
-// 			DescribeTransitGatewayPeeringAttachmentsFunc: func(ctx context.Context, params *ec2.DescribeTransitGatewayPeeringAttachmentsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeTransitGatewayPeeringAttachmentsOutput, error) {
-// 				panic("mock out the DescribeTransitGatewayPeeringAttachments method")
-// 			},
-// 			DescribeTransitGatewayPolicyTablesFunc: func(ctx context.Context, params *ec2.DescribeTransitGatewayPolicyTablesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeTransitGatewayPolicyTablesOutput, error) {
-// 				panic("mock out the DescribeTransitGatewayPolicyTables method")
-// 			},
-// 			DescribeTransitGatewayRouteTableAnnouncementsFunc: func(ctx context.Context, params *ec2.DescribeTransitGatewayRouteTableAnnouncementsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeTransitGatewayRouteTableAnnouncementsOutput, error) {
-// 				panic("mock out the DescribeTransitGatewayRouteTableAnnouncements method")
-// 			},
-// 			DescribeTransitGatewayRouteTablesFunc: func(ctx context.Context, params *ec2.DescribeTransitGatewayRouteTablesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeTransitGatewayRouteTablesOutput, error) {
-// 				panic("mock out the DescribeTransitGatewayRouteTables method")
-// 			},
-// 			DescribeTransitGatewayVpcAttachmentsFunc: func(ctx context.Context, params *ec2.DescribeTransitGatewayVpcAttachmentsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeTransitGatewayVpcAttachmentsOutput, error) {
-// 				panic("mock out the DescribeTransitGatewayVpcAttachments method")
-// 			},
-// 			DescribeTransitGatewaysFunc: func(ctx context.Context, params *ec2.DescribeTransitGatewaysInput, optFns ...func(*ec2.Options)) (*ec2.DescribeTransitGatewaysOutput, error) {
-// 				panic("mock out the DescribeTransitGateways method")
-// 			},
-// 			DescribeTrunkInterfaceAssociationsFunc: func(ctx context.Context, params *ec2.DescribeTrunkInterfaceAssociationsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeTrunkInterfaceAssociationsOutput, error) {
-// 				panic("mock out the DescribeTrunkInterfaceAssociations method")
-// 			},
-// 			DescribeVolumeAttributeFunc: func(ctx context.Context, params *ec2.DescribeVolumeAttributeInput, optFns ...func(*ec2.Options)) (*ec2.DescribeVolumeAttributeOutput, error) {
-// 				panic("mock out the DescribeVolumeAttribute method")
-// 			},
-// 			DescribeVolumeStatusFunc: func(ctx context.Context, params *ec2.DescribeVolumeStatusInput, optFns ...func(*ec2.Options)) (*ec2.DescribeVolumeStatusOutput, error) {
-// 				panic("mock out the DescribeVolumeStatus method")
-// 			},
-// 			DescribeVolumesFunc: func(ctx context.Context, params *ec2.DescribeVolumesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeVolumesOutput, error) {
-// 				panic("mock out the DescribeVolumes method")
-// 			},
-// 			DescribeVolumesModificationsFunc: func(ctx context.Context, params *ec2.DescribeVolumesModificationsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeVolumesModificationsOutput, error) {
-// 				panic("mock out the DescribeVolumesModifications method")
-// 			},
-// 			DescribeVpcAttributeFunc: func(ctx context.Context, params *ec2.DescribeVpcAttributeInput, optFns ...func(*ec2.Options)) (*ec2.DescribeVpcAttributeOutput, error) {
-// 				panic("mock out the DescribeVpcAttribute method")
-// 			},
-// 			DescribeVpcClassicLinkFunc: func(ctx context.Context, params *ec2.DescribeVpcClassicLinkInput, optFns ...func(*ec2.Options)) (*ec2.DescribeVpcClassicLinkOutput, error) {
-// 				panic("mock out the DescribeVpcClassicLink method")
-// 			},
-// 			DescribeVpcClassicLinkDnsSupportFunc: func(ctx context.Context, params *ec2.DescribeVpcClassicLinkDnsSupportInput, optFns ...func(*ec2.Options)) (*ec2.DescribeVpcClassicLinkDnsSupportOutput, error) {
-// 				panic("mock out the DescribeVpcClassicLinkDnsSupport method")
-// 			},
-// 			DescribeVpcEndpointConnectionNotificationsFunc: func(ctx context.Context, params *ec2.DescribeVpcEndpointConnectionNotificationsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeVpcEndpointConnectionNotificationsOutput, error) {
-// 				panic("mock out the DescribeVpcEndpointConnectionNotifications method")
-// 			},
-// 			DescribeVpcEndpointConnectionsFunc: func(ctx context.Context, params *ec2.DescribeVpcEndpointConnectionsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeVpcEndpointConnectionsOutput, error) {
-// 				panic("mock out the DescribeVpcEndpointConnections method")
-// 			},
-// 			DescribeVpcEndpointServiceConfigurationsFunc: func(ctx context.Context, params *ec2.DescribeVpcEndpointServiceConfigurationsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeVpcEndpointServiceConfigurationsOutput, error) {
-// 				panic("mock out the DescribeVpcEndpointServiceConfigurations method")
-// 			},
-// 			DescribeVpcEndpointServicePermissionsFunc: func(ctx context.Context, params *ec2.DescribeVpcEndpointServicePermissionsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeVpcEndpointServicePermissionsOutput, error) {
-// 				panic("mock out the DescribeVpcEndpointServicePermissions method")
-// 			},
-// 			DescribeVpcEndpointServicesFunc: func(ctx context.Context, params *ec2.DescribeVpcEndpointServicesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeVpcEndpointServicesOutput, error) {
-// 				panic("mock out the DescribeVpcEndpointServices method")
-// 			},
-// 			DescribeVpcEndpointsFunc: func(ctx context.Context, params *ec2.DescribeVpcEndpointsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeVpcEndpointsOutput, error) {
-// 				panic("mock out the DescribeVpcEndpoints method")
-// 			},
-// 			DescribeVpcPeeringConnectionsFunc: func(ctx context.Context, params *ec2.DescribeVpcPeeringConnectionsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeVpcPeeringConnectionsOutput, error) {
-// 				panic("mock out the DescribeVpcPeeringConnections method")
-// 			},
-// 			DescribeVpcsFunc: func(ctx context.Context, params *ec2.DescribeVpcsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeVpcsOutput, error) {
-// 				panic("mock out the DescribeVpcs method")
-// 			},
-// 			DescribeVpnConnectionsFunc: func(ctx context.Context, params *ec2.DescribeVpnConnectionsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeVpnConnectionsOutput, error) {
-// 				panic("mock out the DescribeVpnConnections method")
-// 			},
-// 			DescribeVpnGatewaysFunc: func(ctx context.Context, params *ec2.DescribeVpnGatewaysInput, optFns ...func(*ec2.Options)) (*ec2.DescribeVpnGatewaysOutput, error) {
-// 				panic("mock out the DescribeVpnGateways method")
-// 			},
-// 			DetachClassicLinkVpcFunc: func(ctx context.Context, params *ec2.DetachClassicLinkVpcInput, optFns ...func(*ec2.Options)) (*ec2.DetachClassicLinkVpcOutput, error) {
-// 				panic("mock out the DetachClassicLinkVpc method")
-// 			},
-// 			DetachInternetGatewayFunc: func(ctx context.Context, params *ec2.DetachInternetGatewayInput, optFns ...func(*ec2.Options)) (*ec2.DetachInternetGatewayOutput, error) {
-// 				panic("mock out the DetachInternetGateway method")
-// 			},
-// 			DetachNetworkInterfaceFunc: func(ctx context.Context, params *ec2.DetachNetworkInterfaceInput, optFns ...func(*ec2.Options)) (*ec2.DetachNetworkInterfaceOutput, error) {
-// 				panic("mock out the DetachNetworkInterface method")
-// 			},
-// 			DetachVolumeFunc: func(ctx context.Context, params *ec2.DetachVolumeInput, optFns ...func(*ec2.Options)) (*ec2.DetachVolumeOutput, error) {
-// 				panic("mock out the DetachVolume method")
-// 			},
-// 			DetachVpnGatewayFunc: func(ctx context.Context, params *ec2.DetachVpnGatewayInput, optFns ...func(*ec2.Options)) (*ec2.DetachVpnGatewayOutput, error) {
-// 				panic("mock out the DetachVpnGateway method")
-// 			},
-// 			DisableEbsEncryptionByDefaultFunc: func(ctx context.Context, params *ec2.DisableEbsEncryptionByDefaultInput, optFns ...func(*ec2.Options)) (*ec2.DisableEbsEncryptionByDefaultOutput, error) {
-// 				panic("mock out the DisableEbsEncryptionByDefault method")
-// 			},
-// 			DisableFastLaunchFunc: func(ctx context.Context, params *ec2.DisableFastLaunchInput, optFns ...func(*ec2.Options)) (*ec2.DisableFastLaunchOutput, error) {
-// 				panic("mock out the DisableFastLaunch method")
-// 			},
-// 			DisableFastSnapshotRestoresFunc: func(ctx context.Context, params *ec2.DisableFastSnapshotRestoresInput, optFns ...func(*ec2.Options)) (*ec2.DisableFastSnapshotRestoresOutput, error) {
-// 				panic("mock out the DisableFastSnapshotRestores method")
-// 			},
-// 			DisableImageDeprecationFunc: func(ctx context.Context, params *ec2.DisableImageDeprecationInput, optFns ...func(*ec2.Options)) (*ec2.DisableImageDeprecationOutput, error) {
-// 				panic("mock out the DisableImageDeprecation method")
-// 			},
-// 			DisableIpamOrganizationAdminAccountFunc: func(ctx context.Context, params *ec2.DisableIpamOrganizationAdminAccountInput, optFns ...func(*ec2.Options)) (*ec2.DisableIpamOrganizationAdminAccountOutput, error) {
-// 				panic("mock out the DisableIpamOrganizationAdminAccount method")
-// 			},
-// 			DisableSerialConsoleAccessFunc: func(ctx context.Context, params *ec2.DisableSerialConsoleAccessInput, optFns ...func(*ec2.Options)) (*ec2.DisableSerialConsoleAccessOutput, error) {
-// 				panic("mock out the DisableSerialConsoleAccess method")
-// 			},
-// 			DisableTransitGatewayRouteTablePropagationFunc: func(ctx context.Context, params *ec2.DisableTransitGatewayRouteTablePropagationInput, optFns ...func(*ec2.Options)) (*ec2.DisableTransitGatewayRouteTablePropagationOutput, error) {
-// 				panic("mock out the DisableTransitGatewayRouteTablePropagation method")
-// 			},
-// 			DisableVgwRoutePropagationFunc: func(ctx context.Context, params *ec2.DisableVgwRoutePropagationInput, optFns ...func(*ec2.Options)) (*ec2.DisableVgwRoutePropagationOutput, error) {
-// 				panic("mock out the DisableVgwRoutePropagation method")
-// 			},
-// 			DisableVpcClassicLinkFunc: func(ctx context.Context, params *ec2.DisableVpcClassicLinkInput, optFns ...func(*ec2.Options)) (*ec2.DisableVpcClassicLinkOutput, error) {
-// 				panic("mock out the DisableVpcClassicLink method")
-// 			},
-// 			DisableVpcClassicLinkDnsSupportFunc: func(ctx context.Context, params *ec2.DisableVpcClassicLinkDnsSupportInput, optFns ...func(*ec2.Options)) (*ec2.DisableVpcClassicLinkDnsSupportOutput, error) {
-// 				panic("mock out the DisableVpcClassicLinkDnsSupport method")
-// 			},
-// 			DisassociateAddressFunc: func(ctx context.Context, params *ec2.DisassociateAddressInput, optFns ...func(*ec2.Options)) (*ec2.DisassociateAddressOutput, error) {
-// 				panic("mock out the DisassociateAddress method")
-// 			},
-// 			DisassociateClientVpnTargetNetworkFunc: func(ctx context.Context, params *ec2.DisassociateClientVpnTargetNetworkInput, optFns ...func(*ec2.Options)) (*ec2.DisassociateClientVpnTargetNetworkOutput, error) {
-// 				panic("mock out the DisassociateClientVpnTargetNetwork method")
-// 			},
-// 			DisassociateEnclaveCertificateIamRoleFunc: func(ctx context.Context, params *ec2.DisassociateEnclaveCertificateIamRoleInput, optFns ...func(*ec2.Options)) (*ec2.DisassociateEnclaveCertificateIamRoleOutput, error) {
-// 				panic("mock out the DisassociateEnclaveCertificateIamRole method")
-// 			},
-// 			DisassociateIamInstanceProfileFunc: func(ctx context.Context, params *ec2.DisassociateIamInstanceProfileInput, optFns ...func(*ec2.Options)) (*ec2.DisassociateIamInstanceProfileOutput, error) {
-// 				panic("mock out the DisassociateIamInstanceProfile method")
-// 			},
-// 			DisassociateInstanceEventWindowFunc: func(ctx context.Context, params *ec2.DisassociateInstanceEventWindowInput, optFns ...func(*ec2.Options)) (*ec2.DisassociateInstanceEventWindowOutput, error) {
-// 				panic("mock out the DisassociateInstanceEventWindow method")
-// 			},
-// 			DisassociateRouteTableFunc: func(ctx context.Context, params *ec2.DisassociateRouteTableInput, optFns ...func(*ec2.Options)) (*ec2.DisassociateRouteTableOutput, error) {
-// 				panic("mock out the DisassociateRouteTable method")
-// 			},
-// 			DisassociateSubnetCidrBlockFunc: func(ctx context.Context, params *ec2.DisassociateSubnetCidrBlockInput, optFns ...func(*ec2.Options)) (*ec2.DisassociateSubnetCidrBlockOutput, error) {
-// 				panic("mock out the DisassociateSubnetCidrBlock method")
-// 			},
-// 			DisassociateTransitGatewayMulticastDomainFunc: func(ctx context.Context, params *ec2.DisassociateTransitGatewayMulticastDomainInput, optFns ...func(*ec2.Options)) (*ec2.DisassociateTransitGatewayMulticastDomainOutput, error) {
-// 				panic("mock out the DisassociateTransitGatewayMulticastDomain method")
-// 			},
-// 			DisassociateTransitGatewayPolicyTableFunc: func(ctx context.Context, params *ec2.DisassociateTransitGatewayPolicyTableInput, optFns ...func(*ec2.Options)) (*ec2.DisassociateTransitGatewayPolicyTableOutput, error) {
-// 				panic("mock out the DisassociateTransitGatewayPolicyTable method")
-// 			},
-// 			DisassociateTransitGatewayRouteTableFunc: func(ctx context.Context, params *ec2.DisassociateTransitGatewayRouteTableInput, optFns ...func(*ec2.Options)) (*ec2.DisassociateTransitGatewayRouteTableOutput, error) {
-// 				panic("mock out the DisassociateTransitGatewayRouteTable method")
-// 			},
-// 			DisassociateTrunkInterfaceFunc: func(ctx context.Context, params *ec2.DisassociateTrunkInterfaceInput, optFns ...func(*ec2.Options)) (*ec2.DisassociateTrunkInterfaceOutput, error) {
-// 				panic("mock out the DisassociateTrunkInterface method")
-// 			},
-// 			DisassociateVpcCidrBlockFunc: func(ctx context.Context, params *ec2.DisassociateVpcCidrBlockInput, optFns ...func(*ec2.Options)) (*ec2.DisassociateVpcCidrBlockOutput, error) {
-// 				panic("mock out the DisassociateVpcCidrBlock method")
-// 			},
-// 			EnableEbsEncryptionByDefaultFunc: func(ctx context.Context, params *ec2.EnableEbsEncryptionByDefaultInput, optFns ...func(*ec2.Options)) (*ec2.EnableEbsEncryptionByDefaultOutput, error) {
-// 				panic("mock out the EnableEbsEncryptionByDefault method")
-// 			},
-// 			EnableFastLaunchFunc: func(ctx context.Context, params *ec2.EnableFastLaunchInput, optFns ...func(*ec2.Options)) (*ec2.EnableFastLaunchOutput, error) {
-// 				panic("mock out the EnableFastLaunch method")
-// 			},
-// 			EnableFastSnapshotRestoresFunc: func(ctx context.Context, params *ec2.EnableFastSnapshotRestoresInput, optFns ...func(*ec2.Options)) (*ec2.EnableFastSnapshotRestoresOutput, error) {
-// 				panic("mock out the EnableFastSnapshotRestores method")
-// 			},
-// 			EnableImageDeprecationFunc: func(ctx context.Context, params *ec2.EnableImageDeprecationInput, optFns ...func(*ec2.Options)) (*ec2.EnableImageDeprecationOutput, error) {
-// 				panic("mock out the EnableImageDeprecation method")
-// 			},
-// 			EnableIpamOrganizationAdminAccountFunc: func(ctx context.Context, params *ec2.EnableIpamOrganizationAdminAccountInput, optFns ...func(*ec2.Options)) (*ec2.EnableIpamOrganizationAdminAccountOutput, error) {
-// 				panic("mock out the EnableIpamOrganizationAdminAccount method")
-// 			},
-// 			EnableSerialConsoleAccessFunc: func(ctx context.Context, params *ec2.EnableSerialConsoleAccessInput, optFns ...func(*ec2.Options)) (*ec2.EnableSerialConsoleAccessOutput, error) {
-// 				panic("mock out the EnableSerialConsoleAccess method")
-// 			},
-// 			EnableTransitGatewayRouteTablePropagationFunc: func(ctx context.Context, params *ec2.EnableTransitGatewayRouteTablePropagationInput, optFns ...func(*ec2.Options)) (*ec2.EnableTransitGatewayRouteTablePropagationOutput, error) {
-// 				panic("mock out the EnableTransitGatewayRouteTablePropagation method")
-// 			},
-// 			EnableVgwRoutePropagationFunc: func(ctx context.Context, params *ec2.EnableVgwRoutePropagationInput, optFns ...func(*ec2.Options)) (*ec2.EnableVgwRoutePropagationOutput, error) {
-// 				panic("mock out the EnableVgwRoutePropagation method")
-// 			},
-// 			EnableVolumeIOFunc: func(ctx context.Context, params *ec2.EnableVolumeIOInput, optFns ...func(*ec2.Options)) (*ec2.EnableVolumeIOOutput, error) {
-// 				panic("mock out the EnableVolumeIO method")
-// 			},
-// 			EnableVpcClassicLinkFunc: func(ctx context.Context, params *ec2.EnableVpcClassicLinkInput, optFns ...func(*ec2.Options)) (*ec2.EnableVpcClassicLinkOutput, error) {
-// 				panic("mock out the EnableVpcClassicLink method")
-// 			},
-// 			EnableVpcClassicLinkDnsSupportFunc: func(ctx context.Context, params *ec2.EnableVpcClassicLinkDnsSupportInput, optFns ...func(*ec2.Options)) (*ec2.EnableVpcClassicLinkDnsSupportOutput, error) {
-// 				panic("mock out the EnableVpcClassicLinkDnsSupport method")
-// 			},
-// 			ExportClientVpnClientCertificateRevocationListFunc: func(ctx context.Context, params *ec2.ExportClientVpnClientCertificateRevocationListInput, optFns ...func(*ec2.Options)) (*ec2.ExportClientVpnClientCertificateRevocationListOutput, error) {
-// 				panic("mock out the ExportClientVpnClientCertificateRevocationList method")
-// 			},
-// 			ExportClientVpnClientConfigurationFunc: func(ctx context.Context, params *ec2.ExportClientVpnClientConfigurationInput, optFns ...func(*ec2.Options)) (*ec2.ExportClientVpnClientConfigurationOutput, error) {
-// 				panic("mock out the ExportClientVpnClientConfiguration method")
-// 			},
-// 			ExportImageFunc: func(ctx context.Context, params *ec2.ExportImageInput, optFns ...func(*ec2.Options)) (*ec2.ExportImageOutput, error) {
-// 				panic("mock out the ExportImage method")
-// 			},
-// 			ExportTransitGatewayRoutesFunc: func(ctx context.Context, params *ec2.ExportTransitGatewayRoutesInput, optFns ...func(*ec2.Options)) (*ec2.ExportTransitGatewayRoutesOutput, error) {
-// 				panic("mock out the ExportTransitGatewayRoutes method")
-// 			},
-// 			GetAssociatedEnclaveCertificateIamRolesFunc: func(ctx context.Context, params *ec2.GetAssociatedEnclaveCertificateIamRolesInput, optFns ...func(*ec2.Options)) (*ec2.GetAssociatedEnclaveCertificateIamRolesOutput, error) {
-// 				panic("mock out the GetAssociatedEnclaveCertificateIamRoles method")
-// 			},
-// 			GetAssociatedIpv6PoolCidrsFunc: func(ctx context.Context, params *ec2.GetAssociatedIpv6PoolCidrsInput, optFns ...func(*ec2.Options)) (*ec2.GetAssociatedIpv6PoolCidrsOutput, error) {
-// 				panic("mock out the GetAssociatedIpv6PoolCidrs method")
-// 			},
-// 			GetCapacityReservationUsageFunc: func(ctx context.Context, params *ec2.GetCapacityReservationUsageInput, optFns ...func(*ec2.Options)) (*ec2.GetCapacityReservationUsageOutput, error) {
-// 				panic("mock out the GetCapacityReservationUsage method")
-// 			},
-// 			GetCoipPoolUsageFunc: func(ctx context.Context, params *ec2.GetCoipPoolUsageInput, optFns ...func(*ec2.Options)) (*ec2.GetCoipPoolUsageOutput, error) {
-// 				panic("mock out the GetCoipPoolUsage method")
-// 			},
-// 			GetConsoleOutputFunc: func(ctx context.Context, params *ec2.GetConsoleOutputInput, optFns ...func(*ec2.Options)) (*ec2.GetConsoleOutputOutput, error) {
-// 				panic("mock out the GetConsoleOutput method")
-// 			},
-// 			GetConsoleScreenshotFunc: func(ctx context.Context, params *ec2.GetConsoleScreenshotInput, optFns ...func(*ec2.Options)) (*ec2.GetConsoleScreenshotOutput, error) {
-// 				panic("mock out the GetConsoleScreenshot method")
-// 			},
-// 			GetDefaultCreditSpecificationFunc: func(ctx context.Context, params *ec2.GetDefaultCreditSpecificationInput, optFns ...func(*ec2.Options)) (*ec2.GetDefaultCreditSpecificationOutput, error) {
-// 				panic("mock out the GetDefaultCreditSpecification method")
-// 			},
-// 			GetEbsDefaultKmsKeyIdFunc: func(ctx context.Context, params *ec2.GetEbsDefaultKmsKeyIdInput, optFns ...func(*ec2.Options)) (*ec2.GetEbsDefaultKmsKeyIdOutput, error) {
-// 				panic("mock out the GetEbsDefaultKmsKeyId method")
-// 			},
-// 			GetEbsEncryptionByDefaultFunc: func(ctx context.Context, params *ec2.GetEbsEncryptionByDefaultInput, optFns ...func(*ec2.Options)) (*ec2.GetEbsEncryptionByDefaultOutput, error) {
-// 				panic("mock out the GetEbsEncryptionByDefault method")
-// 			},
-// 			GetFlowLogsIntegrationTemplateFunc: func(ctx context.Context, params *ec2.GetFlowLogsIntegrationTemplateInput, optFns ...func(*ec2.Options)) (*ec2.GetFlowLogsIntegrationTemplateOutput, error) {
-// 				panic("mock out the GetFlowLogsIntegrationTemplate method")
-// 			},
-// 			GetGroupsForCapacityReservationFunc: func(ctx context.Context, params *ec2.GetGroupsForCapacityReservationInput, optFns ...func(*ec2.Options)) (*ec2.GetGroupsForCapacityReservationOutput, error) {
-// 				panic("mock out the GetGroupsForCapacityReservation method")
-// 			},
-// 			GetHostReservationPurchasePreviewFunc: func(ctx context.Context, params *ec2.GetHostReservationPurchasePreviewInput, optFns ...func(*ec2.Options)) (*ec2.GetHostReservationPurchasePreviewOutput, error) {
-// 				panic("mock out the GetHostReservationPurchasePreview method")
-// 			},
-// 			GetInstanceTypesFromInstanceRequirementsFunc: func(ctx context.Context, params *ec2.GetInstanceTypesFromInstanceRequirementsInput, optFns ...func(*ec2.Options)) (*ec2.GetInstanceTypesFromInstanceRequirementsOutput, error) {
-// 				panic("mock out the GetInstanceTypesFromInstanceRequirements method")
-// 			},
-// 			GetInstanceUefiDataFunc: func(ctx context.Context, params *ec2.GetInstanceUefiDataInput, optFns ...func(*ec2.Options)) (*ec2.GetInstanceUefiDataOutput, error) {
-// 				panic("mock out the GetInstanceUefiData method")
-// 			},
-// 			GetIpamAddressHistoryFunc: func(ctx context.Context, params *ec2.GetIpamAddressHistoryInput, optFns ...func(*ec2.Options)) (*ec2.GetIpamAddressHistoryOutput, error) {
-// 				panic("mock out the GetIpamAddressHistory method")
-// 			},
-// 			GetIpamPoolAllocationsFunc: func(ctx context.Context, params *ec2.GetIpamPoolAllocationsInput, optFns ...func(*ec2.Options)) (*ec2.GetIpamPoolAllocationsOutput, error) {
-// 				panic("mock out the GetIpamPoolAllocations method")
-// 			},
-// 			GetIpamPoolCidrsFunc: func(ctx context.Context, params *ec2.GetIpamPoolCidrsInput, optFns ...func(*ec2.Options)) (*ec2.GetIpamPoolCidrsOutput, error) {
-// 				panic("mock out the GetIpamPoolCidrs method")
-// 			},
-// 			GetIpamResourceCidrsFunc: func(ctx context.Context, params *ec2.GetIpamResourceCidrsInput, optFns ...func(*ec2.Options)) (*ec2.GetIpamResourceCidrsOutput, error) {
-// 				panic("mock out the GetIpamResourceCidrs method")
-// 			},
-// 			GetLaunchTemplateDataFunc: func(ctx context.Context, params *ec2.GetLaunchTemplateDataInput, optFns ...func(*ec2.Options)) (*ec2.GetLaunchTemplateDataOutput, error) {
-// 				panic("mock out the GetLaunchTemplateData method")
-// 			},
-// 			GetManagedPrefixListAssociationsFunc: func(ctx context.Context, params *ec2.GetManagedPrefixListAssociationsInput, optFns ...func(*ec2.Options)) (*ec2.GetManagedPrefixListAssociationsOutput, error) {
-// 				panic("mock out the GetManagedPrefixListAssociations method")
-// 			},
-// 			GetManagedPrefixListEntriesFunc: func(ctx context.Context, params *ec2.GetManagedPrefixListEntriesInput, optFns ...func(*ec2.Options)) (*ec2.GetManagedPrefixListEntriesOutput, error) {
-// 				panic("mock out the GetManagedPrefixListEntries method")
-// 			},
-// 			GetNetworkInsightsAccessScopeAnalysisFindingsFunc: func(ctx context.Context, params *ec2.GetNetworkInsightsAccessScopeAnalysisFindingsInput, optFns ...func(*ec2.Options)) (*ec2.GetNetworkInsightsAccessScopeAnalysisFindingsOutput, error) {
-// 				panic("mock out the GetNetworkInsightsAccessScopeAnalysisFindings method")
-// 			},
-// 			GetNetworkInsightsAccessScopeContentFunc: func(ctx context.Context, params *ec2.GetNetworkInsightsAccessScopeContentInput, optFns ...func(*ec2.Options)) (*ec2.GetNetworkInsightsAccessScopeContentOutput, error) {
-// 				panic("mock out the GetNetworkInsightsAccessScopeContent method")
-// 			},
-// 			GetPasswordDataFunc: func(ctx context.Context, params *ec2.GetPasswordDataInput, optFns ...func(*ec2.Options)) (*ec2.GetPasswordDataOutput, error) {
-// 				panic("mock out the GetPasswordData method")
-// 			},
-// 			GetReservedInstancesExchangeQuoteFunc: func(ctx context.Context, params *ec2.GetReservedInstancesExchangeQuoteInput, optFns ...func(*ec2.Options)) (*ec2.GetReservedInstancesExchangeQuoteOutput, error) {
-// 				panic("mock out the GetReservedInstancesExchangeQuote method")
-// 			},
-// 			GetSerialConsoleAccessStatusFunc: func(ctx context.Context, params *ec2.GetSerialConsoleAccessStatusInput, optFns ...func(*ec2.Options)) (*ec2.GetSerialConsoleAccessStatusOutput, error) {
-// 				panic("mock out the GetSerialConsoleAccessStatus method")
-// 			},
-// 			GetSpotPlacementScoresFunc: func(ctx context.Context, params *ec2.GetSpotPlacementScoresInput, optFns ...func(*ec2.Options)) (*ec2.GetSpotPlacementScoresOutput, error) {
-// 				panic("mock out the GetSpotPlacementScores method")
-// 			},
-// 			GetSubnetCidrReservationsFunc: func(ctx context.Context, params *ec2.GetSubnetCidrReservationsInput, optFns ...func(*ec2.Options)) (*ec2.GetSubnetCidrReservationsOutput, error) {
-// 				panic("mock out the GetSubnetCidrReservations method")
-// 			},
-// 			GetTransitGatewayAttachmentPropagationsFunc: func(ctx context.Context, params *ec2.GetTransitGatewayAttachmentPropagationsInput, optFns ...func(*ec2.Options)) (*ec2.GetTransitGatewayAttachmentPropagationsOutput, error) {
-// 				panic("mock out the GetTransitGatewayAttachmentPropagations method")
-// 			},
-// 			GetTransitGatewayMulticastDomainAssociationsFunc: func(ctx context.Context, params *ec2.GetTransitGatewayMulticastDomainAssociationsInput, optFns ...func(*ec2.Options)) (*ec2.GetTransitGatewayMulticastDomainAssociationsOutput, error) {
-// 				panic("mock out the GetTransitGatewayMulticastDomainAssociations method")
-// 			},
-// 			GetTransitGatewayPolicyTableAssociationsFunc: func(ctx context.Context, params *ec2.GetTransitGatewayPolicyTableAssociationsInput, optFns ...func(*ec2.Options)) (*ec2.GetTransitGatewayPolicyTableAssociationsOutput, error) {
-// 				panic("mock out the GetTransitGatewayPolicyTableAssociations method")
-// 			},
-// 			GetTransitGatewayPolicyTableEntriesFunc: func(ctx context.Context, params *ec2.GetTransitGatewayPolicyTableEntriesInput, optFns ...func(*ec2.Options)) (*ec2.GetTransitGatewayPolicyTableEntriesOutput, error) {
-// 				panic("mock out the GetTransitGatewayPolicyTableEntries method")
-// 			},
-// 			GetTransitGatewayPrefixListReferencesFunc: func(ctx context.Context, params *ec2.GetTransitGatewayPrefixListReferencesInput, optFns ...func(*ec2.Options)) (*ec2.GetTransitGatewayPrefixListReferencesOutput, error) {
-// 				panic("mock out the GetTransitGatewayPrefixListReferences method")
-// 			},
-// 			GetTransitGatewayRouteTableAssociationsFunc: func(ctx context.Context, params *ec2.GetTransitGatewayRouteTableAssociationsInput, optFns ...func(*ec2.Options)) (*ec2.GetTransitGatewayRouteTableAssociationsOutput, error) {
-// 				panic("mock out the GetTransitGatewayRouteTableAssociations method")
-// 			},
-// 			GetTransitGatewayRouteTablePropagationsFunc: func(ctx context.Context, params *ec2.GetTransitGatewayRouteTablePropagationsInput, optFns ...func(*ec2.Options)) (*ec2.GetTransitGatewayRouteTablePropagationsOutput, error) {
-// 				panic("mock out the GetTransitGatewayRouteTablePropagations method")
-// 			},
-// 			GetVpnConnectionDeviceSampleConfigurationFunc: func(ctx context.Context, params *ec2.GetVpnConnectionDeviceSampleConfigurationInput, optFns ...func(*ec2.Options)) (*ec2.GetVpnConnectionDeviceSampleConfigurationOutput, error) {
-// 				panic("mock out the GetVpnConnectionDeviceSampleConfiguration method")
-// 			},
-// 			GetVpnConnectionDeviceTypesFunc: func(ctx context.Context, params *ec2.GetVpnConnectionDeviceTypesInput, optFns ...func(*ec2.Options)) (*ec2.GetVpnConnectionDeviceTypesOutput, error) {
-// 				panic("mock out the GetVpnConnectionDeviceTypes method")
-// 			},
-// 			ImportClientVpnClientCertificateRevocationListFunc: func(ctx context.Context, params *ec2.ImportClientVpnClientCertificateRevocationListInput, optFns ...func(*ec2.Options)) (*ec2.ImportClientVpnClientCertificateRevocationListOutput, error) {
-// 				panic("mock out the ImportClientVpnClientCertificateRevocationList method")
-// 			},
-// 			ImportImageFunc: func(ctx context.Context, params *ec2.ImportImageInput, optFns ...func(*ec2.Options)) (*ec2.ImportImageOutput, error) {
-// 				panic("mock out the ImportImage method")
-// 			},
-// 			ImportInstanceFunc: func(ctx context.Context, params *ec2.ImportInstanceInput, optFns ...func(*ec2.Options)) (*ec2.ImportInstanceOutput, error) {
-// 				panic("mock out the ImportInstance method")
-// 			},
-// 			ImportKeyPairFunc: func(ctx context.Context, params *ec2.ImportKeyPairInput, optFns ...func(*ec2.Options)) (*ec2.ImportKeyPairOutput, error) {
-// 				panic("mock out the ImportKeyPair method")
-// 			},
-// 			ImportSnapshotFunc: func(ctx context.Context, params *ec2.ImportSnapshotInput, optFns ...func(*ec2.Options)) (*ec2.ImportSnapshotOutput, error) {
-// 				panic("mock out the ImportSnapshot method")
-// 			},
-// 			ImportVolumeFunc: func(ctx context.Context, params *ec2.ImportVolumeInput, optFns ...func(*ec2.Options)) (*ec2.ImportVolumeOutput, error) {
-// 				panic("mock out the ImportVolume method")
-// 			},
-// 			ListImagesInRecycleBinFunc: func(ctx context.Context, params *ec2.ListImagesInRecycleBinInput, optFns ...func(*ec2.Options)) (*ec2.ListImagesInRecycleBinOutput, error) {
-// 				panic("mock out the ListImagesInRecycleBin method")
-// 			},
-// 			ListSnapshotsInRecycleBinFunc: func(ctx context.Context, params *ec2.ListSnapshotsInRecycleBinInput, optFns ...func(*ec2.Options)) (*ec2.ListSnapshotsInRecycleBinOutput, error) {
-// 				panic("mock out the ListSnapshotsInRecycleBin method")
-// 			},
-// 			ModifyAddressAttributeFunc: func(ctx context.Context, params *ec2.ModifyAddressAttributeInput, optFns ...func(*ec2.Options)) (*ec2.ModifyAddressAttributeOutput, error) {
-// 				panic("mock out the ModifyAddressAttribute method")
-// 			},
-// 			ModifyAvailabilityZoneGroupFunc: func(ctx context.Context, params *ec2.ModifyAvailabilityZoneGroupInput, optFns ...func(*ec2.Options)) (*ec2.ModifyAvailabilityZoneGroupOutput, error) {
-// 				panic("mock out the ModifyAvailabilityZoneGroup method")
-// 			},
-// 			ModifyCapacityReservationFunc: func(ctx context.Context, params *ec2.ModifyCapacityReservationInput, optFns ...func(*ec2.Options)) (*ec2.ModifyCapacityReservationOutput, error) {
-// 				panic("mock out the ModifyCapacityReservation method")
-// 			},
-// 			ModifyCapacityReservationFleetFunc: func(ctx context.Context, params *ec2.ModifyCapacityReservationFleetInput, optFns ...func(*ec2.Options)) (*ec2.ModifyCapacityReservationFleetOutput, error) {
-// 				panic("mock out the ModifyCapacityReservationFleet method")
-// 			},
-// 			ModifyClientVpnEndpointFunc: func(ctx context.Context, params *ec2.ModifyClientVpnEndpointInput, optFns ...func(*ec2.Options)) (*ec2.ModifyClientVpnEndpointOutput, error) {
-// 				panic("mock out the ModifyClientVpnEndpoint method")
-// 			},
-// 			ModifyDefaultCreditSpecificationFunc: func(ctx context.Context, params *ec2.ModifyDefaultCreditSpecificationInput, optFns ...func(*ec2.Options)) (*ec2.ModifyDefaultCreditSpecificationOutput, error) {
-// 				panic("mock out the ModifyDefaultCreditSpecification method")
-// 			},
-// 			ModifyEbsDefaultKmsKeyIdFunc: func(ctx context.Context, params *ec2.ModifyEbsDefaultKmsKeyIdInput, optFns ...func(*ec2.Options)) (*ec2.ModifyEbsDefaultKmsKeyIdOutput, error) {
-// 				panic("mock out the ModifyEbsDefaultKmsKeyId method")
-// 			},
-// 			ModifyFleetFunc: func(ctx context.Context, params *ec2.ModifyFleetInput, optFns ...func(*ec2.Options)) (*ec2.ModifyFleetOutput, error) {
-// 				panic("mock out the ModifyFleet method")
-// 			},
-// 			ModifyFpgaImageAttributeFunc: func(ctx context.Context, params *ec2.ModifyFpgaImageAttributeInput, optFns ...func(*ec2.Options)) (*ec2.ModifyFpgaImageAttributeOutput, error) {
-// 				panic("mock out the ModifyFpgaImageAttribute method")
-// 			},
-// 			ModifyHostsFunc: func(ctx context.Context, params *ec2.ModifyHostsInput, optFns ...func(*ec2.Options)) (*ec2.ModifyHostsOutput, error) {
-// 				panic("mock out the ModifyHosts method")
-// 			},
-// 			ModifyIdFormatFunc: func(ctx context.Context, params *ec2.ModifyIdFormatInput, optFns ...func(*ec2.Options)) (*ec2.ModifyIdFormatOutput, error) {
-// 				panic("mock out the ModifyIdFormat method")
-// 			},
-// 			ModifyIdentityIdFormatFunc: func(ctx context.Context, params *ec2.ModifyIdentityIdFormatInput, optFns ...func(*ec2.Options)) (*ec2.ModifyIdentityIdFormatOutput, error) {
-// 				panic("mock out the ModifyIdentityIdFormat method")
-// 			},
-// 			ModifyImageAttributeFunc: func(ctx context.Context, params *ec2.ModifyImageAttributeInput, optFns ...func(*ec2.Options)) (*ec2.ModifyImageAttributeOutput, error) {
-// 				panic("mock out the ModifyImageAttribute method")
-// 			},
-// 			ModifyInstanceAttributeFunc: func(ctx context.Context, params *ec2.ModifyInstanceAttributeInput, optFns ...func(*ec2.Options)) (*ec2.ModifyInstanceAttributeOutput, error) {
-// 				panic("mock out the ModifyInstanceAttribute method")
-// 			},
-// 			ModifyInstanceCapacityReservationAttributesFunc: func(ctx context.Context, params *ec2.ModifyInstanceCapacityReservationAttributesInput, optFns ...func(*ec2.Options)) (*ec2.ModifyInstanceCapacityReservationAttributesOutput, error) {
-// 				panic("mock out the ModifyInstanceCapacityReservationAttributes method")
-// 			},
-// 			ModifyInstanceCreditSpecificationFunc: func(ctx context.Context, params *ec2.ModifyInstanceCreditSpecificationInput, optFns ...func(*ec2.Options)) (*ec2.ModifyInstanceCreditSpecificationOutput, error) {
-// 				panic("mock out the ModifyInstanceCreditSpecification method")
-// 			},
-// 			ModifyInstanceEventStartTimeFunc: func(ctx context.Context, params *ec2.ModifyInstanceEventStartTimeInput, optFns ...func(*ec2.Options)) (*ec2.ModifyInstanceEventStartTimeOutput, error) {
-// 				panic("mock out the ModifyInstanceEventStartTime method")
-// 			},
-// 			ModifyInstanceEventWindowFunc: func(ctx context.Context, params *ec2.ModifyInstanceEventWindowInput, optFns ...func(*ec2.Options)) (*ec2.ModifyInstanceEventWindowOutput, error) {
-// 				panic("mock out the ModifyInstanceEventWindow method")
-// 			},
-// 			ModifyInstanceMaintenanceOptionsFunc: func(ctx context.Context, params *ec2.ModifyInstanceMaintenanceOptionsInput, optFns ...func(*ec2.Options)) (*ec2.ModifyInstanceMaintenanceOptionsOutput, error) {
-// 				panic("mock out the ModifyInstanceMaintenanceOptions method")
-// 			},
-// 			ModifyInstanceMetadataOptionsFunc: func(ctx context.Context, params *ec2.ModifyInstanceMetadataOptionsInput, optFns ...func(*ec2.Options)) (*ec2.ModifyInstanceMetadataOptionsOutput, error) {
-// 				panic("mock out the ModifyInstanceMetadataOptions method")
-// 			},
-// 			ModifyInstancePlacementFunc: func(ctx context.Context, params *ec2.ModifyInstancePlacementInput, optFns ...func(*ec2.Options)) (*ec2.ModifyInstancePlacementOutput, error) {
-// 				panic("mock out the ModifyInstancePlacement method")
-// 			},
-// 			ModifyIpamFunc: func(ctx context.Context, params *ec2.ModifyIpamInput, optFns ...func(*ec2.Options)) (*ec2.ModifyIpamOutput, error) {
-// 				panic("mock out the ModifyIpam method")
-// 			},
-// 			ModifyIpamPoolFunc: func(ctx context.Context, params *ec2.ModifyIpamPoolInput, optFns ...func(*ec2.Options)) (*ec2.ModifyIpamPoolOutput, error) {
-// 				panic("mock out the ModifyIpamPool method")
-// 			},
-// 			ModifyIpamResourceCidrFunc: func(ctx context.Context, params *ec2.ModifyIpamResourceCidrInput, optFns ...func(*ec2.Options)) (*ec2.ModifyIpamResourceCidrOutput, error) {
-// 				panic("mock out the ModifyIpamResourceCidr method")
-// 			},
-// 			ModifyIpamScopeFunc: func(ctx context.Context, params *ec2.ModifyIpamScopeInput, optFns ...func(*ec2.Options)) (*ec2.ModifyIpamScopeOutput, error) {
-// 				panic("mock out the ModifyIpamScope method")
-// 			},
-// 			ModifyLaunchTemplateFunc: func(ctx context.Context, params *ec2.ModifyLaunchTemplateInput, optFns ...func(*ec2.Options)) (*ec2.ModifyLaunchTemplateOutput, error) {
-// 				panic("mock out the ModifyLaunchTemplate method")
-// 			},
-// 			ModifyManagedPrefixListFunc: func(ctx context.Context, params *ec2.ModifyManagedPrefixListInput, optFns ...func(*ec2.Options)) (*ec2.ModifyManagedPrefixListOutput, error) {
-// 				panic("mock out the ModifyManagedPrefixList method")
-// 			},
-// 			ModifyNetworkInterfaceAttributeFunc: func(ctx context.Context, params *ec2.ModifyNetworkInterfaceAttributeInput, optFns ...func(*ec2.Options)) (*ec2.ModifyNetworkInterfaceAttributeOutput, error) {
-// 				panic("mock out the ModifyNetworkInterfaceAttribute method")
-// 			},
-// 			ModifyPrivateDnsNameOptionsFunc: func(ctx context.Context, params *ec2.ModifyPrivateDnsNameOptionsInput, optFns ...func(*ec2.Options)) (*ec2.ModifyPrivateDnsNameOptionsOutput, error) {
-// 				panic("mock out the ModifyPrivateDnsNameOptions method")
-// 			},
-// 			ModifyReservedInstancesFunc: func(ctx context.Context, params *ec2.ModifyReservedInstancesInput, optFns ...func(*ec2.Options)) (*ec2.ModifyReservedInstancesOutput, error) {
-// 				panic("mock out the ModifyReservedInstances method")
-// 			},
-// 			ModifySecurityGroupRulesFunc: func(ctx context.Context, params *ec2.ModifySecurityGroupRulesInput, optFns ...func(*ec2.Options)) (*ec2.ModifySecurityGroupRulesOutput, error) {
-// 				panic("mock out the ModifySecurityGroupRules method")
-// 			},
-// 			ModifySnapshotAttributeFunc: func(ctx context.Context, params *ec2.ModifySnapshotAttributeInput, optFns ...func(*ec2.Options)) (*ec2.ModifySnapshotAttributeOutput, error) {
-// 				panic("mock out the ModifySnapshotAttribute method")
-// 			},
-// 			ModifySnapshotTierFunc: func(ctx context.Context, params *ec2.ModifySnapshotTierInput, optFns ...func(*ec2.Options)) (*ec2.ModifySnapshotTierOutput, error) {
-// 				panic("mock out the ModifySnapshotTier method")
-// 			},
-// 			ModifySpotFleetRequestFunc: func(ctx context.Context, params *ec2.ModifySpotFleetRequestInput, optFns ...func(*ec2.Options)) (*ec2.ModifySpotFleetRequestOutput, error) {
-// 				panic("mock out the ModifySpotFleetRequest method")
-// 			},
-// 			ModifySubnetAttributeFunc: func(ctx context.Context, params *ec2.ModifySubnetAttributeInput, optFns ...func(*ec2.Options)) (*ec2.ModifySubnetAttributeOutput, error) {
-// 				panic("mock out the ModifySubnetAttribute method")
-// 			},
-// 			ModifyTrafficMirrorFilterNetworkServicesFunc: func(ctx context.Context, params *ec2.ModifyTrafficMirrorFilterNetworkServicesInput, optFns ...func(*ec2.Options)) (*ec2.ModifyTrafficMirrorFilterNetworkServicesOutput, error) {
-// 				panic("mock out the ModifyTrafficMirrorFilterNetworkServices method")
-// 			},
-// 			ModifyTrafficMirrorFilterRuleFunc: func(ctx context.Context, params *ec2.ModifyTrafficMirrorFilterRuleInput, optFns ...func(*ec2.Options)) (*ec2.ModifyTrafficMirrorFilterRuleOutput, error) {
-// 				panic("mock out the ModifyTrafficMirrorFilterRule method")
-// 			},
-// 			ModifyTrafficMirrorSessionFunc: func(ctx context.Context, params *ec2.ModifyTrafficMirrorSessionInput, optFns ...func(*ec2.Options)) (*ec2.ModifyTrafficMirrorSessionOutput, error) {
-// 				panic("mock out the ModifyTrafficMirrorSession method")
-// 			},
-// 			ModifyTransitGatewayFunc: func(ctx context.Context, params *ec2.ModifyTransitGatewayInput, optFns ...func(*ec2.Options)) (*ec2.ModifyTransitGatewayOutput, error) {
-// 				panic("mock out the ModifyTransitGateway method")
-// 			},
-// 			ModifyTransitGatewayPrefixListReferenceFunc: func(ctx context.Context, params *ec2.ModifyTransitGatewayPrefixListReferenceInput, optFns ...func(*ec2.Options)) (*ec2.ModifyTransitGatewayPrefixListReferenceOutput, error) {
-// 				panic("mock out the ModifyTransitGatewayPrefixListReference method")
-// 			},
-// 			ModifyTransitGatewayVpcAttachmentFunc: func(ctx context.Context, params *ec2.ModifyTransitGatewayVpcAttachmentInput, optFns ...func(*ec2.Options)) (*ec2.ModifyTransitGatewayVpcAttachmentOutput, error) {
-// 				panic("mock out the ModifyTransitGatewayVpcAttachment method")
-// 			},
-// 			ModifyVolumeFunc: func(ctx context.Context, params *ec2.ModifyVolumeInput, optFns ...func(*ec2.Options)) (*ec2.ModifyVolumeOutput, error) {
-// 				panic("mock out the ModifyVolume method")
-// 			},
-// 			ModifyVolumeAttributeFunc: func(ctx context.Context, params *ec2.ModifyVolumeAttributeInput, optFns ...func(*ec2.Options)) (*ec2.ModifyVolumeAttributeOutput, error) {
-// 				panic("mock out the ModifyVolumeAttribute method")
-// 			},
-// 			ModifyVpcAttributeFunc: func(ctx context.Context, params *ec2.ModifyVpcAttributeInput, optFns ...func(*ec2.Options)) (*ec2.ModifyVpcAttributeOutput, error) {
-// 				panic("mock out the ModifyVpcAttribute method")
-// 			},
-// 			ModifyVpcEndpointFunc: func(ctx context.Context, params *ec2.ModifyVpcEndpointInput, optFns ...func(*ec2.Options)) (*ec2.ModifyVpcEndpointOutput, error) {
-// 				panic("mock out the ModifyVpcEndpoint method")
-// 			},
-// 			ModifyVpcEndpointConnectionNotificationFunc: func(ctx context.Context, params *ec2.ModifyVpcEndpointConnectionNotificationInput, optFns ...func(*ec2.Options)) (*ec2.ModifyVpcEndpointConnectionNotificationOutput, error) {
-// 				panic("mock out the ModifyVpcEndpointConnectionNotification method")
-// 			},
-// 			ModifyVpcEndpointServiceConfigurationFunc: func(ctx context.Context, params *ec2.ModifyVpcEndpointServiceConfigurationInput, optFns ...func(*ec2.Options)) (*ec2.ModifyVpcEndpointServiceConfigurationOutput, error) {
-// 				panic("mock out the ModifyVpcEndpointServiceConfiguration method")
-// 			},
-// 			ModifyVpcEndpointServicePayerResponsibilityFunc: func(ctx context.Context, params *ec2.ModifyVpcEndpointServicePayerResponsibilityInput, optFns ...func(*ec2.Options)) (*ec2.ModifyVpcEndpointServicePayerResponsibilityOutput, error) {
-// 				panic("mock out the ModifyVpcEndpointServicePayerResponsibility method")
-// 			},
-// 			ModifyVpcEndpointServicePermissionsFunc: func(ctx context.Context, params *ec2.ModifyVpcEndpointServicePermissionsInput, optFns ...func(*ec2.Options)) (*ec2.ModifyVpcEndpointServicePermissionsOutput, error) {
-// 				panic("mock out the ModifyVpcEndpointServicePermissions method")
-// 			},
-// 			ModifyVpcPeeringConnectionOptionsFunc: func(ctx context.Context, params *ec2.ModifyVpcPeeringConnectionOptionsInput, optFns ...func(*ec2.Options)) (*ec2.ModifyVpcPeeringConnectionOptionsOutput, error) {
-// 				panic("mock out the ModifyVpcPeeringConnectionOptions method")
-// 			},
-// 			ModifyVpcTenancyFunc: func(ctx context.Context, params *ec2.ModifyVpcTenancyInput, optFns ...func(*ec2.Options)) (*ec2.ModifyVpcTenancyOutput, error) {
-// 				panic("mock out the ModifyVpcTenancy method")
-// 			},
-// 			ModifyVpnConnectionFunc: func(ctx context.Context, params *ec2.ModifyVpnConnectionInput, optFns ...func(*ec2.Options)) (*ec2.ModifyVpnConnectionOutput, error) {
-// 				panic("mock out the ModifyVpnConnection method")
-// 			},
-// 			ModifyVpnConnectionOptionsFunc: func(ctx context.Context, params *ec2.ModifyVpnConnectionOptionsInput, optFns ...func(*ec2.Options)) (*ec2.ModifyVpnConnectionOptionsOutput, error) {
-// 				panic("mock out the ModifyVpnConnectionOptions method")
-// 			},
-// 			ModifyVpnTunnelCertificateFunc: func(ctx context.Context, params *ec2.ModifyVpnTunnelCertificateInput, optFns ...func(*ec2.Options)) (*ec2.ModifyVpnTunnelCertificateOutput, error) {
-// 				panic("mock out the ModifyVpnTunnelCertificate method")
-// 			},
-// 			ModifyVpnTunnelOptionsFunc: func(ctx context.Context, params *ec2.ModifyVpnTunnelOptionsInput, optFns ...func(*ec2.Options)) (*ec2.ModifyVpnTunnelOptionsOutput, error) {
-// 				panic("mock out the ModifyVpnTunnelOptions method")
-// 			},
-// 			MonitorInstancesFunc: func(ctx context.Context, params *ec2.MonitorInstancesInput, optFns ...func(*ec2.Options)) (*ec2.MonitorInstancesOutput, error) {
-// 				panic("mock out the MonitorInstances method")
-// 			},
-// 			MoveAddressToVpcFunc: func(ctx context.Context, params *ec2.MoveAddressToVpcInput, optFns ...func(*ec2.Options)) (*ec2.MoveAddressToVpcOutput, error) {
-// 				panic("mock out the MoveAddressToVpc method")
-// 			},
-// 			MoveByoipCidrToIpamFunc: func(ctx context.Context, params *ec2.MoveByoipCidrToIpamInput, optFns ...func(*ec2.Options)) (*ec2.MoveByoipCidrToIpamOutput, error) {
-// 				panic("mock out the MoveByoipCidrToIpam method")
-// 			},
-// 			ProvisionByoipCidrFunc: func(ctx context.Context, params *ec2.ProvisionByoipCidrInput, optFns ...func(*ec2.Options)) (*ec2.ProvisionByoipCidrOutput, error) {
-// 				panic("mock out the ProvisionByoipCidr method")
-// 			},
-// 			ProvisionIpamPoolCidrFunc: func(ctx context.Context, params *ec2.ProvisionIpamPoolCidrInput, optFns ...func(*ec2.Options)) (*ec2.ProvisionIpamPoolCidrOutput, error) {
-// 				panic("mock out the ProvisionIpamPoolCidr method")
-// 			},
-// 			ProvisionPublicIpv4PoolCidrFunc: func(ctx context.Context, params *ec2.ProvisionPublicIpv4PoolCidrInput, optFns ...func(*ec2.Options)) (*ec2.ProvisionPublicIpv4PoolCidrOutput, error) {
-// 				panic("mock out the ProvisionPublicIpv4PoolCidr method")
-// 			},
-// 			PurchaseHostReservationFunc: func(ctx context.Context, params *ec2.PurchaseHostReservationInput, optFns ...func(*ec2.Options)) (*ec2.PurchaseHostReservationOutput, error) {
-// 				panic("mock out the PurchaseHostReservation method")
-// 			},
-// 			PurchaseReservedInstancesOfferingFunc: func(ctx context.Context, params *ec2.PurchaseReservedInstancesOfferingInput, optFns ...func(*ec2.Options)) (*ec2.PurchaseReservedInstancesOfferingOutput, error) {
-// 				panic("mock out the PurchaseReservedInstancesOffering method")
-// 			},
-// 			PurchaseScheduledInstancesFunc: func(ctx context.Context, params *ec2.PurchaseScheduledInstancesInput, optFns ...func(*ec2.Options)) (*ec2.PurchaseScheduledInstancesOutput, error) {
-// 				panic("mock out the PurchaseScheduledInstances method")
-// 			},
-// 			RebootInstancesFunc: func(ctx context.Context, params *ec2.RebootInstancesInput, optFns ...func(*ec2.Options)) (*ec2.RebootInstancesOutput, error) {
-// 				panic("mock out the RebootInstances method")
-// 			},
-// 			RegisterImageFunc: func(ctx context.Context, params *ec2.RegisterImageInput, optFns ...func(*ec2.Options)) (*ec2.RegisterImageOutput, error) {
-// 				panic("mock out the RegisterImage method")
-// 			},
-// 			RegisterInstanceEventNotificationAttributesFunc: func(ctx context.Context, params *ec2.RegisterInstanceEventNotificationAttributesInput, optFns ...func(*ec2.Options)) (*ec2.RegisterInstanceEventNotificationAttributesOutput, error) {
-// 				panic("mock out the RegisterInstanceEventNotificationAttributes method")
-// 			},
-// 			RegisterTransitGatewayMulticastGroupMembersFunc: func(ctx context.Context, params *ec2.RegisterTransitGatewayMulticastGroupMembersInput, optFns ...func(*ec2.Options)) (*ec2.RegisterTransitGatewayMulticastGroupMembersOutput, error) {
-// 				panic("mock out the RegisterTransitGatewayMulticastGroupMembers method")
-// 			},
-// 			RegisterTransitGatewayMulticastGroupSourcesFunc: func(ctx context.Context, params *ec2.RegisterTransitGatewayMulticastGroupSourcesInput, optFns ...func(*ec2.Options)) (*ec2.RegisterTransitGatewayMulticastGroupSourcesOutput, error) {
-// 				panic("mock out the RegisterTransitGatewayMulticastGroupSources method")
-// 			},
-// 			RejectTransitGatewayMulticastDomainAssociationsFunc: func(ctx context.Context, params *ec2.RejectTransitGatewayMulticastDomainAssociationsInput, optFns ...func(*ec2.Options)) (*ec2.RejectTransitGatewayMulticastDomainAssociationsOutput, error) {
-// 				panic("mock out the RejectTransitGatewayMulticastDomainAssociations method")
-// 			},
-// 			RejectTransitGatewayPeeringAttachmentFunc: func(ctx context.Context, params *ec2.RejectTransitGatewayPeeringAttachmentInput, optFns ...func(*ec2.Options)) (*ec2.RejectTransitGatewayPeeringAttachmentOutput, error) {
-// 				panic("mock out the RejectTransitGatewayPeeringAttachment method")
-// 			},
-// 			RejectTransitGatewayVpcAttachmentFunc: func(ctx context.Context, params *ec2.RejectTransitGatewayVpcAttachmentInput, optFns ...func(*ec2.Options)) (*ec2.RejectTransitGatewayVpcAttachmentOutput, error) {
-// 				panic("mock out the RejectTransitGatewayVpcAttachment method")
-// 			},
-// 			RejectVpcEndpointConnectionsFunc: func(ctx context.Context, params *ec2.RejectVpcEndpointConnectionsInput, optFns ...func(*ec2.Options)) (*ec2.RejectVpcEndpointConnectionsOutput, error) {
-// 				panic("mock out the RejectVpcEndpointConnections method")
-// 			},
-// 			RejectVpcPeeringConnectionFunc: func(ctx context.Context, params *ec2.RejectVpcPeeringConnectionInput, optFns ...func(*ec2.Options)) (*ec2.RejectVpcPeeringConnectionOutput, error) {
-// 				panic("mock out the RejectVpcPeeringConnection method")
-// 			},
-// 			ReleaseAddressFunc: func(ctx context.Context, params *ec2.ReleaseAddressInput, optFns ...func(*ec2.Options)) (*ec2.ReleaseAddressOutput, error) {
-// 				panic("mock out the ReleaseAddress method")
-// 			},
-// 			ReleaseHostsFunc: func(ctx context.Context, params *ec2.ReleaseHostsInput, optFns ...func(*ec2.Options)) (*ec2.ReleaseHostsOutput, error) {
-// 				panic("mock out the ReleaseHosts method")
-// 			},
-// 			ReleaseIpamPoolAllocationFunc: func(ctx context.Context, params *ec2.ReleaseIpamPoolAllocationInput, optFns ...func(*ec2.Options)) (*ec2.ReleaseIpamPoolAllocationOutput, error) {
-// 				panic("mock out the ReleaseIpamPoolAllocation method")
-// 			},
-// 			ReplaceIamInstanceProfileAssociationFunc: func(ctx context.Context, params *ec2.ReplaceIamInstanceProfileAssociationInput, optFns ...func(*ec2.Options)) (*ec2.ReplaceIamInstanceProfileAssociationOutput, error) {
-// 				panic("mock out the ReplaceIamInstanceProfileAssociation method")
-// 			},
-// 			ReplaceNetworkAclAssociationFunc: func(ctx context.Context, params *ec2.ReplaceNetworkAclAssociationInput, optFns ...func(*ec2.Options)) (*ec2.ReplaceNetworkAclAssociationOutput, error) {
-// 				panic("mock out the ReplaceNetworkAclAssociation method")
-// 			},
-// 			ReplaceNetworkAclEntryFunc: func(ctx context.Context, params *ec2.ReplaceNetworkAclEntryInput, optFns ...func(*ec2.Options)) (*ec2.ReplaceNetworkAclEntryOutput, error) {
-// 				panic("mock out the ReplaceNetworkAclEntry method")
-// 			},
-// 			ReplaceRouteFunc: func(ctx context.Context, params *ec2.ReplaceRouteInput, optFns ...func(*ec2.Options)) (*ec2.ReplaceRouteOutput, error) {
-// 				panic("mock out the ReplaceRoute method")
-// 			},
-// 			ReplaceRouteTableAssociationFunc: func(ctx context.Context, params *ec2.ReplaceRouteTableAssociationInput, optFns ...func(*ec2.Options)) (*ec2.ReplaceRouteTableAssociationOutput, error) {
-// 				panic("mock out the ReplaceRouteTableAssociation method")
-// 			},
-// 			ReplaceTransitGatewayRouteFunc: func(ctx context.Context, params *ec2.ReplaceTransitGatewayRouteInput, optFns ...func(*ec2.Options)) (*ec2.ReplaceTransitGatewayRouteOutput, error) {
-// 				panic("mock out the ReplaceTransitGatewayRoute method")
-// 			},
-// 			ReportInstanceStatusFunc: func(ctx context.Context, params *ec2.ReportInstanceStatusInput, optFns ...func(*ec2.Options)) (*ec2.ReportInstanceStatusOutput, error) {
-// 				panic("mock out the ReportInstanceStatus method")
-// 			},
-// 			RequestSpotFleetFunc: func(ctx context.Context, params *ec2.RequestSpotFleetInput, optFns ...func(*ec2.Options)) (*ec2.RequestSpotFleetOutput, error) {
-// 				panic("mock out the RequestSpotFleet method")
-// 			},
-// 			RequestSpotInstancesFunc: func(ctx context.Context, params *ec2.RequestSpotInstancesInput, optFns ...func(*ec2.Options)) (*ec2.RequestSpotInstancesOutput, error) {
-// 				panic("mock out the RequestSpotInstances method")
-// 			},
-// 			ResetAddressAttributeFunc: func(ctx context.Context, params *ec2.ResetAddressAttributeInput, optFns ...func(*ec2.Options)) (*ec2.ResetAddressAttributeOutput, error) {
-// 				panic("mock out the ResetAddressAttribute method")
-// 			},
-// 			ResetEbsDefaultKmsKeyIdFunc: func(ctx context.Context, params *ec2.ResetEbsDefaultKmsKeyIdInput, optFns ...func(*ec2.Options)) (*ec2.ResetEbsDefaultKmsKeyIdOutput, error) {
-// 				panic("mock out the ResetEbsDefaultKmsKeyId method")
-// 			},
-// 			ResetFpgaImageAttributeFunc: func(ctx context.Context, params *ec2.ResetFpgaImageAttributeInput, optFns ...func(*ec2.Options)) (*ec2.ResetFpgaImageAttributeOutput, error) {
-// 				panic("mock out the ResetFpgaImageAttribute method")
-// 			},
-// 			ResetImageAttributeFunc: func(ctx context.Context, params *ec2.ResetImageAttributeInput, optFns ...func(*ec2.Options)) (*ec2.ResetImageAttributeOutput, error) {
-// 				panic("mock out the ResetImageAttribute method")
-// 			},
-// 			ResetInstanceAttributeFunc: func(ctx context.Context, params *ec2.ResetInstanceAttributeInput, optFns ...func(*ec2.Options)) (*ec2.ResetInstanceAttributeOutput, error) {
-// 				panic("mock out the ResetInstanceAttribute method")
-// 			},
-// 			ResetNetworkInterfaceAttributeFunc: func(ctx context.Context, params *ec2.ResetNetworkInterfaceAttributeInput, optFns ...func(*ec2.Options)) (*ec2.ResetNetworkInterfaceAttributeOutput, error) {
-// 				panic("mock out the ResetNetworkInterfaceAttribute method")
-// 			},
-// 			ResetSnapshotAttributeFunc: func(ctx context.Context, params *ec2.ResetSnapshotAttributeInput, optFns ...func(*ec2.Options)) (*ec2.ResetSnapshotAttributeOutput, error) {
-// 				panic("mock out the ResetSnapshotAttribute method")
-// 			},
-// 			RestoreAddressToClassicFunc: func(ctx context.Context, params *ec2.RestoreAddressToClassicInput, optFns ...func(*ec2.Options)) (*ec2.RestoreAddressToClassicOutput, error) {
-// 				panic("mock out the RestoreAddressToClassic method")
-// 			},
-// 			RestoreImageFromRecycleBinFunc: func(ctx context.Context, params *ec2.RestoreImageFromRecycleBinInput, optFns ...func(*ec2.Options)) (*ec2.RestoreImageFromRecycleBinOutput, error) {
-// 				panic("mock out the RestoreImageFromRecycleBin method")
-// 			},
-// 			RestoreManagedPrefixListVersionFunc: func(ctx context.Context, params *ec2.RestoreManagedPrefixListVersionInput, optFns ...func(*ec2.Options)) (*ec2.RestoreManagedPrefixListVersionOutput, error) {
-// 				panic("mock out the RestoreManagedPrefixListVersion method")
-// 			},
-// 			RestoreSnapshotFromRecycleBinFunc: func(ctx context.Context, params *ec2.RestoreSnapshotFromRecycleBinInput, optFns ...func(*ec2.Options)) (*ec2.RestoreSnapshotFromRecycleBinOutput, error) {
-// 				panic("mock out the RestoreSnapshotFromRecycleBin method")
-// 			},
-// 			RestoreSnapshotTierFunc: func(ctx context.Context, params *ec2.RestoreSnapshotTierInput, optFns ...func(*ec2.Options)) (*ec2.RestoreSnapshotTierOutput, error) {
-// 				panic("mock out the RestoreSnapshotTier method")
-// 			},
-// 			RevokeClientVpnIngressFunc: func(ctx context.Context, params *ec2.RevokeClientVpnIngressInput, optFns ...func(*ec2.Options)) (*ec2.RevokeClientVpnIngressOutput, error) {
-// 				panic("mock out the RevokeClientVpnIngress method")
-// 			},
-// 			RevokeSecurityGroupEgressFunc: func(ctx context.Context, params *ec2.RevokeSecurityGroupEgressInput, optFns ...func(*ec2.Options)) (*ec2.RevokeSecurityGroupEgressOutput, error) {
-// 				panic("mock out the RevokeSecurityGroupEgress method")
-// 			},
-// 			RevokeSecurityGroupIngressFunc: func(ctx context.Context, params *ec2.RevokeSecurityGroupIngressInput, optFns ...func(*ec2.Options)) (*ec2.RevokeSecurityGroupIngressOutput, error) {
-// 				panic("mock out the RevokeSecurityGroupIngress method")
-// 			},
-// 			RunInstancesFunc: func(ctx context.Context, params *ec2.RunInstancesInput, optFns ...func(*ec2.Options)) (*ec2.RunInstancesOutput, error) {
-// 				panic("mock out the RunInstances method")
-// 			},
-// 			RunScheduledInstancesFunc: func(ctx context.Context, params *ec2.RunScheduledInstancesInput, optFns ...func(*ec2.Options)) (*ec2.RunScheduledInstancesOutput, error) {
-// 				panic("mock out the RunScheduledInstances method")
-// 			},
-// 			SearchLocalGatewayRoutesFunc: func(ctx context.Context, params *ec2.SearchLocalGatewayRoutesInput, optFns ...func(*ec2.Options)) (*ec2.SearchLocalGatewayRoutesOutput, error) {
-// 				panic("mock out the SearchLocalGatewayRoutes method")
-// 			},
-// 			SearchTransitGatewayMulticastGroupsFunc: func(ctx context.Context, params *ec2.SearchTransitGatewayMulticastGroupsInput, optFns ...func(*ec2.Options)) (*ec2.SearchTransitGatewayMulticastGroupsOutput, error) {
-// 				panic("mock out the SearchTransitGatewayMulticastGroups method")
-// 			},
-// 			SearchTransitGatewayRoutesFunc: func(ctx context.Context, params *ec2.SearchTransitGatewayRoutesInput, optFns ...func(*ec2.Options)) (*ec2.SearchTransitGatewayRoutesOutput, error) {
-// 				panic("mock out the SearchTransitGatewayRoutes method")
-// 			},
-// 			SendDiagnosticInterruptFunc: func(ctx context.Context, params *ec2.SendDiagnosticInterruptInput, optFns ...func(*ec2.Options)) (*ec2.SendDiagnosticInterruptOutput, error) {
-// 				panic("mock out the SendDiagnosticInterrupt method")
-// 			},
-// 			StartInstancesFunc: func(ctx context.Context, params *ec2.StartInstancesInput, optFns ...func(*ec2.Options)) (*ec2.StartInstancesOutput, error) {
-// 				panic("mock out the StartInstances method")
-// 			},
-// 			StartNetworkInsightsAccessScopeAnalysisFunc: func(ctx context.Context, params *ec2.StartNetworkInsightsAccessScopeAnalysisInput, optFns ...func(*ec2.Options)) (*ec2.StartNetworkInsightsAccessScopeAnalysisOutput, error) {
-// 				panic("mock out the StartNetworkInsightsAccessScopeAnalysis method")
-// 			},
-// 			StartNetworkInsightsAnalysisFunc: func(ctx context.Context, params *ec2.StartNetworkInsightsAnalysisInput, optFns ...func(*ec2.Options)) (*ec2.StartNetworkInsightsAnalysisOutput, error) {
-// 				panic("mock out the StartNetworkInsightsAnalysis method")
-// 			},
-// 			StartVpcEndpointServicePrivateDnsVerificationFunc: func(ctx context.Context, params *ec2.StartVpcEndpointServicePrivateDnsVerificationInput, optFns ...func(*ec2.Options)) (*ec2.StartVpcEndpointServicePrivateDnsVerificationOutput, error) {
-// 				panic("mock out the StartVpcEndpointServicePrivateDnsVerification method")
-// 			},
-// 			StopInstancesFunc: func(ctx context.Context, params *ec2.StopInstancesInput, optFns ...func(*ec2.Options)) (*ec2.StopInstancesOutput, error) {
-// 				panic("mock out the StopInstances method")
-// 			},
-// 			TerminateClientVpnConnectionsFunc: func(ctx context.Context, params *ec2.TerminateClientVpnConnectionsInput, optFns ...func(*ec2.Options)) (*ec2.TerminateClientVpnConnectionsOutput, error) {
-// 				panic("mock out the TerminateClientVpnConnections method")
-// 			},
-// 			TerminateInstancesFunc: func(ctx context.Context, params *ec2.TerminateInstancesInput, optFns ...func(*ec2.Options)) (*ec2.TerminateInstancesOutput, error) {
-// 				panic("mock out the TerminateInstances method")
-// 			},
-// 			UnassignIpv6AddressesFunc: func(ctx context.Context, params *ec2.UnassignIpv6AddressesInput, optFns ...func(*ec2.Options)) (*ec2.UnassignIpv6AddressesOutput, error) {
-// 				panic("mock out the UnassignIpv6Addresses method")
-// 			},
-// 			UnassignPrivateIpAddressesFunc: func(ctx context.Context, params *ec2.UnassignPrivateIpAddressesInput, optFns ...func(*ec2.Options)) (*ec2.UnassignPrivateIpAddressesOutput, error) {
-// 				panic("mock out the UnassignPrivateIpAddresses method")
-// 			},
-// 			UnmonitorInstancesFunc: func(ctx context.Context, params *ec2.UnmonitorInstancesInput, optFns ...func(*ec2.Options)) (*ec2.UnmonitorInstancesOutput, error) {
-// 				panic("mock out the UnmonitorInstances method")
-// 			},
-// 			UpdateSecurityGroupRuleDescriptionsEgressFunc: func(ctx context.Context, params *ec2.UpdateSecurityGroupRuleDescriptionsEgressInput, optFns ...func(*ec2.Options)) (*ec2.UpdateSecurityGroupRuleDescriptionsEgressOutput, error) {
-// 				panic("mock out the UpdateSecurityGroupRuleDescriptionsEgress method")
-// 			},
-// 			UpdateSecurityGroupRuleDescriptionsIngressFunc: func(ctx context.Context, params *ec2.UpdateSecurityGroupRuleDescriptionsIngressInput, optFns ...func(*ec2.Options)) (*ec2.UpdateSecurityGroupRuleDescriptionsIngressOutput, error) {
-// 				panic("mock out the UpdateSecurityGroupRuleDescriptionsIngress method")
-// 			},
-// 			WithdrawByoipCidrFunc: func(ctx context.Context, params *ec2.WithdrawByoipCidrInput, optFns ...func(*ec2.Options)) (*ec2.WithdrawByoipCidrOutput, error) {
-// 				panic("mock out the WithdrawByoipCidr method")
-// 			},
-// 		}
+//		// make and configure a mocked Client
+//		mockedClient := &ClientMock{
+//			AcceptReservedInstancesExchangeQuoteFunc: func(ctx context.Context, params *ec2.AcceptReservedInstancesExchangeQuoteInput, optFns ...func(*ec2.Options)) (*ec2.AcceptReservedInstancesExchangeQuoteOutput, error) {
+//				panic("mock out the AcceptReservedInstancesExchangeQuote method")
+//			},
+//			AcceptTransitGatewayMulticastDomainAssociationsFunc: func(ctx context.Context, params *ec2.AcceptTransitGatewayMulticastDomainAssociationsInput, optFns ...func(*ec2.Options)) (*ec2.AcceptTransitGatewayMulticastDomainAssociationsOutput, error) {
+//				panic("mock out the AcceptTransitGatewayMulticastDomainAssociations method")
+//			},
+//			AcceptTransitGatewayPeeringAttachmentFunc: func(ctx context.Context, params *ec2.AcceptTransitGatewayPeeringAttachmentInput, optFns ...func(*ec2.Options)) (*ec2.AcceptTransitGatewayPeeringAttachmentOutput, error) {
+//				panic("mock out the AcceptTransitGatewayPeeringAttachment method")
+//			},
+//			AcceptTransitGatewayVpcAttachmentFunc: func(ctx context.Context, params *ec2.AcceptTransitGatewayVpcAttachmentInput, optFns ...func(*ec2.Options)) (*ec2.AcceptTransitGatewayVpcAttachmentOutput, error) {
+//				panic("mock out the AcceptTransitGatewayVpcAttachment method")
+//			},
+//			AcceptVpcEndpointConnectionsFunc: func(ctx context.Context, params *ec2.AcceptVpcEndpointConnectionsInput, optFns ...func(*ec2.Options)) (*ec2.AcceptVpcEndpointConnectionsOutput, error) {
+//				panic("mock out the AcceptVpcEndpointConnections method")
+//			},
+//			AcceptVpcPeeringConnectionFunc: func(ctx context.Context, params *ec2.AcceptVpcPeeringConnectionInput, optFns ...func(*ec2.Options)) (*ec2.AcceptVpcPeeringConnectionOutput, error) {
+//				panic("mock out the AcceptVpcPeeringConnection method")
+//			},
+//			AdvertiseByoipCidrFunc: func(ctx context.Context, params *ec2.AdvertiseByoipCidrInput, optFns ...func(*ec2.Options)) (*ec2.AdvertiseByoipCidrOutput, error) {
+//				panic("mock out the AdvertiseByoipCidr method")
+//			},
+//			AllocateAddressFunc: func(ctx context.Context, params *ec2.AllocateAddressInput, optFns ...func(*ec2.Options)) (*ec2.AllocateAddressOutput, error) {
+//				panic("mock out the AllocateAddress method")
+//			},
+//			AllocateHostsFunc: func(ctx context.Context, params *ec2.AllocateHostsInput, optFns ...func(*ec2.Options)) (*ec2.AllocateHostsOutput, error) {
+//				panic("mock out the AllocateHosts method")
+//			},
+//			AllocateIpamPoolCidrFunc: func(ctx context.Context, params *ec2.AllocateIpamPoolCidrInput, optFns ...func(*ec2.Options)) (*ec2.AllocateIpamPoolCidrOutput, error) {
+//				panic("mock out the AllocateIpamPoolCidr method")
+//			},
+//			ApplySecurityGroupsToClientVpnTargetNetworkFunc: func(ctx context.Context, params *ec2.ApplySecurityGroupsToClientVpnTargetNetworkInput, optFns ...func(*ec2.Options)) (*ec2.ApplySecurityGroupsToClientVpnTargetNetworkOutput, error) {
+//				panic("mock out the ApplySecurityGroupsToClientVpnTargetNetwork method")
+//			},
+//			AssignIpv6AddressesFunc: func(ctx context.Context, params *ec2.AssignIpv6AddressesInput, optFns ...func(*ec2.Options)) (*ec2.AssignIpv6AddressesOutput, error) {
+//				panic("mock out the AssignIpv6Addresses method")
+//			},
+//			AssignPrivateIpAddressesFunc: func(ctx context.Context, params *ec2.AssignPrivateIpAddressesInput, optFns ...func(*ec2.Options)) (*ec2.AssignPrivateIpAddressesOutput, error) {
+//				panic("mock out the AssignPrivateIpAddresses method")
+//			},
+//			AssociateAddressFunc: func(ctx context.Context, params *ec2.AssociateAddressInput, optFns ...func(*ec2.Options)) (*ec2.AssociateAddressOutput, error) {
+//				panic("mock out the AssociateAddress method")
+//			},
+//			AssociateClientVpnTargetNetworkFunc: func(ctx context.Context, params *ec2.AssociateClientVpnTargetNetworkInput, optFns ...func(*ec2.Options)) (*ec2.AssociateClientVpnTargetNetworkOutput, error) {
+//				panic("mock out the AssociateClientVpnTargetNetwork method")
+//			},
+//			AssociateDhcpOptionsFunc: func(ctx context.Context, params *ec2.AssociateDhcpOptionsInput, optFns ...func(*ec2.Options)) (*ec2.AssociateDhcpOptionsOutput, error) {
+//				panic("mock out the AssociateDhcpOptions method")
+//			},
+//			AssociateEnclaveCertificateIamRoleFunc: func(ctx context.Context, params *ec2.AssociateEnclaveCertificateIamRoleInput, optFns ...func(*ec2.Options)) (*ec2.AssociateEnclaveCertificateIamRoleOutput, error) {
+//				panic("mock out the AssociateEnclaveCertificateIamRole method")
+//			},
+//			AssociateIamInstanceProfileFunc: func(ctx context.Context, params *ec2.AssociateIamInstanceProfileInput, optFns ...func(*ec2.Options)) (*ec2.AssociateIamInstanceProfileOutput, error) {
+//				panic("mock out the AssociateIamInstanceProfile method")
+//			},
+//			AssociateInstanceEventWindowFunc: func(ctx context.Context, params *ec2.AssociateInstanceEventWindowInput, optFns ...func(*ec2.Options)) (*ec2.AssociateInstanceEventWindowOutput, error) {
+//				panic("mock out the AssociateInstanceEventWindow method")
+//			},
+//			AssociateRouteTableFunc: func(ctx context.Context, params *ec2.AssociateRouteTableInput, optFns ...func(*ec2.Options)) (*ec2.AssociateRouteTableOutput, error) {
+//				panic("mock out the AssociateRouteTable method")
+//			},
+//			AssociateSubnetCidrBlockFunc: func(ctx context.Context, params *ec2.AssociateSubnetCidrBlockInput, optFns ...func(*ec2.Options)) (*ec2.AssociateSubnetCidrBlockOutput, error) {
+//				panic("mock out the AssociateSubnetCidrBlock method")
+//			},
+//			AssociateTransitGatewayMulticastDomainFunc: func(ctx context.Context, params *ec2.AssociateTransitGatewayMulticastDomainInput, optFns ...func(*ec2.Options)) (*ec2.AssociateTransitGatewayMulticastDomainOutput, error) {
+//				panic("mock out the AssociateTransitGatewayMulticastDomain method")
+//			},
+//			AssociateTransitGatewayPolicyTableFunc: func(ctx context.Context, params *ec2.AssociateTransitGatewayPolicyTableInput, optFns ...func(*ec2.Options)) (*ec2.AssociateTransitGatewayPolicyTableOutput, error) {
+//				panic("mock out the AssociateTransitGatewayPolicyTable method")
+//			},
+//			AssociateTransitGatewayRouteTableFunc: func(ctx context.Context, params *ec2.AssociateTransitGatewayRouteTableInput, optFns ...func(*ec2.Options)) (*ec2.AssociateTransitGatewayRouteTableOutput, error) {
+//				panic("mock out the AssociateTransitGatewayRouteTable method")
+//			},
+//			AssociateTrunkInterfaceFunc: func(ctx context.Context, params *ec2.AssociateTrunkInterfaceInput, optFns ...func(*ec2.Options)) (*ec2.AssociateTrunkInterfaceOutput, error) {
+//				panic("mock out the AssociateTrunkInterface method")
+//			},
+//			AssociateVpcCidrBlockFunc: func(ctx context.Context, params *ec2.AssociateVpcCidrBlockInput, optFns ...func(*ec2.Options)) (*ec2.AssociateVpcCidrBlockOutput, error) {
+//				panic("mock out the AssociateVpcCidrBlock method")
+//			},
+//			AttachClassicLinkVpcFunc: func(ctx context.Context, params *ec2.AttachClassicLinkVpcInput, optFns ...func(*ec2.Options)) (*ec2.AttachClassicLinkVpcOutput, error) {
+//				panic("mock out the AttachClassicLinkVpc method")
+//			},
+//			AttachInternetGatewayFunc: func(ctx context.Context, params *ec2.AttachInternetGatewayInput, optFns ...func(*ec2.Options)) (*ec2.AttachInternetGatewayOutput, error) {
+//				panic("mock out the AttachInternetGateway method")
+//			},
+//			AttachNetworkInterfaceFunc: func(ctx context.Context, params *ec2.AttachNetworkInterfaceInput, optFns ...func(*ec2.Options)) (*ec2.AttachNetworkInterfaceOutput, error) {
+//				panic("mock out the AttachNetworkInterface method")
+//			},
+//			AttachVolumeFunc: func(ctx context.Context, params *ec2.AttachVolumeInput, optFns ...func(*ec2.Options)) (*ec2.AttachVolumeOutput, error) {
+//				panic("mock out the AttachVolume method")
+//			},
+//			AttachVpnGatewayFunc: func(ctx context.Context, params *ec2.AttachVpnGatewayInput, optFns ...func(*ec2.Options)) (*ec2.AttachVpnGatewayOutput, error) {
+//				panic("mock out the AttachVpnGateway method")
+//			},
+//			AuthorizeClientVpnIngressFunc: func(ctx context.Context, params *ec2.AuthorizeClientVpnIngressInput, optFns ...func(*ec2.Options)) (*ec2.AuthorizeClientVpnIngressOutput, error) {
+//				panic("mock out the AuthorizeClientVpnIngress method")
+//			},
+//			AuthorizeSecurityGroupEgressFunc: func(ctx context.Context, params *ec2.AuthorizeSecurityGroupEgressInput, optFns ...func(*ec2.Options)) (*ec2.AuthorizeSecurityGroupEgressOutput, error) {
+//				panic("mock out the AuthorizeSecurityGroupEgress method")
+//			},
+//			AuthorizeSecurityGroupIngressFunc: func(ctx context.Context, params *ec2.AuthorizeSecurityGroupIngressInput, optFns ...func(*ec2.Options)) (*ec2.AuthorizeSecurityGroupIngressOutput, error) {
+//				panic("mock out the AuthorizeSecurityGroupIngress method")
+//			},
+//			BundleInstanceFunc: func(ctx context.Context, params *ec2.BundleInstanceInput, optFns ...func(*ec2.Options)) (*ec2.BundleInstanceOutput, error) {
+//				panic("mock out the BundleInstance method")
+//			},
+//			CancelBundleTaskFunc: func(ctx context.Context, params *ec2.CancelBundleTaskInput, optFns ...func(*ec2.Options)) (*ec2.CancelBundleTaskOutput, error) {
+//				panic("mock out the CancelBundleTask method")
+//			},
+//			CancelCapacityReservationFunc: func(ctx context.Context, params *ec2.CancelCapacityReservationInput, optFns ...func(*ec2.Options)) (*ec2.CancelCapacityReservationOutput, error) {
+//				panic("mock out the CancelCapacityReservation method")
+//			},
+//			CancelCapacityReservationFleetsFunc: func(ctx context.Context, params *ec2.CancelCapacityReservationFleetsInput, optFns ...func(*ec2.Options)) (*ec2.CancelCapacityReservationFleetsOutput, error) {
+//				panic("mock out the CancelCapacityReservationFleets method")
+//			},
+//			CancelConversionTaskFunc: func(ctx context.Context, params *ec2.CancelConversionTaskInput, optFns ...func(*ec2.Options)) (*ec2.CancelConversionTaskOutput, error) {
+//				panic("mock out the CancelConversionTask method")
+//			},
+//			CancelExportTaskFunc: func(ctx context.Context, params *ec2.CancelExportTaskInput, optFns ...func(*ec2.Options)) (*ec2.CancelExportTaskOutput, error) {
+//				panic("mock out the CancelExportTask method")
+//			},
+//			CancelImportTaskFunc: func(ctx context.Context, params *ec2.CancelImportTaskInput, optFns ...func(*ec2.Options)) (*ec2.CancelImportTaskOutput, error) {
+//				panic("mock out the CancelImportTask method")
+//			},
+//			CancelReservedInstancesListingFunc: func(ctx context.Context, params *ec2.CancelReservedInstancesListingInput, optFns ...func(*ec2.Options)) (*ec2.CancelReservedInstancesListingOutput, error) {
+//				panic("mock out the CancelReservedInstancesListing method")
+//			},
+//			CancelSpotFleetRequestsFunc: func(ctx context.Context, params *ec2.CancelSpotFleetRequestsInput, optFns ...func(*ec2.Options)) (*ec2.CancelSpotFleetRequestsOutput, error) {
+//				panic("mock out the CancelSpotFleetRequests method")
+//			},
+//			CancelSpotInstanceRequestsFunc: func(ctx context.Context, params *ec2.CancelSpotInstanceRequestsInput, optFns ...func(*ec2.Options)) (*ec2.CancelSpotInstanceRequestsOutput, error) {
+//				panic("mock out the CancelSpotInstanceRequests method")
+//			},
+//			ConfirmProductInstanceFunc: func(ctx context.Context, params *ec2.ConfirmProductInstanceInput, optFns ...func(*ec2.Options)) (*ec2.ConfirmProductInstanceOutput, error) {
+//				panic("mock out the ConfirmProductInstance method")
+//			},
+//			CopyFpgaImageFunc: func(ctx context.Context, params *ec2.CopyFpgaImageInput, optFns ...func(*ec2.Options)) (*ec2.CopyFpgaImageOutput, error) {
+//				panic("mock out the CopyFpgaImage method")
+//			},
+//			CopyImageFunc: func(ctx context.Context, params *ec2.CopyImageInput, optFns ...func(*ec2.Options)) (*ec2.CopyImageOutput, error) {
+//				panic("mock out the CopyImage method")
+//			},
+//			CopySnapshotFunc: func(ctx context.Context, params *ec2.CopySnapshotInput, optFns ...func(*ec2.Options)) (*ec2.CopySnapshotOutput, error) {
+//				panic("mock out the CopySnapshot method")
+//			},
+//			CreateCapacityReservationFunc: func(ctx context.Context, params *ec2.CreateCapacityReservationInput, optFns ...func(*ec2.Options)) (*ec2.CreateCapacityReservationOutput, error) {
+//				panic("mock out the CreateCapacityReservation method")
+//			},
+//			CreateCapacityReservationFleetFunc: func(ctx context.Context, params *ec2.CreateCapacityReservationFleetInput, optFns ...func(*ec2.Options)) (*ec2.CreateCapacityReservationFleetOutput, error) {
+//				panic("mock out the CreateCapacityReservationFleet method")
+//			},
+//			CreateCarrierGatewayFunc: func(ctx context.Context, params *ec2.CreateCarrierGatewayInput, optFns ...func(*ec2.Options)) (*ec2.CreateCarrierGatewayOutput, error) {
+//				panic("mock out the CreateCarrierGateway method")
+//			},
+//			CreateClientVpnEndpointFunc: func(ctx context.Context, params *ec2.CreateClientVpnEndpointInput, optFns ...func(*ec2.Options)) (*ec2.CreateClientVpnEndpointOutput, error) {
+//				panic("mock out the CreateClientVpnEndpoint method")
+//			},
+//			CreateClientVpnRouteFunc: func(ctx context.Context, params *ec2.CreateClientVpnRouteInput, optFns ...func(*ec2.Options)) (*ec2.CreateClientVpnRouteOutput, error) {
+//				panic("mock out the CreateClientVpnRoute method")
+//			},
+//			CreateCustomerGatewayFunc: func(ctx context.Context, params *ec2.CreateCustomerGatewayInput, optFns ...func(*ec2.Options)) (*ec2.CreateCustomerGatewayOutput, error) {
+//				panic("mock out the CreateCustomerGateway method")
+//			},
+//			CreateDefaultSubnetFunc: func(ctx context.Context, params *ec2.CreateDefaultSubnetInput, optFns ...func(*ec2.Options)) (*ec2.CreateDefaultSubnetOutput, error) {
+//				panic("mock out the CreateDefaultSubnet method")
+//			},
+//			CreateDefaultVpcFunc: func(ctx context.Context, params *ec2.CreateDefaultVpcInput, optFns ...func(*ec2.Options)) (*ec2.CreateDefaultVpcOutput, error) {
+//				panic("mock out the CreateDefaultVpc method")
+//			},
+//			CreateDhcpOptionsFunc: func(ctx context.Context, params *ec2.CreateDhcpOptionsInput, optFns ...func(*ec2.Options)) (*ec2.CreateDhcpOptionsOutput, error) {
+//				panic("mock out the CreateDhcpOptions method")
+//			},
+//			CreateEgressOnlyInternetGatewayFunc: func(ctx context.Context, params *ec2.CreateEgressOnlyInternetGatewayInput, optFns ...func(*ec2.Options)) (*ec2.CreateEgressOnlyInternetGatewayOutput, error) {
+//				panic("mock out the CreateEgressOnlyInternetGateway method")
+//			},
+//			CreateFleetFunc: func(ctx context.Context, params *ec2.CreateFleetInput, optFns ...func(*ec2.Options)) (*ec2.CreateFleetOutput, error) {
+//				panic("mock out the CreateFleet method")
+//			},
+//			CreateFlowLogsFunc: func(ctx context.Context, params *ec2.CreateFlowLogsInput, optFns ...func(*ec2.Options)) (*ec2.CreateFlowLogsOutput, error) {
+//				panic("mock out the CreateFlowLogs method")
+//			},
+//			CreateFpgaImageFunc: func(ctx context.Context, params *ec2.CreateFpgaImageInput, optFns ...func(*ec2.Options)) (*ec2.CreateFpgaImageOutput, error) {
+//				panic("mock out the CreateFpgaImage method")
+//			},
+//			CreateImageFunc: func(ctx context.Context, params *ec2.CreateImageInput, optFns ...func(*ec2.Options)) (*ec2.CreateImageOutput, error) {
+//				panic("mock out the CreateImage method")
+//			},
+//			CreateInstanceEventWindowFunc: func(ctx context.Context, params *ec2.CreateInstanceEventWindowInput, optFns ...func(*ec2.Options)) (*ec2.CreateInstanceEventWindowOutput, error) {
+//				panic("mock out the CreateInstanceEventWindow method")
+//			},
+//			CreateInstanceExportTaskFunc: func(ctx context.Context, params *ec2.CreateInstanceExportTaskInput, optFns ...func(*ec2.Options)) (*ec2.CreateInstanceExportTaskOutput, error) {
+//				panic("mock out the CreateInstanceExportTask method")
+//			},
+//			CreateInternetGatewayFunc: func(ctx context.Context, params *ec2.CreateInternetGatewayInput, optFns ...func(*ec2.Options)) (*ec2.CreateInternetGatewayOutput, error) {
+//				panic("mock out the CreateInternetGateway method")
+//			},
+//			CreateIpamFunc: func(ctx context.Context, params *ec2.CreateIpamInput, optFns ...func(*ec2.Options)) (*ec2.CreateIpamOutput, error) {
+//				panic("mock out the CreateIpam method")
+//			},
+//			CreateIpamPoolFunc: func(ctx context.Context, params *ec2.CreateIpamPoolInput, optFns ...func(*ec2.Options)) (*ec2.CreateIpamPoolOutput, error) {
+//				panic("mock out the CreateIpamPool method")
+//			},
+//			CreateIpamScopeFunc: func(ctx context.Context, params *ec2.CreateIpamScopeInput, optFns ...func(*ec2.Options)) (*ec2.CreateIpamScopeOutput, error) {
+//				panic("mock out the CreateIpamScope method")
+//			},
+//			CreateKeyPairFunc: func(ctx context.Context, params *ec2.CreateKeyPairInput, optFns ...func(*ec2.Options)) (*ec2.CreateKeyPairOutput, error) {
+//				panic("mock out the CreateKeyPair method")
+//			},
+//			CreateLaunchTemplateFunc: func(ctx context.Context, params *ec2.CreateLaunchTemplateInput, optFns ...func(*ec2.Options)) (*ec2.CreateLaunchTemplateOutput, error) {
+//				panic("mock out the CreateLaunchTemplate method")
+//			},
+//			CreateLaunchTemplateVersionFunc: func(ctx context.Context, params *ec2.CreateLaunchTemplateVersionInput, optFns ...func(*ec2.Options)) (*ec2.CreateLaunchTemplateVersionOutput, error) {
+//				panic("mock out the CreateLaunchTemplateVersion method")
+//			},
+//			CreateLocalGatewayRouteFunc: func(ctx context.Context, params *ec2.CreateLocalGatewayRouteInput, optFns ...func(*ec2.Options)) (*ec2.CreateLocalGatewayRouteOutput, error) {
+//				panic("mock out the CreateLocalGatewayRoute method")
+//			},
+//			CreateLocalGatewayRouteTableVpcAssociationFunc: func(ctx context.Context, params *ec2.CreateLocalGatewayRouteTableVpcAssociationInput, optFns ...func(*ec2.Options)) (*ec2.CreateLocalGatewayRouteTableVpcAssociationOutput, error) {
+//				panic("mock out the CreateLocalGatewayRouteTableVpcAssociation method")
+//			},
+//			CreateManagedPrefixListFunc: func(ctx context.Context, params *ec2.CreateManagedPrefixListInput, optFns ...func(*ec2.Options)) (*ec2.CreateManagedPrefixListOutput, error) {
+//				panic("mock out the CreateManagedPrefixList method")
+//			},
+//			CreateNatGatewayFunc: func(ctx context.Context, params *ec2.CreateNatGatewayInput, optFns ...func(*ec2.Options)) (*ec2.CreateNatGatewayOutput, error) {
+//				panic("mock out the CreateNatGateway method")
+//			},
+//			CreateNetworkAclFunc: func(ctx context.Context, params *ec2.CreateNetworkAclInput, optFns ...func(*ec2.Options)) (*ec2.CreateNetworkAclOutput, error) {
+//				panic("mock out the CreateNetworkAcl method")
+//			},
+//			CreateNetworkAclEntryFunc: func(ctx context.Context, params *ec2.CreateNetworkAclEntryInput, optFns ...func(*ec2.Options)) (*ec2.CreateNetworkAclEntryOutput, error) {
+//				panic("mock out the CreateNetworkAclEntry method")
+//			},
+//			CreateNetworkInsightsAccessScopeFunc: func(ctx context.Context, params *ec2.CreateNetworkInsightsAccessScopeInput, optFns ...func(*ec2.Options)) (*ec2.CreateNetworkInsightsAccessScopeOutput, error) {
+//				panic("mock out the CreateNetworkInsightsAccessScope method")
+//			},
+//			CreateNetworkInsightsPathFunc: func(ctx context.Context, params *ec2.CreateNetworkInsightsPathInput, optFns ...func(*ec2.Options)) (*ec2.CreateNetworkInsightsPathOutput, error) {
+//				panic("mock out the CreateNetworkInsightsPath method")
+//			},
+//			CreateNetworkInterfaceFunc: func(ctx context.Context, params *ec2.CreateNetworkInterfaceInput, optFns ...func(*ec2.Options)) (*ec2.CreateNetworkInterfaceOutput, error) {
+//				panic("mock out the CreateNetworkInterface method")
+//			},
+//			CreateNetworkInterfacePermissionFunc: func(ctx context.Context, params *ec2.CreateNetworkInterfacePermissionInput, optFns ...func(*ec2.Options)) (*ec2.CreateNetworkInterfacePermissionOutput, error) {
+//				panic("mock out the CreateNetworkInterfacePermission method")
+//			},
+//			CreatePlacementGroupFunc: func(ctx context.Context, params *ec2.CreatePlacementGroupInput, optFns ...func(*ec2.Options)) (*ec2.CreatePlacementGroupOutput, error) {
+//				panic("mock out the CreatePlacementGroup method")
+//			},
+//			CreatePublicIpv4PoolFunc: func(ctx context.Context, params *ec2.CreatePublicIpv4PoolInput, optFns ...func(*ec2.Options)) (*ec2.CreatePublicIpv4PoolOutput, error) {
+//				panic("mock out the CreatePublicIpv4Pool method")
+//			},
+//			CreateReplaceRootVolumeTaskFunc: func(ctx context.Context, params *ec2.CreateReplaceRootVolumeTaskInput, optFns ...func(*ec2.Options)) (*ec2.CreateReplaceRootVolumeTaskOutput, error) {
+//				panic("mock out the CreateReplaceRootVolumeTask method")
+//			},
+//			CreateReservedInstancesListingFunc: func(ctx context.Context, params *ec2.CreateReservedInstancesListingInput, optFns ...func(*ec2.Options)) (*ec2.CreateReservedInstancesListingOutput, error) {
+//				panic("mock out the CreateReservedInstancesListing method")
+//			},
+//			CreateRestoreImageTaskFunc: func(ctx context.Context, params *ec2.CreateRestoreImageTaskInput, optFns ...func(*ec2.Options)) (*ec2.CreateRestoreImageTaskOutput, error) {
+//				panic("mock out the CreateRestoreImageTask method")
+//			},
+//			CreateRouteFunc: func(ctx context.Context, params *ec2.CreateRouteInput, optFns ...func(*ec2.Options)) (*ec2.CreateRouteOutput, error) {
+//				panic("mock out the CreateRoute method")
+//			},
+//			CreateRouteTableFunc: func(ctx context.Context, params *ec2.CreateRouteTableInput, optFns ...func(*ec2.Options)) (*ec2.CreateRouteTableOutput, error) {
+//				panic("mock out the CreateRouteTable method")
+//			},
+//			CreateSecurityGroupFunc: func(ctx context.Context, params *ec2.CreateSecurityGroupInput, optFns ...func(*ec2.Options)) (*ec2.CreateSecurityGroupOutput, error) {
+//				panic("mock out the CreateSecurityGroup method")
+//			},
+//			CreateSnapshotFunc: func(ctx context.Context, params *ec2.CreateSnapshotInput, optFns ...func(*ec2.Options)) (*ec2.CreateSnapshotOutput, error) {
+//				panic("mock out the CreateSnapshot method")
+//			},
+//			CreateSnapshotsFunc: func(ctx context.Context, params *ec2.CreateSnapshotsInput, optFns ...func(*ec2.Options)) (*ec2.CreateSnapshotsOutput, error) {
+//				panic("mock out the CreateSnapshots method")
+//			},
+//			CreateSpotDatafeedSubscriptionFunc: func(ctx context.Context, params *ec2.CreateSpotDatafeedSubscriptionInput, optFns ...func(*ec2.Options)) (*ec2.CreateSpotDatafeedSubscriptionOutput, error) {
+//				panic("mock out the CreateSpotDatafeedSubscription method")
+//			},
+//			CreateStoreImageTaskFunc: func(ctx context.Context, params *ec2.CreateStoreImageTaskInput, optFns ...func(*ec2.Options)) (*ec2.CreateStoreImageTaskOutput, error) {
+//				panic("mock out the CreateStoreImageTask method")
+//			},
+//			CreateSubnetFunc: func(ctx context.Context, params *ec2.CreateSubnetInput, optFns ...func(*ec2.Options)) (*ec2.CreateSubnetOutput, error) {
+//				panic("mock out the CreateSubnet method")
+//			},
+//			CreateSubnetCidrReservationFunc: func(ctx context.Context, params *ec2.CreateSubnetCidrReservationInput, optFns ...func(*ec2.Options)) (*ec2.CreateSubnetCidrReservationOutput, error) {
+//				panic("mock out the CreateSubnetCidrReservation method")
+//			},
+//			CreateTagsFunc: func(ctx context.Context, params *ec2.CreateTagsInput, optFns ...func(*ec2.Options)) (*ec2.CreateTagsOutput, error) {
+//				panic("mock out the CreateTags method")
+//			},
+//			CreateTrafficMirrorFilterFunc: func(ctx context.Context, params *ec2.CreateTrafficMirrorFilterInput, optFns ...func(*ec2.Options)) (*ec2.CreateTrafficMirrorFilterOutput, error) {
+//				panic("mock out the CreateTrafficMirrorFilter method")
+//			},
+//			CreateTrafficMirrorFilterRuleFunc: func(ctx context.Context, params *ec2.CreateTrafficMirrorFilterRuleInput, optFns ...func(*ec2.Options)) (*ec2.CreateTrafficMirrorFilterRuleOutput, error) {
+//				panic("mock out the CreateTrafficMirrorFilterRule method")
+//			},
+//			CreateTrafficMirrorSessionFunc: func(ctx context.Context, params *ec2.CreateTrafficMirrorSessionInput, optFns ...func(*ec2.Options)) (*ec2.CreateTrafficMirrorSessionOutput, error) {
+//				panic("mock out the CreateTrafficMirrorSession method")
+//			},
+//			CreateTrafficMirrorTargetFunc: func(ctx context.Context, params *ec2.CreateTrafficMirrorTargetInput, optFns ...func(*ec2.Options)) (*ec2.CreateTrafficMirrorTargetOutput, error) {
+//				panic("mock out the CreateTrafficMirrorTarget method")
+//			},
+//			CreateTransitGatewayFunc: func(ctx context.Context, params *ec2.CreateTransitGatewayInput, optFns ...func(*ec2.Options)) (*ec2.CreateTransitGatewayOutput, error) {
+//				panic("mock out the CreateTransitGateway method")
+//			},
+//			CreateTransitGatewayConnectFunc: func(ctx context.Context, params *ec2.CreateTransitGatewayConnectInput, optFns ...func(*ec2.Options)) (*ec2.CreateTransitGatewayConnectOutput, error) {
+//				panic("mock out the CreateTransitGatewayConnect method")
+//			},
+//			CreateTransitGatewayConnectPeerFunc: func(ctx context.Context, params *ec2.CreateTransitGatewayConnectPeerInput, optFns ...func(*ec2.Options)) (*ec2.CreateTransitGatewayConnectPeerOutput, error) {
+//				panic("mock out the CreateTransitGatewayConnectPeer method")
+//			},
+//			CreateTransitGatewayMulticastDomainFunc: func(ctx context.Context, params *ec2.CreateTransitGatewayMulticastDomainInput, optFns ...func(*ec2.Options)) (*ec2.CreateTransitGatewayMulticastDomainOutput, error) {
+//				panic("mock out the CreateTransitGatewayMulticastDomain method")
+//			},
+//			CreateTransitGatewayPeeringAttachmentFunc: func(ctx context.Context, params *ec2.CreateTransitGatewayPeeringAttachmentInput, optFns ...func(*ec2.Options)) (*ec2.CreateTransitGatewayPeeringAttachmentOutput, error) {
+//				panic("mock out the CreateTransitGatewayPeeringAttachment method")
+//			},
+//			CreateTransitGatewayPolicyTableFunc: func(ctx context.Context, params *ec2.CreateTransitGatewayPolicyTableInput, optFns ...func(*ec2.Options)) (*ec2.CreateTransitGatewayPolicyTableOutput, error) {
+//				panic("mock out the CreateTransitGatewayPolicyTable method")
+//			},
+//			CreateTransitGatewayPrefixListReferenceFunc: func(ctx context.Context, params *ec2.CreateTransitGatewayPrefixListReferenceInput, optFns ...func(*ec2.Options)) (*ec2.CreateTransitGatewayPrefixListReferenceOutput, error) {
+//				panic("mock out the CreateTransitGatewayPrefixListReference method")
+//			},
+//			CreateTransitGatewayRouteFunc: func(ctx context.Context, params *ec2.CreateTransitGatewayRouteInput, optFns ...func(*ec2.Options)) (*ec2.CreateTransitGatewayRouteOutput, error) {
+//				panic("mock out the CreateTransitGatewayRoute method")
+//			},
+//			CreateTransitGatewayRouteTableFunc: func(ctx context.Context, params *ec2.CreateTransitGatewayRouteTableInput, optFns ...func(*ec2.Options)) (*ec2.CreateTransitGatewayRouteTableOutput, error) {
+//				panic("mock out the CreateTransitGatewayRouteTable method")
+//			},
+//			CreateTransitGatewayRouteTableAnnouncementFunc: func(ctx context.Context, params *ec2.CreateTransitGatewayRouteTableAnnouncementInput, optFns ...func(*ec2.Options)) (*ec2.CreateTransitGatewayRouteTableAnnouncementOutput, error) {
+//				panic("mock out the CreateTransitGatewayRouteTableAnnouncement method")
+//			},
+//			CreateTransitGatewayVpcAttachmentFunc: func(ctx context.Context, params *ec2.CreateTransitGatewayVpcAttachmentInput, optFns ...func(*ec2.Options)) (*ec2.CreateTransitGatewayVpcAttachmentOutput, error) {
+//				panic("mock out the CreateTransitGatewayVpcAttachment method")
+//			},
+//			CreateVolumeFunc: func(ctx context.Context, params *ec2.CreateVolumeInput, optFns ...func(*ec2.Options)) (*ec2.CreateVolumeOutput, error) {
+//				panic("mock out the CreateVolume method")
+//			},
+//			CreateVpcFunc: func(ctx context.Context, params *ec2.CreateVpcInput, optFns ...func(*ec2.Options)) (*ec2.CreateVpcOutput, error) {
+//				panic("mock out the CreateVpc method")
+//			},
+//			CreateVpcEndpointFunc: func(ctx context.Context, params *ec2.CreateVpcEndpointInput, optFns ...func(*ec2.Options)) (*ec2.CreateVpcEndpointOutput, error) {
+//				panic("mock out the CreateVpcEndpoint method")
+//			},
+//			CreateVpcEndpointConnectionNotificationFunc: func(ctx context.Context, params *ec2.CreateVpcEndpointConnectionNotificationInput, optFns ...func(*ec2.Options)) (*ec2.CreateVpcEndpointConnectionNotificationOutput, error) {
+//				panic("mock out the CreateVpcEndpointConnectionNotification method")
+//			},
+//			CreateVpcEndpointServiceConfigurationFunc: func(ctx context.Context, params *ec2.CreateVpcEndpointServiceConfigurationInput, optFns ...func(*ec2.Options)) (*ec2.CreateVpcEndpointServiceConfigurationOutput, error) {
+//				panic("mock out the CreateVpcEndpointServiceConfiguration method")
+//			},
+//			CreateVpcPeeringConnectionFunc: func(ctx context.Context, params *ec2.CreateVpcPeeringConnectionInput, optFns ...func(*ec2.Options)) (*ec2.CreateVpcPeeringConnectionOutput, error) {
+//				panic("mock out the CreateVpcPeeringConnection method")
+//			},
+//			CreateVpnConnectionFunc: func(ctx context.Context, params *ec2.CreateVpnConnectionInput, optFns ...func(*ec2.Options)) (*ec2.CreateVpnConnectionOutput, error) {
+//				panic("mock out the CreateVpnConnection method")
+//			},
+//			CreateVpnConnectionRouteFunc: func(ctx context.Context, params *ec2.CreateVpnConnectionRouteInput, optFns ...func(*ec2.Options)) (*ec2.CreateVpnConnectionRouteOutput, error) {
+//				panic("mock out the CreateVpnConnectionRoute method")
+//			},
+//			CreateVpnGatewayFunc: func(ctx context.Context, params *ec2.CreateVpnGatewayInput, optFns ...func(*ec2.Options)) (*ec2.CreateVpnGatewayOutput, error) {
+//				panic("mock out the CreateVpnGateway method")
+//			},
+//			DeleteCarrierGatewayFunc: func(ctx context.Context, params *ec2.DeleteCarrierGatewayInput, optFns ...func(*ec2.Options)) (*ec2.DeleteCarrierGatewayOutput, error) {
+//				panic("mock out the DeleteCarrierGateway method")
+//			},
+//			DeleteClientVpnEndpointFunc: func(ctx context.Context, params *ec2.DeleteClientVpnEndpointInput, optFns ...func(*ec2.Options)) (*ec2.DeleteClientVpnEndpointOutput, error) {
+//				panic("mock out the DeleteClientVpnEndpoint method")
+//			},
+//			DeleteClientVpnRouteFunc: func(ctx context.Context, params *ec2.DeleteClientVpnRouteInput, optFns ...func(*ec2.Options)) (*ec2.DeleteClientVpnRouteOutput, error) {
+//				panic("mock out the DeleteClientVpnRoute method")
+//			},
+//			DeleteCustomerGatewayFunc: func(ctx context.Context, params *ec2.DeleteCustomerGatewayInput, optFns ...func(*ec2.Options)) (*ec2.DeleteCustomerGatewayOutput, error) {
+//				panic("mock out the DeleteCustomerGateway method")
+//			},
+//			DeleteDhcpOptionsFunc: func(ctx context.Context, params *ec2.DeleteDhcpOptionsInput, optFns ...func(*ec2.Options)) (*ec2.DeleteDhcpOptionsOutput, error) {
+//				panic("mock out the DeleteDhcpOptions method")
+//			},
+//			DeleteEgressOnlyInternetGatewayFunc: func(ctx context.Context, params *ec2.DeleteEgressOnlyInternetGatewayInput, optFns ...func(*ec2.Options)) (*ec2.DeleteEgressOnlyInternetGatewayOutput, error) {
+//				panic("mock out the DeleteEgressOnlyInternetGateway method")
+//			},
+//			DeleteFleetsFunc: func(ctx context.Context, params *ec2.DeleteFleetsInput, optFns ...func(*ec2.Options)) (*ec2.DeleteFleetsOutput, error) {
+//				panic("mock out the DeleteFleets method")
+//			},
+//			DeleteFlowLogsFunc: func(ctx context.Context, params *ec2.DeleteFlowLogsInput, optFns ...func(*ec2.Options)) (*ec2.DeleteFlowLogsOutput, error) {
+//				panic("mock out the DeleteFlowLogs method")
+//			},
+//			DeleteFpgaImageFunc: func(ctx context.Context, params *ec2.DeleteFpgaImageInput, optFns ...func(*ec2.Options)) (*ec2.DeleteFpgaImageOutput, error) {
+//				panic("mock out the DeleteFpgaImage method")
+//			},
+//			DeleteInstanceEventWindowFunc: func(ctx context.Context, params *ec2.DeleteInstanceEventWindowInput, optFns ...func(*ec2.Options)) (*ec2.DeleteInstanceEventWindowOutput, error) {
+//				panic("mock out the DeleteInstanceEventWindow method")
+//			},
+//			DeleteInternetGatewayFunc: func(ctx context.Context, params *ec2.DeleteInternetGatewayInput, optFns ...func(*ec2.Options)) (*ec2.DeleteInternetGatewayOutput, error) {
+//				panic("mock out the DeleteInternetGateway method")
+//			},
+//			DeleteIpamFunc: func(ctx context.Context, params *ec2.DeleteIpamInput, optFns ...func(*ec2.Options)) (*ec2.DeleteIpamOutput, error) {
+//				panic("mock out the DeleteIpam method")
+//			},
+//			DeleteIpamPoolFunc: func(ctx context.Context, params *ec2.DeleteIpamPoolInput, optFns ...func(*ec2.Options)) (*ec2.DeleteIpamPoolOutput, error) {
+//				panic("mock out the DeleteIpamPool method")
+//			},
+//			DeleteIpamScopeFunc: func(ctx context.Context, params *ec2.DeleteIpamScopeInput, optFns ...func(*ec2.Options)) (*ec2.DeleteIpamScopeOutput, error) {
+//				panic("mock out the DeleteIpamScope method")
+//			},
+//			DeleteKeyPairFunc: func(ctx context.Context, params *ec2.DeleteKeyPairInput, optFns ...func(*ec2.Options)) (*ec2.DeleteKeyPairOutput, error) {
+//				panic("mock out the DeleteKeyPair method")
+//			},
+//			DeleteLaunchTemplateFunc: func(ctx context.Context, params *ec2.DeleteLaunchTemplateInput, optFns ...func(*ec2.Options)) (*ec2.DeleteLaunchTemplateOutput, error) {
+//				panic("mock out the DeleteLaunchTemplate method")
+//			},
+//			DeleteLaunchTemplateVersionsFunc: func(ctx context.Context, params *ec2.DeleteLaunchTemplateVersionsInput, optFns ...func(*ec2.Options)) (*ec2.DeleteLaunchTemplateVersionsOutput, error) {
+//				panic("mock out the DeleteLaunchTemplateVersions method")
+//			},
+//			DeleteLocalGatewayRouteFunc: func(ctx context.Context, params *ec2.DeleteLocalGatewayRouteInput, optFns ...func(*ec2.Options)) (*ec2.DeleteLocalGatewayRouteOutput, error) {
+//				panic("mock out the DeleteLocalGatewayRoute method")
+//			},
+//			DeleteLocalGatewayRouteTableVpcAssociationFunc: func(ctx context.Context, params *ec2.DeleteLocalGatewayRouteTableVpcAssociationInput, optFns ...func(*ec2.Options)) (*ec2.DeleteLocalGatewayRouteTableVpcAssociationOutput, error) {
+//				panic("mock out the DeleteLocalGatewayRouteTableVpcAssociation method")
+//			},
+//			DeleteManagedPrefixListFunc: func(ctx context.Context, params *ec2.DeleteManagedPrefixListInput, optFns ...func(*ec2.Options)) (*ec2.DeleteManagedPrefixListOutput, error) {
+//				panic("mock out the DeleteManagedPrefixList method")
+//			},
+//			DeleteNatGatewayFunc: func(ctx context.Context, params *ec2.DeleteNatGatewayInput, optFns ...func(*ec2.Options)) (*ec2.DeleteNatGatewayOutput, error) {
+//				panic("mock out the DeleteNatGateway method")
+//			},
+//			DeleteNetworkAclFunc: func(ctx context.Context, params *ec2.DeleteNetworkAclInput, optFns ...func(*ec2.Options)) (*ec2.DeleteNetworkAclOutput, error) {
+//				panic("mock out the DeleteNetworkAcl method")
+//			},
+//			DeleteNetworkAclEntryFunc: func(ctx context.Context, params *ec2.DeleteNetworkAclEntryInput, optFns ...func(*ec2.Options)) (*ec2.DeleteNetworkAclEntryOutput, error) {
+//				panic("mock out the DeleteNetworkAclEntry method")
+//			},
+//			DeleteNetworkInsightsAccessScopeFunc: func(ctx context.Context, params *ec2.DeleteNetworkInsightsAccessScopeInput, optFns ...func(*ec2.Options)) (*ec2.DeleteNetworkInsightsAccessScopeOutput, error) {
+//				panic("mock out the DeleteNetworkInsightsAccessScope method")
+//			},
+//			DeleteNetworkInsightsAccessScopeAnalysisFunc: func(ctx context.Context, params *ec2.DeleteNetworkInsightsAccessScopeAnalysisInput, optFns ...func(*ec2.Options)) (*ec2.DeleteNetworkInsightsAccessScopeAnalysisOutput, error) {
+//				panic("mock out the DeleteNetworkInsightsAccessScopeAnalysis method")
+//			},
+//			DeleteNetworkInsightsAnalysisFunc: func(ctx context.Context, params *ec2.DeleteNetworkInsightsAnalysisInput, optFns ...func(*ec2.Options)) (*ec2.DeleteNetworkInsightsAnalysisOutput, error) {
+//				panic("mock out the DeleteNetworkInsightsAnalysis method")
+//			},
+//			DeleteNetworkInsightsPathFunc: func(ctx context.Context, params *ec2.DeleteNetworkInsightsPathInput, optFns ...func(*ec2.Options)) (*ec2.DeleteNetworkInsightsPathOutput, error) {
+//				panic("mock out the DeleteNetworkInsightsPath method")
+//			},
+//			DeleteNetworkInterfaceFunc: func(ctx context.Context, params *ec2.DeleteNetworkInterfaceInput, optFns ...func(*ec2.Options)) (*ec2.DeleteNetworkInterfaceOutput, error) {
+//				panic("mock out the DeleteNetworkInterface method")
+//			},
+//			DeleteNetworkInterfacePermissionFunc: func(ctx context.Context, params *ec2.DeleteNetworkInterfacePermissionInput, optFns ...func(*ec2.Options)) (*ec2.DeleteNetworkInterfacePermissionOutput, error) {
+//				panic("mock out the DeleteNetworkInterfacePermission method")
+//			},
+//			DeletePlacementGroupFunc: func(ctx context.Context, params *ec2.DeletePlacementGroupInput, optFns ...func(*ec2.Options)) (*ec2.DeletePlacementGroupOutput, error) {
+//				panic("mock out the DeletePlacementGroup method")
+//			},
+//			DeletePublicIpv4PoolFunc: func(ctx context.Context, params *ec2.DeletePublicIpv4PoolInput, optFns ...func(*ec2.Options)) (*ec2.DeletePublicIpv4PoolOutput, error) {
+//				panic("mock out the DeletePublicIpv4Pool method")
+//			},
+//			DeleteQueuedReservedInstancesFunc: func(ctx context.Context, params *ec2.DeleteQueuedReservedInstancesInput, optFns ...func(*ec2.Options)) (*ec2.DeleteQueuedReservedInstancesOutput, error) {
+//				panic("mock out the DeleteQueuedReservedInstances method")
+//			},
+//			DeleteRouteFunc: func(ctx context.Context, params *ec2.DeleteRouteInput, optFns ...func(*ec2.Options)) (*ec2.DeleteRouteOutput, error) {
+//				panic("mock out the DeleteRoute method")
+//			},
+//			DeleteRouteTableFunc: func(ctx context.Context, params *ec2.DeleteRouteTableInput, optFns ...func(*ec2.Options)) (*ec2.DeleteRouteTableOutput, error) {
+//				panic("mock out the DeleteRouteTable method")
+//			},
+//			DeleteSecurityGroupFunc: func(ctx context.Context, params *ec2.DeleteSecurityGroupInput, optFns ...func(*ec2.Options)) (*ec2.DeleteSecurityGroupOutput, error) {
+//				panic("mock out the DeleteSecurityGroup method")
+//			},
+//			DeleteSnapshotFunc: func(ctx context.Context, params *ec2.DeleteSnapshotInput, optFns ...func(*ec2.Options)) (*ec2.DeleteSnapshotOutput, error) {
+//				panic("mock out the DeleteSnapshot method")
+//			},
+//			DeleteSpotDatafeedSubscriptionFunc: func(ctx context.Context, params *ec2.DeleteSpotDatafeedSubscriptionInput, optFns ...func(*ec2.Options)) (*ec2.DeleteSpotDatafeedSubscriptionOutput, error) {
+//				panic("mock out the DeleteSpotDatafeedSubscription method")
+//			},
+//			DeleteSubnetFunc: func(ctx context.Context, params *ec2.DeleteSubnetInput, optFns ...func(*ec2.Options)) (*ec2.DeleteSubnetOutput, error) {
+//				panic("mock out the DeleteSubnet method")
+//			},
+//			DeleteSubnetCidrReservationFunc: func(ctx context.Context, params *ec2.DeleteSubnetCidrReservationInput, optFns ...func(*ec2.Options)) (*ec2.DeleteSubnetCidrReservationOutput, error) {
+//				panic("mock out the DeleteSubnetCidrReservation method")
+//			},
+//			DeleteTagsFunc: func(ctx context.Context, params *ec2.DeleteTagsInput, optFns ...func(*ec2.Options)) (*ec2.DeleteTagsOutput, error) {
+//				panic("mock out the DeleteTags method")
+//			},
+//			DeleteTrafficMirrorFilterFunc: func(ctx context.Context, params *ec2.DeleteTrafficMirrorFilterInput, optFns ...func(*ec2.Options)) (*ec2.DeleteTrafficMirrorFilterOutput, error) {
+//				panic("mock out the DeleteTrafficMirrorFilter method")
+//			},
+//			DeleteTrafficMirrorFilterRuleFunc: func(ctx context.Context, params *ec2.DeleteTrafficMirrorFilterRuleInput, optFns ...func(*ec2.Options)) (*ec2.DeleteTrafficMirrorFilterRuleOutput, error) {
+//				panic("mock out the DeleteTrafficMirrorFilterRule method")
+//			},
+//			DeleteTrafficMirrorSessionFunc: func(ctx context.Context, params *ec2.DeleteTrafficMirrorSessionInput, optFns ...func(*ec2.Options)) (*ec2.DeleteTrafficMirrorSessionOutput, error) {
+//				panic("mock out the DeleteTrafficMirrorSession method")
+//			},
+//			DeleteTrafficMirrorTargetFunc: func(ctx context.Context, params *ec2.DeleteTrafficMirrorTargetInput, optFns ...func(*ec2.Options)) (*ec2.DeleteTrafficMirrorTargetOutput, error) {
+//				panic("mock out the DeleteTrafficMirrorTarget method")
+//			},
+//			DeleteTransitGatewayFunc: func(ctx context.Context, params *ec2.DeleteTransitGatewayInput, optFns ...func(*ec2.Options)) (*ec2.DeleteTransitGatewayOutput, error) {
+//				panic("mock out the DeleteTransitGateway method")
+//			},
+//			DeleteTransitGatewayConnectFunc: func(ctx context.Context, params *ec2.DeleteTransitGatewayConnectInput, optFns ...func(*ec2.Options)) (*ec2.DeleteTransitGatewayConnectOutput, error) {
+//				panic("mock out the DeleteTransitGatewayConnect method")
+//			},
+//			DeleteTransitGatewayConnectPeerFunc: func(ctx context.Context, params *ec2.DeleteTransitGatewayConnectPeerInput, optFns ...func(*ec2.Options)) (*ec2.DeleteTransitGatewayConnectPeerOutput, error) {
+//				panic("mock out the DeleteTransitGatewayConnectPeer method")
+//			},
+//			DeleteTransitGatewayMulticastDomainFunc: func(ctx context.Context, params *ec2.DeleteTransitGatewayMulticastDomainInput, optFns ...func(*ec2.Options)) (*ec2.DeleteTransitGatewayMulticastDomainOutput, error) {
+//				panic("mock out the DeleteTransitGatewayMulticastDomain method")
+//			},
+//			DeleteTransitGatewayPeeringAttachmentFunc: func(ctx context.Context, params *ec2.DeleteTransitGatewayPeeringAttachmentInput, optFns ...func(*ec2.Options)) (*ec2.DeleteTransitGatewayPeeringAttachmentOutput, error) {
+//				panic("mock out the DeleteTransitGatewayPeeringAttachment method")
+//			},
+//			DeleteTransitGatewayPolicyTableFunc: func(ctx context.Context, params *ec2.DeleteTransitGatewayPolicyTableInput, optFns ...func(*ec2.Options)) (*ec2.DeleteTransitGatewayPolicyTableOutput, error) {
+//				panic("mock out the DeleteTransitGatewayPolicyTable method")
+//			},
+//			DeleteTransitGatewayPrefixListReferenceFunc: func(ctx context.Context, params *ec2.DeleteTransitGatewayPrefixListReferenceInput, optFns ...func(*ec2.Options)) (*ec2.DeleteTransitGatewayPrefixListReferenceOutput, error) {
+//				panic("mock out the DeleteTransitGatewayPrefixListReference method")
+//			},
+//			DeleteTransitGatewayRouteFunc: func(ctx context.Context, params *ec2.DeleteTransitGatewayRouteInput, optFns ...func(*ec2.Options)) (*ec2.DeleteTransitGatewayRouteOutput, error) {
+//				panic("mock out the DeleteTransitGatewayRoute method")
+//			},
+//			DeleteTransitGatewayRouteTableFunc: func(ctx context.Context, params *ec2.DeleteTransitGatewayRouteTableInput, optFns ...func(*ec2.Options)) (*ec2.DeleteTransitGatewayRouteTableOutput, error) {
+//				panic("mock out the DeleteTransitGatewayRouteTable method")
+//			},
+//			DeleteTransitGatewayRouteTableAnnouncementFunc: func(ctx context.Context, params *ec2.DeleteTransitGatewayRouteTableAnnouncementInput, optFns ...func(*ec2.Options)) (*ec2.DeleteTransitGatewayRouteTableAnnouncementOutput, error) {
+//				panic("mock out the DeleteTransitGatewayRouteTableAnnouncement method")
+//			},
+//			DeleteTransitGatewayVpcAttachmentFunc: func(ctx context.Context, params *ec2.DeleteTransitGatewayVpcAttachmentInput, optFns ...func(*ec2.Options)) (*ec2.DeleteTransitGatewayVpcAttachmentOutput, error) {
+//				panic("mock out the DeleteTransitGatewayVpcAttachment method")
+//			},
+//			DeleteVolumeFunc: func(ctx context.Context, params *ec2.DeleteVolumeInput, optFns ...func(*ec2.Options)) (*ec2.DeleteVolumeOutput, error) {
+//				panic("mock out the DeleteVolume method")
+//			},
+//			DeleteVpcFunc: func(ctx context.Context, params *ec2.DeleteVpcInput, optFns ...func(*ec2.Options)) (*ec2.DeleteVpcOutput, error) {
+//				panic("mock out the DeleteVpc method")
+//			},
+//			DeleteVpcEndpointConnectionNotificationsFunc: func(ctx context.Context, params *ec2.DeleteVpcEndpointConnectionNotificationsInput, optFns ...func(*ec2.Options)) (*ec2.DeleteVpcEndpointConnectionNotificationsOutput, error) {
+//				panic("mock out the DeleteVpcEndpointConnectionNotifications method")
+//			},
+//			DeleteVpcEndpointServiceConfigurationsFunc: func(ctx context.Context, params *ec2.DeleteVpcEndpointServiceConfigurationsInput, optFns ...func(*ec2.Options)) (*ec2.DeleteVpcEndpointServiceConfigurationsOutput, error) {
+//				panic("mock out the DeleteVpcEndpointServiceConfigurations method")
+//			},
+//			DeleteVpcEndpointsFunc: func(ctx context.Context, params *ec2.DeleteVpcEndpointsInput, optFns ...func(*ec2.Options)) (*ec2.DeleteVpcEndpointsOutput, error) {
+//				panic("mock out the DeleteVpcEndpoints method")
+//			},
+//			DeleteVpcPeeringConnectionFunc: func(ctx context.Context, params *ec2.DeleteVpcPeeringConnectionInput, optFns ...func(*ec2.Options)) (*ec2.DeleteVpcPeeringConnectionOutput, error) {
+//				panic("mock out the DeleteVpcPeeringConnection method")
+//			},
+//			DeleteVpnConnectionFunc: func(ctx context.Context, params *ec2.DeleteVpnConnectionInput, optFns ...func(*ec2.Options)) (*ec2.DeleteVpnConnectionOutput, error) {
+//				panic("mock out the DeleteVpnConnection method")
+//			},
+//			DeleteVpnConnectionRouteFunc: func(ctx context.Context, params *ec2.DeleteVpnConnectionRouteInput, optFns ...func(*ec2.Options)) (*ec2.DeleteVpnConnectionRouteOutput, error) {
+//				panic("mock out the DeleteVpnConnectionRoute method")
+//			},
+//			DeleteVpnGatewayFunc: func(ctx context.Context, params *ec2.DeleteVpnGatewayInput, optFns ...func(*ec2.Options)) (*ec2.DeleteVpnGatewayOutput, error) {
+//				panic("mock out the DeleteVpnGateway method")
+//			},
+//			DeprovisionByoipCidrFunc: func(ctx context.Context, params *ec2.DeprovisionByoipCidrInput, optFns ...func(*ec2.Options)) (*ec2.DeprovisionByoipCidrOutput, error) {
+//				panic("mock out the DeprovisionByoipCidr method")
+//			},
+//			DeprovisionIpamPoolCidrFunc: func(ctx context.Context, params *ec2.DeprovisionIpamPoolCidrInput, optFns ...func(*ec2.Options)) (*ec2.DeprovisionIpamPoolCidrOutput, error) {
+//				panic("mock out the DeprovisionIpamPoolCidr method")
+//			},
+//			DeprovisionPublicIpv4PoolCidrFunc: func(ctx context.Context, params *ec2.DeprovisionPublicIpv4PoolCidrInput, optFns ...func(*ec2.Options)) (*ec2.DeprovisionPublicIpv4PoolCidrOutput, error) {
+//				panic("mock out the DeprovisionPublicIpv4PoolCidr method")
+//			},
+//			DeregisterImageFunc: func(ctx context.Context, params *ec2.DeregisterImageInput, optFns ...func(*ec2.Options)) (*ec2.DeregisterImageOutput, error) {
+//				panic("mock out the DeregisterImage method")
+//			},
+//			DeregisterInstanceEventNotificationAttributesFunc: func(ctx context.Context, params *ec2.DeregisterInstanceEventNotificationAttributesInput, optFns ...func(*ec2.Options)) (*ec2.DeregisterInstanceEventNotificationAttributesOutput, error) {
+//				panic("mock out the DeregisterInstanceEventNotificationAttributes method")
+//			},
+//			DeregisterTransitGatewayMulticastGroupMembersFunc: func(ctx context.Context, params *ec2.DeregisterTransitGatewayMulticastGroupMembersInput, optFns ...func(*ec2.Options)) (*ec2.DeregisterTransitGatewayMulticastGroupMembersOutput, error) {
+//				panic("mock out the DeregisterTransitGatewayMulticastGroupMembers method")
+//			},
+//			DeregisterTransitGatewayMulticastGroupSourcesFunc: func(ctx context.Context, params *ec2.DeregisterTransitGatewayMulticastGroupSourcesInput, optFns ...func(*ec2.Options)) (*ec2.DeregisterTransitGatewayMulticastGroupSourcesOutput, error) {
+//				panic("mock out the DeregisterTransitGatewayMulticastGroupSources method")
+//			},
+//			DescribeAccountAttributesFunc: func(ctx context.Context, params *ec2.DescribeAccountAttributesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeAccountAttributesOutput, error) {
+//				panic("mock out the DescribeAccountAttributes method")
+//			},
+//			DescribeAddressesFunc: func(ctx context.Context, params *ec2.DescribeAddressesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeAddressesOutput, error) {
+//				panic("mock out the DescribeAddresses method")
+//			},
+//			DescribeAddressesAttributeFunc: func(ctx context.Context, params *ec2.DescribeAddressesAttributeInput, optFns ...func(*ec2.Options)) (*ec2.DescribeAddressesAttributeOutput, error) {
+//				panic("mock out the DescribeAddressesAttribute method")
+//			},
+//			DescribeAggregateIdFormatFunc: func(ctx context.Context, params *ec2.DescribeAggregateIdFormatInput, optFns ...func(*ec2.Options)) (*ec2.DescribeAggregateIdFormatOutput, error) {
+//				panic("mock out the DescribeAggregateIdFormat method")
+//			},
+//			DescribeAvailabilityZonesFunc: func(ctx context.Context, params *ec2.DescribeAvailabilityZonesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeAvailabilityZonesOutput, error) {
+//				panic("mock out the DescribeAvailabilityZones method")
+//			},
+//			DescribeBundleTasksFunc: func(ctx context.Context, params *ec2.DescribeBundleTasksInput, optFns ...func(*ec2.Options)) (*ec2.DescribeBundleTasksOutput, error) {
+//				panic("mock out the DescribeBundleTasks method")
+//			},
+//			DescribeByoipCidrsFunc: func(ctx context.Context, params *ec2.DescribeByoipCidrsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeByoipCidrsOutput, error) {
+//				panic("mock out the DescribeByoipCidrs method")
+//			},
+//			DescribeCapacityReservationFleetsFunc: func(ctx context.Context, params *ec2.DescribeCapacityReservationFleetsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeCapacityReservationFleetsOutput, error) {
+//				panic("mock out the DescribeCapacityReservationFleets method")
+//			},
+//			DescribeCapacityReservationsFunc: func(ctx context.Context, params *ec2.DescribeCapacityReservationsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeCapacityReservationsOutput, error) {
+//				panic("mock out the DescribeCapacityReservations method")
+//			},
+//			DescribeCarrierGatewaysFunc: func(ctx context.Context, params *ec2.DescribeCarrierGatewaysInput, optFns ...func(*ec2.Options)) (*ec2.DescribeCarrierGatewaysOutput, error) {
+//				panic("mock out the DescribeCarrierGateways method")
+//			},
+//			DescribeClassicLinkInstancesFunc: func(ctx context.Context, params *ec2.DescribeClassicLinkInstancesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeClassicLinkInstancesOutput, error) {
+//				panic("mock out the DescribeClassicLinkInstances method")
+//			},
+//			DescribeClientVpnAuthorizationRulesFunc: func(ctx context.Context, params *ec2.DescribeClientVpnAuthorizationRulesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeClientVpnAuthorizationRulesOutput, error) {
+//				panic("mock out the DescribeClientVpnAuthorizationRules method")
+//			},
+//			DescribeClientVpnConnectionsFunc: func(ctx context.Context, params *ec2.DescribeClientVpnConnectionsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeClientVpnConnectionsOutput, error) {
+//				panic("mock out the DescribeClientVpnConnections method")
+//			},
+//			DescribeClientVpnEndpointsFunc: func(ctx context.Context, params *ec2.DescribeClientVpnEndpointsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeClientVpnEndpointsOutput, error) {
+//				panic("mock out the DescribeClientVpnEndpoints method")
+//			},
+//			DescribeClientVpnRoutesFunc: func(ctx context.Context, params *ec2.DescribeClientVpnRoutesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeClientVpnRoutesOutput, error) {
+//				panic("mock out the DescribeClientVpnRoutes method")
+//			},
+//			DescribeClientVpnTargetNetworksFunc: func(ctx context.Context, params *ec2.DescribeClientVpnTargetNetworksInput, optFns ...func(*ec2.Options)) (*ec2.DescribeClientVpnTargetNetworksOutput, error) {
+//				panic("mock out the DescribeClientVpnTargetNetworks method")
+//			},
+//			DescribeCoipPoolsFunc: func(ctx context.Context, params *ec2.DescribeCoipPoolsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeCoipPoolsOutput, error) {
+//				panic("mock out the DescribeCoipPools method")
+//			},
+//			DescribeConversionTasksFunc: func(ctx context.Context, params *ec2.DescribeConversionTasksInput, optFns ...func(*ec2.Options)) (*ec2.DescribeConversionTasksOutput, error) {
+//				panic("mock out the DescribeConversionTasks method")
+//			},
+//			DescribeCustomerGatewaysFunc: func(ctx context.Context, params *ec2.DescribeCustomerGatewaysInput, optFns ...func(*ec2.Options)) (*ec2.DescribeCustomerGatewaysOutput, error) {
+//				panic("mock out the DescribeCustomerGateways method")
+//			},
+//			DescribeDhcpOptionsFunc: func(ctx context.Context, params *ec2.DescribeDhcpOptionsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeDhcpOptionsOutput, error) {
+//				panic("mock out the DescribeDhcpOptions method")
+//			},
+//			DescribeEgressOnlyInternetGatewaysFunc: func(ctx context.Context, params *ec2.DescribeEgressOnlyInternetGatewaysInput, optFns ...func(*ec2.Options)) (*ec2.DescribeEgressOnlyInternetGatewaysOutput, error) {
+//				panic("mock out the DescribeEgressOnlyInternetGateways method")
+//			},
+//			DescribeElasticGpusFunc: func(ctx context.Context, params *ec2.DescribeElasticGpusInput, optFns ...func(*ec2.Options)) (*ec2.DescribeElasticGpusOutput, error) {
+//				panic("mock out the DescribeElasticGpus method")
+//			},
+//			DescribeExportImageTasksFunc: func(ctx context.Context, params *ec2.DescribeExportImageTasksInput, optFns ...func(*ec2.Options)) (*ec2.DescribeExportImageTasksOutput, error) {
+//				panic("mock out the DescribeExportImageTasks method")
+//			},
+//			DescribeExportTasksFunc: func(ctx context.Context, params *ec2.DescribeExportTasksInput, optFns ...func(*ec2.Options)) (*ec2.DescribeExportTasksOutput, error) {
+//				panic("mock out the DescribeExportTasks method")
+//			},
+//			DescribeFastLaunchImagesFunc: func(ctx context.Context, params *ec2.DescribeFastLaunchImagesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeFastLaunchImagesOutput, error) {
+//				panic("mock out the DescribeFastLaunchImages method")
+//			},
+//			DescribeFastSnapshotRestoresFunc: func(ctx context.Context, params *ec2.DescribeFastSnapshotRestoresInput, optFns ...func(*ec2.Options)) (*ec2.DescribeFastSnapshotRestoresOutput, error) {
+//				panic("mock out the DescribeFastSnapshotRestores method")
+//			},
+//			DescribeFleetHistoryFunc: func(ctx context.Context, params *ec2.DescribeFleetHistoryInput, optFns ...func(*ec2.Options)) (*ec2.DescribeFleetHistoryOutput, error) {
+//				panic("mock out the DescribeFleetHistory method")
+//			},
+//			DescribeFleetInstancesFunc: func(ctx context.Context, params *ec2.DescribeFleetInstancesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeFleetInstancesOutput, error) {
+//				panic("mock out the DescribeFleetInstances method")
+//			},
+//			DescribeFleetsFunc: func(ctx context.Context, params *ec2.DescribeFleetsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeFleetsOutput, error) {
+//				panic("mock out the DescribeFleets method")
+//			},
+//			DescribeFlowLogsFunc: func(ctx context.Context, params *ec2.DescribeFlowLogsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeFlowLogsOutput, error) {
+//				panic("mock out the DescribeFlowLogs method")
+//			},
+//			DescribeFpgaImageAttributeFunc: func(ctx context.Context, params *ec2.DescribeFpgaImageAttributeInput, optFns ...func(*ec2.Options)) (*ec2.DescribeFpgaImageAttributeOutput, error) {
+//				panic("mock out the DescribeFpgaImageAttribute method")
+//			},
+//			DescribeFpgaImagesFunc: func(ctx context.Context, params *ec2.DescribeFpgaImagesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeFpgaImagesOutput, error) {
+//				panic("mock out the DescribeFpgaImages method")
+//			},
+//			DescribeHostReservationOfferingsFunc: func(ctx context.Context, params *ec2.DescribeHostReservationOfferingsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeHostReservationOfferingsOutput, error) {
+//				panic("mock out the DescribeHostReservationOfferings method")
+//			},
+//			DescribeHostReservationsFunc: func(ctx context.Context, params *ec2.DescribeHostReservationsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeHostReservationsOutput, error) {
+//				panic("mock out the DescribeHostReservations method")
+//			},
+//			DescribeHostsFunc: func(ctx context.Context, params *ec2.DescribeHostsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeHostsOutput, error) {
+//				panic("mock out the DescribeHosts method")
+//			},
+//			DescribeIamInstanceProfileAssociationsFunc: func(ctx context.Context, params *ec2.DescribeIamInstanceProfileAssociationsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeIamInstanceProfileAssociationsOutput, error) {
+//				panic("mock out the DescribeIamInstanceProfileAssociations method")
+//			},
+//			DescribeIdFormatFunc: func(ctx context.Context, params *ec2.DescribeIdFormatInput, optFns ...func(*ec2.Options)) (*ec2.DescribeIdFormatOutput, error) {
+//				panic("mock out the DescribeIdFormat method")
+//			},
+//			DescribeIdentityIdFormatFunc: func(ctx context.Context, params *ec2.DescribeIdentityIdFormatInput, optFns ...func(*ec2.Options)) (*ec2.DescribeIdentityIdFormatOutput, error) {
+//				panic("mock out the DescribeIdentityIdFormat method")
+//			},
+//			DescribeImageAttributeFunc: func(ctx context.Context, params *ec2.DescribeImageAttributeInput, optFns ...func(*ec2.Options)) (*ec2.DescribeImageAttributeOutput, error) {
+//				panic("mock out the DescribeImageAttribute method")
+//			},
+//			DescribeImagesFunc: func(ctx context.Context, params *ec2.DescribeImagesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeImagesOutput, error) {
+//				panic("mock out the DescribeImages method")
+//			},
+//			DescribeImportImageTasksFunc: func(ctx context.Context, params *ec2.DescribeImportImageTasksInput, optFns ...func(*ec2.Options)) (*ec2.DescribeImportImageTasksOutput, error) {
+//				panic("mock out the DescribeImportImageTasks method")
+//			},
+//			DescribeImportSnapshotTasksFunc: func(ctx context.Context, params *ec2.DescribeImportSnapshotTasksInput, optFns ...func(*ec2.Options)) (*ec2.DescribeImportSnapshotTasksOutput, error) {
+//				panic("mock out the DescribeImportSnapshotTasks method")
+//			},
+//			DescribeInstanceAttributeFunc: func(ctx context.Context, params *ec2.DescribeInstanceAttributeInput, optFns ...func(*ec2.Options)) (*ec2.DescribeInstanceAttributeOutput, error) {
+//				panic("mock out the DescribeInstanceAttribute method")
+//			},
+//			DescribeInstanceCreditSpecificationsFunc: func(ctx context.Context, params *ec2.DescribeInstanceCreditSpecificationsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeInstanceCreditSpecificationsOutput, error) {
+//				panic("mock out the DescribeInstanceCreditSpecifications method")
+//			},
+//			DescribeInstanceEventNotificationAttributesFunc: func(ctx context.Context, params *ec2.DescribeInstanceEventNotificationAttributesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeInstanceEventNotificationAttributesOutput, error) {
+//				panic("mock out the DescribeInstanceEventNotificationAttributes method")
+//			},
+//			DescribeInstanceEventWindowsFunc: func(ctx context.Context, params *ec2.DescribeInstanceEventWindowsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeInstanceEventWindowsOutput, error) {
+//				panic("mock out the DescribeInstanceEventWindows method")
+//			},
+//			DescribeInstanceStatusFunc: func(ctx context.Context, params *ec2.DescribeInstanceStatusInput, optFns ...func(*ec2.Options)) (*ec2.DescribeInstanceStatusOutput, error) {
+//				panic("mock out the DescribeInstanceStatus method")
+//			},
+//			DescribeInstanceTypeOfferingsFunc: func(ctx context.Context, params *ec2.DescribeInstanceTypeOfferingsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeInstanceTypeOfferingsOutput, error) {
+//				panic("mock out the DescribeInstanceTypeOfferings method")
+//			},
+//			DescribeInstanceTypesFunc: func(ctx context.Context, params *ec2.DescribeInstanceTypesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeInstanceTypesOutput, error) {
+//				panic("mock out the DescribeInstanceTypes method")
+//			},
+//			DescribeInstancesFunc: func(ctx context.Context, params *ec2.DescribeInstancesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeInstancesOutput, error) {
+//				panic("mock out the DescribeInstances method")
+//			},
+//			DescribeInternetGatewaysFunc: func(ctx context.Context, params *ec2.DescribeInternetGatewaysInput, optFns ...func(*ec2.Options)) (*ec2.DescribeInternetGatewaysOutput, error) {
+//				panic("mock out the DescribeInternetGateways method")
+//			},
+//			DescribeIpamPoolsFunc: func(ctx context.Context, params *ec2.DescribeIpamPoolsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeIpamPoolsOutput, error) {
+//				panic("mock out the DescribeIpamPools method")
+//			},
+//			DescribeIpamScopesFunc: func(ctx context.Context, params *ec2.DescribeIpamScopesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeIpamScopesOutput, error) {
+//				panic("mock out the DescribeIpamScopes method")
+//			},
+//			DescribeIpamsFunc: func(ctx context.Context, params *ec2.DescribeIpamsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeIpamsOutput, error) {
+//				panic("mock out the DescribeIpams method")
+//			},
+//			DescribeIpv6PoolsFunc: func(ctx context.Context, params *ec2.DescribeIpv6PoolsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeIpv6PoolsOutput, error) {
+//				panic("mock out the DescribeIpv6Pools method")
+//			},
+//			DescribeKeyPairsFunc: func(ctx context.Context, params *ec2.DescribeKeyPairsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeKeyPairsOutput, error) {
+//				panic("mock out the DescribeKeyPairs method")
+//			},
+//			DescribeLaunchTemplateVersionsFunc: func(ctx context.Context, params *ec2.DescribeLaunchTemplateVersionsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeLaunchTemplateVersionsOutput, error) {
+//				panic("mock out the DescribeLaunchTemplateVersions method")
+//			},
+//			DescribeLaunchTemplatesFunc: func(ctx context.Context, params *ec2.DescribeLaunchTemplatesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeLaunchTemplatesOutput, error) {
+//				panic("mock out the DescribeLaunchTemplates method")
+//			},
+//			DescribeLocalGatewayRouteTableVirtualInterfaceGroupAssociationsFunc: func(ctx context.Context, params *ec2.DescribeLocalGatewayRouteTableVirtualInterfaceGroupAssociationsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeLocalGatewayRouteTableVirtualInterfaceGroupAssociationsOutput, error) {
+//				panic("mock out the DescribeLocalGatewayRouteTableVirtualInterfaceGroupAssociations method")
+//			},
+//			DescribeLocalGatewayRouteTableVpcAssociationsFunc: func(ctx context.Context, params *ec2.DescribeLocalGatewayRouteTableVpcAssociationsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeLocalGatewayRouteTableVpcAssociationsOutput, error) {
+//				panic("mock out the DescribeLocalGatewayRouteTableVpcAssociations method")
+//			},
+//			DescribeLocalGatewayRouteTablesFunc: func(ctx context.Context, params *ec2.DescribeLocalGatewayRouteTablesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeLocalGatewayRouteTablesOutput, error) {
+//				panic("mock out the DescribeLocalGatewayRouteTables method")
+//			},
+//			DescribeLocalGatewayVirtualInterfaceGroupsFunc: func(ctx context.Context, params *ec2.DescribeLocalGatewayVirtualInterfaceGroupsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeLocalGatewayVirtualInterfaceGroupsOutput, error) {
+//				panic("mock out the DescribeLocalGatewayVirtualInterfaceGroups method")
+//			},
+//			DescribeLocalGatewayVirtualInterfacesFunc: func(ctx context.Context, params *ec2.DescribeLocalGatewayVirtualInterfacesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeLocalGatewayVirtualInterfacesOutput, error) {
+//				panic("mock out the DescribeLocalGatewayVirtualInterfaces method")
+//			},
+//			DescribeLocalGatewaysFunc: func(ctx context.Context, params *ec2.DescribeLocalGatewaysInput, optFns ...func(*ec2.Options)) (*ec2.DescribeLocalGatewaysOutput, error) {
+//				panic("mock out the DescribeLocalGateways method")
+//			},
+//			DescribeManagedPrefixListsFunc: func(ctx context.Context, params *ec2.DescribeManagedPrefixListsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeManagedPrefixListsOutput, error) {
+//				panic("mock out the DescribeManagedPrefixLists method")
+//			},
+//			DescribeMovingAddressesFunc: func(ctx context.Context, params *ec2.DescribeMovingAddressesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeMovingAddressesOutput, error) {
+//				panic("mock out the DescribeMovingAddresses method")
+//			},
+//			DescribeNatGatewaysFunc: func(ctx context.Context, params *ec2.DescribeNatGatewaysInput, optFns ...func(*ec2.Options)) (*ec2.DescribeNatGatewaysOutput, error) {
+//				panic("mock out the DescribeNatGateways method")
+//			},
+//			DescribeNetworkAclsFunc: func(ctx context.Context, params *ec2.DescribeNetworkAclsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeNetworkAclsOutput, error) {
+//				panic("mock out the DescribeNetworkAcls method")
+//			},
+//			DescribeNetworkInsightsAccessScopeAnalysesFunc: func(ctx context.Context, params *ec2.DescribeNetworkInsightsAccessScopeAnalysesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeNetworkInsightsAccessScopeAnalysesOutput, error) {
+//				panic("mock out the DescribeNetworkInsightsAccessScopeAnalyses method")
+//			},
+//			DescribeNetworkInsightsAccessScopesFunc: func(ctx context.Context, params *ec2.DescribeNetworkInsightsAccessScopesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeNetworkInsightsAccessScopesOutput, error) {
+//				panic("mock out the DescribeNetworkInsightsAccessScopes method")
+//			},
+//			DescribeNetworkInsightsAnalysesFunc: func(ctx context.Context, params *ec2.DescribeNetworkInsightsAnalysesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeNetworkInsightsAnalysesOutput, error) {
+//				panic("mock out the DescribeNetworkInsightsAnalyses method")
+//			},
+//			DescribeNetworkInsightsPathsFunc: func(ctx context.Context, params *ec2.DescribeNetworkInsightsPathsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeNetworkInsightsPathsOutput, error) {
+//				panic("mock out the DescribeNetworkInsightsPaths method")
+//			},
+//			DescribeNetworkInterfaceAttributeFunc: func(ctx context.Context, params *ec2.DescribeNetworkInterfaceAttributeInput, optFns ...func(*ec2.Options)) (*ec2.DescribeNetworkInterfaceAttributeOutput, error) {
+//				panic("mock out the DescribeNetworkInterfaceAttribute method")
+//			},
+//			DescribeNetworkInterfacePermissionsFunc: func(ctx context.Context, params *ec2.DescribeNetworkInterfacePermissionsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeNetworkInterfacePermissionsOutput, error) {
+//				panic("mock out the DescribeNetworkInterfacePermissions method")
+//			},
+//			DescribeNetworkInterfacesFunc: func(ctx context.Context, params *ec2.DescribeNetworkInterfacesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeNetworkInterfacesOutput, error) {
+//				panic("mock out the DescribeNetworkInterfaces method")
+//			},
+//			DescribePlacementGroupsFunc: func(ctx context.Context, params *ec2.DescribePlacementGroupsInput, optFns ...func(*ec2.Options)) (*ec2.DescribePlacementGroupsOutput, error) {
+//				panic("mock out the DescribePlacementGroups method")
+//			},
+//			DescribePrefixListsFunc: func(ctx context.Context, params *ec2.DescribePrefixListsInput, optFns ...func(*ec2.Options)) (*ec2.DescribePrefixListsOutput, error) {
+//				panic("mock out the DescribePrefixLists method")
+//			},
+//			DescribePrincipalIdFormatFunc: func(ctx context.Context, params *ec2.DescribePrincipalIdFormatInput, optFns ...func(*ec2.Options)) (*ec2.DescribePrincipalIdFormatOutput, error) {
+//				panic("mock out the DescribePrincipalIdFormat method")
+//			},
+//			DescribePublicIpv4PoolsFunc: func(ctx context.Context, params *ec2.DescribePublicIpv4PoolsInput, optFns ...func(*ec2.Options)) (*ec2.DescribePublicIpv4PoolsOutput, error) {
+//				panic("mock out the DescribePublicIpv4Pools method")
+//			},
+//			DescribeRegionsFunc: func(ctx context.Context, params *ec2.DescribeRegionsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeRegionsOutput, error) {
+//				panic("mock out the DescribeRegions method")
+//			},
+//			DescribeReplaceRootVolumeTasksFunc: func(ctx context.Context, params *ec2.DescribeReplaceRootVolumeTasksInput, optFns ...func(*ec2.Options)) (*ec2.DescribeReplaceRootVolumeTasksOutput, error) {
+//				panic("mock out the DescribeReplaceRootVolumeTasks method")
+//			},
+//			DescribeReservedInstancesFunc: func(ctx context.Context, params *ec2.DescribeReservedInstancesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeReservedInstancesOutput, error) {
+//				panic("mock out the DescribeReservedInstances method")
+//			},
+//			DescribeReservedInstancesListingsFunc: func(ctx context.Context, params *ec2.DescribeReservedInstancesListingsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeReservedInstancesListingsOutput, error) {
+//				panic("mock out the DescribeReservedInstancesListings method")
+//			},
+//			DescribeReservedInstancesModificationsFunc: func(ctx context.Context, params *ec2.DescribeReservedInstancesModificationsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeReservedInstancesModificationsOutput, error) {
+//				panic("mock out the DescribeReservedInstancesModifications method")
+//			},
+//			DescribeReservedInstancesOfferingsFunc: func(ctx context.Context, params *ec2.DescribeReservedInstancesOfferingsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeReservedInstancesOfferingsOutput, error) {
+//				panic("mock out the DescribeReservedInstancesOfferings method")
+//			},
+//			DescribeRouteTablesFunc: func(ctx context.Context, params *ec2.DescribeRouteTablesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeRouteTablesOutput, error) {
+//				panic("mock out the DescribeRouteTables method")
+//			},
+//			DescribeScheduledInstanceAvailabilityFunc: func(ctx context.Context, params *ec2.DescribeScheduledInstanceAvailabilityInput, optFns ...func(*ec2.Options)) (*ec2.DescribeScheduledInstanceAvailabilityOutput, error) {
+//				panic("mock out the DescribeScheduledInstanceAvailability method")
+//			},
+//			DescribeScheduledInstancesFunc: func(ctx context.Context, params *ec2.DescribeScheduledInstancesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeScheduledInstancesOutput, error) {
+//				panic("mock out the DescribeScheduledInstances method")
+//			},
+//			DescribeSecurityGroupReferencesFunc: func(ctx context.Context, params *ec2.DescribeSecurityGroupReferencesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeSecurityGroupReferencesOutput, error) {
+//				panic("mock out the DescribeSecurityGroupReferences method")
+//			},
+//			DescribeSecurityGroupRulesFunc: func(ctx context.Context, params *ec2.DescribeSecurityGroupRulesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeSecurityGroupRulesOutput, error) {
+//				panic("mock out the DescribeSecurityGroupRules method")
+//			},
+//			DescribeSecurityGroupsFunc: func(ctx context.Context, params *ec2.DescribeSecurityGroupsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeSecurityGroupsOutput, error) {
+//				panic("mock out the DescribeSecurityGroups method")
+//			},
+//			DescribeSnapshotAttributeFunc: func(ctx context.Context, params *ec2.DescribeSnapshotAttributeInput, optFns ...func(*ec2.Options)) (*ec2.DescribeSnapshotAttributeOutput, error) {
+//				panic("mock out the DescribeSnapshotAttribute method")
+//			},
+//			DescribeSnapshotTierStatusFunc: func(ctx context.Context, params *ec2.DescribeSnapshotTierStatusInput, optFns ...func(*ec2.Options)) (*ec2.DescribeSnapshotTierStatusOutput, error) {
+//				panic("mock out the DescribeSnapshotTierStatus method")
+//			},
+//			DescribeSnapshotsFunc: func(ctx context.Context, params *ec2.DescribeSnapshotsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeSnapshotsOutput, error) {
+//				panic("mock out the DescribeSnapshots method")
+//			},
+//			DescribeSpotDatafeedSubscriptionFunc: func(ctx context.Context, params *ec2.DescribeSpotDatafeedSubscriptionInput, optFns ...func(*ec2.Options)) (*ec2.DescribeSpotDatafeedSubscriptionOutput, error) {
+//				panic("mock out the DescribeSpotDatafeedSubscription method")
+//			},
+//			DescribeSpotFleetInstancesFunc: func(ctx context.Context, params *ec2.DescribeSpotFleetInstancesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeSpotFleetInstancesOutput, error) {
+//				panic("mock out the DescribeSpotFleetInstances method")
+//			},
+//			DescribeSpotFleetRequestHistoryFunc: func(ctx context.Context, params *ec2.DescribeSpotFleetRequestHistoryInput, optFns ...func(*ec2.Options)) (*ec2.DescribeSpotFleetRequestHistoryOutput, error) {
+//				panic("mock out the DescribeSpotFleetRequestHistory method")
+//			},
+//			DescribeSpotFleetRequestsFunc: func(ctx context.Context, params *ec2.DescribeSpotFleetRequestsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeSpotFleetRequestsOutput, error) {
+//				panic("mock out the DescribeSpotFleetRequests method")
+//			},
+//			DescribeSpotInstanceRequestsFunc: func(ctx context.Context, params *ec2.DescribeSpotInstanceRequestsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeSpotInstanceRequestsOutput, error) {
+//				panic("mock out the DescribeSpotInstanceRequests method")
+//			},
+//			DescribeSpotPriceHistoryFunc: func(ctx context.Context, params *ec2.DescribeSpotPriceHistoryInput, optFns ...func(*ec2.Options)) (*ec2.DescribeSpotPriceHistoryOutput, error) {
+//				panic("mock out the DescribeSpotPriceHistory method")
+//			},
+//			DescribeStaleSecurityGroupsFunc: func(ctx context.Context, params *ec2.DescribeStaleSecurityGroupsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeStaleSecurityGroupsOutput, error) {
+//				panic("mock out the DescribeStaleSecurityGroups method")
+//			},
+//			DescribeStoreImageTasksFunc: func(ctx context.Context, params *ec2.DescribeStoreImageTasksInput, optFns ...func(*ec2.Options)) (*ec2.DescribeStoreImageTasksOutput, error) {
+//				panic("mock out the DescribeStoreImageTasks method")
+//			},
+//			DescribeSubnetsFunc: func(ctx context.Context, params *ec2.DescribeSubnetsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeSubnetsOutput, error) {
+//				panic("mock out the DescribeSubnets method")
+//			},
+//			DescribeTagsFunc: func(ctx context.Context, params *ec2.DescribeTagsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeTagsOutput, error) {
+//				panic("mock out the DescribeTags method")
+//			},
+//			DescribeTrafficMirrorFiltersFunc: func(ctx context.Context, params *ec2.DescribeTrafficMirrorFiltersInput, optFns ...func(*ec2.Options)) (*ec2.DescribeTrafficMirrorFiltersOutput, error) {
+//				panic("mock out the DescribeTrafficMirrorFilters method")
+//			},
+//			DescribeTrafficMirrorSessionsFunc: func(ctx context.Context, params *ec2.DescribeTrafficMirrorSessionsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeTrafficMirrorSessionsOutput, error) {
+//				panic("mock out the DescribeTrafficMirrorSessions method")
+//			},
+//			DescribeTrafficMirrorTargetsFunc: func(ctx context.Context, params *ec2.DescribeTrafficMirrorTargetsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeTrafficMirrorTargetsOutput, error) {
+//				panic("mock out the DescribeTrafficMirrorTargets method")
+//			},
+//			DescribeTransitGatewayAttachmentsFunc: func(ctx context.Context, params *ec2.DescribeTransitGatewayAttachmentsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeTransitGatewayAttachmentsOutput, error) {
+//				panic("mock out the DescribeTransitGatewayAttachments method")
+//			},
+//			DescribeTransitGatewayConnectPeersFunc: func(ctx context.Context, params *ec2.DescribeTransitGatewayConnectPeersInput, optFns ...func(*ec2.Options)) (*ec2.DescribeTransitGatewayConnectPeersOutput, error) {
+//				panic("mock out the DescribeTransitGatewayConnectPeers method")
+//			},
+//			DescribeTransitGatewayConnectsFunc: func(ctx context.Context, params *ec2.DescribeTransitGatewayConnectsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeTransitGatewayConnectsOutput, error) {
+//				panic("mock out the DescribeTransitGatewayConnects method")
+//			},
+//			DescribeTransitGatewayMulticastDomainsFunc: func(ctx context.Context, params *ec2.DescribeTransitGatewayMulticastDomainsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeTransitGatewayMulticastDomainsOutput, error) {
+//				panic("mock out the DescribeTransitGatewayMulticastDomains method")
+//			},
+//			DescribeTransitGatewayPeeringAttachmentsFunc: func(ctx context.Context, params *ec2.DescribeTransitGatewayPeeringAttachmentsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeTransitGatewayPeeringAttachmentsOutput, error) {
+//				panic("mock out the DescribeTransitGatewayPeeringAttachments method")
+//			},
+//			DescribeTransitGatewayPolicyTablesFunc: func(ctx context.Context, params *ec2.DescribeTransitGatewayPolicyTablesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeTransitGatewayPolicyTablesOutput, error) {
+//				panic("mock out the DescribeTransitGatewayPolicyTables method")
+//			},
+//			DescribeTransitGatewayRouteTableAnnouncementsFunc: func(ctx context.Context, params *ec2.DescribeTransitGatewayRouteTableAnnouncementsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeTransitGatewayRouteTableAnnouncementsOutput, error) {
+//				panic("mock out the DescribeTransitGatewayRouteTableAnnouncements method")
+//			},
+//			DescribeTransitGatewayRouteTablesFunc: func(ctx context.Context, params *ec2.DescribeTransitGatewayRouteTablesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeTransitGatewayRouteTablesOutput, error) {
+//				panic("mock out the DescribeTransitGatewayRouteTables method")
+//			},
+//			DescribeTransitGatewayVpcAttachmentsFunc: func(ctx context.Context, params *ec2.DescribeTransitGatewayVpcAttachmentsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeTransitGatewayVpcAttachmentsOutput, error) {
+//				panic("mock out the DescribeTransitGatewayVpcAttachments method")
+//			},
+//			DescribeTransitGatewaysFunc: func(ctx context.Context, params *ec2.DescribeTransitGatewaysInput, optFns ...func(*ec2.Options)) (*ec2.DescribeTransitGatewaysOutput, error) {
+//				panic("mock out the DescribeTransitGateways method")
+//			},
+//			DescribeTrunkInterfaceAssociationsFunc: func(ctx context.Context, params *ec2.DescribeTrunkInterfaceAssociationsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeTrunkInterfaceAssociationsOutput, error) {
+//				panic("mock out the DescribeTrunkInterfaceAssociations method")
+//			},
+//			DescribeVolumeAttributeFunc: func(ctx context.Context, params *ec2.DescribeVolumeAttributeInput, optFns ...func(*ec2.Options)) (*ec2.DescribeVolumeAttributeOutput, error) {
+//				panic("mock out the DescribeVolumeAttribute method")
+//			},
+//			DescribeVolumeStatusFunc: func(ctx context.Context, params *ec2.DescribeVolumeStatusInput, optFns ...func(*ec2.Options)) (*ec2.DescribeVolumeStatusOutput, error) {
+//				panic("mock out the DescribeVolumeStatus method")
+//			},
+//			DescribeVolumesFunc: func(ctx context.Context, params *ec2.DescribeVolumesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeVolumesOutput, error) {
+//				panic("mock out the DescribeVolumes method")
+//			},
+//			DescribeVolumesModificationsFunc: func(ctx context.Context, params *ec2.DescribeVolumesModificationsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeVolumesModificationsOutput, error) {
+//				panic("mock out the DescribeVolumesModifications method")
+//			},
+//			DescribeVpcAttributeFunc: func(ctx context.Context, params *ec2.DescribeVpcAttributeInput, optFns ...func(*ec2.Options)) (*ec2.DescribeVpcAttributeOutput, error) {
+//				panic("mock out the DescribeVpcAttribute method")
+//			},
+//			DescribeVpcClassicLinkFunc: func(ctx context.Context, params *ec2.DescribeVpcClassicLinkInput, optFns ...func(*ec2.Options)) (*ec2.DescribeVpcClassicLinkOutput, error) {
+//				panic("mock out the DescribeVpcClassicLink method")
+//			},
+//			DescribeVpcClassicLinkDnsSupportFunc: func(ctx context.Context, params *ec2.DescribeVpcClassicLinkDnsSupportInput, optFns ...func(*ec2.Options)) (*ec2.DescribeVpcClassicLinkDnsSupportOutput, error) {
+//				panic("mock out the DescribeVpcClassicLinkDnsSupport method")
+//			},
+//			DescribeVpcEndpointConnectionNotificationsFunc: func(ctx context.Context, params *ec2.DescribeVpcEndpointConnectionNotificationsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeVpcEndpointConnectionNotificationsOutput, error) {
+//				panic("mock out the DescribeVpcEndpointConnectionNotifications method")
+//			},
+//			DescribeVpcEndpointConnectionsFunc: func(ctx context.Context, params *ec2.DescribeVpcEndpointConnectionsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeVpcEndpointConnectionsOutput, error) {
+//				panic("mock out the DescribeVpcEndpointConnections method")
+//			},
+//			DescribeVpcEndpointServiceConfigurationsFunc: func(ctx context.Context, params *ec2.DescribeVpcEndpointServiceConfigurationsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeVpcEndpointServiceConfigurationsOutput, error) {
+//				panic("mock out the DescribeVpcEndpointServiceConfigurations method")
+//			},
+//			DescribeVpcEndpointServicePermissionsFunc: func(ctx context.Context, params *ec2.DescribeVpcEndpointServicePermissionsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeVpcEndpointServicePermissionsOutput, error) {
+//				panic("mock out the DescribeVpcEndpointServicePermissions method")
+//			},
+//			DescribeVpcEndpointServicesFunc: func(ctx context.Context, params *ec2.DescribeVpcEndpointServicesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeVpcEndpointServicesOutput, error) {
+//				panic("mock out the DescribeVpcEndpointServices method")
+//			},
+//			DescribeVpcEndpointsFunc: func(ctx context.Context, params *ec2.DescribeVpcEndpointsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeVpcEndpointsOutput, error) {
+//				panic("mock out the DescribeVpcEndpoints method")
+//			},
+//			DescribeVpcPeeringConnectionsFunc: func(ctx context.Context, params *ec2.DescribeVpcPeeringConnectionsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeVpcPeeringConnectionsOutput, error) {
+//				panic("mock out the DescribeVpcPeeringConnections method")
+//			},
+//			DescribeVpcsFunc: func(ctx context.Context, params *ec2.DescribeVpcsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeVpcsOutput, error) {
+//				panic("mock out the DescribeVpcs method")
+//			},
+//			DescribeVpnConnectionsFunc: func(ctx context.Context, params *ec2.DescribeVpnConnectionsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeVpnConnectionsOutput, error) {
+//				panic("mock out the DescribeVpnConnections method")
+//			},
+//			DescribeVpnGatewaysFunc: func(ctx context.Context, params *ec2.DescribeVpnGatewaysInput, optFns ...func(*ec2.Options)) (*ec2.DescribeVpnGatewaysOutput, error) {
+//				panic("mock out the DescribeVpnGateways method")
+//			},
+//			DetachClassicLinkVpcFunc: func(ctx context.Context, params *ec2.DetachClassicLinkVpcInput, optFns ...func(*ec2.Options)) (*ec2.DetachClassicLinkVpcOutput, error) {
+//				panic("mock out the DetachClassicLinkVpc method")
+//			},
+//			DetachInternetGatewayFunc: func(ctx context.Context, params *ec2.DetachInternetGatewayInput, optFns ...func(*ec2.Options)) (*ec2.DetachInternetGatewayOutput, error) {
+//				panic("mock out the DetachInternetGateway method")
+//			},
+//			DetachNetworkInterfaceFunc: func(ctx context.Context, params *ec2.DetachNetworkInterfaceInput, optFns ...func(*ec2.Options)) (*ec2.DetachNetworkInterfaceOutput, error) {
+//				panic("mock out the DetachNetworkInterface method")
+//			},
+//			DetachVolumeFunc: func(ctx context.Context, params *ec2.DetachVolumeInput, optFns ...func(*ec2.Options)) (*ec2.DetachVolumeOutput, error) {
+//				panic("mock out the DetachVolume method")
+//			},
+//			DetachVpnGatewayFunc: func(ctx context.Context, params *ec2.DetachVpnGatewayInput, optFns ...func(*ec2.Options)) (*ec2.DetachVpnGatewayOutput, error) {
+//				panic("mock out the DetachVpnGateway method")
+//			},
+//			DisableEbsEncryptionByDefaultFunc: func(ctx context.Context, params *ec2.DisableEbsEncryptionByDefaultInput, optFns ...func(*ec2.Options)) (*ec2.DisableEbsEncryptionByDefaultOutput, error) {
+//				panic("mock out the DisableEbsEncryptionByDefault method")
+//			},
+//			DisableFastLaunchFunc: func(ctx context.Context, params *ec2.DisableFastLaunchInput, optFns ...func(*ec2.Options)) (*ec2.DisableFastLaunchOutput, error) {
+//				panic("mock out the DisableFastLaunch method")
+//			},
+//			DisableFastSnapshotRestoresFunc: func(ctx context.Context, params *ec2.DisableFastSnapshotRestoresInput, optFns ...func(*ec2.Options)) (*ec2.DisableFastSnapshotRestoresOutput, error) {
+//				panic("mock out the DisableFastSnapshotRestores method")
+//			},
+//			DisableImageDeprecationFunc: func(ctx context.Context, params *ec2.DisableImageDeprecationInput, optFns ...func(*ec2.Options)) (*ec2.DisableImageDeprecationOutput, error) {
+//				panic("mock out the DisableImageDeprecation method")
+//			},
+//			DisableIpamOrganizationAdminAccountFunc: func(ctx context.Context, params *ec2.DisableIpamOrganizationAdminAccountInput, optFns ...func(*ec2.Options)) (*ec2.DisableIpamOrganizationAdminAccountOutput, error) {
+//				panic("mock out the DisableIpamOrganizationAdminAccount method")
+//			},
+//			DisableSerialConsoleAccessFunc: func(ctx context.Context, params *ec2.DisableSerialConsoleAccessInput, optFns ...func(*ec2.Options)) (*ec2.DisableSerialConsoleAccessOutput, error) {
+//				panic("mock out the DisableSerialConsoleAccess method")
+//			},
+//			DisableTransitGatewayRouteTablePropagationFunc: func(ctx context.Context, params *ec2.DisableTransitGatewayRouteTablePropagationInput, optFns ...func(*ec2.Options)) (*ec2.DisableTransitGatewayRouteTablePropagationOutput, error) {
+//				panic("mock out the DisableTransitGatewayRouteTablePropagation method")
+//			},
+//			DisableVgwRoutePropagationFunc: func(ctx context.Context, params *ec2.DisableVgwRoutePropagationInput, optFns ...func(*ec2.Options)) (*ec2.DisableVgwRoutePropagationOutput, error) {
+//				panic("mock out the DisableVgwRoutePropagation method")
+//			},
+//			DisableVpcClassicLinkFunc: func(ctx context.Context, params *ec2.DisableVpcClassicLinkInput, optFns ...func(*ec2.Options)) (*ec2.DisableVpcClassicLinkOutput, error) {
+//				panic("mock out the DisableVpcClassicLink method")
+//			},
+//			DisableVpcClassicLinkDnsSupportFunc: func(ctx context.Context, params *ec2.DisableVpcClassicLinkDnsSupportInput, optFns ...func(*ec2.Options)) (*ec2.DisableVpcClassicLinkDnsSupportOutput, error) {
+//				panic("mock out the DisableVpcClassicLinkDnsSupport method")
+//			},
+//			DisassociateAddressFunc: func(ctx context.Context, params *ec2.DisassociateAddressInput, optFns ...func(*ec2.Options)) (*ec2.DisassociateAddressOutput, error) {
+//				panic("mock out the DisassociateAddress method")
+//			},
+//			DisassociateClientVpnTargetNetworkFunc: func(ctx context.Context, params *ec2.DisassociateClientVpnTargetNetworkInput, optFns ...func(*ec2.Options)) (*ec2.DisassociateClientVpnTargetNetworkOutput, error) {
+//				panic("mock out the DisassociateClientVpnTargetNetwork method")
+//			},
+//			DisassociateEnclaveCertificateIamRoleFunc: func(ctx context.Context, params *ec2.DisassociateEnclaveCertificateIamRoleInput, optFns ...func(*ec2.Options)) (*ec2.DisassociateEnclaveCertificateIamRoleOutput, error) {
+//				panic("mock out the DisassociateEnclaveCertificateIamRole method")
+//			},
+//			DisassociateIamInstanceProfileFunc: func(ctx context.Context, params *ec2.DisassociateIamInstanceProfileInput, optFns ...func(*ec2.Options)) (*ec2.DisassociateIamInstanceProfileOutput, error) {
+//				panic("mock out the DisassociateIamInstanceProfile method")
+//			},
+//			DisassociateInstanceEventWindowFunc: func(ctx context.Context, params *ec2.DisassociateInstanceEventWindowInput, optFns ...func(*ec2.Options)) (*ec2.DisassociateInstanceEventWindowOutput, error) {
+//				panic("mock out the DisassociateInstanceEventWindow method")
+//			},
+//			DisassociateRouteTableFunc: func(ctx context.Context, params *ec2.DisassociateRouteTableInput, optFns ...func(*ec2.Options)) (*ec2.DisassociateRouteTableOutput, error) {
+//				panic("mock out the DisassociateRouteTable method")
+//			},
+//			DisassociateSubnetCidrBlockFunc: func(ctx context.Context, params *ec2.DisassociateSubnetCidrBlockInput, optFns ...func(*ec2.Options)) (*ec2.DisassociateSubnetCidrBlockOutput, error) {
+//				panic("mock out the DisassociateSubnetCidrBlock method")
+//			},
+//			DisassociateTransitGatewayMulticastDomainFunc: func(ctx context.Context, params *ec2.DisassociateTransitGatewayMulticastDomainInput, optFns ...func(*ec2.Options)) (*ec2.DisassociateTransitGatewayMulticastDomainOutput, error) {
+//				panic("mock out the DisassociateTransitGatewayMulticastDomain method")
+//			},
+//			DisassociateTransitGatewayPolicyTableFunc: func(ctx context.Context, params *ec2.DisassociateTransitGatewayPolicyTableInput, optFns ...func(*ec2.Options)) (*ec2.DisassociateTransitGatewayPolicyTableOutput, error) {
+//				panic("mock out the DisassociateTransitGatewayPolicyTable method")
+//			},
+//			DisassociateTransitGatewayRouteTableFunc: func(ctx context.Context, params *ec2.DisassociateTransitGatewayRouteTableInput, optFns ...func(*ec2.Options)) (*ec2.DisassociateTransitGatewayRouteTableOutput, error) {
+//				panic("mock out the DisassociateTransitGatewayRouteTable method")
+//			},
+//			DisassociateTrunkInterfaceFunc: func(ctx context.Context, params *ec2.DisassociateTrunkInterfaceInput, optFns ...func(*ec2.Options)) (*ec2.DisassociateTrunkInterfaceOutput, error) {
+//				panic("mock out the DisassociateTrunkInterface method")
+//			},
+//			DisassociateVpcCidrBlockFunc: func(ctx context.Context, params *ec2.DisassociateVpcCidrBlockInput, optFns ...func(*ec2.Options)) (*ec2.DisassociateVpcCidrBlockOutput, error) {
+//				panic("mock out the DisassociateVpcCidrBlock method")
+//			},
+//			EnableEbsEncryptionByDefaultFunc: func(ctx context.Context, params *ec2.EnableEbsEncryptionByDefaultInput, optFns ...func(*ec2.Options)) (*ec2.EnableEbsEncryptionByDefaultOutput, error) {
+//				panic("mock out the EnableEbsEncryptionByDefault method")
+//			},
+//			EnableFastLaunchFunc: func(ctx context.Context, params *ec2.EnableFastLaunchInput, optFns ...func(*ec2.Options)) (*ec2.EnableFastLaunchOutput, error) {
+//				panic("mock out the EnableFastLaunch method")
+//			},
+//			EnableFastSnapshotRestoresFunc: func(ctx context.Context, params *ec2.EnableFastSnapshotRestoresInput, optFns ...func(*ec2.Options)) (*ec2.EnableFastSnapshotRestoresOutput, error) {
+//				panic("mock out the EnableFastSnapshotRestores method")
+//			},
+//			EnableImageDeprecationFunc: func(ctx context.Context, params *ec2.EnableImageDeprecationInput, optFns ...func(*ec2.Options)) (*ec2.EnableImageDeprecationOutput, error) {
+//				panic("mock out the EnableImageDeprecation method")
+//			},
+//			EnableIpamOrganizationAdminAccountFunc: func(ctx context.Context, params *ec2.EnableIpamOrganizationAdminAccountInput, optFns ...func(*ec2.Options)) (*ec2.EnableIpamOrganizationAdminAccountOutput, error) {
+//				panic("mock out the EnableIpamOrganizationAdminAccount method")
+//			},
+//			EnableSerialConsoleAccessFunc: func(ctx context.Context, params *ec2.EnableSerialConsoleAccessInput, optFns ...func(*ec2.Options)) (*ec2.EnableSerialConsoleAccessOutput, error) {
+//				panic("mock out the EnableSerialConsoleAccess method")
+//			},
+//			EnableTransitGatewayRouteTablePropagationFunc: func(ctx context.Context, params *ec2.EnableTransitGatewayRouteTablePropagationInput, optFns ...func(*ec2.Options)) (*ec2.EnableTransitGatewayRouteTablePropagationOutput, error) {
+//				panic("mock out the EnableTransitGatewayRouteTablePropagation method")
+//			},
+//			EnableVgwRoutePropagationFunc: func(ctx context.Context, params *ec2.EnableVgwRoutePropagationInput, optFns ...func(*ec2.Options)) (*ec2.EnableVgwRoutePropagationOutput, error) {
+//				panic("mock out the EnableVgwRoutePropagation method")
+//			},
+//			EnableVolumeIOFunc: func(ctx context.Context, params *ec2.EnableVolumeIOInput, optFns ...func(*ec2.Options)) (*ec2.EnableVolumeIOOutput, error) {
+//				panic("mock out the EnableVolumeIO method")
+//			},
+//			EnableVpcClassicLinkFunc: func(ctx context.Context, params *ec2.EnableVpcClassicLinkInput, optFns ...func(*ec2.Options)) (*ec2.EnableVpcClassicLinkOutput, error) {
+//				panic("mock out the EnableVpcClassicLink method")
+//			},
+//			EnableVpcClassicLinkDnsSupportFunc: func(ctx context.Context, params *ec2.EnableVpcClassicLinkDnsSupportInput, optFns ...func(*ec2.Options)) (*ec2.EnableVpcClassicLinkDnsSupportOutput, error) {
+//				panic("mock out the EnableVpcClassicLinkDnsSupport method")
+//			},
+//			ExportClientVpnClientCertificateRevocationListFunc: func(ctx context.Context, params *ec2.ExportClientVpnClientCertificateRevocationListInput, optFns ...func(*ec2.Options)) (*ec2.ExportClientVpnClientCertificateRevocationListOutput, error) {
+//				panic("mock out the ExportClientVpnClientCertificateRevocationList method")
+//			},
+//			ExportClientVpnClientConfigurationFunc: func(ctx context.Context, params *ec2.ExportClientVpnClientConfigurationInput, optFns ...func(*ec2.Options)) (*ec2.ExportClientVpnClientConfigurationOutput, error) {
+//				panic("mock out the ExportClientVpnClientConfiguration method")
+//			},
+//			ExportImageFunc: func(ctx context.Context, params *ec2.ExportImageInput, optFns ...func(*ec2.Options)) (*ec2.ExportImageOutput, error) {
+//				panic("mock out the ExportImage method")
+//			},
+//			ExportTransitGatewayRoutesFunc: func(ctx context.Context, params *ec2.ExportTransitGatewayRoutesInput, optFns ...func(*ec2.Options)) (*ec2.ExportTransitGatewayRoutesOutput, error) {
+//				panic("mock out the ExportTransitGatewayRoutes method")
+//			},
+//			GetAssociatedEnclaveCertificateIamRolesFunc: func(ctx context.Context, params *ec2.GetAssociatedEnclaveCertificateIamRolesInput, optFns ...func(*ec2.Options)) (*ec2.GetAssociatedEnclaveCertificateIamRolesOutput, error) {
+//				panic("mock out the GetAssociatedEnclaveCertificateIamRoles method")
+//			},
+//			GetAssociatedIpv6PoolCidrsFunc: func(ctx context.Context, params *ec2.GetAssociatedIpv6PoolCidrsInput, optFns ...func(*ec2.Options)) (*ec2.GetAssociatedIpv6PoolCidrsOutput, error) {
+//				panic("mock out the GetAssociatedIpv6PoolCidrs method")
+//			},
+//			GetCapacityReservationUsageFunc: func(ctx context.Context, params *ec2.GetCapacityReservationUsageInput, optFns ...func(*ec2.Options)) (*ec2.GetCapacityReservationUsageOutput, error) {
+//				panic("mock out the GetCapacityReservationUsage method")
+//			},
+//			GetCoipPoolUsageFunc: func(ctx context.Context, params *ec2.GetCoipPoolUsageInput, optFns ...func(*ec2.Options)) (*ec2.GetCoipPoolUsageOutput, error) {
+//				panic("mock out the GetCoipPoolUsage method")
+//			},
+//			GetConsoleOutputFunc: func(ctx context.Context, params *ec2.GetConsoleOutputInput, optFns ...func(*ec2.Options)) (*ec2.GetConsoleOutputOutput, error) {
+//				panic("mock out the GetConsoleOutput method")
+//			},
+//			GetConsoleScreenshotFunc: func(ctx context.Context, params *ec2.GetConsoleScreenshotInput, optFns ...func(*ec2.Options)) (*ec2.GetConsoleScreenshotOutput, error) {
+//				panic("mock out the GetConsoleScreenshot method")
+//			},
+//			GetDefaultCreditSpecificationFunc: func(ctx context.Context, params *ec2.GetDefaultCreditSpecificationInput, optFns ...func(*ec2.Options)) (*ec2.GetDefaultCreditSpecificationOutput, error) {
+//				panic("mock out the GetDefaultCreditSpecification method")
+//			},
+//			GetEbsDefaultKmsKeyIdFunc: func(ctx context.Context, params *ec2.GetEbsDefaultKmsKeyIdInput, optFns ...func(*ec2.Options)) (*ec2.GetEbsDefaultKmsKeyIdOutput, error) {
+//				panic("mock out the GetEbsDefaultKmsKeyId method")
+//			},
+//			GetEbsEncryptionByDefaultFunc: func(ctx context.Context, params *ec2.GetEbsEncryptionByDefaultInput, optFns ...func(*ec2.Options)) (*ec2.GetEbsEncryptionByDefaultOutput, error) {
+//				panic("mock out the GetEbsEncryptionByDefault method")
+//			},
+//			GetFlowLogsIntegrationTemplateFunc: func(ctx context.Context, params *ec2.GetFlowLogsIntegrationTemplateInput, optFns ...func(*ec2.Options)) (*ec2.GetFlowLogsIntegrationTemplateOutput, error) {
+//				panic("mock out the GetFlowLogsIntegrationTemplate method")
+//			},
+//			GetGroupsForCapacityReservationFunc: func(ctx context.Context, params *ec2.GetGroupsForCapacityReservationInput, optFns ...func(*ec2.Options)) (*ec2.GetGroupsForCapacityReservationOutput, error) {
+//				panic("mock out the GetGroupsForCapacityReservation method")
+//			},
+//			GetHostReservationPurchasePreviewFunc: func(ctx context.Context, params *ec2.GetHostReservationPurchasePreviewInput, optFns ...func(*ec2.Options)) (*ec2.GetHostReservationPurchasePreviewOutput, error) {
+//				panic("mock out the GetHostReservationPurchasePreview method")
+//			},
+//			GetInstanceTypesFromInstanceRequirementsFunc: func(ctx context.Context, params *ec2.GetInstanceTypesFromInstanceRequirementsInput, optFns ...func(*ec2.Options)) (*ec2.GetInstanceTypesFromInstanceRequirementsOutput, error) {
+//				panic("mock out the GetInstanceTypesFromInstanceRequirements method")
+//			},
+//			GetInstanceUefiDataFunc: func(ctx context.Context, params *ec2.GetInstanceUefiDataInput, optFns ...func(*ec2.Options)) (*ec2.GetInstanceUefiDataOutput, error) {
+//				panic("mock out the GetInstanceUefiData method")
+//			},
+//			GetIpamAddressHistoryFunc: func(ctx context.Context, params *ec2.GetIpamAddressHistoryInput, optFns ...func(*ec2.Options)) (*ec2.GetIpamAddressHistoryOutput, error) {
+//				panic("mock out the GetIpamAddressHistory method")
+//			},
+//			GetIpamPoolAllocationsFunc: func(ctx context.Context, params *ec2.GetIpamPoolAllocationsInput, optFns ...func(*ec2.Options)) (*ec2.GetIpamPoolAllocationsOutput, error) {
+//				panic("mock out the GetIpamPoolAllocations method")
+//			},
+//			GetIpamPoolCidrsFunc: func(ctx context.Context, params *ec2.GetIpamPoolCidrsInput, optFns ...func(*ec2.Options)) (*ec2.GetIpamPoolCidrsOutput, error) {
+//				panic("mock out the GetIpamPoolCidrs method")
+//			},
+//			GetIpamResourceCidrsFunc: func(ctx context.Context, params *ec2.GetIpamResourceCidrsInput, optFns ...func(*ec2.Options)) (*ec2.GetIpamResourceCidrsOutput, error) {
+//				panic("mock out the GetIpamResourceCidrs method")
+//			},
+//			GetLaunchTemplateDataFunc: func(ctx context.Context, params *ec2.GetLaunchTemplateDataInput, optFns ...func(*ec2.Options)) (*ec2.GetLaunchTemplateDataOutput, error) {
+//				panic("mock out the GetLaunchTemplateData method")
+//			},
+//			GetManagedPrefixListAssociationsFunc: func(ctx context.Context, params *ec2.GetManagedPrefixListAssociationsInput, optFns ...func(*ec2.Options)) (*ec2.GetManagedPrefixListAssociationsOutput, error) {
+//				panic("mock out the GetManagedPrefixListAssociations method")
+//			},
+//			GetManagedPrefixListEntriesFunc: func(ctx context.Context, params *ec2.GetManagedPrefixListEntriesInput, optFns ...func(*ec2.Options)) (*ec2.GetManagedPrefixListEntriesOutput, error) {
+//				panic("mock out the GetManagedPrefixListEntries method")
+//			},
+//			GetNetworkInsightsAccessScopeAnalysisFindingsFunc: func(ctx context.Context, params *ec2.GetNetworkInsightsAccessScopeAnalysisFindingsInput, optFns ...func(*ec2.Options)) (*ec2.GetNetworkInsightsAccessScopeAnalysisFindingsOutput, error) {
+//				panic("mock out the GetNetworkInsightsAccessScopeAnalysisFindings method")
+//			},
+//			GetNetworkInsightsAccessScopeContentFunc: func(ctx context.Context, params *ec2.GetNetworkInsightsAccessScopeContentInput, optFns ...func(*ec2.Options)) (*ec2.GetNetworkInsightsAccessScopeContentOutput, error) {
+//				panic("mock out the GetNetworkInsightsAccessScopeContent method")
+//			},
+//			GetPasswordDataFunc: func(ctx context.Context, params *ec2.GetPasswordDataInput, optFns ...func(*ec2.Options)) (*ec2.GetPasswordDataOutput, error) {
+//				panic("mock out the GetPasswordData method")
+//			},
+//			GetReservedInstancesExchangeQuoteFunc: func(ctx context.Context, params *ec2.GetReservedInstancesExchangeQuoteInput, optFns ...func(*ec2.Options)) (*ec2.GetReservedInstancesExchangeQuoteOutput, error) {
+//				panic("mock out the GetReservedInstancesExchangeQuote method")
+//			},
+//			GetSerialConsoleAccessStatusFunc: func(ctx context.Context, params *ec2.GetSerialConsoleAccessStatusInput, optFns ...func(*ec2.Options)) (*ec2.GetSerialConsoleAccessStatusOutput, error) {
+//				panic("mock out the GetSerialConsoleAccessStatus method")
+//			},
+//			GetSpotPlacementScoresFunc: func(ctx context.Context, params *ec2.GetSpotPlacementScoresInput, optFns ...func(*ec2.Options)) (*ec2.GetSpotPlacementScoresOutput, error) {
+//				panic("mock out the GetSpotPlacementScores method")
+//			},
+//			GetSubnetCidrReservationsFunc: func(ctx context.Context, params *ec2.GetSubnetCidrReservationsInput, optFns ...func(*ec2.Options)) (*ec2.GetSubnetCidrReservationsOutput, error) {
+//				panic("mock out the GetSubnetCidrReservations method")
+//			},
+//			GetTransitGatewayAttachmentPropagationsFunc: func(ctx context.Context, params *ec2.GetTransitGatewayAttachmentPropagationsInput, optFns ...func(*ec2.Options)) (*ec2.GetTransitGatewayAttachmentPropagationsOutput, error) {
+//				panic("mock out the GetTransitGatewayAttachmentPropagations method")
+//			},
+//			GetTransitGatewayMulticastDomainAssociationsFunc: func(ctx context.Context, params *ec2.GetTransitGatewayMulticastDomainAssociationsInput, optFns ...func(*ec2.Options)) (*ec2.GetTransitGatewayMulticastDomainAssociationsOutput, error) {
+//				panic("mock out the GetTransitGatewayMulticastDomainAssociations method")
+//			},
+//			GetTransitGatewayPolicyTableAssociationsFunc: func(ctx context.Context, params *ec2.GetTransitGatewayPolicyTableAssociationsInput, optFns ...func(*ec2.Options)) (*ec2.GetTransitGatewayPolicyTableAssociationsOutput, error) {
+//				panic("mock out the GetTransitGatewayPolicyTableAssociations method")
+//			},
+//			GetTransitGatewayPolicyTableEntriesFunc: func(ctx context.Context, params *ec2.GetTransitGatewayPolicyTableEntriesInput, optFns ...func(*ec2.Options)) (*ec2.GetTransitGatewayPolicyTableEntriesOutput, error) {
+//				panic("mock out the GetTransitGatewayPolicyTableEntries method")
+//			},
+//			GetTransitGatewayPrefixListReferencesFunc: func(ctx context.Context, params *ec2.GetTransitGatewayPrefixListReferencesInput, optFns ...func(*ec2.Options)) (*ec2.GetTransitGatewayPrefixListReferencesOutput, error) {
+//				panic("mock out the GetTransitGatewayPrefixListReferences method")
+//			},
+//			GetTransitGatewayRouteTableAssociationsFunc: func(ctx context.Context, params *ec2.GetTransitGatewayRouteTableAssociationsInput, optFns ...func(*ec2.Options)) (*ec2.GetTransitGatewayRouteTableAssociationsOutput, error) {
+//				panic("mock out the GetTransitGatewayRouteTableAssociations method")
+//			},
+//			GetTransitGatewayRouteTablePropagationsFunc: func(ctx context.Context, params *ec2.GetTransitGatewayRouteTablePropagationsInput, optFns ...func(*ec2.Options)) (*ec2.GetTransitGatewayRouteTablePropagationsOutput, error) {
+//				panic("mock out the GetTransitGatewayRouteTablePropagations method")
+//			},
+//			GetVpnConnectionDeviceSampleConfigurationFunc: func(ctx context.Context, params *ec2.GetVpnConnectionDeviceSampleConfigurationInput, optFns ...func(*ec2.Options)) (*ec2.GetVpnConnectionDeviceSampleConfigurationOutput, error) {
+//				panic("mock out the GetVpnConnectionDeviceSampleConfiguration method")
+//			},
+//			GetVpnConnectionDeviceTypesFunc: func(ctx context.Context, params *ec2.GetVpnConnectionDeviceTypesInput, optFns ...func(*ec2.Options)) (*ec2.GetVpnConnectionDeviceTypesOutput, error) {
+//				panic("mock out the GetVpnConnectionDeviceTypes method")
+//			},
+//			ImportClientVpnClientCertificateRevocationListFunc: func(ctx context.Context, params *ec2.ImportClientVpnClientCertificateRevocationListInput, optFns ...func(*ec2.Options)) (*ec2.ImportClientVpnClientCertificateRevocationListOutput, error) {
+//				panic("mock out the ImportClientVpnClientCertificateRevocationList method")
+//			},
+//			ImportImageFunc: func(ctx context.Context, params *ec2.ImportImageInput, optFns ...func(*ec2.Options)) (*ec2.ImportImageOutput, error) {
+//				panic("mock out the ImportImage method")
+//			},
+//			ImportInstanceFunc: func(ctx context.Context, params *ec2.ImportInstanceInput, optFns ...func(*ec2.Options)) (*ec2.ImportInstanceOutput, error) {
+//				panic("mock out the ImportInstance method")
+//			},
+//			ImportKeyPairFunc: func(ctx context.Context, params *ec2.ImportKeyPairInput, optFns ...func(*ec2.Options)) (*ec2.ImportKeyPairOutput, error) {
+//				panic("mock out the ImportKeyPair method")
+//			},
+//			ImportSnapshotFunc: func(ctx context.Context, params *ec2.ImportSnapshotInput, optFns ...func(*ec2.Options)) (*ec2.ImportSnapshotOutput, error) {
+//				panic("mock out the ImportSnapshot method")
+//			},
+//			ImportVolumeFunc: func(ctx context.Context, params *ec2.ImportVolumeInput, optFns ...func(*ec2.Options)) (*ec2.ImportVolumeOutput, error) {
+//				panic("mock out the ImportVolume method")
+//			},
+//			ListImagesInRecycleBinFunc: func(ctx context.Context, params *ec2.ListImagesInRecycleBinInput, optFns ...func(*ec2.Options)) (*ec2.ListImagesInRecycleBinOutput, error) {
+//				panic("mock out the ListImagesInRecycleBin method")
+//			},
+//			ListSnapshotsInRecycleBinFunc: func(ctx context.Context, params *ec2.ListSnapshotsInRecycleBinInput, optFns ...func(*ec2.Options)) (*ec2.ListSnapshotsInRecycleBinOutput, error) {
+//				panic("mock out the ListSnapshotsInRecycleBin method")
+//			},
+//			ModifyAddressAttributeFunc: func(ctx context.Context, params *ec2.ModifyAddressAttributeInput, optFns ...func(*ec2.Options)) (*ec2.ModifyAddressAttributeOutput, error) {
+//				panic("mock out the ModifyAddressAttribute method")
+//			},
+//			ModifyAvailabilityZoneGroupFunc: func(ctx context.Context, params *ec2.ModifyAvailabilityZoneGroupInput, optFns ...func(*ec2.Options)) (*ec2.ModifyAvailabilityZoneGroupOutput, error) {
+//				panic("mock out the ModifyAvailabilityZoneGroup method")
+//			},
+//			ModifyCapacityReservationFunc: func(ctx context.Context, params *ec2.ModifyCapacityReservationInput, optFns ...func(*ec2.Options)) (*ec2.ModifyCapacityReservationOutput, error) {
+//				panic("mock out the ModifyCapacityReservation method")
+//			},
+//			ModifyCapacityReservationFleetFunc: func(ctx context.Context, params *ec2.ModifyCapacityReservationFleetInput, optFns ...func(*ec2.Options)) (*ec2.ModifyCapacityReservationFleetOutput, error) {
+//				panic("mock out the ModifyCapacityReservationFleet method")
+//			},
+//			ModifyClientVpnEndpointFunc: func(ctx context.Context, params *ec2.ModifyClientVpnEndpointInput, optFns ...func(*ec2.Options)) (*ec2.ModifyClientVpnEndpointOutput, error) {
+//				panic("mock out the ModifyClientVpnEndpoint method")
+//			},
+//			ModifyDefaultCreditSpecificationFunc: func(ctx context.Context, params *ec2.ModifyDefaultCreditSpecificationInput, optFns ...func(*ec2.Options)) (*ec2.ModifyDefaultCreditSpecificationOutput, error) {
+//				panic("mock out the ModifyDefaultCreditSpecification method")
+//			},
+//			ModifyEbsDefaultKmsKeyIdFunc: func(ctx context.Context, params *ec2.ModifyEbsDefaultKmsKeyIdInput, optFns ...func(*ec2.Options)) (*ec2.ModifyEbsDefaultKmsKeyIdOutput, error) {
+//				panic("mock out the ModifyEbsDefaultKmsKeyId method")
+//			},
+//			ModifyFleetFunc: func(ctx context.Context, params *ec2.ModifyFleetInput, optFns ...func(*ec2.Options)) (*ec2.ModifyFleetOutput, error) {
+//				panic("mock out the ModifyFleet method")
+//			},
+//			ModifyFpgaImageAttributeFunc: func(ctx context.Context, params *ec2.ModifyFpgaImageAttributeInput, optFns ...func(*ec2.Options)) (*ec2.ModifyFpgaImageAttributeOutput, error) {
+//				panic("mock out the ModifyFpgaImageAttribute method")
+//			},
+//			ModifyHostsFunc: func(ctx context.Context, params *ec2.ModifyHostsInput, optFns ...func(*ec2.Options)) (*ec2.ModifyHostsOutput, error) {
+//				panic("mock out the ModifyHosts method")
+//			},
+//			ModifyIdFormatFunc: func(ctx context.Context, params *ec2.ModifyIdFormatInput, optFns ...func(*ec2.Options)) (*ec2.ModifyIdFormatOutput, error) {
+//				panic("mock out the ModifyIdFormat method")
+//			},
+//			ModifyIdentityIdFormatFunc: func(ctx context.Context, params *ec2.ModifyIdentityIdFormatInput, optFns ...func(*ec2.Options)) (*ec2.ModifyIdentityIdFormatOutput, error) {
+//				panic("mock out the ModifyIdentityIdFormat method")
+//			},
+//			ModifyImageAttributeFunc: func(ctx context.Context, params *ec2.ModifyImageAttributeInput, optFns ...func(*ec2.Options)) (*ec2.ModifyImageAttributeOutput, error) {
+//				panic("mock out the ModifyImageAttribute method")
+//			},
+//			ModifyInstanceAttributeFunc: func(ctx context.Context, params *ec2.ModifyInstanceAttributeInput, optFns ...func(*ec2.Options)) (*ec2.ModifyInstanceAttributeOutput, error) {
+//				panic("mock out the ModifyInstanceAttribute method")
+//			},
+//			ModifyInstanceCapacityReservationAttributesFunc: func(ctx context.Context, params *ec2.ModifyInstanceCapacityReservationAttributesInput, optFns ...func(*ec2.Options)) (*ec2.ModifyInstanceCapacityReservationAttributesOutput, error) {
+//				panic("mock out the ModifyInstanceCapacityReservationAttributes method")
+//			},
+//			ModifyInstanceCreditSpecificationFunc: func(ctx context.Context, params *ec2.ModifyInstanceCreditSpecificationInput, optFns ...func(*ec2.Options)) (*ec2.ModifyInstanceCreditSpecificationOutput, error) {
+//				panic("mock out the ModifyInstanceCreditSpecification method")
+//			},
+//			ModifyInstanceEventStartTimeFunc: func(ctx context.Context, params *ec2.ModifyInstanceEventStartTimeInput, optFns ...func(*ec2.Options)) (*ec2.ModifyInstanceEventStartTimeOutput, error) {
+//				panic("mock out the ModifyInstanceEventStartTime method")
+//			},
+//			ModifyInstanceEventWindowFunc: func(ctx context.Context, params *ec2.ModifyInstanceEventWindowInput, optFns ...func(*ec2.Options)) (*ec2.ModifyInstanceEventWindowOutput, error) {
+//				panic("mock out the ModifyInstanceEventWindow method")
+//			},
+//			ModifyInstanceMaintenanceOptionsFunc: func(ctx context.Context, params *ec2.ModifyInstanceMaintenanceOptionsInput, optFns ...func(*ec2.Options)) (*ec2.ModifyInstanceMaintenanceOptionsOutput, error) {
+//				panic("mock out the ModifyInstanceMaintenanceOptions method")
+//			},
+//			ModifyInstanceMetadataOptionsFunc: func(ctx context.Context, params *ec2.ModifyInstanceMetadataOptionsInput, optFns ...func(*ec2.Options)) (*ec2.ModifyInstanceMetadataOptionsOutput, error) {
+//				panic("mock out the ModifyInstanceMetadataOptions method")
+//			},
+//			ModifyInstancePlacementFunc: func(ctx context.Context, params *ec2.ModifyInstancePlacementInput, optFns ...func(*ec2.Options)) (*ec2.ModifyInstancePlacementOutput, error) {
+//				panic("mock out the ModifyInstancePlacement method")
+//			},
+//			ModifyIpamFunc: func(ctx context.Context, params *ec2.ModifyIpamInput, optFns ...func(*ec2.Options)) (*ec2.ModifyIpamOutput, error) {
+//				panic("mock out the ModifyIpam method")
+//			},
+//			ModifyIpamPoolFunc: func(ctx context.Context, params *ec2.ModifyIpamPoolInput, optFns ...func(*ec2.Options)) (*ec2.ModifyIpamPoolOutput, error) {
+//				panic("mock out the ModifyIpamPool method")
+//			},
+//			ModifyIpamResourceCidrFunc: func(ctx context.Context, params *ec2.ModifyIpamResourceCidrInput, optFns ...func(*ec2.Options)) (*ec2.ModifyIpamResourceCidrOutput, error) {
+//				panic("mock out the ModifyIpamResourceCidr method")
+//			},
+//			ModifyIpamScopeFunc: func(ctx context.Context, params *ec2.ModifyIpamScopeInput, optFns ...func(*ec2.Options)) (*ec2.ModifyIpamScopeOutput, error) {
+//				panic("mock out the ModifyIpamScope method")
+//			},
+//			ModifyLaunchTemplateFunc: func(ctx context.Context, params *ec2.ModifyLaunchTemplateInput, optFns ...func(*ec2.Options)) (*ec2.ModifyLaunchTemplateOutput, error) {
+//				panic("mock out the ModifyLaunchTemplate method")
+//			},
+//			ModifyManagedPrefixListFunc: func(ctx context.Context, params *ec2.ModifyManagedPrefixListInput, optFns ...func(*ec2.Options)) (*ec2.ModifyManagedPrefixListOutput, error) {
+//				panic("mock out the ModifyManagedPrefixList method")
+//			},
+//			ModifyNetworkInterfaceAttributeFunc: func(ctx context.Context, params *ec2.ModifyNetworkInterfaceAttributeInput, optFns ...func(*ec2.Options)) (*ec2.ModifyNetworkInterfaceAttributeOutput, error) {
+//				panic("mock out the ModifyNetworkInterfaceAttribute method")
+//			},
+//			ModifyPrivateDnsNameOptionsFunc: func(ctx context.Context, params *ec2.ModifyPrivateDnsNameOptionsInput, optFns ...func(*ec2.Options)) (*ec2.ModifyPrivateDnsNameOptionsOutput, error) {
+//				panic("mock out the ModifyPrivateDnsNameOptions method")
+//			},
+//			ModifyReservedInstancesFunc: func(ctx context.Context, params *ec2.ModifyReservedInstancesInput, optFns ...func(*ec2.Options)) (*ec2.ModifyReservedInstancesOutput, error) {
+//				panic("mock out the ModifyReservedInstances method")
+//			},
+//			ModifySecurityGroupRulesFunc: func(ctx context.Context, params *ec2.ModifySecurityGroupRulesInput, optFns ...func(*ec2.Options)) (*ec2.ModifySecurityGroupRulesOutput, error) {
+//				panic("mock out the ModifySecurityGroupRules method")
+//			},
+//			ModifySnapshotAttributeFunc: func(ctx context.Context, params *ec2.ModifySnapshotAttributeInput, optFns ...func(*ec2.Options)) (*ec2.ModifySnapshotAttributeOutput, error) {
+//				panic("mock out the ModifySnapshotAttribute method")
+//			},
+//			ModifySnapshotTierFunc: func(ctx context.Context, params *ec2.ModifySnapshotTierInput, optFns ...func(*ec2.Options)) (*ec2.ModifySnapshotTierOutput, error) {
+//				panic("mock out the ModifySnapshotTier method")
+//			},
+//			ModifySpotFleetRequestFunc: func(ctx context.Context, params *ec2.ModifySpotFleetRequestInput, optFns ...func(*ec2.Options)) (*ec2.ModifySpotFleetRequestOutput, error) {
+//				panic("mock out the ModifySpotFleetRequest method")
+//			},
+//			ModifySubnetAttributeFunc: func(ctx context.Context, params *ec2.ModifySubnetAttributeInput, optFns ...func(*ec2.Options)) (*ec2.ModifySubnetAttributeOutput, error) {
+//				panic("mock out the ModifySubnetAttribute method")
+//			},
+//			ModifyTrafficMirrorFilterNetworkServicesFunc: func(ctx context.Context, params *ec2.ModifyTrafficMirrorFilterNetworkServicesInput, optFns ...func(*ec2.Options)) (*ec2.ModifyTrafficMirrorFilterNetworkServicesOutput, error) {
+//				panic("mock out the ModifyTrafficMirrorFilterNetworkServices method")
+//			},
+//			ModifyTrafficMirrorFilterRuleFunc: func(ctx context.Context, params *ec2.ModifyTrafficMirrorFilterRuleInput, optFns ...func(*ec2.Options)) (*ec2.ModifyTrafficMirrorFilterRuleOutput, error) {
+//				panic("mock out the ModifyTrafficMirrorFilterRule method")
+//			},
+//			ModifyTrafficMirrorSessionFunc: func(ctx context.Context, params *ec2.ModifyTrafficMirrorSessionInput, optFns ...func(*ec2.Options)) (*ec2.ModifyTrafficMirrorSessionOutput, error) {
+//				panic("mock out the ModifyTrafficMirrorSession method")
+//			},
+//			ModifyTransitGatewayFunc: func(ctx context.Context, params *ec2.ModifyTransitGatewayInput, optFns ...func(*ec2.Options)) (*ec2.ModifyTransitGatewayOutput, error) {
+//				panic("mock out the ModifyTransitGateway method")
+//			},
+//			ModifyTransitGatewayPrefixListReferenceFunc: func(ctx context.Context, params *ec2.ModifyTransitGatewayPrefixListReferenceInput, optFns ...func(*ec2.Options)) (*ec2.ModifyTransitGatewayPrefixListReferenceOutput, error) {
+//				panic("mock out the ModifyTransitGatewayPrefixListReference method")
+//			},
+//			ModifyTransitGatewayVpcAttachmentFunc: func(ctx context.Context, params *ec2.ModifyTransitGatewayVpcAttachmentInput, optFns ...func(*ec2.Options)) (*ec2.ModifyTransitGatewayVpcAttachmentOutput, error) {
+//				panic("mock out the ModifyTransitGatewayVpcAttachment method")
+//			},
+//			ModifyVolumeFunc: func(ctx context.Context, params *ec2.ModifyVolumeInput, optFns ...func(*ec2.Options)) (*ec2.ModifyVolumeOutput, error) {
+//				panic("mock out the ModifyVolume method")
+//			},
+//			ModifyVolumeAttributeFunc: func(ctx context.Context, params *ec2.ModifyVolumeAttributeInput, optFns ...func(*ec2.Options)) (*ec2.ModifyVolumeAttributeOutput, error) {
+//				panic("mock out the ModifyVolumeAttribute method")
+//			},
+//			ModifyVpcAttributeFunc: func(ctx context.Context, params *ec2.ModifyVpcAttributeInput, optFns ...func(*ec2.Options)) (*ec2.ModifyVpcAttributeOutput, error) {
+//				panic("mock out the ModifyVpcAttribute method")
+//			},
+//			ModifyVpcEndpointFunc: func(ctx context.Context, params *ec2.ModifyVpcEndpointInput, optFns ...func(*ec2.Options)) (*ec2.ModifyVpcEndpointOutput, error) {
+//				panic("mock out the ModifyVpcEndpoint method")
+//			},
+//			ModifyVpcEndpointConnectionNotificationFunc: func(ctx context.Context, params *ec2.ModifyVpcEndpointConnectionNotificationInput, optFns ...func(*ec2.Options)) (*ec2.ModifyVpcEndpointConnectionNotificationOutput, error) {
+//				panic("mock out the ModifyVpcEndpointConnectionNotification method")
+//			},
+//			ModifyVpcEndpointServiceConfigurationFunc: func(ctx context.Context, params *ec2.ModifyVpcEndpointServiceConfigurationInput, optFns ...func(*ec2.Options)) (*ec2.ModifyVpcEndpointServiceConfigurationOutput, error) {
+//				panic("mock out the ModifyVpcEndpointServiceConfiguration method")
+//			},
+//			ModifyVpcEndpointServicePayerResponsibilityFunc: func(ctx context.Context, params *ec2.ModifyVpcEndpointServicePayerResponsibilityInput, optFns ...func(*ec2.Options)) (*ec2.ModifyVpcEndpointServicePayerResponsibilityOutput, error) {
+//				panic("mock out the ModifyVpcEndpointServicePayerResponsibility method")
+//			},
+//			ModifyVpcEndpointServicePermissionsFunc: func(ctx context.Context, params *ec2.ModifyVpcEndpointServicePermissionsInput, optFns ...func(*ec2.Options)) (*ec2.ModifyVpcEndpointServicePermissionsOutput, error) {
+//				panic("mock out the ModifyVpcEndpointServicePermissions method")
+//			},
+//			ModifyVpcPeeringConnectionOptionsFunc: func(ctx context.Context, params *ec2.ModifyVpcPeeringConnectionOptionsInput, optFns ...func(*ec2.Options)) (*ec2.ModifyVpcPeeringConnectionOptionsOutput, error) {
+//				panic("mock out the ModifyVpcPeeringConnectionOptions method")
+//			},
+//			ModifyVpcTenancyFunc: func(ctx context.Context, params *ec2.ModifyVpcTenancyInput, optFns ...func(*ec2.Options)) (*ec2.ModifyVpcTenancyOutput, error) {
+//				panic("mock out the ModifyVpcTenancy method")
+//			},
+//			ModifyVpnConnectionFunc: func(ctx context.Context, params *ec2.ModifyVpnConnectionInput, optFns ...func(*ec2.Options)) (*ec2.ModifyVpnConnectionOutput, error) {
+//				panic("mock out the ModifyVpnConnection method")
+//			},
+//			ModifyVpnConnectionOptionsFunc: func(ctx context.Context, params *ec2.ModifyVpnConnectionOptionsInput, optFns ...func(*ec2.Options)) (*ec2.ModifyVpnConnectionOptionsOutput, error) {
+//				panic("mock out the ModifyVpnConnectionOptions method")
+//			},
+//			ModifyVpnTunnelCertificateFunc: func(ctx context.Context, params *ec2.ModifyVpnTunnelCertificateInput, optFns ...func(*ec2.Options)) (*ec2.ModifyVpnTunnelCertificateOutput, error) {
+//				panic("mock out the ModifyVpnTunnelCertificate method")
+//			},
+//			ModifyVpnTunnelOptionsFunc: func(ctx context.Context, params *ec2.ModifyVpnTunnelOptionsInput, optFns ...func(*ec2.Options)) (*ec2.ModifyVpnTunnelOptionsOutput, error) {
+//				panic("mock out the ModifyVpnTunnelOptions method")
+//			},
+//			MonitorInstancesFunc: func(ctx context.Context, params *ec2.MonitorInstancesInput, optFns ...func(*ec2.Options)) (*ec2.MonitorInstancesOutput, error) {
+//				panic("mock out the MonitorInstances method")
+//			},
+//			MoveAddressToVpcFunc: func(ctx context.Context, params *ec2.MoveAddressToVpcInput, optFns ...func(*ec2.Options)) (*ec2.MoveAddressToVpcOutput, error) {
+//				panic("mock out the MoveAddressToVpc method")
+//			},
+//			MoveByoipCidrToIpamFunc: func(ctx context.Context, params *ec2.MoveByoipCidrToIpamInput, optFns ...func(*ec2.Options)) (*ec2.MoveByoipCidrToIpamOutput, error) {
+//				panic("mock out the MoveByoipCidrToIpam method")
+//			},
+//			ProvisionByoipCidrFunc: func(ctx context.Context, params *ec2.ProvisionByoipCidrInput, optFns ...func(*ec2.Options)) (*ec2.ProvisionByoipCidrOutput, error) {
+//				panic("mock out the ProvisionByoipCidr method")
+//			},
+//			ProvisionIpamPoolCidrFunc: func(ctx context.Context, params *ec2.ProvisionIpamPoolCidrInput, optFns ...func(*ec2.Options)) (*ec2.ProvisionIpamPoolCidrOutput, error) {
+//				panic("mock out the ProvisionIpamPoolCidr method")
+//			},
+//			ProvisionPublicIpv4PoolCidrFunc: func(ctx context.Context, params *ec2.ProvisionPublicIpv4PoolCidrInput, optFns ...func(*ec2.Options)) (*ec2.ProvisionPublicIpv4PoolCidrOutput, error) {
+//				panic("mock out the ProvisionPublicIpv4PoolCidr method")
+//			},
+//			PurchaseHostReservationFunc: func(ctx context.Context, params *ec2.PurchaseHostReservationInput, optFns ...func(*ec2.Options)) (*ec2.PurchaseHostReservationOutput, error) {
+//				panic("mock out the PurchaseHostReservation method")
+//			},
+//			PurchaseReservedInstancesOfferingFunc: func(ctx context.Context, params *ec2.PurchaseReservedInstancesOfferingInput, optFns ...func(*ec2.Options)) (*ec2.PurchaseReservedInstancesOfferingOutput, error) {
+//				panic("mock out the PurchaseReservedInstancesOffering method")
+//			},
+//			PurchaseScheduledInstancesFunc: func(ctx context.Context, params *ec2.PurchaseScheduledInstancesInput, optFns ...func(*ec2.Options)) (*ec2.PurchaseScheduledInstancesOutput, error) {
+//				panic("mock out the PurchaseScheduledInstances method")
+//			},
+//			RebootInstancesFunc: func(ctx context.Context, params *ec2.RebootInstancesInput, optFns ...func(*ec2.Options)) (*ec2.RebootInstancesOutput, error) {
+//				panic("mock out the RebootInstances method")
+//			},
+//			RegisterImageFunc: func(ctx context.Context, params *ec2.RegisterImageInput, optFns ...func(*ec2.Options)) (*ec2.RegisterImageOutput, error) {
+//				panic("mock out the RegisterImage method")
+//			},
+//			RegisterInstanceEventNotificationAttributesFunc: func(ctx context.Context, params *ec2.RegisterInstanceEventNotificationAttributesInput, optFns ...func(*ec2.Options)) (*ec2.RegisterInstanceEventNotificationAttributesOutput, error) {
+//				panic("mock out the RegisterInstanceEventNotificationAttributes method")
+//			},
+//			RegisterTransitGatewayMulticastGroupMembersFunc: func(ctx context.Context, params *ec2.RegisterTransitGatewayMulticastGroupMembersInput, optFns ...func(*ec2.Options)) (*ec2.RegisterTransitGatewayMulticastGroupMembersOutput, error) {
+//				panic("mock out the RegisterTransitGatewayMulticastGroupMembers method")
+//			},
+//			RegisterTransitGatewayMulticastGroupSourcesFunc: func(ctx context.Context, params *ec2.RegisterTransitGatewayMulticastGroupSourcesInput, optFns ...func(*ec2.Options)) (*ec2.RegisterTransitGatewayMulticastGroupSourcesOutput, error) {
+//				panic("mock out the RegisterTransitGatewayMulticastGroupSources method")
+//			},
+//			RejectTransitGatewayMulticastDomainAssociationsFunc: func(ctx context.Context, params *ec2.RejectTransitGatewayMulticastDomainAssociationsInput, optFns ...func(*ec2.Options)) (*ec2.RejectTransitGatewayMulticastDomainAssociationsOutput, error) {
+//				panic("mock out the RejectTransitGatewayMulticastDomainAssociations method")
+//			},
+//			RejectTransitGatewayPeeringAttachmentFunc: func(ctx context.Context, params *ec2.RejectTransitGatewayPeeringAttachmentInput, optFns ...func(*ec2.Options)) (*ec2.RejectTransitGatewayPeeringAttachmentOutput, error) {
+//				panic("mock out the RejectTransitGatewayPeeringAttachment method")
+//			},
+//			RejectTransitGatewayVpcAttachmentFunc: func(ctx context.Context, params *ec2.RejectTransitGatewayVpcAttachmentInput, optFns ...func(*ec2.Options)) (*ec2.RejectTransitGatewayVpcAttachmentOutput, error) {
+//				panic("mock out the RejectTransitGatewayVpcAttachment method")
+//			},
+//			RejectVpcEndpointConnectionsFunc: func(ctx context.Context, params *ec2.RejectVpcEndpointConnectionsInput, optFns ...func(*ec2.Options)) (*ec2.RejectVpcEndpointConnectionsOutput, error) {
+//				panic("mock out the RejectVpcEndpointConnections method")
+//			},
+//			RejectVpcPeeringConnectionFunc: func(ctx context.Context, params *ec2.RejectVpcPeeringConnectionInput, optFns ...func(*ec2.Options)) (*ec2.RejectVpcPeeringConnectionOutput, error) {
+//				panic("mock out the RejectVpcPeeringConnection method")
+//			},
+//			ReleaseAddressFunc: func(ctx context.Context, params *ec2.ReleaseAddressInput, optFns ...func(*ec2.Options)) (*ec2.ReleaseAddressOutput, error) {
+//				panic("mock out the ReleaseAddress method")
+//			},
+//			ReleaseHostsFunc: func(ctx context.Context, params *ec2.ReleaseHostsInput, optFns ...func(*ec2.Options)) (*ec2.ReleaseHostsOutput, error) {
+//				panic("mock out the ReleaseHosts method")
+//			},
+//			ReleaseIpamPoolAllocationFunc: func(ctx context.Context, params *ec2.ReleaseIpamPoolAllocationInput, optFns ...func(*ec2.Options)) (*ec2.ReleaseIpamPoolAllocationOutput, error) {
+//				panic("mock out the ReleaseIpamPoolAllocation method")
+//			},
+//			ReplaceIamInstanceProfileAssociationFunc: func(ctx context.Context, params *ec2.ReplaceIamInstanceProfileAssociationInput, optFns ...func(*ec2.Options)) (*ec2.ReplaceIamInstanceProfileAssociationOutput, error) {
+//				panic("mock out the ReplaceIamInstanceProfileAssociation method")
+//			},
+//			ReplaceNetworkAclAssociationFunc: func(ctx context.Context, params *ec2.ReplaceNetworkAclAssociationInput, optFns ...func(*ec2.Options)) (*ec2.ReplaceNetworkAclAssociationOutput, error) {
+//				panic("mock out the ReplaceNetworkAclAssociation method")
+//			},
+//			ReplaceNetworkAclEntryFunc: func(ctx context.Context, params *ec2.ReplaceNetworkAclEntryInput, optFns ...func(*ec2.Options)) (*ec2.ReplaceNetworkAclEntryOutput, error) {
+//				panic("mock out the ReplaceNetworkAclEntry method")
+//			},
+//			ReplaceRouteFunc: func(ctx context.Context, params *ec2.ReplaceRouteInput, optFns ...func(*ec2.Options)) (*ec2.ReplaceRouteOutput, error) {
+//				panic("mock out the ReplaceRoute method")
+//			},
+//			ReplaceRouteTableAssociationFunc: func(ctx context.Context, params *ec2.ReplaceRouteTableAssociationInput, optFns ...func(*ec2.Options)) (*ec2.ReplaceRouteTableAssociationOutput, error) {
+//				panic("mock out the ReplaceRouteTableAssociation method")
+//			},
+//			ReplaceTransitGatewayRouteFunc: func(ctx context.Context, params *ec2.ReplaceTransitGatewayRouteInput, optFns ...func(*ec2.Options)) (*ec2.ReplaceTransitGatewayRouteOutput, error) {
+//				panic("mock out the ReplaceTransitGatewayRoute method")
+//			},
+//			ReportInstanceStatusFunc: func(ctx context.Context, params *ec2.ReportInstanceStatusInput, optFns ...func(*ec2.Options)) (*ec2.ReportInstanceStatusOutput, error) {
+//				panic("mock out the ReportInstanceStatus method")
+//			},
+//			RequestSpotFleetFunc: func(ctx context.Context, params *ec2.RequestSpotFleetInput, optFns ...func(*ec2.Options)) (*ec2.RequestSpotFleetOutput, error) {
+//				panic("mock out the RequestSpotFleet method")
+//			},
+//			RequestSpotInstancesFunc: func(ctx context.Context, params *ec2.RequestSpotInstancesInput, optFns ...func(*ec2.Options)) (*ec2.RequestSpotInstancesOutput, error) {
+//				panic("mock out the RequestSpotInstances method")
+//			},
+//			ResetAddressAttributeFunc: func(ctx context.Context, params *ec2.ResetAddressAttributeInput, optFns ...func(*ec2.Options)) (*ec2.ResetAddressAttributeOutput, error) {
+//				panic("mock out the ResetAddressAttribute method")
+//			},
+//			ResetEbsDefaultKmsKeyIdFunc: func(ctx context.Context, params *ec2.ResetEbsDefaultKmsKeyIdInput, optFns ...func(*ec2.Options)) (*ec2.ResetEbsDefaultKmsKeyIdOutput, error) {
+//				panic("mock out the ResetEbsDefaultKmsKeyId method")
+//			},
+//			ResetFpgaImageAttributeFunc: func(ctx context.Context, params *ec2.ResetFpgaImageAttributeInput, optFns ...func(*ec2.Options)) (*ec2.ResetFpgaImageAttributeOutput, error) {
+//				panic("mock out the ResetFpgaImageAttribute method")
+//			},
+//			ResetImageAttributeFunc: func(ctx context.Context, params *ec2.ResetImageAttributeInput, optFns ...func(*ec2.Options)) (*ec2.ResetImageAttributeOutput, error) {
+//				panic("mock out the ResetImageAttribute method")
+//			},
+//			ResetInstanceAttributeFunc: func(ctx context.Context, params *ec2.ResetInstanceAttributeInput, optFns ...func(*ec2.Options)) (*ec2.ResetInstanceAttributeOutput, error) {
+//				panic("mock out the ResetInstanceAttribute method")
+//			},
+//			ResetNetworkInterfaceAttributeFunc: func(ctx context.Context, params *ec2.ResetNetworkInterfaceAttributeInput, optFns ...func(*ec2.Options)) (*ec2.ResetNetworkInterfaceAttributeOutput, error) {
+//				panic("mock out the ResetNetworkInterfaceAttribute method")
+//			},
+//			ResetSnapshotAttributeFunc: func(ctx context.Context, params *ec2.ResetSnapshotAttributeInput, optFns ...func(*ec2.Options)) (*ec2.ResetSnapshotAttributeOutput, error) {
+//				panic("mock out the ResetSnapshotAttribute method")
+//			},
+//			RestoreAddressToClassicFunc: func(ctx context.Context, params *ec2.RestoreAddressToClassicInput, optFns ...func(*ec2.Options)) (*ec2.RestoreAddressToClassicOutput, error) {
+//				panic("mock out the RestoreAddressToClassic method")
+//			},
+//			RestoreImageFromRecycleBinFunc: func(ctx context.Context, params *ec2.RestoreImageFromRecycleBinInput, optFns ...func(*ec2.Options)) (*ec2.RestoreImageFromRecycleBinOutput, error) {
+//				panic("mock out the RestoreImageFromRecycleBin method")
+//			},
+//			RestoreManagedPrefixListVersionFunc: func(ctx context.Context, params *ec2.RestoreManagedPrefixListVersionInput, optFns ...func(*ec2.Options)) (*ec2.RestoreManagedPrefixListVersionOutput, error) {
+//				panic("mock out the RestoreManagedPrefixListVersion method")
+//			},
+//			RestoreSnapshotFromRecycleBinFunc: func(ctx context.Context, params *ec2.RestoreSnapshotFromRecycleBinInput, optFns ...func(*ec2.Options)) (*ec2.RestoreSnapshotFromRecycleBinOutput, error) {
+//				panic("mock out the RestoreSnapshotFromRecycleBin method")
+//			},
+//			RestoreSnapshotTierFunc: func(ctx context.Context, params *ec2.RestoreSnapshotTierInput, optFns ...func(*ec2.Options)) (*ec2.RestoreSnapshotTierOutput, error) {
+//				panic("mock out the RestoreSnapshotTier method")
+//			},
+//			RevokeClientVpnIngressFunc: func(ctx context.Context, params *ec2.RevokeClientVpnIngressInput, optFns ...func(*ec2.Options)) (*ec2.RevokeClientVpnIngressOutput, error) {
+//				panic("mock out the RevokeClientVpnIngress method")
+//			},
+//			RevokeSecurityGroupEgressFunc: func(ctx context.Context, params *ec2.RevokeSecurityGroupEgressInput, optFns ...func(*ec2.Options)) (*ec2.RevokeSecurityGroupEgressOutput, error) {
+//				panic("mock out the RevokeSecurityGroupEgress method")
+//			},
+//			RevokeSecurityGroupIngressFunc: func(ctx context.Context, params *ec2.RevokeSecurityGroupIngressInput, optFns ...func(*ec2.Options)) (*ec2.RevokeSecurityGroupIngressOutput, error) {
+//				panic("mock out the RevokeSecurityGroupIngress method")
+//			},
+//			RunInstancesFunc: func(ctx context.Context, params *ec2.RunInstancesInput, optFns ...func(*ec2.Options)) (*ec2.RunInstancesOutput, error) {
+//				panic("mock out the RunInstances method")
+//			},
+//			RunScheduledInstancesFunc: func(ctx context.Context, params *ec2.RunScheduledInstancesInput, optFns ...func(*ec2.Options)) (*ec2.RunScheduledInstancesOutput, error) {
+//				panic("mock out the RunScheduledInstances method")
+//			},
+//			SearchLocalGatewayRoutesFunc: func(ctx context.Context, params *ec2.SearchLocalGatewayRoutesInput, optFns ...func(*ec2.Options)) (*ec2.SearchLocalGatewayRoutesOutput, error) {
+//				panic("mock out the SearchLocalGatewayRoutes method")
+//			},
+//			SearchTransitGatewayMulticastGroupsFunc: func(ctx context.Context, params *ec2.SearchTransitGatewayMulticastGroupsInput, optFns ...func(*ec2.Options)) (*ec2.SearchTransitGatewayMulticastGroupsOutput, error) {
+//				panic("mock out the SearchTransitGatewayMulticastGroups method")
+//			},
+//			SearchTransitGatewayRoutesFunc: func(ctx context.Context, params *ec2.SearchTransitGatewayRoutesInput, optFns ...func(*ec2.Options)) (*ec2.SearchTransitGatewayRoutesOutput, error) {
+//				panic("mock out the SearchTransitGatewayRoutes method")
+//			},
+//			SendDiagnosticInterruptFunc: func(ctx context.Context, params *ec2.SendDiagnosticInterruptInput, optFns ...func(*ec2.Options)) (*ec2.SendDiagnosticInterruptOutput, error) {
+//				panic("mock out the SendDiagnosticInterrupt method")
+//			},
+//			StartInstancesFunc: func(ctx context.Context, params *ec2.StartInstancesInput, optFns ...func(*ec2.Options)) (*ec2.StartInstancesOutput, error) {
+//				panic("mock out the StartInstances method")
+//			},
+//			StartNetworkInsightsAccessScopeAnalysisFunc: func(ctx context.Context, params *ec2.StartNetworkInsightsAccessScopeAnalysisInput, optFns ...func(*ec2.Options)) (*ec2.StartNetworkInsightsAccessScopeAnalysisOutput, error) {
+//				panic("mock out the StartNetworkInsightsAccessScopeAnalysis method")
+//			},
+//			StartNetworkInsightsAnalysisFunc: func(ctx context.Context, params *ec2.StartNetworkInsightsAnalysisInput, optFns ...func(*ec2.Options)) (*ec2.StartNetworkInsightsAnalysisOutput, error) {
+//				panic("mock out the StartNetworkInsightsAnalysis method")
+//			},
+//			StartVpcEndpointServicePrivateDnsVerificationFunc: func(ctx context.Context, params *ec2.StartVpcEndpointServicePrivateDnsVerificationInput, optFns ...func(*ec2.Options)) (*ec2.StartVpcEndpointServicePrivateDnsVerificationOutput, error) {
+//				panic("mock out the StartVpcEndpointServicePrivateDnsVerification method")
+//			},
+//			StopInstancesFunc: func(ctx context.Context, params *ec2.StopInstancesInput, optFns ...func(*ec2.Options)) (*ec2.StopInstancesOutput, error) {
+//				panic("mock out the StopInstances method")
+//			},
+//			TerminateClientVpnConnectionsFunc: func(ctx context.Context, params *ec2.TerminateClientVpnConnectionsInput, optFns ...func(*ec2.Options)) (*ec2.TerminateClientVpnConnectionsOutput, error) {
+//				panic("mock out the TerminateClientVpnConnections method")
+//			},
+//			TerminateInstancesFunc: func(ctx context.Context, params *ec2.TerminateInstancesInput, optFns ...func(*ec2.Options)) (*ec2.TerminateInstancesOutput, error) {
+//				panic("mock out the TerminateInstances method")
+//			},
+//			UnassignIpv6AddressesFunc: func(ctx context.Context, params *ec2.UnassignIpv6AddressesInput, optFns ...func(*ec2.Options)) (*ec2.UnassignIpv6AddressesOutput, error) {
+//				panic("mock out the UnassignIpv6Addresses method")
+//			},
+//			UnassignPrivateIpAddressesFunc: func(ctx context.Context, params *ec2.UnassignPrivateIpAddressesInput, optFns ...func(*ec2.Options)) (*ec2.UnassignPrivateIpAddressesOutput, error) {
+//				panic("mock out the UnassignPrivateIpAddresses method")
+//			},
+//			UnmonitorInstancesFunc: func(ctx context.Context, params *ec2.UnmonitorInstancesInput, optFns ...func(*ec2.Options)) (*ec2.UnmonitorInstancesOutput, error) {
+//				panic("mock out the UnmonitorInstances method")
+//			},
+//			UpdateSecurityGroupRuleDescriptionsEgressFunc: func(ctx context.Context, params *ec2.UpdateSecurityGroupRuleDescriptionsEgressInput, optFns ...func(*ec2.Options)) (*ec2.UpdateSecurityGroupRuleDescriptionsEgressOutput, error) {
+//				panic("mock out the UpdateSecurityGroupRuleDescriptionsEgress method")
+//			},
+//			UpdateSecurityGroupRuleDescriptionsIngressFunc: func(ctx context.Context, params *ec2.UpdateSecurityGroupRuleDescriptionsIngressInput, optFns ...func(*ec2.Options)) (*ec2.UpdateSecurityGroupRuleDescriptionsIngressOutput, error) {
+//				panic("mock out the UpdateSecurityGroupRuleDescriptionsIngress method")
+//			},
+//			WithdrawByoipCidrFunc: func(ctx context.Context, params *ec2.WithdrawByoipCidrInput, optFns ...func(*ec2.Options)) (*ec2.WithdrawByoipCidrOutput, error) {
+//				panic("mock out the WithdrawByoipCidr method")
+//			},
+//		}
 //
-// 		// use mockedClient in code that requires Client
-// 		// and then make assertions.
+//		// use mockedClient in code that requires Client
+//		// and then make assertions.
 //
-// 	}
+//	}
 type ClientMock struct {
 	// AcceptReservedInstancesExchangeQuoteFunc mocks the AcceptReservedInstancesExchangeQuote method.
 	AcceptReservedInstancesExchangeQuoteFunc func(ctx context.Context, params *ec2.AcceptReservedInstancesExchangeQuoteInput, optFns ...func(*ec2.Options)) (*ec2.AcceptReservedInstancesExchangeQuoteOutput, error)
@@ -8582,7 +8582,8 @@ func (mock *ClientMock) AcceptReservedInstancesExchangeQuote(ctx context.Context
 
 // AcceptReservedInstancesExchangeQuoteCalls gets all the calls that were made to AcceptReservedInstancesExchangeQuote.
 // Check the length with:
-//     len(mockedClient.AcceptReservedInstancesExchangeQuoteCalls())
+//
+//	len(mockedClient.AcceptReservedInstancesExchangeQuoteCalls())
 func (mock *ClientMock) AcceptReservedInstancesExchangeQuoteCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.AcceptReservedInstancesExchangeQuoteInput
@@ -8621,7 +8622,8 @@ func (mock *ClientMock) AcceptTransitGatewayMulticastDomainAssociations(ctx cont
 
 // AcceptTransitGatewayMulticastDomainAssociationsCalls gets all the calls that were made to AcceptTransitGatewayMulticastDomainAssociations.
 // Check the length with:
-//     len(mockedClient.AcceptTransitGatewayMulticastDomainAssociationsCalls())
+//
+//	len(mockedClient.AcceptTransitGatewayMulticastDomainAssociationsCalls())
 func (mock *ClientMock) AcceptTransitGatewayMulticastDomainAssociationsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.AcceptTransitGatewayMulticastDomainAssociationsInput
@@ -8660,7 +8662,8 @@ func (mock *ClientMock) AcceptTransitGatewayPeeringAttachment(ctx context.Contex
 
 // AcceptTransitGatewayPeeringAttachmentCalls gets all the calls that were made to AcceptTransitGatewayPeeringAttachment.
 // Check the length with:
-//     len(mockedClient.AcceptTransitGatewayPeeringAttachmentCalls())
+//
+//	len(mockedClient.AcceptTransitGatewayPeeringAttachmentCalls())
 func (mock *ClientMock) AcceptTransitGatewayPeeringAttachmentCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.AcceptTransitGatewayPeeringAttachmentInput
@@ -8699,7 +8702,8 @@ func (mock *ClientMock) AcceptTransitGatewayVpcAttachment(ctx context.Context, p
 
 // AcceptTransitGatewayVpcAttachmentCalls gets all the calls that were made to AcceptTransitGatewayVpcAttachment.
 // Check the length with:
-//     len(mockedClient.AcceptTransitGatewayVpcAttachmentCalls())
+//
+//	len(mockedClient.AcceptTransitGatewayVpcAttachmentCalls())
 func (mock *ClientMock) AcceptTransitGatewayVpcAttachmentCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.AcceptTransitGatewayVpcAttachmentInput
@@ -8738,7 +8742,8 @@ func (mock *ClientMock) AcceptVpcEndpointConnections(ctx context.Context, params
 
 // AcceptVpcEndpointConnectionsCalls gets all the calls that were made to AcceptVpcEndpointConnections.
 // Check the length with:
-//     len(mockedClient.AcceptVpcEndpointConnectionsCalls())
+//
+//	len(mockedClient.AcceptVpcEndpointConnectionsCalls())
 func (mock *ClientMock) AcceptVpcEndpointConnectionsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.AcceptVpcEndpointConnectionsInput
@@ -8777,7 +8782,8 @@ func (mock *ClientMock) AcceptVpcPeeringConnection(ctx context.Context, params *
 
 // AcceptVpcPeeringConnectionCalls gets all the calls that were made to AcceptVpcPeeringConnection.
 // Check the length with:
-//     len(mockedClient.AcceptVpcPeeringConnectionCalls())
+//
+//	len(mockedClient.AcceptVpcPeeringConnectionCalls())
 func (mock *ClientMock) AcceptVpcPeeringConnectionCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.AcceptVpcPeeringConnectionInput
@@ -8816,7 +8822,8 @@ func (mock *ClientMock) AdvertiseByoipCidr(ctx context.Context, params *ec2.Adve
 
 // AdvertiseByoipCidrCalls gets all the calls that were made to AdvertiseByoipCidr.
 // Check the length with:
-//     len(mockedClient.AdvertiseByoipCidrCalls())
+//
+//	len(mockedClient.AdvertiseByoipCidrCalls())
 func (mock *ClientMock) AdvertiseByoipCidrCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.AdvertiseByoipCidrInput
@@ -8855,7 +8862,8 @@ func (mock *ClientMock) AllocateAddress(ctx context.Context, params *ec2.Allocat
 
 // AllocateAddressCalls gets all the calls that were made to AllocateAddress.
 // Check the length with:
-//     len(mockedClient.AllocateAddressCalls())
+//
+//	len(mockedClient.AllocateAddressCalls())
 func (mock *ClientMock) AllocateAddressCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.AllocateAddressInput
@@ -8894,7 +8902,8 @@ func (mock *ClientMock) AllocateHosts(ctx context.Context, params *ec2.AllocateH
 
 // AllocateHostsCalls gets all the calls that were made to AllocateHosts.
 // Check the length with:
-//     len(mockedClient.AllocateHostsCalls())
+//
+//	len(mockedClient.AllocateHostsCalls())
 func (mock *ClientMock) AllocateHostsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.AllocateHostsInput
@@ -8933,7 +8942,8 @@ func (mock *ClientMock) AllocateIpamPoolCidr(ctx context.Context, params *ec2.Al
 
 // AllocateIpamPoolCidrCalls gets all the calls that were made to AllocateIpamPoolCidr.
 // Check the length with:
-//     len(mockedClient.AllocateIpamPoolCidrCalls())
+//
+//	len(mockedClient.AllocateIpamPoolCidrCalls())
 func (mock *ClientMock) AllocateIpamPoolCidrCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.AllocateIpamPoolCidrInput
@@ -8972,7 +8982,8 @@ func (mock *ClientMock) ApplySecurityGroupsToClientVpnTargetNetwork(ctx context.
 
 // ApplySecurityGroupsToClientVpnTargetNetworkCalls gets all the calls that were made to ApplySecurityGroupsToClientVpnTargetNetwork.
 // Check the length with:
-//     len(mockedClient.ApplySecurityGroupsToClientVpnTargetNetworkCalls())
+//
+//	len(mockedClient.ApplySecurityGroupsToClientVpnTargetNetworkCalls())
 func (mock *ClientMock) ApplySecurityGroupsToClientVpnTargetNetworkCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ApplySecurityGroupsToClientVpnTargetNetworkInput
@@ -9011,7 +9022,8 @@ func (mock *ClientMock) AssignIpv6Addresses(ctx context.Context, params *ec2.Ass
 
 // AssignIpv6AddressesCalls gets all the calls that were made to AssignIpv6Addresses.
 // Check the length with:
-//     len(mockedClient.AssignIpv6AddressesCalls())
+//
+//	len(mockedClient.AssignIpv6AddressesCalls())
 func (mock *ClientMock) AssignIpv6AddressesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.AssignIpv6AddressesInput
@@ -9050,7 +9062,8 @@ func (mock *ClientMock) AssignPrivateIpAddresses(ctx context.Context, params *ec
 
 // AssignPrivateIpAddressesCalls gets all the calls that were made to AssignPrivateIpAddresses.
 // Check the length with:
-//     len(mockedClient.AssignPrivateIpAddressesCalls())
+//
+//	len(mockedClient.AssignPrivateIpAddressesCalls())
 func (mock *ClientMock) AssignPrivateIpAddressesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.AssignPrivateIpAddressesInput
@@ -9089,7 +9102,8 @@ func (mock *ClientMock) AssociateAddress(ctx context.Context, params *ec2.Associ
 
 // AssociateAddressCalls gets all the calls that were made to AssociateAddress.
 // Check the length with:
-//     len(mockedClient.AssociateAddressCalls())
+//
+//	len(mockedClient.AssociateAddressCalls())
 func (mock *ClientMock) AssociateAddressCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.AssociateAddressInput
@@ -9128,7 +9142,8 @@ func (mock *ClientMock) AssociateClientVpnTargetNetwork(ctx context.Context, par
 
 // AssociateClientVpnTargetNetworkCalls gets all the calls that were made to AssociateClientVpnTargetNetwork.
 // Check the length with:
-//     len(mockedClient.AssociateClientVpnTargetNetworkCalls())
+//
+//	len(mockedClient.AssociateClientVpnTargetNetworkCalls())
 func (mock *ClientMock) AssociateClientVpnTargetNetworkCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.AssociateClientVpnTargetNetworkInput
@@ -9167,7 +9182,8 @@ func (mock *ClientMock) AssociateDhcpOptions(ctx context.Context, params *ec2.As
 
 // AssociateDhcpOptionsCalls gets all the calls that were made to AssociateDhcpOptions.
 // Check the length with:
-//     len(mockedClient.AssociateDhcpOptionsCalls())
+//
+//	len(mockedClient.AssociateDhcpOptionsCalls())
 func (mock *ClientMock) AssociateDhcpOptionsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.AssociateDhcpOptionsInput
@@ -9206,7 +9222,8 @@ func (mock *ClientMock) AssociateEnclaveCertificateIamRole(ctx context.Context, 
 
 // AssociateEnclaveCertificateIamRoleCalls gets all the calls that were made to AssociateEnclaveCertificateIamRole.
 // Check the length with:
-//     len(mockedClient.AssociateEnclaveCertificateIamRoleCalls())
+//
+//	len(mockedClient.AssociateEnclaveCertificateIamRoleCalls())
 func (mock *ClientMock) AssociateEnclaveCertificateIamRoleCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.AssociateEnclaveCertificateIamRoleInput
@@ -9245,7 +9262,8 @@ func (mock *ClientMock) AssociateIamInstanceProfile(ctx context.Context, params 
 
 // AssociateIamInstanceProfileCalls gets all the calls that were made to AssociateIamInstanceProfile.
 // Check the length with:
-//     len(mockedClient.AssociateIamInstanceProfileCalls())
+//
+//	len(mockedClient.AssociateIamInstanceProfileCalls())
 func (mock *ClientMock) AssociateIamInstanceProfileCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.AssociateIamInstanceProfileInput
@@ -9284,7 +9302,8 @@ func (mock *ClientMock) AssociateInstanceEventWindow(ctx context.Context, params
 
 // AssociateInstanceEventWindowCalls gets all the calls that were made to AssociateInstanceEventWindow.
 // Check the length with:
-//     len(mockedClient.AssociateInstanceEventWindowCalls())
+//
+//	len(mockedClient.AssociateInstanceEventWindowCalls())
 func (mock *ClientMock) AssociateInstanceEventWindowCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.AssociateInstanceEventWindowInput
@@ -9323,7 +9342,8 @@ func (mock *ClientMock) AssociateRouteTable(ctx context.Context, params *ec2.Ass
 
 // AssociateRouteTableCalls gets all the calls that were made to AssociateRouteTable.
 // Check the length with:
-//     len(mockedClient.AssociateRouteTableCalls())
+//
+//	len(mockedClient.AssociateRouteTableCalls())
 func (mock *ClientMock) AssociateRouteTableCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.AssociateRouteTableInput
@@ -9362,7 +9382,8 @@ func (mock *ClientMock) AssociateSubnetCidrBlock(ctx context.Context, params *ec
 
 // AssociateSubnetCidrBlockCalls gets all the calls that were made to AssociateSubnetCidrBlock.
 // Check the length with:
-//     len(mockedClient.AssociateSubnetCidrBlockCalls())
+//
+//	len(mockedClient.AssociateSubnetCidrBlockCalls())
 func (mock *ClientMock) AssociateSubnetCidrBlockCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.AssociateSubnetCidrBlockInput
@@ -9401,7 +9422,8 @@ func (mock *ClientMock) AssociateTransitGatewayMulticastDomain(ctx context.Conte
 
 // AssociateTransitGatewayMulticastDomainCalls gets all the calls that were made to AssociateTransitGatewayMulticastDomain.
 // Check the length with:
-//     len(mockedClient.AssociateTransitGatewayMulticastDomainCalls())
+//
+//	len(mockedClient.AssociateTransitGatewayMulticastDomainCalls())
 func (mock *ClientMock) AssociateTransitGatewayMulticastDomainCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.AssociateTransitGatewayMulticastDomainInput
@@ -9440,7 +9462,8 @@ func (mock *ClientMock) AssociateTransitGatewayPolicyTable(ctx context.Context, 
 
 // AssociateTransitGatewayPolicyTableCalls gets all the calls that were made to AssociateTransitGatewayPolicyTable.
 // Check the length with:
-//     len(mockedClient.AssociateTransitGatewayPolicyTableCalls())
+//
+//	len(mockedClient.AssociateTransitGatewayPolicyTableCalls())
 func (mock *ClientMock) AssociateTransitGatewayPolicyTableCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.AssociateTransitGatewayPolicyTableInput
@@ -9479,7 +9502,8 @@ func (mock *ClientMock) AssociateTransitGatewayRouteTable(ctx context.Context, p
 
 // AssociateTransitGatewayRouteTableCalls gets all the calls that were made to AssociateTransitGatewayRouteTable.
 // Check the length with:
-//     len(mockedClient.AssociateTransitGatewayRouteTableCalls())
+//
+//	len(mockedClient.AssociateTransitGatewayRouteTableCalls())
 func (mock *ClientMock) AssociateTransitGatewayRouteTableCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.AssociateTransitGatewayRouteTableInput
@@ -9518,7 +9542,8 @@ func (mock *ClientMock) AssociateTrunkInterface(ctx context.Context, params *ec2
 
 // AssociateTrunkInterfaceCalls gets all the calls that were made to AssociateTrunkInterface.
 // Check the length with:
-//     len(mockedClient.AssociateTrunkInterfaceCalls())
+//
+//	len(mockedClient.AssociateTrunkInterfaceCalls())
 func (mock *ClientMock) AssociateTrunkInterfaceCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.AssociateTrunkInterfaceInput
@@ -9557,7 +9582,8 @@ func (mock *ClientMock) AssociateVpcCidrBlock(ctx context.Context, params *ec2.A
 
 // AssociateVpcCidrBlockCalls gets all the calls that were made to AssociateVpcCidrBlock.
 // Check the length with:
-//     len(mockedClient.AssociateVpcCidrBlockCalls())
+//
+//	len(mockedClient.AssociateVpcCidrBlockCalls())
 func (mock *ClientMock) AssociateVpcCidrBlockCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.AssociateVpcCidrBlockInput
@@ -9596,7 +9622,8 @@ func (mock *ClientMock) AttachClassicLinkVpc(ctx context.Context, params *ec2.At
 
 // AttachClassicLinkVpcCalls gets all the calls that were made to AttachClassicLinkVpc.
 // Check the length with:
-//     len(mockedClient.AttachClassicLinkVpcCalls())
+//
+//	len(mockedClient.AttachClassicLinkVpcCalls())
 func (mock *ClientMock) AttachClassicLinkVpcCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.AttachClassicLinkVpcInput
@@ -9635,7 +9662,8 @@ func (mock *ClientMock) AttachInternetGateway(ctx context.Context, params *ec2.A
 
 // AttachInternetGatewayCalls gets all the calls that were made to AttachInternetGateway.
 // Check the length with:
-//     len(mockedClient.AttachInternetGatewayCalls())
+//
+//	len(mockedClient.AttachInternetGatewayCalls())
 func (mock *ClientMock) AttachInternetGatewayCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.AttachInternetGatewayInput
@@ -9674,7 +9702,8 @@ func (mock *ClientMock) AttachNetworkInterface(ctx context.Context, params *ec2.
 
 // AttachNetworkInterfaceCalls gets all the calls that were made to AttachNetworkInterface.
 // Check the length with:
-//     len(mockedClient.AttachNetworkInterfaceCalls())
+//
+//	len(mockedClient.AttachNetworkInterfaceCalls())
 func (mock *ClientMock) AttachNetworkInterfaceCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.AttachNetworkInterfaceInput
@@ -9713,7 +9742,8 @@ func (mock *ClientMock) AttachVolume(ctx context.Context, params *ec2.AttachVolu
 
 // AttachVolumeCalls gets all the calls that were made to AttachVolume.
 // Check the length with:
-//     len(mockedClient.AttachVolumeCalls())
+//
+//	len(mockedClient.AttachVolumeCalls())
 func (mock *ClientMock) AttachVolumeCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.AttachVolumeInput
@@ -9752,7 +9782,8 @@ func (mock *ClientMock) AttachVpnGateway(ctx context.Context, params *ec2.Attach
 
 // AttachVpnGatewayCalls gets all the calls that were made to AttachVpnGateway.
 // Check the length with:
-//     len(mockedClient.AttachVpnGatewayCalls())
+//
+//	len(mockedClient.AttachVpnGatewayCalls())
 func (mock *ClientMock) AttachVpnGatewayCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.AttachVpnGatewayInput
@@ -9791,7 +9822,8 @@ func (mock *ClientMock) AuthorizeClientVpnIngress(ctx context.Context, params *e
 
 // AuthorizeClientVpnIngressCalls gets all the calls that were made to AuthorizeClientVpnIngress.
 // Check the length with:
-//     len(mockedClient.AuthorizeClientVpnIngressCalls())
+//
+//	len(mockedClient.AuthorizeClientVpnIngressCalls())
 func (mock *ClientMock) AuthorizeClientVpnIngressCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.AuthorizeClientVpnIngressInput
@@ -9830,7 +9862,8 @@ func (mock *ClientMock) AuthorizeSecurityGroupEgress(ctx context.Context, params
 
 // AuthorizeSecurityGroupEgressCalls gets all the calls that were made to AuthorizeSecurityGroupEgress.
 // Check the length with:
-//     len(mockedClient.AuthorizeSecurityGroupEgressCalls())
+//
+//	len(mockedClient.AuthorizeSecurityGroupEgressCalls())
 func (mock *ClientMock) AuthorizeSecurityGroupEgressCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.AuthorizeSecurityGroupEgressInput
@@ -9869,7 +9902,8 @@ func (mock *ClientMock) AuthorizeSecurityGroupIngress(ctx context.Context, param
 
 // AuthorizeSecurityGroupIngressCalls gets all the calls that were made to AuthorizeSecurityGroupIngress.
 // Check the length with:
-//     len(mockedClient.AuthorizeSecurityGroupIngressCalls())
+//
+//	len(mockedClient.AuthorizeSecurityGroupIngressCalls())
 func (mock *ClientMock) AuthorizeSecurityGroupIngressCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.AuthorizeSecurityGroupIngressInput
@@ -9908,7 +9942,8 @@ func (mock *ClientMock) BundleInstance(ctx context.Context, params *ec2.BundleIn
 
 // BundleInstanceCalls gets all the calls that were made to BundleInstance.
 // Check the length with:
-//     len(mockedClient.BundleInstanceCalls())
+//
+//	len(mockedClient.BundleInstanceCalls())
 func (mock *ClientMock) BundleInstanceCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.BundleInstanceInput
@@ -9947,7 +9982,8 @@ func (mock *ClientMock) CancelBundleTask(ctx context.Context, params *ec2.Cancel
 
 // CancelBundleTaskCalls gets all the calls that were made to CancelBundleTask.
 // Check the length with:
-//     len(mockedClient.CancelBundleTaskCalls())
+//
+//	len(mockedClient.CancelBundleTaskCalls())
 func (mock *ClientMock) CancelBundleTaskCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CancelBundleTaskInput
@@ -9986,7 +10022,8 @@ func (mock *ClientMock) CancelCapacityReservation(ctx context.Context, params *e
 
 // CancelCapacityReservationCalls gets all the calls that were made to CancelCapacityReservation.
 // Check the length with:
-//     len(mockedClient.CancelCapacityReservationCalls())
+//
+//	len(mockedClient.CancelCapacityReservationCalls())
 func (mock *ClientMock) CancelCapacityReservationCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CancelCapacityReservationInput
@@ -10025,7 +10062,8 @@ func (mock *ClientMock) CancelCapacityReservationFleets(ctx context.Context, par
 
 // CancelCapacityReservationFleetsCalls gets all the calls that were made to CancelCapacityReservationFleets.
 // Check the length with:
-//     len(mockedClient.CancelCapacityReservationFleetsCalls())
+//
+//	len(mockedClient.CancelCapacityReservationFleetsCalls())
 func (mock *ClientMock) CancelCapacityReservationFleetsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CancelCapacityReservationFleetsInput
@@ -10064,7 +10102,8 @@ func (mock *ClientMock) CancelConversionTask(ctx context.Context, params *ec2.Ca
 
 // CancelConversionTaskCalls gets all the calls that were made to CancelConversionTask.
 // Check the length with:
-//     len(mockedClient.CancelConversionTaskCalls())
+//
+//	len(mockedClient.CancelConversionTaskCalls())
 func (mock *ClientMock) CancelConversionTaskCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CancelConversionTaskInput
@@ -10103,7 +10142,8 @@ func (mock *ClientMock) CancelExportTask(ctx context.Context, params *ec2.Cancel
 
 // CancelExportTaskCalls gets all the calls that were made to CancelExportTask.
 // Check the length with:
-//     len(mockedClient.CancelExportTaskCalls())
+//
+//	len(mockedClient.CancelExportTaskCalls())
 func (mock *ClientMock) CancelExportTaskCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CancelExportTaskInput
@@ -10142,7 +10182,8 @@ func (mock *ClientMock) CancelImportTask(ctx context.Context, params *ec2.Cancel
 
 // CancelImportTaskCalls gets all the calls that were made to CancelImportTask.
 // Check the length with:
-//     len(mockedClient.CancelImportTaskCalls())
+//
+//	len(mockedClient.CancelImportTaskCalls())
 func (mock *ClientMock) CancelImportTaskCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CancelImportTaskInput
@@ -10181,7 +10222,8 @@ func (mock *ClientMock) CancelReservedInstancesListing(ctx context.Context, para
 
 // CancelReservedInstancesListingCalls gets all the calls that were made to CancelReservedInstancesListing.
 // Check the length with:
-//     len(mockedClient.CancelReservedInstancesListingCalls())
+//
+//	len(mockedClient.CancelReservedInstancesListingCalls())
 func (mock *ClientMock) CancelReservedInstancesListingCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CancelReservedInstancesListingInput
@@ -10220,7 +10262,8 @@ func (mock *ClientMock) CancelSpotFleetRequests(ctx context.Context, params *ec2
 
 // CancelSpotFleetRequestsCalls gets all the calls that were made to CancelSpotFleetRequests.
 // Check the length with:
-//     len(mockedClient.CancelSpotFleetRequestsCalls())
+//
+//	len(mockedClient.CancelSpotFleetRequestsCalls())
 func (mock *ClientMock) CancelSpotFleetRequestsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CancelSpotFleetRequestsInput
@@ -10259,7 +10302,8 @@ func (mock *ClientMock) CancelSpotInstanceRequests(ctx context.Context, params *
 
 // CancelSpotInstanceRequestsCalls gets all the calls that were made to CancelSpotInstanceRequests.
 // Check the length with:
-//     len(mockedClient.CancelSpotInstanceRequestsCalls())
+//
+//	len(mockedClient.CancelSpotInstanceRequestsCalls())
 func (mock *ClientMock) CancelSpotInstanceRequestsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CancelSpotInstanceRequestsInput
@@ -10298,7 +10342,8 @@ func (mock *ClientMock) ConfirmProductInstance(ctx context.Context, params *ec2.
 
 // ConfirmProductInstanceCalls gets all the calls that were made to ConfirmProductInstance.
 // Check the length with:
-//     len(mockedClient.ConfirmProductInstanceCalls())
+//
+//	len(mockedClient.ConfirmProductInstanceCalls())
 func (mock *ClientMock) ConfirmProductInstanceCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ConfirmProductInstanceInput
@@ -10337,7 +10382,8 @@ func (mock *ClientMock) CopyFpgaImage(ctx context.Context, params *ec2.CopyFpgaI
 
 // CopyFpgaImageCalls gets all the calls that were made to CopyFpgaImage.
 // Check the length with:
-//     len(mockedClient.CopyFpgaImageCalls())
+//
+//	len(mockedClient.CopyFpgaImageCalls())
 func (mock *ClientMock) CopyFpgaImageCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CopyFpgaImageInput
@@ -10376,7 +10422,8 @@ func (mock *ClientMock) CopyImage(ctx context.Context, params *ec2.CopyImageInpu
 
 // CopyImageCalls gets all the calls that were made to CopyImage.
 // Check the length with:
-//     len(mockedClient.CopyImageCalls())
+//
+//	len(mockedClient.CopyImageCalls())
 func (mock *ClientMock) CopyImageCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CopyImageInput
@@ -10415,7 +10462,8 @@ func (mock *ClientMock) CopySnapshot(ctx context.Context, params *ec2.CopySnapsh
 
 // CopySnapshotCalls gets all the calls that were made to CopySnapshot.
 // Check the length with:
-//     len(mockedClient.CopySnapshotCalls())
+//
+//	len(mockedClient.CopySnapshotCalls())
 func (mock *ClientMock) CopySnapshotCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CopySnapshotInput
@@ -10454,7 +10502,8 @@ func (mock *ClientMock) CreateCapacityReservation(ctx context.Context, params *e
 
 // CreateCapacityReservationCalls gets all the calls that were made to CreateCapacityReservation.
 // Check the length with:
-//     len(mockedClient.CreateCapacityReservationCalls())
+//
+//	len(mockedClient.CreateCapacityReservationCalls())
 func (mock *ClientMock) CreateCapacityReservationCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateCapacityReservationInput
@@ -10493,7 +10542,8 @@ func (mock *ClientMock) CreateCapacityReservationFleet(ctx context.Context, para
 
 // CreateCapacityReservationFleetCalls gets all the calls that were made to CreateCapacityReservationFleet.
 // Check the length with:
-//     len(mockedClient.CreateCapacityReservationFleetCalls())
+//
+//	len(mockedClient.CreateCapacityReservationFleetCalls())
 func (mock *ClientMock) CreateCapacityReservationFleetCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateCapacityReservationFleetInput
@@ -10532,7 +10582,8 @@ func (mock *ClientMock) CreateCarrierGateway(ctx context.Context, params *ec2.Cr
 
 // CreateCarrierGatewayCalls gets all the calls that were made to CreateCarrierGateway.
 // Check the length with:
-//     len(mockedClient.CreateCarrierGatewayCalls())
+//
+//	len(mockedClient.CreateCarrierGatewayCalls())
 func (mock *ClientMock) CreateCarrierGatewayCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateCarrierGatewayInput
@@ -10571,7 +10622,8 @@ func (mock *ClientMock) CreateClientVpnEndpoint(ctx context.Context, params *ec2
 
 // CreateClientVpnEndpointCalls gets all the calls that were made to CreateClientVpnEndpoint.
 // Check the length with:
-//     len(mockedClient.CreateClientVpnEndpointCalls())
+//
+//	len(mockedClient.CreateClientVpnEndpointCalls())
 func (mock *ClientMock) CreateClientVpnEndpointCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateClientVpnEndpointInput
@@ -10610,7 +10662,8 @@ func (mock *ClientMock) CreateClientVpnRoute(ctx context.Context, params *ec2.Cr
 
 // CreateClientVpnRouteCalls gets all the calls that were made to CreateClientVpnRoute.
 // Check the length with:
-//     len(mockedClient.CreateClientVpnRouteCalls())
+//
+//	len(mockedClient.CreateClientVpnRouteCalls())
 func (mock *ClientMock) CreateClientVpnRouteCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateClientVpnRouteInput
@@ -10649,7 +10702,8 @@ func (mock *ClientMock) CreateCustomerGateway(ctx context.Context, params *ec2.C
 
 // CreateCustomerGatewayCalls gets all the calls that were made to CreateCustomerGateway.
 // Check the length with:
-//     len(mockedClient.CreateCustomerGatewayCalls())
+//
+//	len(mockedClient.CreateCustomerGatewayCalls())
 func (mock *ClientMock) CreateCustomerGatewayCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateCustomerGatewayInput
@@ -10688,7 +10742,8 @@ func (mock *ClientMock) CreateDefaultSubnet(ctx context.Context, params *ec2.Cre
 
 // CreateDefaultSubnetCalls gets all the calls that were made to CreateDefaultSubnet.
 // Check the length with:
-//     len(mockedClient.CreateDefaultSubnetCalls())
+//
+//	len(mockedClient.CreateDefaultSubnetCalls())
 func (mock *ClientMock) CreateDefaultSubnetCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateDefaultSubnetInput
@@ -10727,7 +10782,8 @@ func (mock *ClientMock) CreateDefaultVpc(ctx context.Context, params *ec2.Create
 
 // CreateDefaultVpcCalls gets all the calls that were made to CreateDefaultVpc.
 // Check the length with:
-//     len(mockedClient.CreateDefaultVpcCalls())
+//
+//	len(mockedClient.CreateDefaultVpcCalls())
 func (mock *ClientMock) CreateDefaultVpcCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateDefaultVpcInput
@@ -10766,7 +10822,8 @@ func (mock *ClientMock) CreateDhcpOptions(ctx context.Context, params *ec2.Creat
 
 // CreateDhcpOptionsCalls gets all the calls that were made to CreateDhcpOptions.
 // Check the length with:
-//     len(mockedClient.CreateDhcpOptionsCalls())
+//
+//	len(mockedClient.CreateDhcpOptionsCalls())
 func (mock *ClientMock) CreateDhcpOptionsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateDhcpOptionsInput
@@ -10805,7 +10862,8 @@ func (mock *ClientMock) CreateEgressOnlyInternetGateway(ctx context.Context, par
 
 // CreateEgressOnlyInternetGatewayCalls gets all the calls that were made to CreateEgressOnlyInternetGateway.
 // Check the length with:
-//     len(mockedClient.CreateEgressOnlyInternetGatewayCalls())
+//
+//	len(mockedClient.CreateEgressOnlyInternetGatewayCalls())
 func (mock *ClientMock) CreateEgressOnlyInternetGatewayCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateEgressOnlyInternetGatewayInput
@@ -10844,7 +10902,8 @@ func (mock *ClientMock) CreateFleet(ctx context.Context, params *ec2.CreateFleet
 
 // CreateFleetCalls gets all the calls that were made to CreateFleet.
 // Check the length with:
-//     len(mockedClient.CreateFleetCalls())
+//
+//	len(mockedClient.CreateFleetCalls())
 func (mock *ClientMock) CreateFleetCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateFleetInput
@@ -10883,7 +10942,8 @@ func (mock *ClientMock) CreateFlowLogs(ctx context.Context, params *ec2.CreateFl
 
 // CreateFlowLogsCalls gets all the calls that were made to CreateFlowLogs.
 // Check the length with:
-//     len(mockedClient.CreateFlowLogsCalls())
+//
+//	len(mockedClient.CreateFlowLogsCalls())
 func (mock *ClientMock) CreateFlowLogsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateFlowLogsInput
@@ -10922,7 +10982,8 @@ func (mock *ClientMock) CreateFpgaImage(ctx context.Context, params *ec2.CreateF
 
 // CreateFpgaImageCalls gets all the calls that were made to CreateFpgaImage.
 // Check the length with:
-//     len(mockedClient.CreateFpgaImageCalls())
+//
+//	len(mockedClient.CreateFpgaImageCalls())
 func (mock *ClientMock) CreateFpgaImageCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateFpgaImageInput
@@ -10961,7 +11022,8 @@ func (mock *ClientMock) CreateImage(ctx context.Context, params *ec2.CreateImage
 
 // CreateImageCalls gets all the calls that were made to CreateImage.
 // Check the length with:
-//     len(mockedClient.CreateImageCalls())
+//
+//	len(mockedClient.CreateImageCalls())
 func (mock *ClientMock) CreateImageCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateImageInput
@@ -11000,7 +11062,8 @@ func (mock *ClientMock) CreateInstanceEventWindow(ctx context.Context, params *e
 
 // CreateInstanceEventWindowCalls gets all the calls that were made to CreateInstanceEventWindow.
 // Check the length with:
-//     len(mockedClient.CreateInstanceEventWindowCalls())
+//
+//	len(mockedClient.CreateInstanceEventWindowCalls())
 func (mock *ClientMock) CreateInstanceEventWindowCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateInstanceEventWindowInput
@@ -11039,7 +11102,8 @@ func (mock *ClientMock) CreateInstanceExportTask(ctx context.Context, params *ec
 
 // CreateInstanceExportTaskCalls gets all the calls that were made to CreateInstanceExportTask.
 // Check the length with:
-//     len(mockedClient.CreateInstanceExportTaskCalls())
+//
+//	len(mockedClient.CreateInstanceExportTaskCalls())
 func (mock *ClientMock) CreateInstanceExportTaskCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateInstanceExportTaskInput
@@ -11078,7 +11142,8 @@ func (mock *ClientMock) CreateInternetGateway(ctx context.Context, params *ec2.C
 
 // CreateInternetGatewayCalls gets all the calls that were made to CreateInternetGateway.
 // Check the length with:
-//     len(mockedClient.CreateInternetGatewayCalls())
+//
+//	len(mockedClient.CreateInternetGatewayCalls())
 func (mock *ClientMock) CreateInternetGatewayCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateInternetGatewayInput
@@ -11117,7 +11182,8 @@ func (mock *ClientMock) CreateIpam(ctx context.Context, params *ec2.CreateIpamIn
 
 // CreateIpamCalls gets all the calls that were made to CreateIpam.
 // Check the length with:
-//     len(mockedClient.CreateIpamCalls())
+//
+//	len(mockedClient.CreateIpamCalls())
 func (mock *ClientMock) CreateIpamCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateIpamInput
@@ -11156,7 +11222,8 @@ func (mock *ClientMock) CreateIpamPool(ctx context.Context, params *ec2.CreateIp
 
 // CreateIpamPoolCalls gets all the calls that were made to CreateIpamPool.
 // Check the length with:
-//     len(mockedClient.CreateIpamPoolCalls())
+//
+//	len(mockedClient.CreateIpamPoolCalls())
 func (mock *ClientMock) CreateIpamPoolCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateIpamPoolInput
@@ -11195,7 +11262,8 @@ func (mock *ClientMock) CreateIpamScope(ctx context.Context, params *ec2.CreateI
 
 // CreateIpamScopeCalls gets all the calls that were made to CreateIpamScope.
 // Check the length with:
-//     len(mockedClient.CreateIpamScopeCalls())
+//
+//	len(mockedClient.CreateIpamScopeCalls())
 func (mock *ClientMock) CreateIpamScopeCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateIpamScopeInput
@@ -11234,7 +11302,8 @@ func (mock *ClientMock) CreateKeyPair(ctx context.Context, params *ec2.CreateKey
 
 // CreateKeyPairCalls gets all the calls that were made to CreateKeyPair.
 // Check the length with:
-//     len(mockedClient.CreateKeyPairCalls())
+//
+//	len(mockedClient.CreateKeyPairCalls())
 func (mock *ClientMock) CreateKeyPairCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateKeyPairInput
@@ -11273,7 +11342,8 @@ func (mock *ClientMock) CreateLaunchTemplate(ctx context.Context, params *ec2.Cr
 
 // CreateLaunchTemplateCalls gets all the calls that were made to CreateLaunchTemplate.
 // Check the length with:
-//     len(mockedClient.CreateLaunchTemplateCalls())
+//
+//	len(mockedClient.CreateLaunchTemplateCalls())
 func (mock *ClientMock) CreateLaunchTemplateCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateLaunchTemplateInput
@@ -11312,7 +11382,8 @@ func (mock *ClientMock) CreateLaunchTemplateVersion(ctx context.Context, params 
 
 // CreateLaunchTemplateVersionCalls gets all the calls that were made to CreateLaunchTemplateVersion.
 // Check the length with:
-//     len(mockedClient.CreateLaunchTemplateVersionCalls())
+//
+//	len(mockedClient.CreateLaunchTemplateVersionCalls())
 func (mock *ClientMock) CreateLaunchTemplateVersionCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateLaunchTemplateVersionInput
@@ -11351,7 +11422,8 @@ func (mock *ClientMock) CreateLocalGatewayRoute(ctx context.Context, params *ec2
 
 // CreateLocalGatewayRouteCalls gets all the calls that were made to CreateLocalGatewayRoute.
 // Check the length with:
-//     len(mockedClient.CreateLocalGatewayRouteCalls())
+//
+//	len(mockedClient.CreateLocalGatewayRouteCalls())
 func (mock *ClientMock) CreateLocalGatewayRouteCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateLocalGatewayRouteInput
@@ -11390,7 +11462,8 @@ func (mock *ClientMock) CreateLocalGatewayRouteTableVpcAssociation(ctx context.C
 
 // CreateLocalGatewayRouteTableVpcAssociationCalls gets all the calls that were made to CreateLocalGatewayRouteTableVpcAssociation.
 // Check the length with:
-//     len(mockedClient.CreateLocalGatewayRouteTableVpcAssociationCalls())
+//
+//	len(mockedClient.CreateLocalGatewayRouteTableVpcAssociationCalls())
 func (mock *ClientMock) CreateLocalGatewayRouteTableVpcAssociationCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateLocalGatewayRouteTableVpcAssociationInput
@@ -11429,7 +11502,8 @@ func (mock *ClientMock) CreateManagedPrefixList(ctx context.Context, params *ec2
 
 // CreateManagedPrefixListCalls gets all the calls that were made to CreateManagedPrefixList.
 // Check the length with:
-//     len(mockedClient.CreateManagedPrefixListCalls())
+//
+//	len(mockedClient.CreateManagedPrefixListCalls())
 func (mock *ClientMock) CreateManagedPrefixListCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateManagedPrefixListInput
@@ -11468,7 +11542,8 @@ func (mock *ClientMock) CreateNatGateway(ctx context.Context, params *ec2.Create
 
 // CreateNatGatewayCalls gets all the calls that were made to CreateNatGateway.
 // Check the length with:
-//     len(mockedClient.CreateNatGatewayCalls())
+//
+//	len(mockedClient.CreateNatGatewayCalls())
 func (mock *ClientMock) CreateNatGatewayCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateNatGatewayInput
@@ -11507,7 +11582,8 @@ func (mock *ClientMock) CreateNetworkAcl(ctx context.Context, params *ec2.Create
 
 // CreateNetworkAclCalls gets all the calls that were made to CreateNetworkAcl.
 // Check the length with:
-//     len(mockedClient.CreateNetworkAclCalls())
+//
+//	len(mockedClient.CreateNetworkAclCalls())
 func (mock *ClientMock) CreateNetworkAclCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateNetworkAclInput
@@ -11546,7 +11622,8 @@ func (mock *ClientMock) CreateNetworkAclEntry(ctx context.Context, params *ec2.C
 
 // CreateNetworkAclEntryCalls gets all the calls that were made to CreateNetworkAclEntry.
 // Check the length with:
-//     len(mockedClient.CreateNetworkAclEntryCalls())
+//
+//	len(mockedClient.CreateNetworkAclEntryCalls())
 func (mock *ClientMock) CreateNetworkAclEntryCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateNetworkAclEntryInput
@@ -11585,7 +11662,8 @@ func (mock *ClientMock) CreateNetworkInsightsAccessScope(ctx context.Context, pa
 
 // CreateNetworkInsightsAccessScopeCalls gets all the calls that were made to CreateNetworkInsightsAccessScope.
 // Check the length with:
-//     len(mockedClient.CreateNetworkInsightsAccessScopeCalls())
+//
+//	len(mockedClient.CreateNetworkInsightsAccessScopeCalls())
 func (mock *ClientMock) CreateNetworkInsightsAccessScopeCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateNetworkInsightsAccessScopeInput
@@ -11624,7 +11702,8 @@ func (mock *ClientMock) CreateNetworkInsightsPath(ctx context.Context, params *e
 
 // CreateNetworkInsightsPathCalls gets all the calls that were made to CreateNetworkInsightsPath.
 // Check the length with:
-//     len(mockedClient.CreateNetworkInsightsPathCalls())
+//
+//	len(mockedClient.CreateNetworkInsightsPathCalls())
 func (mock *ClientMock) CreateNetworkInsightsPathCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateNetworkInsightsPathInput
@@ -11663,7 +11742,8 @@ func (mock *ClientMock) CreateNetworkInterface(ctx context.Context, params *ec2.
 
 // CreateNetworkInterfaceCalls gets all the calls that were made to CreateNetworkInterface.
 // Check the length with:
-//     len(mockedClient.CreateNetworkInterfaceCalls())
+//
+//	len(mockedClient.CreateNetworkInterfaceCalls())
 func (mock *ClientMock) CreateNetworkInterfaceCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateNetworkInterfaceInput
@@ -11702,7 +11782,8 @@ func (mock *ClientMock) CreateNetworkInterfacePermission(ctx context.Context, pa
 
 // CreateNetworkInterfacePermissionCalls gets all the calls that were made to CreateNetworkInterfacePermission.
 // Check the length with:
-//     len(mockedClient.CreateNetworkInterfacePermissionCalls())
+//
+//	len(mockedClient.CreateNetworkInterfacePermissionCalls())
 func (mock *ClientMock) CreateNetworkInterfacePermissionCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateNetworkInterfacePermissionInput
@@ -11741,7 +11822,8 @@ func (mock *ClientMock) CreatePlacementGroup(ctx context.Context, params *ec2.Cr
 
 // CreatePlacementGroupCalls gets all the calls that were made to CreatePlacementGroup.
 // Check the length with:
-//     len(mockedClient.CreatePlacementGroupCalls())
+//
+//	len(mockedClient.CreatePlacementGroupCalls())
 func (mock *ClientMock) CreatePlacementGroupCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreatePlacementGroupInput
@@ -11780,7 +11862,8 @@ func (mock *ClientMock) CreatePublicIpv4Pool(ctx context.Context, params *ec2.Cr
 
 // CreatePublicIpv4PoolCalls gets all the calls that were made to CreatePublicIpv4Pool.
 // Check the length with:
-//     len(mockedClient.CreatePublicIpv4PoolCalls())
+//
+//	len(mockedClient.CreatePublicIpv4PoolCalls())
 func (mock *ClientMock) CreatePublicIpv4PoolCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreatePublicIpv4PoolInput
@@ -11819,7 +11902,8 @@ func (mock *ClientMock) CreateReplaceRootVolumeTask(ctx context.Context, params 
 
 // CreateReplaceRootVolumeTaskCalls gets all the calls that were made to CreateReplaceRootVolumeTask.
 // Check the length with:
-//     len(mockedClient.CreateReplaceRootVolumeTaskCalls())
+//
+//	len(mockedClient.CreateReplaceRootVolumeTaskCalls())
 func (mock *ClientMock) CreateReplaceRootVolumeTaskCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateReplaceRootVolumeTaskInput
@@ -11858,7 +11942,8 @@ func (mock *ClientMock) CreateReservedInstancesListing(ctx context.Context, para
 
 // CreateReservedInstancesListingCalls gets all the calls that were made to CreateReservedInstancesListing.
 // Check the length with:
-//     len(mockedClient.CreateReservedInstancesListingCalls())
+//
+//	len(mockedClient.CreateReservedInstancesListingCalls())
 func (mock *ClientMock) CreateReservedInstancesListingCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateReservedInstancesListingInput
@@ -11897,7 +11982,8 @@ func (mock *ClientMock) CreateRestoreImageTask(ctx context.Context, params *ec2.
 
 // CreateRestoreImageTaskCalls gets all the calls that were made to CreateRestoreImageTask.
 // Check the length with:
-//     len(mockedClient.CreateRestoreImageTaskCalls())
+//
+//	len(mockedClient.CreateRestoreImageTaskCalls())
 func (mock *ClientMock) CreateRestoreImageTaskCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateRestoreImageTaskInput
@@ -11936,7 +12022,8 @@ func (mock *ClientMock) CreateRoute(ctx context.Context, params *ec2.CreateRoute
 
 // CreateRouteCalls gets all the calls that were made to CreateRoute.
 // Check the length with:
-//     len(mockedClient.CreateRouteCalls())
+//
+//	len(mockedClient.CreateRouteCalls())
 func (mock *ClientMock) CreateRouteCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateRouteInput
@@ -11975,7 +12062,8 @@ func (mock *ClientMock) CreateRouteTable(ctx context.Context, params *ec2.Create
 
 // CreateRouteTableCalls gets all the calls that were made to CreateRouteTable.
 // Check the length with:
-//     len(mockedClient.CreateRouteTableCalls())
+//
+//	len(mockedClient.CreateRouteTableCalls())
 func (mock *ClientMock) CreateRouteTableCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateRouteTableInput
@@ -12014,7 +12102,8 @@ func (mock *ClientMock) CreateSecurityGroup(ctx context.Context, params *ec2.Cre
 
 // CreateSecurityGroupCalls gets all the calls that were made to CreateSecurityGroup.
 // Check the length with:
-//     len(mockedClient.CreateSecurityGroupCalls())
+//
+//	len(mockedClient.CreateSecurityGroupCalls())
 func (mock *ClientMock) CreateSecurityGroupCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateSecurityGroupInput
@@ -12053,7 +12142,8 @@ func (mock *ClientMock) CreateSnapshot(ctx context.Context, params *ec2.CreateSn
 
 // CreateSnapshotCalls gets all the calls that were made to CreateSnapshot.
 // Check the length with:
-//     len(mockedClient.CreateSnapshotCalls())
+//
+//	len(mockedClient.CreateSnapshotCalls())
 func (mock *ClientMock) CreateSnapshotCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateSnapshotInput
@@ -12092,7 +12182,8 @@ func (mock *ClientMock) CreateSnapshots(ctx context.Context, params *ec2.CreateS
 
 // CreateSnapshotsCalls gets all the calls that were made to CreateSnapshots.
 // Check the length with:
-//     len(mockedClient.CreateSnapshotsCalls())
+//
+//	len(mockedClient.CreateSnapshotsCalls())
 func (mock *ClientMock) CreateSnapshotsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateSnapshotsInput
@@ -12131,7 +12222,8 @@ func (mock *ClientMock) CreateSpotDatafeedSubscription(ctx context.Context, para
 
 // CreateSpotDatafeedSubscriptionCalls gets all the calls that were made to CreateSpotDatafeedSubscription.
 // Check the length with:
-//     len(mockedClient.CreateSpotDatafeedSubscriptionCalls())
+//
+//	len(mockedClient.CreateSpotDatafeedSubscriptionCalls())
 func (mock *ClientMock) CreateSpotDatafeedSubscriptionCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateSpotDatafeedSubscriptionInput
@@ -12170,7 +12262,8 @@ func (mock *ClientMock) CreateStoreImageTask(ctx context.Context, params *ec2.Cr
 
 // CreateStoreImageTaskCalls gets all the calls that were made to CreateStoreImageTask.
 // Check the length with:
-//     len(mockedClient.CreateStoreImageTaskCalls())
+//
+//	len(mockedClient.CreateStoreImageTaskCalls())
 func (mock *ClientMock) CreateStoreImageTaskCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateStoreImageTaskInput
@@ -12209,7 +12302,8 @@ func (mock *ClientMock) CreateSubnet(ctx context.Context, params *ec2.CreateSubn
 
 // CreateSubnetCalls gets all the calls that were made to CreateSubnet.
 // Check the length with:
-//     len(mockedClient.CreateSubnetCalls())
+//
+//	len(mockedClient.CreateSubnetCalls())
 func (mock *ClientMock) CreateSubnetCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateSubnetInput
@@ -12248,7 +12342,8 @@ func (mock *ClientMock) CreateSubnetCidrReservation(ctx context.Context, params 
 
 // CreateSubnetCidrReservationCalls gets all the calls that were made to CreateSubnetCidrReservation.
 // Check the length with:
-//     len(mockedClient.CreateSubnetCidrReservationCalls())
+//
+//	len(mockedClient.CreateSubnetCidrReservationCalls())
 func (mock *ClientMock) CreateSubnetCidrReservationCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateSubnetCidrReservationInput
@@ -12287,7 +12382,8 @@ func (mock *ClientMock) CreateTags(ctx context.Context, params *ec2.CreateTagsIn
 
 // CreateTagsCalls gets all the calls that were made to CreateTags.
 // Check the length with:
-//     len(mockedClient.CreateTagsCalls())
+//
+//	len(mockedClient.CreateTagsCalls())
 func (mock *ClientMock) CreateTagsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateTagsInput
@@ -12326,7 +12422,8 @@ func (mock *ClientMock) CreateTrafficMirrorFilter(ctx context.Context, params *e
 
 // CreateTrafficMirrorFilterCalls gets all the calls that were made to CreateTrafficMirrorFilter.
 // Check the length with:
-//     len(mockedClient.CreateTrafficMirrorFilterCalls())
+//
+//	len(mockedClient.CreateTrafficMirrorFilterCalls())
 func (mock *ClientMock) CreateTrafficMirrorFilterCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateTrafficMirrorFilterInput
@@ -12365,7 +12462,8 @@ func (mock *ClientMock) CreateTrafficMirrorFilterRule(ctx context.Context, param
 
 // CreateTrafficMirrorFilterRuleCalls gets all the calls that were made to CreateTrafficMirrorFilterRule.
 // Check the length with:
-//     len(mockedClient.CreateTrafficMirrorFilterRuleCalls())
+//
+//	len(mockedClient.CreateTrafficMirrorFilterRuleCalls())
 func (mock *ClientMock) CreateTrafficMirrorFilterRuleCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateTrafficMirrorFilterRuleInput
@@ -12404,7 +12502,8 @@ func (mock *ClientMock) CreateTrafficMirrorSession(ctx context.Context, params *
 
 // CreateTrafficMirrorSessionCalls gets all the calls that were made to CreateTrafficMirrorSession.
 // Check the length with:
-//     len(mockedClient.CreateTrafficMirrorSessionCalls())
+//
+//	len(mockedClient.CreateTrafficMirrorSessionCalls())
 func (mock *ClientMock) CreateTrafficMirrorSessionCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateTrafficMirrorSessionInput
@@ -12443,7 +12542,8 @@ func (mock *ClientMock) CreateTrafficMirrorTarget(ctx context.Context, params *e
 
 // CreateTrafficMirrorTargetCalls gets all the calls that were made to CreateTrafficMirrorTarget.
 // Check the length with:
-//     len(mockedClient.CreateTrafficMirrorTargetCalls())
+//
+//	len(mockedClient.CreateTrafficMirrorTargetCalls())
 func (mock *ClientMock) CreateTrafficMirrorTargetCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateTrafficMirrorTargetInput
@@ -12482,7 +12582,8 @@ func (mock *ClientMock) CreateTransitGateway(ctx context.Context, params *ec2.Cr
 
 // CreateTransitGatewayCalls gets all the calls that were made to CreateTransitGateway.
 // Check the length with:
-//     len(mockedClient.CreateTransitGatewayCalls())
+//
+//	len(mockedClient.CreateTransitGatewayCalls())
 func (mock *ClientMock) CreateTransitGatewayCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateTransitGatewayInput
@@ -12521,7 +12622,8 @@ func (mock *ClientMock) CreateTransitGatewayConnect(ctx context.Context, params 
 
 // CreateTransitGatewayConnectCalls gets all the calls that were made to CreateTransitGatewayConnect.
 // Check the length with:
-//     len(mockedClient.CreateTransitGatewayConnectCalls())
+//
+//	len(mockedClient.CreateTransitGatewayConnectCalls())
 func (mock *ClientMock) CreateTransitGatewayConnectCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateTransitGatewayConnectInput
@@ -12560,7 +12662,8 @@ func (mock *ClientMock) CreateTransitGatewayConnectPeer(ctx context.Context, par
 
 // CreateTransitGatewayConnectPeerCalls gets all the calls that were made to CreateTransitGatewayConnectPeer.
 // Check the length with:
-//     len(mockedClient.CreateTransitGatewayConnectPeerCalls())
+//
+//	len(mockedClient.CreateTransitGatewayConnectPeerCalls())
 func (mock *ClientMock) CreateTransitGatewayConnectPeerCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateTransitGatewayConnectPeerInput
@@ -12599,7 +12702,8 @@ func (mock *ClientMock) CreateTransitGatewayMulticastDomain(ctx context.Context,
 
 // CreateTransitGatewayMulticastDomainCalls gets all the calls that were made to CreateTransitGatewayMulticastDomain.
 // Check the length with:
-//     len(mockedClient.CreateTransitGatewayMulticastDomainCalls())
+//
+//	len(mockedClient.CreateTransitGatewayMulticastDomainCalls())
 func (mock *ClientMock) CreateTransitGatewayMulticastDomainCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateTransitGatewayMulticastDomainInput
@@ -12638,7 +12742,8 @@ func (mock *ClientMock) CreateTransitGatewayPeeringAttachment(ctx context.Contex
 
 // CreateTransitGatewayPeeringAttachmentCalls gets all the calls that were made to CreateTransitGatewayPeeringAttachment.
 // Check the length with:
-//     len(mockedClient.CreateTransitGatewayPeeringAttachmentCalls())
+//
+//	len(mockedClient.CreateTransitGatewayPeeringAttachmentCalls())
 func (mock *ClientMock) CreateTransitGatewayPeeringAttachmentCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateTransitGatewayPeeringAttachmentInput
@@ -12677,7 +12782,8 @@ func (mock *ClientMock) CreateTransitGatewayPolicyTable(ctx context.Context, par
 
 // CreateTransitGatewayPolicyTableCalls gets all the calls that were made to CreateTransitGatewayPolicyTable.
 // Check the length with:
-//     len(mockedClient.CreateTransitGatewayPolicyTableCalls())
+//
+//	len(mockedClient.CreateTransitGatewayPolicyTableCalls())
 func (mock *ClientMock) CreateTransitGatewayPolicyTableCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateTransitGatewayPolicyTableInput
@@ -12716,7 +12822,8 @@ func (mock *ClientMock) CreateTransitGatewayPrefixListReference(ctx context.Cont
 
 // CreateTransitGatewayPrefixListReferenceCalls gets all the calls that were made to CreateTransitGatewayPrefixListReference.
 // Check the length with:
-//     len(mockedClient.CreateTransitGatewayPrefixListReferenceCalls())
+//
+//	len(mockedClient.CreateTransitGatewayPrefixListReferenceCalls())
 func (mock *ClientMock) CreateTransitGatewayPrefixListReferenceCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateTransitGatewayPrefixListReferenceInput
@@ -12755,7 +12862,8 @@ func (mock *ClientMock) CreateTransitGatewayRoute(ctx context.Context, params *e
 
 // CreateTransitGatewayRouteCalls gets all the calls that were made to CreateTransitGatewayRoute.
 // Check the length with:
-//     len(mockedClient.CreateTransitGatewayRouteCalls())
+//
+//	len(mockedClient.CreateTransitGatewayRouteCalls())
 func (mock *ClientMock) CreateTransitGatewayRouteCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateTransitGatewayRouteInput
@@ -12794,7 +12902,8 @@ func (mock *ClientMock) CreateTransitGatewayRouteTable(ctx context.Context, para
 
 // CreateTransitGatewayRouteTableCalls gets all the calls that were made to CreateTransitGatewayRouteTable.
 // Check the length with:
-//     len(mockedClient.CreateTransitGatewayRouteTableCalls())
+//
+//	len(mockedClient.CreateTransitGatewayRouteTableCalls())
 func (mock *ClientMock) CreateTransitGatewayRouteTableCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateTransitGatewayRouteTableInput
@@ -12833,7 +12942,8 @@ func (mock *ClientMock) CreateTransitGatewayRouteTableAnnouncement(ctx context.C
 
 // CreateTransitGatewayRouteTableAnnouncementCalls gets all the calls that were made to CreateTransitGatewayRouteTableAnnouncement.
 // Check the length with:
-//     len(mockedClient.CreateTransitGatewayRouteTableAnnouncementCalls())
+//
+//	len(mockedClient.CreateTransitGatewayRouteTableAnnouncementCalls())
 func (mock *ClientMock) CreateTransitGatewayRouteTableAnnouncementCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateTransitGatewayRouteTableAnnouncementInput
@@ -12872,7 +12982,8 @@ func (mock *ClientMock) CreateTransitGatewayVpcAttachment(ctx context.Context, p
 
 // CreateTransitGatewayVpcAttachmentCalls gets all the calls that were made to CreateTransitGatewayVpcAttachment.
 // Check the length with:
-//     len(mockedClient.CreateTransitGatewayVpcAttachmentCalls())
+//
+//	len(mockedClient.CreateTransitGatewayVpcAttachmentCalls())
 func (mock *ClientMock) CreateTransitGatewayVpcAttachmentCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateTransitGatewayVpcAttachmentInput
@@ -12911,7 +13022,8 @@ func (mock *ClientMock) CreateVolume(ctx context.Context, params *ec2.CreateVolu
 
 // CreateVolumeCalls gets all the calls that were made to CreateVolume.
 // Check the length with:
-//     len(mockedClient.CreateVolumeCalls())
+//
+//	len(mockedClient.CreateVolumeCalls())
 func (mock *ClientMock) CreateVolumeCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateVolumeInput
@@ -12950,7 +13062,8 @@ func (mock *ClientMock) CreateVpc(ctx context.Context, params *ec2.CreateVpcInpu
 
 // CreateVpcCalls gets all the calls that were made to CreateVpc.
 // Check the length with:
-//     len(mockedClient.CreateVpcCalls())
+//
+//	len(mockedClient.CreateVpcCalls())
 func (mock *ClientMock) CreateVpcCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateVpcInput
@@ -12989,7 +13102,8 @@ func (mock *ClientMock) CreateVpcEndpoint(ctx context.Context, params *ec2.Creat
 
 // CreateVpcEndpointCalls gets all the calls that were made to CreateVpcEndpoint.
 // Check the length with:
-//     len(mockedClient.CreateVpcEndpointCalls())
+//
+//	len(mockedClient.CreateVpcEndpointCalls())
 func (mock *ClientMock) CreateVpcEndpointCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateVpcEndpointInput
@@ -13028,7 +13142,8 @@ func (mock *ClientMock) CreateVpcEndpointConnectionNotification(ctx context.Cont
 
 // CreateVpcEndpointConnectionNotificationCalls gets all the calls that were made to CreateVpcEndpointConnectionNotification.
 // Check the length with:
-//     len(mockedClient.CreateVpcEndpointConnectionNotificationCalls())
+//
+//	len(mockedClient.CreateVpcEndpointConnectionNotificationCalls())
 func (mock *ClientMock) CreateVpcEndpointConnectionNotificationCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateVpcEndpointConnectionNotificationInput
@@ -13067,7 +13182,8 @@ func (mock *ClientMock) CreateVpcEndpointServiceConfiguration(ctx context.Contex
 
 // CreateVpcEndpointServiceConfigurationCalls gets all the calls that were made to CreateVpcEndpointServiceConfiguration.
 // Check the length with:
-//     len(mockedClient.CreateVpcEndpointServiceConfigurationCalls())
+//
+//	len(mockedClient.CreateVpcEndpointServiceConfigurationCalls())
 func (mock *ClientMock) CreateVpcEndpointServiceConfigurationCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateVpcEndpointServiceConfigurationInput
@@ -13106,7 +13222,8 @@ func (mock *ClientMock) CreateVpcPeeringConnection(ctx context.Context, params *
 
 // CreateVpcPeeringConnectionCalls gets all the calls that were made to CreateVpcPeeringConnection.
 // Check the length with:
-//     len(mockedClient.CreateVpcPeeringConnectionCalls())
+//
+//	len(mockedClient.CreateVpcPeeringConnectionCalls())
 func (mock *ClientMock) CreateVpcPeeringConnectionCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateVpcPeeringConnectionInput
@@ -13145,7 +13262,8 @@ func (mock *ClientMock) CreateVpnConnection(ctx context.Context, params *ec2.Cre
 
 // CreateVpnConnectionCalls gets all the calls that were made to CreateVpnConnection.
 // Check the length with:
-//     len(mockedClient.CreateVpnConnectionCalls())
+//
+//	len(mockedClient.CreateVpnConnectionCalls())
 func (mock *ClientMock) CreateVpnConnectionCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateVpnConnectionInput
@@ -13184,7 +13302,8 @@ func (mock *ClientMock) CreateVpnConnectionRoute(ctx context.Context, params *ec
 
 // CreateVpnConnectionRouteCalls gets all the calls that were made to CreateVpnConnectionRoute.
 // Check the length with:
-//     len(mockedClient.CreateVpnConnectionRouteCalls())
+//
+//	len(mockedClient.CreateVpnConnectionRouteCalls())
 func (mock *ClientMock) CreateVpnConnectionRouteCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateVpnConnectionRouteInput
@@ -13223,7 +13342,8 @@ func (mock *ClientMock) CreateVpnGateway(ctx context.Context, params *ec2.Create
 
 // CreateVpnGatewayCalls gets all the calls that were made to CreateVpnGateway.
 // Check the length with:
-//     len(mockedClient.CreateVpnGatewayCalls())
+//
+//	len(mockedClient.CreateVpnGatewayCalls())
 func (mock *ClientMock) CreateVpnGatewayCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.CreateVpnGatewayInput
@@ -13262,7 +13382,8 @@ func (mock *ClientMock) DeleteCarrierGateway(ctx context.Context, params *ec2.De
 
 // DeleteCarrierGatewayCalls gets all the calls that were made to DeleteCarrierGateway.
 // Check the length with:
-//     len(mockedClient.DeleteCarrierGatewayCalls())
+//
+//	len(mockedClient.DeleteCarrierGatewayCalls())
 func (mock *ClientMock) DeleteCarrierGatewayCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteCarrierGatewayInput
@@ -13301,7 +13422,8 @@ func (mock *ClientMock) DeleteClientVpnEndpoint(ctx context.Context, params *ec2
 
 // DeleteClientVpnEndpointCalls gets all the calls that were made to DeleteClientVpnEndpoint.
 // Check the length with:
-//     len(mockedClient.DeleteClientVpnEndpointCalls())
+//
+//	len(mockedClient.DeleteClientVpnEndpointCalls())
 func (mock *ClientMock) DeleteClientVpnEndpointCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteClientVpnEndpointInput
@@ -13340,7 +13462,8 @@ func (mock *ClientMock) DeleteClientVpnRoute(ctx context.Context, params *ec2.De
 
 // DeleteClientVpnRouteCalls gets all the calls that were made to DeleteClientVpnRoute.
 // Check the length with:
-//     len(mockedClient.DeleteClientVpnRouteCalls())
+//
+//	len(mockedClient.DeleteClientVpnRouteCalls())
 func (mock *ClientMock) DeleteClientVpnRouteCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteClientVpnRouteInput
@@ -13379,7 +13502,8 @@ func (mock *ClientMock) DeleteCustomerGateway(ctx context.Context, params *ec2.D
 
 // DeleteCustomerGatewayCalls gets all the calls that were made to DeleteCustomerGateway.
 // Check the length with:
-//     len(mockedClient.DeleteCustomerGatewayCalls())
+//
+//	len(mockedClient.DeleteCustomerGatewayCalls())
 func (mock *ClientMock) DeleteCustomerGatewayCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteCustomerGatewayInput
@@ -13418,7 +13542,8 @@ func (mock *ClientMock) DeleteDhcpOptions(ctx context.Context, params *ec2.Delet
 
 // DeleteDhcpOptionsCalls gets all the calls that were made to DeleteDhcpOptions.
 // Check the length with:
-//     len(mockedClient.DeleteDhcpOptionsCalls())
+//
+//	len(mockedClient.DeleteDhcpOptionsCalls())
 func (mock *ClientMock) DeleteDhcpOptionsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteDhcpOptionsInput
@@ -13457,7 +13582,8 @@ func (mock *ClientMock) DeleteEgressOnlyInternetGateway(ctx context.Context, par
 
 // DeleteEgressOnlyInternetGatewayCalls gets all the calls that were made to DeleteEgressOnlyInternetGateway.
 // Check the length with:
-//     len(mockedClient.DeleteEgressOnlyInternetGatewayCalls())
+//
+//	len(mockedClient.DeleteEgressOnlyInternetGatewayCalls())
 func (mock *ClientMock) DeleteEgressOnlyInternetGatewayCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteEgressOnlyInternetGatewayInput
@@ -13496,7 +13622,8 @@ func (mock *ClientMock) DeleteFleets(ctx context.Context, params *ec2.DeleteFlee
 
 // DeleteFleetsCalls gets all the calls that were made to DeleteFleets.
 // Check the length with:
-//     len(mockedClient.DeleteFleetsCalls())
+//
+//	len(mockedClient.DeleteFleetsCalls())
 func (mock *ClientMock) DeleteFleetsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteFleetsInput
@@ -13535,7 +13662,8 @@ func (mock *ClientMock) DeleteFlowLogs(ctx context.Context, params *ec2.DeleteFl
 
 // DeleteFlowLogsCalls gets all the calls that were made to DeleteFlowLogs.
 // Check the length with:
-//     len(mockedClient.DeleteFlowLogsCalls())
+//
+//	len(mockedClient.DeleteFlowLogsCalls())
 func (mock *ClientMock) DeleteFlowLogsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteFlowLogsInput
@@ -13574,7 +13702,8 @@ func (mock *ClientMock) DeleteFpgaImage(ctx context.Context, params *ec2.DeleteF
 
 // DeleteFpgaImageCalls gets all the calls that were made to DeleteFpgaImage.
 // Check the length with:
-//     len(mockedClient.DeleteFpgaImageCalls())
+//
+//	len(mockedClient.DeleteFpgaImageCalls())
 func (mock *ClientMock) DeleteFpgaImageCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteFpgaImageInput
@@ -13613,7 +13742,8 @@ func (mock *ClientMock) DeleteInstanceEventWindow(ctx context.Context, params *e
 
 // DeleteInstanceEventWindowCalls gets all the calls that were made to DeleteInstanceEventWindow.
 // Check the length with:
-//     len(mockedClient.DeleteInstanceEventWindowCalls())
+//
+//	len(mockedClient.DeleteInstanceEventWindowCalls())
 func (mock *ClientMock) DeleteInstanceEventWindowCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteInstanceEventWindowInput
@@ -13652,7 +13782,8 @@ func (mock *ClientMock) DeleteInternetGateway(ctx context.Context, params *ec2.D
 
 // DeleteInternetGatewayCalls gets all the calls that were made to DeleteInternetGateway.
 // Check the length with:
-//     len(mockedClient.DeleteInternetGatewayCalls())
+//
+//	len(mockedClient.DeleteInternetGatewayCalls())
 func (mock *ClientMock) DeleteInternetGatewayCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteInternetGatewayInput
@@ -13691,7 +13822,8 @@ func (mock *ClientMock) DeleteIpam(ctx context.Context, params *ec2.DeleteIpamIn
 
 // DeleteIpamCalls gets all the calls that were made to DeleteIpam.
 // Check the length with:
-//     len(mockedClient.DeleteIpamCalls())
+//
+//	len(mockedClient.DeleteIpamCalls())
 func (mock *ClientMock) DeleteIpamCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteIpamInput
@@ -13730,7 +13862,8 @@ func (mock *ClientMock) DeleteIpamPool(ctx context.Context, params *ec2.DeleteIp
 
 // DeleteIpamPoolCalls gets all the calls that were made to DeleteIpamPool.
 // Check the length with:
-//     len(mockedClient.DeleteIpamPoolCalls())
+//
+//	len(mockedClient.DeleteIpamPoolCalls())
 func (mock *ClientMock) DeleteIpamPoolCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteIpamPoolInput
@@ -13769,7 +13902,8 @@ func (mock *ClientMock) DeleteIpamScope(ctx context.Context, params *ec2.DeleteI
 
 // DeleteIpamScopeCalls gets all the calls that were made to DeleteIpamScope.
 // Check the length with:
-//     len(mockedClient.DeleteIpamScopeCalls())
+//
+//	len(mockedClient.DeleteIpamScopeCalls())
 func (mock *ClientMock) DeleteIpamScopeCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteIpamScopeInput
@@ -13808,7 +13942,8 @@ func (mock *ClientMock) DeleteKeyPair(ctx context.Context, params *ec2.DeleteKey
 
 // DeleteKeyPairCalls gets all the calls that were made to DeleteKeyPair.
 // Check the length with:
-//     len(mockedClient.DeleteKeyPairCalls())
+//
+//	len(mockedClient.DeleteKeyPairCalls())
 func (mock *ClientMock) DeleteKeyPairCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteKeyPairInput
@@ -13847,7 +13982,8 @@ func (mock *ClientMock) DeleteLaunchTemplate(ctx context.Context, params *ec2.De
 
 // DeleteLaunchTemplateCalls gets all the calls that were made to DeleteLaunchTemplate.
 // Check the length with:
-//     len(mockedClient.DeleteLaunchTemplateCalls())
+//
+//	len(mockedClient.DeleteLaunchTemplateCalls())
 func (mock *ClientMock) DeleteLaunchTemplateCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteLaunchTemplateInput
@@ -13886,7 +14022,8 @@ func (mock *ClientMock) DeleteLaunchTemplateVersions(ctx context.Context, params
 
 // DeleteLaunchTemplateVersionsCalls gets all the calls that were made to DeleteLaunchTemplateVersions.
 // Check the length with:
-//     len(mockedClient.DeleteLaunchTemplateVersionsCalls())
+//
+//	len(mockedClient.DeleteLaunchTemplateVersionsCalls())
 func (mock *ClientMock) DeleteLaunchTemplateVersionsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteLaunchTemplateVersionsInput
@@ -13925,7 +14062,8 @@ func (mock *ClientMock) DeleteLocalGatewayRoute(ctx context.Context, params *ec2
 
 // DeleteLocalGatewayRouteCalls gets all the calls that were made to DeleteLocalGatewayRoute.
 // Check the length with:
-//     len(mockedClient.DeleteLocalGatewayRouteCalls())
+//
+//	len(mockedClient.DeleteLocalGatewayRouteCalls())
 func (mock *ClientMock) DeleteLocalGatewayRouteCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteLocalGatewayRouteInput
@@ -13964,7 +14102,8 @@ func (mock *ClientMock) DeleteLocalGatewayRouteTableVpcAssociation(ctx context.C
 
 // DeleteLocalGatewayRouteTableVpcAssociationCalls gets all the calls that were made to DeleteLocalGatewayRouteTableVpcAssociation.
 // Check the length with:
-//     len(mockedClient.DeleteLocalGatewayRouteTableVpcAssociationCalls())
+//
+//	len(mockedClient.DeleteLocalGatewayRouteTableVpcAssociationCalls())
 func (mock *ClientMock) DeleteLocalGatewayRouteTableVpcAssociationCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteLocalGatewayRouteTableVpcAssociationInput
@@ -14003,7 +14142,8 @@ func (mock *ClientMock) DeleteManagedPrefixList(ctx context.Context, params *ec2
 
 // DeleteManagedPrefixListCalls gets all the calls that were made to DeleteManagedPrefixList.
 // Check the length with:
-//     len(mockedClient.DeleteManagedPrefixListCalls())
+//
+//	len(mockedClient.DeleteManagedPrefixListCalls())
 func (mock *ClientMock) DeleteManagedPrefixListCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteManagedPrefixListInput
@@ -14042,7 +14182,8 @@ func (mock *ClientMock) DeleteNatGateway(ctx context.Context, params *ec2.Delete
 
 // DeleteNatGatewayCalls gets all the calls that were made to DeleteNatGateway.
 // Check the length with:
-//     len(mockedClient.DeleteNatGatewayCalls())
+//
+//	len(mockedClient.DeleteNatGatewayCalls())
 func (mock *ClientMock) DeleteNatGatewayCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteNatGatewayInput
@@ -14081,7 +14222,8 @@ func (mock *ClientMock) DeleteNetworkAcl(ctx context.Context, params *ec2.Delete
 
 // DeleteNetworkAclCalls gets all the calls that were made to DeleteNetworkAcl.
 // Check the length with:
-//     len(mockedClient.DeleteNetworkAclCalls())
+//
+//	len(mockedClient.DeleteNetworkAclCalls())
 func (mock *ClientMock) DeleteNetworkAclCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteNetworkAclInput
@@ -14120,7 +14262,8 @@ func (mock *ClientMock) DeleteNetworkAclEntry(ctx context.Context, params *ec2.D
 
 // DeleteNetworkAclEntryCalls gets all the calls that were made to DeleteNetworkAclEntry.
 // Check the length with:
-//     len(mockedClient.DeleteNetworkAclEntryCalls())
+//
+//	len(mockedClient.DeleteNetworkAclEntryCalls())
 func (mock *ClientMock) DeleteNetworkAclEntryCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteNetworkAclEntryInput
@@ -14159,7 +14302,8 @@ func (mock *ClientMock) DeleteNetworkInsightsAccessScope(ctx context.Context, pa
 
 // DeleteNetworkInsightsAccessScopeCalls gets all the calls that were made to DeleteNetworkInsightsAccessScope.
 // Check the length with:
-//     len(mockedClient.DeleteNetworkInsightsAccessScopeCalls())
+//
+//	len(mockedClient.DeleteNetworkInsightsAccessScopeCalls())
 func (mock *ClientMock) DeleteNetworkInsightsAccessScopeCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteNetworkInsightsAccessScopeInput
@@ -14198,7 +14342,8 @@ func (mock *ClientMock) DeleteNetworkInsightsAccessScopeAnalysis(ctx context.Con
 
 // DeleteNetworkInsightsAccessScopeAnalysisCalls gets all the calls that were made to DeleteNetworkInsightsAccessScopeAnalysis.
 // Check the length with:
-//     len(mockedClient.DeleteNetworkInsightsAccessScopeAnalysisCalls())
+//
+//	len(mockedClient.DeleteNetworkInsightsAccessScopeAnalysisCalls())
 func (mock *ClientMock) DeleteNetworkInsightsAccessScopeAnalysisCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteNetworkInsightsAccessScopeAnalysisInput
@@ -14237,7 +14382,8 @@ func (mock *ClientMock) DeleteNetworkInsightsAnalysis(ctx context.Context, param
 
 // DeleteNetworkInsightsAnalysisCalls gets all the calls that were made to DeleteNetworkInsightsAnalysis.
 // Check the length with:
-//     len(mockedClient.DeleteNetworkInsightsAnalysisCalls())
+//
+//	len(mockedClient.DeleteNetworkInsightsAnalysisCalls())
 func (mock *ClientMock) DeleteNetworkInsightsAnalysisCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteNetworkInsightsAnalysisInput
@@ -14276,7 +14422,8 @@ func (mock *ClientMock) DeleteNetworkInsightsPath(ctx context.Context, params *e
 
 // DeleteNetworkInsightsPathCalls gets all the calls that were made to DeleteNetworkInsightsPath.
 // Check the length with:
-//     len(mockedClient.DeleteNetworkInsightsPathCalls())
+//
+//	len(mockedClient.DeleteNetworkInsightsPathCalls())
 func (mock *ClientMock) DeleteNetworkInsightsPathCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteNetworkInsightsPathInput
@@ -14315,7 +14462,8 @@ func (mock *ClientMock) DeleteNetworkInterface(ctx context.Context, params *ec2.
 
 // DeleteNetworkInterfaceCalls gets all the calls that were made to DeleteNetworkInterface.
 // Check the length with:
-//     len(mockedClient.DeleteNetworkInterfaceCalls())
+//
+//	len(mockedClient.DeleteNetworkInterfaceCalls())
 func (mock *ClientMock) DeleteNetworkInterfaceCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteNetworkInterfaceInput
@@ -14354,7 +14502,8 @@ func (mock *ClientMock) DeleteNetworkInterfacePermission(ctx context.Context, pa
 
 // DeleteNetworkInterfacePermissionCalls gets all the calls that were made to DeleteNetworkInterfacePermission.
 // Check the length with:
-//     len(mockedClient.DeleteNetworkInterfacePermissionCalls())
+//
+//	len(mockedClient.DeleteNetworkInterfacePermissionCalls())
 func (mock *ClientMock) DeleteNetworkInterfacePermissionCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteNetworkInterfacePermissionInput
@@ -14393,7 +14542,8 @@ func (mock *ClientMock) DeletePlacementGroup(ctx context.Context, params *ec2.De
 
 // DeletePlacementGroupCalls gets all the calls that were made to DeletePlacementGroup.
 // Check the length with:
-//     len(mockedClient.DeletePlacementGroupCalls())
+//
+//	len(mockedClient.DeletePlacementGroupCalls())
 func (mock *ClientMock) DeletePlacementGroupCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeletePlacementGroupInput
@@ -14432,7 +14582,8 @@ func (mock *ClientMock) DeletePublicIpv4Pool(ctx context.Context, params *ec2.De
 
 // DeletePublicIpv4PoolCalls gets all the calls that were made to DeletePublicIpv4Pool.
 // Check the length with:
-//     len(mockedClient.DeletePublicIpv4PoolCalls())
+//
+//	len(mockedClient.DeletePublicIpv4PoolCalls())
 func (mock *ClientMock) DeletePublicIpv4PoolCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeletePublicIpv4PoolInput
@@ -14471,7 +14622,8 @@ func (mock *ClientMock) DeleteQueuedReservedInstances(ctx context.Context, param
 
 // DeleteQueuedReservedInstancesCalls gets all the calls that were made to DeleteQueuedReservedInstances.
 // Check the length with:
-//     len(mockedClient.DeleteQueuedReservedInstancesCalls())
+//
+//	len(mockedClient.DeleteQueuedReservedInstancesCalls())
 func (mock *ClientMock) DeleteQueuedReservedInstancesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteQueuedReservedInstancesInput
@@ -14510,7 +14662,8 @@ func (mock *ClientMock) DeleteRoute(ctx context.Context, params *ec2.DeleteRoute
 
 // DeleteRouteCalls gets all the calls that were made to DeleteRoute.
 // Check the length with:
-//     len(mockedClient.DeleteRouteCalls())
+//
+//	len(mockedClient.DeleteRouteCalls())
 func (mock *ClientMock) DeleteRouteCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteRouteInput
@@ -14549,7 +14702,8 @@ func (mock *ClientMock) DeleteRouteTable(ctx context.Context, params *ec2.Delete
 
 // DeleteRouteTableCalls gets all the calls that were made to DeleteRouteTable.
 // Check the length with:
-//     len(mockedClient.DeleteRouteTableCalls())
+//
+//	len(mockedClient.DeleteRouteTableCalls())
 func (mock *ClientMock) DeleteRouteTableCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteRouteTableInput
@@ -14588,7 +14742,8 @@ func (mock *ClientMock) DeleteSecurityGroup(ctx context.Context, params *ec2.Del
 
 // DeleteSecurityGroupCalls gets all the calls that were made to DeleteSecurityGroup.
 // Check the length with:
-//     len(mockedClient.DeleteSecurityGroupCalls())
+//
+//	len(mockedClient.DeleteSecurityGroupCalls())
 func (mock *ClientMock) DeleteSecurityGroupCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteSecurityGroupInput
@@ -14627,7 +14782,8 @@ func (mock *ClientMock) DeleteSnapshot(ctx context.Context, params *ec2.DeleteSn
 
 // DeleteSnapshotCalls gets all the calls that were made to DeleteSnapshot.
 // Check the length with:
-//     len(mockedClient.DeleteSnapshotCalls())
+//
+//	len(mockedClient.DeleteSnapshotCalls())
 func (mock *ClientMock) DeleteSnapshotCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteSnapshotInput
@@ -14666,7 +14822,8 @@ func (mock *ClientMock) DeleteSpotDatafeedSubscription(ctx context.Context, para
 
 // DeleteSpotDatafeedSubscriptionCalls gets all the calls that were made to DeleteSpotDatafeedSubscription.
 // Check the length with:
-//     len(mockedClient.DeleteSpotDatafeedSubscriptionCalls())
+//
+//	len(mockedClient.DeleteSpotDatafeedSubscriptionCalls())
 func (mock *ClientMock) DeleteSpotDatafeedSubscriptionCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteSpotDatafeedSubscriptionInput
@@ -14705,7 +14862,8 @@ func (mock *ClientMock) DeleteSubnet(ctx context.Context, params *ec2.DeleteSubn
 
 // DeleteSubnetCalls gets all the calls that were made to DeleteSubnet.
 // Check the length with:
-//     len(mockedClient.DeleteSubnetCalls())
+//
+//	len(mockedClient.DeleteSubnetCalls())
 func (mock *ClientMock) DeleteSubnetCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteSubnetInput
@@ -14744,7 +14902,8 @@ func (mock *ClientMock) DeleteSubnetCidrReservation(ctx context.Context, params 
 
 // DeleteSubnetCidrReservationCalls gets all the calls that were made to DeleteSubnetCidrReservation.
 // Check the length with:
-//     len(mockedClient.DeleteSubnetCidrReservationCalls())
+//
+//	len(mockedClient.DeleteSubnetCidrReservationCalls())
 func (mock *ClientMock) DeleteSubnetCidrReservationCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteSubnetCidrReservationInput
@@ -14783,7 +14942,8 @@ func (mock *ClientMock) DeleteTags(ctx context.Context, params *ec2.DeleteTagsIn
 
 // DeleteTagsCalls gets all the calls that were made to DeleteTags.
 // Check the length with:
-//     len(mockedClient.DeleteTagsCalls())
+//
+//	len(mockedClient.DeleteTagsCalls())
 func (mock *ClientMock) DeleteTagsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteTagsInput
@@ -14822,7 +14982,8 @@ func (mock *ClientMock) DeleteTrafficMirrorFilter(ctx context.Context, params *e
 
 // DeleteTrafficMirrorFilterCalls gets all the calls that were made to DeleteTrafficMirrorFilter.
 // Check the length with:
-//     len(mockedClient.DeleteTrafficMirrorFilterCalls())
+//
+//	len(mockedClient.DeleteTrafficMirrorFilterCalls())
 func (mock *ClientMock) DeleteTrafficMirrorFilterCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteTrafficMirrorFilterInput
@@ -14861,7 +15022,8 @@ func (mock *ClientMock) DeleteTrafficMirrorFilterRule(ctx context.Context, param
 
 // DeleteTrafficMirrorFilterRuleCalls gets all the calls that were made to DeleteTrafficMirrorFilterRule.
 // Check the length with:
-//     len(mockedClient.DeleteTrafficMirrorFilterRuleCalls())
+//
+//	len(mockedClient.DeleteTrafficMirrorFilterRuleCalls())
 func (mock *ClientMock) DeleteTrafficMirrorFilterRuleCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteTrafficMirrorFilterRuleInput
@@ -14900,7 +15062,8 @@ func (mock *ClientMock) DeleteTrafficMirrorSession(ctx context.Context, params *
 
 // DeleteTrafficMirrorSessionCalls gets all the calls that were made to DeleteTrafficMirrorSession.
 // Check the length with:
-//     len(mockedClient.DeleteTrafficMirrorSessionCalls())
+//
+//	len(mockedClient.DeleteTrafficMirrorSessionCalls())
 func (mock *ClientMock) DeleteTrafficMirrorSessionCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteTrafficMirrorSessionInput
@@ -14939,7 +15102,8 @@ func (mock *ClientMock) DeleteTrafficMirrorTarget(ctx context.Context, params *e
 
 // DeleteTrafficMirrorTargetCalls gets all the calls that were made to DeleteTrafficMirrorTarget.
 // Check the length with:
-//     len(mockedClient.DeleteTrafficMirrorTargetCalls())
+//
+//	len(mockedClient.DeleteTrafficMirrorTargetCalls())
 func (mock *ClientMock) DeleteTrafficMirrorTargetCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteTrafficMirrorTargetInput
@@ -14978,7 +15142,8 @@ func (mock *ClientMock) DeleteTransitGateway(ctx context.Context, params *ec2.De
 
 // DeleteTransitGatewayCalls gets all the calls that were made to DeleteTransitGateway.
 // Check the length with:
-//     len(mockedClient.DeleteTransitGatewayCalls())
+//
+//	len(mockedClient.DeleteTransitGatewayCalls())
 func (mock *ClientMock) DeleteTransitGatewayCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteTransitGatewayInput
@@ -15017,7 +15182,8 @@ func (mock *ClientMock) DeleteTransitGatewayConnect(ctx context.Context, params 
 
 // DeleteTransitGatewayConnectCalls gets all the calls that were made to DeleteTransitGatewayConnect.
 // Check the length with:
-//     len(mockedClient.DeleteTransitGatewayConnectCalls())
+//
+//	len(mockedClient.DeleteTransitGatewayConnectCalls())
 func (mock *ClientMock) DeleteTransitGatewayConnectCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteTransitGatewayConnectInput
@@ -15056,7 +15222,8 @@ func (mock *ClientMock) DeleteTransitGatewayConnectPeer(ctx context.Context, par
 
 // DeleteTransitGatewayConnectPeerCalls gets all the calls that were made to DeleteTransitGatewayConnectPeer.
 // Check the length with:
-//     len(mockedClient.DeleteTransitGatewayConnectPeerCalls())
+//
+//	len(mockedClient.DeleteTransitGatewayConnectPeerCalls())
 func (mock *ClientMock) DeleteTransitGatewayConnectPeerCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteTransitGatewayConnectPeerInput
@@ -15095,7 +15262,8 @@ func (mock *ClientMock) DeleteTransitGatewayMulticastDomain(ctx context.Context,
 
 // DeleteTransitGatewayMulticastDomainCalls gets all the calls that were made to DeleteTransitGatewayMulticastDomain.
 // Check the length with:
-//     len(mockedClient.DeleteTransitGatewayMulticastDomainCalls())
+//
+//	len(mockedClient.DeleteTransitGatewayMulticastDomainCalls())
 func (mock *ClientMock) DeleteTransitGatewayMulticastDomainCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteTransitGatewayMulticastDomainInput
@@ -15134,7 +15302,8 @@ func (mock *ClientMock) DeleteTransitGatewayPeeringAttachment(ctx context.Contex
 
 // DeleteTransitGatewayPeeringAttachmentCalls gets all the calls that were made to DeleteTransitGatewayPeeringAttachment.
 // Check the length with:
-//     len(mockedClient.DeleteTransitGatewayPeeringAttachmentCalls())
+//
+//	len(mockedClient.DeleteTransitGatewayPeeringAttachmentCalls())
 func (mock *ClientMock) DeleteTransitGatewayPeeringAttachmentCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteTransitGatewayPeeringAttachmentInput
@@ -15173,7 +15342,8 @@ func (mock *ClientMock) DeleteTransitGatewayPolicyTable(ctx context.Context, par
 
 // DeleteTransitGatewayPolicyTableCalls gets all the calls that were made to DeleteTransitGatewayPolicyTable.
 // Check the length with:
-//     len(mockedClient.DeleteTransitGatewayPolicyTableCalls())
+//
+//	len(mockedClient.DeleteTransitGatewayPolicyTableCalls())
 func (mock *ClientMock) DeleteTransitGatewayPolicyTableCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteTransitGatewayPolicyTableInput
@@ -15212,7 +15382,8 @@ func (mock *ClientMock) DeleteTransitGatewayPrefixListReference(ctx context.Cont
 
 // DeleteTransitGatewayPrefixListReferenceCalls gets all the calls that were made to DeleteTransitGatewayPrefixListReference.
 // Check the length with:
-//     len(mockedClient.DeleteTransitGatewayPrefixListReferenceCalls())
+//
+//	len(mockedClient.DeleteTransitGatewayPrefixListReferenceCalls())
 func (mock *ClientMock) DeleteTransitGatewayPrefixListReferenceCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteTransitGatewayPrefixListReferenceInput
@@ -15251,7 +15422,8 @@ func (mock *ClientMock) DeleteTransitGatewayRoute(ctx context.Context, params *e
 
 // DeleteTransitGatewayRouteCalls gets all the calls that were made to DeleteTransitGatewayRoute.
 // Check the length with:
-//     len(mockedClient.DeleteTransitGatewayRouteCalls())
+//
+//	len(mockedClient.DeleteTransitGatewayRouteCalls())
 func (mock *ClientMock) DeleteTransitGatewayRouteCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteTransitGatewayRouteInput
@@ -15290,7 +15462,8 @@ func (mock *ClientMock) DeleteTransitGatewayRouteTable(ctx context.Context, para
 
 // DeleteTransitGatewayRouteTableCalls gets all the calls that were made to DeleteTransitGatewayRouteTable.
 // Check the length with:
-//     len(mockedClient.DeleteTransitGatewayRouteTableCalls())
+//
+//	len(mockedClient.DeleteTransitGatewayRouteTableCalls())
 func (mock *ClientMock) DeleteTransitGatewayRouteTableCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteTransitGatewayRouteTableInput
@@ -15329,7 +15502,8 @@ func (mock *ClientMock) DeleteTransitGatewayRouteTableAnnouncement(ctx context.C
 
 // DeleteTransitGatewayRouteTableAnnouncementCalls gets all the calls that were made to DeleteTransitGatewayRouteTableAnnouncement.
 // Check the length with:
-//     len(mockedClient.DeleteTransitGatewayRouteTableAnnouncementCalls())
+//
+//	len(mockedClient.DeleteTransitGatewayRouteTableAnnouncementCalls())
 func (mock *ClientMock) DeleteTransitGatewayRouteTableAnnouncementCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteTransitGatewayRouteTableAnnouncementInput
@@ -15368,7 +15542,8 @@ func (mock *ClientMock) DeleteTransitGatewayVpcAttachment(ctx context.Context, p
 
 // DeleteTransitGatewayVpcAttachmentCalls gets all the calls that were made to DeleteTransitGatewayVpcAttachment.
 // Check the length with:
-//     len(mockedClient.DeleteTransitGatewayVpcAttachmentCalls())
+//
+//	len(mockedClient.DeleteTransitGatewayVpcAttachmentCalls())
 func (mock *ClientMock) DeleteTransitGatewayVpcAttachmentCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteTransitGatewayVpcAttachmentInput
@@ -15407,7 +15582,8 @@ func (mock *ClientMock) DeleteVolume(ctx context.Context, params *ec2.DeleteVolu
 
 // DeleteVolumeCalls gets all the calls that were made to DeleteVolume.
 // Check the length with:
-//     len(mockedClient.DeleteVolumeCalls())
+//
+//	len(mockedClient.DeleteVolumeCalls())
 func (mock *ClientMock) DeleteVolumeCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteVolumeInput
@@ -15446,7 +15622,8 @@ func (mock *ClientMock) DeleteVpc(ctx context.Context, params *ec2.DeleteVpcInpu
 
 // DeleteVpcCalls gets all the calls that were made to DeleteVpc.
 // Check the length with:
-//     len(mockedClient.DeleteVpcCalls())
+//
+//	len(mockedClient.DeleteVpcCalls())
 func (mock *ClientMock) DeleteVpcCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteVpcInput
@@ -15485,7 +15662,8 @@ func (mock *ClientMock) DeleteVpcEndpointConnectionNotifications(ctx context.Con
 
 // DeleteVpcEndpointConnectionNotificationsCalls gets all the calls that were made to DeleteVpcEndpointConnectionNotifications.
 // Check the length with:
-//     len(mockedClient.DeleteVpcEndpointConnectionNotificationsCalls())
+//
+//	len(mockedClient.DeleteVpcEndpointConnectionNotificationsCalls())
 func (mock *ClientMock) DeleteVpcEndpointConnectionNotificationsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteVpcEndpointConnectionNotificationsInput
@@ -15524,7 +15702,8 @@ func (mock *ClientMock) DeleteVpcEndpointServiceConfigurations(ctx context.Conte
 
 // DeleteVpcEndpointServiceConfigurationsCalls gets all the calls that were made to DeleteVpcEndpointServiceConfigurations.
 // Check the length with:
-//     len(mockedClient.DeleteVpcEndpointServiceConfigurationsCalls())
+//
+//	len(mockedClient.DeleteVpcEndpointServiceConfigurationsCalls())
 func (mock *ClientMock) DeleteVpcEndpointServiceConfigurationsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteVpcEndpointServiceConfigurationsInput
@@ -15563,7 +15742,8 @@ func (mock *ClientMock) DeleteVpcEndpoints(ctx context.Context, params *ec2.Dele
 
 // DeleteVpcEndpointsCalls gets all the calls that were made to DeleteVpcEndpoints.
 // Check the length with:
-//     len(mockedClient.DeleteVpcEndpointsCalls())
+//
+//	len(mockedClient.DeleteVpcEndpointsCalls())
 func (mock *ClientMock) DeleteVpcEndpointsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteVpcEndpointsInput
@@ -15602,7 +15782,8 @@ func (mock *ClientMock) DeleteVpcPeeringConnection(ctx context.Context, params *
 
 // DeleteVpcPeeringConnectionCalls gets all the calls that were made to DeleteVpcPeeringConnection.
 // Check the length with:
-//     len(mockedClient.DeleteVpcPeeringConnectionCalls())
+//
+//	len(mockedClient.DeleteVpcPeeringConnectionCalls())
 func (mock *ClientMock) DeleteVpcPeeringConnectionCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteVpcPeeringConnectionInput
@@ -15641,7 +15822,8 @@ func (mock *ClientMock) DeleteVpnConnection(ctx context.Context, params *ec2.Del
 
 // DeleteVpnConnectionCalls gets all the calls that were made to DeleteVpnConnection.
 // Check the length with:
-//     len(mockedClient.DeleteVpnConnectionCalls())
+//
+//	len(mockedClient.DeleteVpnConnectionCalls())
 func (mock *ClientMock) DeleteVpnConnectionCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteVpnConnectionInput
@@ -15680,7 +15862,8 @@ func (mock *ClientMock) DeleteVpnConnectionRoute(ctx context.Context, params *ec
 
 // DeleteVpnConnectionRouteCalls gets all the calls that were made to DeleteVpnConnectionRoute.
 // Check the length with:
-//     len(mockedClient.DeleteVpnConnectionRouteCalls())
+//
+//	len(mockedClient.DeleteVpnConnectionRouteCalls())
 func (mock *ClientMock) DeleteVpnConnectionRouteCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteVpnConnectionRouteInput
@@ -15719,7 +15902,8 @@ func (mock *ClientMock) DeleteVpnGateway(ctx context.Context, params *ec2.Delete
 
 // DeleteVpnGatewayCalls gets all the calls that were made to DeleteVpnGateway.
 // Check the length with:
-//     len(mockedClient.DeleteVpnGatewayCalls())
+//
+//	len(mockedClient.DeleteVpnGatewayCalls())
 func (mock *ClientMock) DeleteVpnGatewayCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeleteVpnGatewayInput
@@ -15758,7 +15942,8 @@ func (mock *ClientMock) DeprovisionByoipCidr(ctx context.Context, params *ec2.De
 
 // DeprovisionByoipCidrCalls gets all the calls that were made to DeprovisionByoipCidr.
 // Check the length with:
-//     len(mockedClient.DeprovisionByoipCidrCalls())
+//
+//	len(mockedClient.DeprovisionByoipCidrCalls())
 func (mock *ClientMock) DeprovisionByoipCidrCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeprovisionByoipCidrInput
@@ -15797,7 +15982,8 @@ func (mock *ClientMock) DeprovisionIpamPoolCidr(ctx context.Context, params *ec2
 
 // DeprovisionIpamPoolCidrCalls gets all the calls that were made to DeprovisionIpamPoolCidr.
 // Check the length with:
-//     len(mockedClient.DeprovisionIpamPoolCidrCalls())
+//
+//	len(mockedClient.DeprovisionIpamPoolCidrCalls())
 func (mock *ClientMock) DeprovisionIpamPoolCidrCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeprovisionIpamPoolCidrInput
@@ -15836,7 +16022,8 @@ func (mock *ClientMock) DeprovisionPublicIpv4PoolCidr(ctx context.Context, param
 
 // DeprovisionPublicIpv4PoolCidrCalls gets all the calls that were made to DeprovisionPublicIpv4PoolCidr.
 // Check the length with:
-//     len(mockedClient.DeprovisionPublicIpv4PoolCidrCalls())
+//
+//	len(mockedClient.DeprovisionPublicIpv4PoolCidrCalls())
 func (mock *ClientMock) DeprovisionPublicIpv4PoolCidrCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeprovisionPublicIpv4PoolCidrInput
@@ -15875,7 +16062,8 @@ func (mock *ClientMock) DeregisterImage(ctx context.Context, params *ec2.Deregis
 
 // DeregisterImageCalls gets all the calls that were made to DeregisterImage.
 // Check the length with:
-//     len(mockedClient.DeregisterImageCalls())
+//
+//	len(mockedClient.DeregisterImageCalls())
 func (mock *ClientMock) DeregisterImageCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeregisterImageInput
@@ -15914,7 +16102,8 @@ func (mock *ClientMock) DeregisterInstanceEventNotificationAttributes(ctx contex
 
 // DeregisterInstanceEventNotificationAttributesCalls gets all the calls that were made to DeregisterInstanceEventNotificationAttributes.
 // Check the length with:
-//     len(mockedClient.DeregisterInstanceEventNotificationAttributesCalls())
+//
+//	len(mockedClient.DeregisterInstanceEventNotificationAttributesCalls())
 func (mock *ClientMock) DeregisterInstanceEventNotificationAttributesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeregisterInstanceEventNotificationAttributesInput
@@ -15953,7 +16142,8 @@ func (mock *ClientMock) DeregisterTransitGatewayMulticastGroupMembers(ctx contex
 
 // DeregisterTransitGatewayMulticastGroupMembersCalls gets all the calls that were made to DeregisterTransitGatewayMulticastGroupMembers.
 // Check the length with:
-//     len(mockedClient.DeregisterTransitGatewayMulticastGroupMembersCalls())
+//
+//	len(mockedClient.DeregisterTransitGatewayMulticastGroupMembersCalls())
 func (mock *ClientMock) DeregisterTransitGatewayMulticastGroupMembersCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeregisterTransitGatewayMulticastGroupMembersInput
@@ -15992,7 +16182,8 @@ func (mock *ClientMock) DeregisterTransitGatewayMulticastGroupSources(ctx contex
 
 // DeregisterTransitGatewayMulticastGroupSourcesCalls gets all the calls that were made to DeregisterTransitGatewayMulticastGroupSources.
 // Check the length with:
-//     len(mockedClient.DeregisterTransitGatewayMulticastGroupSourcesCalls())
+//
+//	len(mockedClient.DeregisterTransitGatewayMulticastGroupSourcesCalls())
 func (mock *ClientMock) DeregisterTransitGatewayMulticastGroupSourcesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DeregisterTransitGatewayMulticastGroupSourcesInput
@@ -16031,7 +16222,8 @@ func (mock *ClientMock) DescribeAccountAttributes(ctx context.Context, params *e
 
 // DescribeAccountAttributesCalls gets all the calls that were made to DescribeAccountAttributes.
 // Check the length with:
-//     len(mockedClient.DescribeAccountAttributesCalls())
+//
+//	len(mockedClient.DescribeAccountAttributesCalls())
 func (mock *ClientMock) DescribeAccountAttributesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeAccountAttributesInput
@@ -16070,7 +16262,8 @@ func (mock *ClientMock) DescribeAddresses(ctx context.Context, params *ec2.Descr
 
 // DescribeAddressesCalls gets all the calls that were made to DescribeAddresses.
 // Check the length with:
-//     len(mockedClient.DescribeAddressesCalls())
+//
+//	len(mockedClient.DescribeAddressesCalls())
 func (mock *ClientMock) DescribeAddressesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeAddressesInput
@@ -16109,7 +16302,8 @@ func (mock *ClientMock) DescribeAddressesAttribute(ctx context.Context, params *
 
 // DescribeAddressesAttributeCalls gets all the calls that were made to DescribeAddressesAttribute.
 // Check the length with:
-//     len(mockedClient.DescribeAddressesAttributeCalls())
+//
+//	len(mockedClient.DescribeAddressesAttributeCalls())
 func (mock *ClientMock) DescribeAddressesAttributeCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeAddressesAttributeInput
@@ -16148,7 +16342,8 @@ func (mock *ClientMock) DescribeAggregateIdFormat(ctx context.Context, params *e
 
 // DescribeAggregateIdFormatCalls gets all the calls that were made to DescribeAggregateIdFormat.
 // Check the length with:
-//     len(mockedClient.DescribeAggregateIdFormatCalls())
+//
+//	len(mockedClient.DescribeAggregateIdFormatCalls())
 func (mock *ClientMock) DescribeAggregateIdFormatCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeAggregateIdFormatInput
@@ -16187,7 +16382,8 @@ func (mock *ClientMock) DescribeAvailabilityZones(ctx context.Context, params *e
 
 // DescribeAvailabilityZonesCalls gets all the calls that were made to DescribeAvailabilityZones.
 // Check the length with:
-//     len(mockedClient.DescribeAvailabilityZonesCalls())
+//
+//	len(mockedClient.DescribeAvailabilityZonesCalls())
 func (mock *ClientMock) DescribeAvailabilityZonesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeAvailabilityZonesInput
@@ -16226,7 +16422,8 @@ func (mock *ClientMock) DescribeBundleTasks(ctx context.Context, params *ec2.Des
 
 // DescribeBundleTasksCalls gets all the calls that were made to DescribeBundleTasks.
 // Check the length with:
-//     len(mockedClient.DescribeBundleTasksCalls())
+//
+//	len(mockedClient.DescribeBundleTasksCalls())
 func (mock *ClientMock) DescribeBundleTasksCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeBundleTasksInput
@@ -16265,7 +16462,8 @@ func (mock *ClientMock) DescribeByoipCidrs(ctx context.Context, params *ec2.Desc
 
 // DescribeByoipCidrsCalls gets all the calls that were made to DescribeByoipCidrs.
 // Check the length with:
-//     len(mockedClient.DescribeByoipCidrsCalls())
+//
+//	len(mockedClient.DescribeByoipCidrsCalls())
 func (mock *ClientMock) DescribeByoipCidrsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeByoipCidrsInput
@@ -16304,7 +16502,8 @@ func (mock *ClientMock) DescribeCapacityReservationFleets(ctx context.Context, p
 
 // DescribeCapacityReservationFleetsCalls gets all the calls that were made to DescribeCapacityReservationFleets.
 // Check the length with:
-//     len(mockedClient.DescribeCapacityReservationFleetsCalls())
+//
+//	len(mockedClient.DescribeCapacityReservationFleetsCalls())
 func (mock *ClientMock) DescribeCapacityReservationFleetsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeCapacityReservationFleetsInput
@@ -16343,7 +16542,8 @@ func (mock *ClientMock) DescribeCapacityReservations(ctx context.Context, params
 
 // DescribeCapacityReservationsCalls gets all the calls that were made to DescribeCapacityReservations.
 // Check the length with:
-//     len(mockedClient.DescribeCapacityReservationsCalls())
+//
+//	len(mockedClient.DescribeCapacityReservationsCalls())
 func (mock *ClientMock) DescribeCapacityReservationsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeCapacityReservationsInput
@@ -16382,7 +16582,8 @@ func (mock *ClientMock) DescribeCarrierGateways(ctx context.Context, params *ec2
 
 // DescribeCarrierGatewaysCalls gets all the calls that were made to DescribeCarrierGateways.
 // Check the length with:
-//     len(mockedClient.DescribeCarrierGatewaysCalls())
+//
+//	len(mockedClient.DescribeCarrierGatewaysCalls())
 func (mock *ClientMock) DescribeCarrierGatewaysCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeCarrierGatewaysInput
@@ -16421,7 +16622,8 @@ func (mock *ClientMock) DescribeClassicLinkInstances(ctx context.Context, params
 
 // DescribeClassicLinkInstancesCalls gets all the calls that were made to DescribeClassicLinkInstances.
 // Check the length with:
-//     len(mockedClient.DescribeClassicLinkInstancesCalls())
+//
+//	len(mockedClient.DescribeClassicLinkInstancesCalls())
 func (mock *ClientMock) DescribeClassicLinkInstancesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeClassicLinkInstancesInput
@@ -16460,7 +16662,8 @@ func (mock *ClientMock) DescribeClientVpnAuthorizationRules(ctx context.Context,
 
 // DescribeClientVpnAuthorizationRulesCalls gets all the calls that were made to DescribeClientVpnAuthorizationRules.
 // Check the length with:
-//     len(mockedClient.DescribeClientVpnAuthorizationRulesCalls())
+//
+//	len(mockedClient.DescribeClientVpnAuthorizationRulesCalls())
 func (mock *ClientMock) DescribeClientVpnAuthorizationRulesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeClientVpnAuthorizationRulesInput
@@ -16499,7 +16702,8 @@ func (mock *ClientMock) DescribeClientVpnConnections(ctx context.Context, params
 
 // DescribeClientVpnConnectionsCalls gets all the calls that were made to DescribeClientVpnConnections.
 // Check the length with:
-//     len(mockedClient.DescribeClientVpnConnectionsCalls())
+//
+//	len(mockedClient.DescribeClientVpnConnectionsCalls())
 func (mock *ClientMock) DescribeClientVpnConnectionsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeClientVpnConnectionsInput
@@ -16538,7 +16742,8 @@ func (mock *ClientMock) DescribeClientVpnEndpoints(ctx context.Context, params *
 
 // DescribeClientVpnEndpointsCalls gets all the calls that were made to DescribeClientVpnEndpoints.
 // Check the length with:
-//     len(mockedClient.DescribeClientVpnEndpointsCalls())
+//
+//	len(mockedClient.DescribeClientVpnEndpointsCalls())
 func (mock *ClientMock) DescribeClientVpnEndpointsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeClientVpnEndpointsInput
@@ -16577,7 +16782,8 @@ func (mock *ClientMock) DescribeClientVpnRoutes(ctx context.Context, params *ec2
 
 // DescribeClientVpnRoutesCalls gets all the calls that were made to DescribeClientVpnRoutes.
 // Check the length with:
-//     len(mockedClient.DescribeClientVpnRoutesCalls())
+//
+//	len(mockedClient.DescribeClientVpnRoutesCalls())
 func (mock *ClientMock) DescribeClientVpnRoutesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeClientVpnRoutesInput
@@ -16616,7 +16822,8 @@ func (mock *ClientMock) DescribeClientVpnTargetNetworks(ctx context.Context, par
 
 // DescribeClientVpnTargetNetworksCalls gets all the calls that were made to DescribeClientVpnTargetNetworks.
 // Check the length with:
-//     len(mockedClient.DescribeClientVpnTargetNetworksCalls())
+//
+//	len(mockedClient.DescribeClientVpnTargetNetworksCalls())
 func (mock *ClientMock) DescribeClientVpnTargetNetworksCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeClientVpnTargetNetworksInput
@@ -16655,7 +16862,8 @@ func (mock *ClientMock) DescribeCoipPools(ctx context.Context, params *ec2.Descr
 
 // DescribeCoipPoolsCalls gets all the calls that were made to DescribeCoipPools.
 // Check the length with:
-//     len(mockedClient.DescribeCoipPoolsCalls())
+//
+//	len(mockedClient.DescribeCoipPoolsCalls())
 func (mock *ClientMock) DescribeCoipPoolsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeCoipPoolsInput
@@ -16694,7 +16902,8 @@ func (mock *ClientMock) DescribeConversionTasks(ctx context.Context, params *ec2
 
 // DescribeConversionTasksCalls gets all the calls that were made to DescribeConversionTasks.
 // Check the length with:
-//     len(mockedClient.DescribeConversionTasksCalls())
+//
+//	len(mockedClient.DescribeConversionTasksCalls())
 func (mock *ClientMock) DescribeConversionTasksCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeConversionTasksInput
@@ -16733,7 +16942,8 @@ func (mock *ClientMock) DescribeCustomerGateways(ctx context.Context, params *ec
 
 // DescribeCustomerGatewaysCalls gets all the calls that were made to DescribeCustomerGateways.
 // Check the length with:
-//     len(mockedClient.DescribeCustomerGatewaysCalls())
+//
+//	len(mockedClient.DescribeCustomerGatewaysCalls())
 func (mock *ClientMock) DescribeCustomerGatewaysCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeCustomerGatewaysInput
@@ -16772,7 +16982,8 @@ func (mock *ClientMock) DescribeDhcpOptions(ctx context.Context, params *ec2.Des
 
 // DescribeDhcpOptionsCalls gets all the calls that were made to DescribeDhcpOptions.
 // Check the length with:
-//     len(mockedClient.DescribeDhcpOptionsCalls())
+//
+//	len(mockedClient.DescribeDhcpOptionsCalls())
 func (mock *ClientMock) DescribeDhcpOptionsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeDhcpOptionsInput
@@ -16811,7 +17022,8 @@ func (mock *ClientMock) DescribeEgressOnlyInternetGateways(ctx context.Context, 
 
 // DescribeEgressOnlyInternetGatewaysCalls gets all the calls that were made to DescribeEgressOnlyInternetGateways.
 // Check the length with:
-//     len(mockedClient.DescribeEgressOnlyInternetGatewaysCalls())
+//
+//	len(mockedClient.DescribeEgressOnlyInternetGatewaysCalls())
 func (mock *ClientMock) DescribeEgressOnlyInternetGatewaysCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeEgressOnlyInternetGatewaysInput
@@ -16850,7 +17062,8 @@ func (mock *ClientMock) DescribeElasticGpus(ctx context.Context, params *ec2.Des
 
 // DescribeElasticGpusCalls gets all the calls that were made to DescribeElasticGpus.
 // Check the length with:
-//     len(mockedClient.DescribeElasticGpusCalls())
+//
+//	len(mockedClient.DescribeElasticGpusCalls())
 func (mock *ClientMock) DescribeElasticGpusCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeElasticGpusInput
@@ -16889,7 +17102,8 @@ func (mock *ClientMock) DescribeExportImageTasks(ctx context.Context, params *ec
 
 // DescribeExportImageTasksCalls gets all the calls that were made to DescribeExportImageTasks.
 // Check the length with:
-//     len(mockedClient.DescribeExportImageTasksCalls())
+//
+//	len(mockedClient.DescribeExportImageTasksCalls())
 func (mock *ClientMock) DescribeExportImageTasksCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeExportImageTasksInput
@@ -16928,7 +17142,8 @@ func (mock *ClientMock) DescribeExportTasks(ctx context.Context, params *ec2.Des
 
 // DescribeExportTasksCalls gets all the calls that were made to DescribeExportTasks.
 // Check the length with:
-//     len(mockedClient.DescribeExportTasksCalls())
+//
+//	len(mockedClient.DescribeExportTasksCalls())
 func (mock *ClientMock) DescribeExportTasksCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeExportTasksInput
@@ -16967,7 +17182,8 @@ func (mock *ClientMock) DescribeFastLaunchImages(ctx context.Context, params *ec
 
 // DescribeFastLaunchImagesCalls gets all the calls that were made to DescribeFastLaunchImages.
 // Check the length with:
-//     len(mockedClient.DescribeFastLaunchImagesCalls())
+//
+//	len(mockedClient.DescribeFastLaunchImagesCalls())
 func (mock *ClientMock) DescribeFastLaunchImagesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeFastLaunchImagesInput
@@ -17006,7 +17222,8 @@ func (mock *ClientMock) DescribeFastSnapshotRestores(ctx context.Context, params
 
 // DescribeFastSnapshotRestoresCalls gets all the calls that were made to DescribeFastSnapshotRestores.
 // Check the length with:
-//     len(mockedClient.DescribeFastSnapshotRestoresCalls())
+//
+//	len(mockedClient.DescribeFastSnapshotRestoresCalls())
 func (mock *ClientMock) DescribeFastSnapshotRestoresCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeFastSnapshotRestoresInput
@@ -17045,7 +17262,8 @@ func (mock *ClientMock) DescribeFleetHistory(ctx context.Context, params *ec2.De
 
 // DescribeFleetHistoryCalls gets all the calls that were made to DescribeFleetHistory.
 // Check the length with:
-//     len(mockedClient.DescribeFleetHistoryCalls())
+//
+//	len(mockedClient.DescribeFleetHistoryCalls())
 func (mock *ClientMock) DescribeFleetHistoryCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeFleetHistoryInput
@@ -17084,7 +17302,8 @@ func (mock *ClientMock) DescribeFleetInstances(ctx context.Context, params *ec2.
 
 // DescribeFleetInstancesCalls gets all the calls that were made to DescribeFleetInstances.
 // Check the length with:
-//     len(mockedClient.DescribeFleetInstancesCalls())
+//
+//	len(mockedClient.DescribeFleetInstancesCalls())
 func (mock *ClientMock) DescribeFleetInstancesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeFleetInstancesInput
@@ -17123,7 +17342,8 @@ func (mock *ClientMock) DescribeFleets(ctx context.Context, params *ec2.Describe
 
 // DescribeFleetsCalls gets all the calls that were made to DescribeFleets.
 // Check the length with:
-//     len(mockedClient.DescribeFleetsCalls())
+//
+//	len(mockedClient.DescribeFleetsCalls())
 func (mock *ClientMock) DescribeFleetsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeFleetsInput
@@ -17162,7 +17382,8 @@ func (mock *ClientMock) DescribeFlowLogs(ctx context.Context, params *ec2.Descri
 
 // DescribeFlowLogsCalls gets all the calls that were made to DescribeFlowLogs.
 // Check the length with:
-//     len(mockedClient.DescribeFlowLogsCalls())
+//
+//	len(mockedClient.DescribeFlowLogsCalls())
 func (mock *ClientMock) DescribeFlowLogsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeFlowLogsInput
@@ -17201,7 +17422,8 @@ func (mock *ClientMock) DescribeFpgaImageAttribute(ctx context.Context, params *
 
 // DescribeFpgaImageAttributeCalls gets all the calls that were made to DescribeFpgaImageAttribute.
 // Check the length with:
-//     len(mockedClient.DescribeFpgaImageAttributeCalls())
+//
+//	len(mockedClient.DescribeFpgaImageAttributeCalls())
 func (mock *ClientMock) DescribeFpgaImageAttributeCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeFpgaImageAttributeInput
@@ -17240,7 +17462,8 @@ func (mock *ClientMock) DescribeFpgaImages(ctx context.Context, params *ec2.Desc
 
 // DescribeFpgaImagesCalls gets all the calls that were made to DescribeFpgaImages.
 // Check the length with:
-//     len(mockedClient.DescribeFpgaImagesCalls())
+//
+//	len(mockedClient.DescribeFpgaImagesCalls())
 func (mock *ClientMock) DescribeFpgaImagesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeFpgaImagesInput
@@ -17279,7 +17502,8 @@ func (mock *ClientMock) DescribeHostReservationOfferings(ctx context.Context, pa
 
 // DescribeHostReservationOfferingsCalls gets all the calls that were made to DescribeHostReservationOfferings.
 // Check the length with:
-//     len(mockedClient.DescribeHostReservationOfferingsCalls())
+//
+//	len(mockedClient.DescribeHostReservationOfferingsCalls())
 func (mock *ClientMock) DescribeHostReservationOfferingsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeHostReservationOfferingsInput
@@ -17318,7 +17542,8 @@ func (mock *ClientMock) DescribeHostReservations(ctx context.Context, params *ec
 
 // DescribeHostReservationsCalls gets all the calls that were made to DescribeHostReservations.
 // Check the length with:
-//     len(mockedClient.DescribeHostReservationsCalls())
+//
+//	len(mockedClient.DescribeHostReservationsCalls())
 func (mock *ClientMock) DescribeHostReservationsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeHostReservationsInput
@@ -17357,7 +17582,8 @@ func (mock *ClientMock) DescribeHosts(ctx context.Context, params *ec2.DescribeH
 
 // DescribeHostsCalls gets all the calls that were made to DescribeHosts.
 // Check the length with:
-//     len(mockedClient.DescribeHostsCalls())
+//
+//	len(mockedClient.DescribeHostsCalls())
 func (mock *ClientMock) DescribeHostsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeHostsInput
@@ -17396,7 +17622,8 @@ func (mock *ClientMock) DescribeIamInstanceProfileAssociations(ctx context.Conte
 
 // DescribeIamInstanceProfileAssociationsCalls gets all the calls that were made to DescribeIamInstanceProfileAssociations.
 // Check the length with:
-//     len(mockedClient.DescribeIamInstanceProfileAssociationsCalls())
+//
+//	len(mockedClient.DescribeIamInstanceProfileAssociationsCalls())
 func (mock *ClientMock) DescribeIamInstanceProfileAssociationsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeIamInstanceProfileAssociationsInput
@@ -17435,7 +17662,8 @@ func (mock *ClientMock) DescribeIdFormat(ctx context.Context, params *ec2.Descri
 
 // DescribeIdFormatCalls gets all the calls that were made to DescribeIdFormat.
 // Check the length with:
-//     len(mockedClient.DescribeIdFormatCalls())
+//
+//	len(mockedClient.DescribeIdFormatCalls())
 func (mock *ClientMock) DescribeIdFormatCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeIdFormatInput
@@ -17474,7 +17702,8 @@ func (mock *ClientMock) DescribeIdentityIdFormat(ctx context.Context, params *ec
 
 // DescribeIdentityIdFormatCalls gets all the calls that were made to DescribeIdentityIdFormat.
 // Check the length with:
-//     len(mockedClient.DescribeIdentityIdFormatCalls())
+//
+//	len(mockedClient.DescribeIdentityIdFormatCalls())
 func (mock *ClientMock) DescribeIdentityIdFormatCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeIdentityIdFormatInput
@@ -17513,7 +17742,8 @@ func (mock *ClientMock) DescribeImageAttribute(ctx context.Context, params *ec2.
 
 // DescribeImageAttributeCalls gets all the calls that were made to DescribeImageAttribute.
 // Check the length with:
-//     len(mockedClient.DescribeImageAttributeCalls())
+//
+//	len(mockedClient.DescribeImageAttributeCalls())
 func (mock *ClientMock) DescribeImageAttributeCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeImageAttributeInput
@@ -17552,7 +17782,8 @@ func (mock *ClientMock) DescribeImages(ctx context.Context, params *ec2.Describe
 
 // DescribeImagesCalls gets all the calls that were made to DescribeImages.
 // Check the length with:
-//     len(mockedClient.DescribeImagesCalls())
+//
+//	len(mockedClient.DescribeImagesCalls())
 func (mock *ClientMock) DescribeImagesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeImagesInput
@@ -17591,7 +17822,8 @@ func (mock *ClientMock) DescribeImportImageTasks(ctx context.Context, params *ec
 
 // DescribeImportImageTasksCalls gets all the calls that were made to DescribeImportImageTasks.
 // Check the length with:
-//     len(mockedClient.DescribeImportImageTasksCalls())
+//
+//	len(mockedClient.DescribeImportImageTasksCalls())
 func (mock *ClientMock) DescribeImportImageTasksCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeImportImageTasksInput
@@ -17630,7 +17862,8 @@ func (mock *ClientMock) DescribeImportSnapshotTasks(ctx context.Context, params 
 
 // DescribeImportSnapshotTasksCalls gets all the calls that were made to DescribeImportSnapshotTasks.
 // Check the length with:
-//     len(mockedClient.DescribeImportSnapshotTasksCalls())
+//
+//	len(mockedClient.DescribeImportSnapshotTasksCalls())
 func (mock *ClientMock) DescribeImportSnapshotTasksCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeImportSnapshotTasksInput
@@ -17669,7 +17902,8 @@ func (mock *ClientMock) DescribeInstanceAttribute(ctx context.Context, params *e
 
 // DescribeInstanceAttributeCalls gets all the calls that were made to DescribeInstanceAttribute.
 // Check the length with:
-//     len(mockedClient.DescribeInstanceAttributeCalls())
+//
+//	len(mockedClient.DescribeInstanceAttributeCalls())
 func (mock *ClientMock) DescribeInstanceAttributeCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeInstanceAttributeInput
@@ -17708,7 +17942,8 @@ func (mock *ClientMock) DescribeInstanceCreditSpecifications(ctx context.Context
 
 // DescribeInstanceCreditSpecificationsCalls gets all the calls that were made to DescribeInstanceCreditSpecifications.
 // Check the length with:
-//     len(mockedClient.DescribeInstanceCreditSpecificationsCalls())
+//
+//	len(mockedClient.DescribeInstanceCreditSpecificationsCalls())
 func (mock *ClientMock) DescribeInstanceCreditSpecificationsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeInstanceCreditSpecificationsInput
@@ -17747,7 +17982,8 @@ func (mock *ClientMock) DescribeInstanceEventNotificationAttributes(ctx context.
 
 // DescribeInstanceEventNotificationAttributesCalls gets all the calls that were made to DescribeInstanceEventNotificationAttributes.
 // Check the length with:
-//     len(mockedClient.DescribeInstanceEventNotificationAttributesCalls())
+//
+//	len(mockedClient.DescribeInstanceEventNotificationAttributesCalls())
 func (mock *ClientMock) DescribeInstanceEventNotificationAttributesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeInstanceEventNotificationAttributesInput
@@ -17786,7 +18022,8 @@ func (mock *ClientMock) DescribeInstanceEventWindows(ctx context.Context, params
 
 // DescribeInstanceEventWindowsCalls gets all the calls that were made to DescribeInstanceEventWindows.
 // Check the length with:
-//     len(mockedClient.DescribeInstanceEventWindowsCalls())
+//
+//	len(mockedClient.DescribeInstanceEventWindowsCalls())
 func (mock *ClientMock) DescribeInstanceEventWindowsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeInstanceEventWindowsInput
@@ -17825,7 +18062,8 @@ func (mock *ClientMock) DescribeInstanceStatus(ctx context.Context, params *ec2.
 
 // DescribeInstanceStatusCalls gets all the calls that were made to DescribeInstanceStatus.
 // Check the length with:
-//     len(mockedClient.DescribeInstanceStatusCalls())
+//
+//	len(mockedClient.DescribeInstanceStatusCalls())
 func (mock *ClientMock) DescribeInstanceStatusCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeInstanceStatusInput
@@ -17864,7 +18102,8 @@ func (mock *ClientMock) DescribeInstanceTypeOfferings(ctx context.Context, param
 
 // DescribeInstanceTypeOfferingsCalls gets all the calls that were made to DescribeInstanceTypeOfferings.
 // Check the length with:
-//     len(mockedClient.DescribeInstanceTypeOfferingsCalls())
+//
+//	len(mockedClient.DescribeInstanceTypeOfferingsCalls())
 func (mock *ClientMock) DescribeInstanceTypeOfferingsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeInstanceTypeOfferingsInput
@@ -17903,7 +18142,8 @@ func (mock *ClientMock) DescribeInstanceTypes(ctx context.Context, params *ec2.D
 
 // DescribeInstanceTypesCalls gets all the calls that were made to DescribeInstanceTypes.
 // Check the length with:
-//     len(mockedClient.DescribeInstanceTypesCalls())
+//
+//	len(mockedClient.DescribeInstanceTypesCalls())
 func (mock *ClientMock) DescribeInstanceTypesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeInstanceTypesInput
@@ -17942,7 +18182,8 @@ func (mock *ClientMock) DescribeInstances(ctx context.Context, params *ec2.Descr
 
 // DescribeInstancesCalls gets all the calls that were made to DescribeInstances.
 // Check the length with:
-//     len(mockedClient.DescribeInstancesCalls())
+//
+//	len(mockedClient.DescribeInstancesCalls())
 func (mock *ClientMock) DescribeInstancesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeInstancesInput
@@ -17981,7 +18222,8 @@ func (mock *ClientMock) DescribeInternetGateways(ctx context.Context, params *ec
 
 // DescribeInternetGatewaysCalls gets all the calls that were made to DescribeInternetGateways.
 // Check the length with:
-//     len(mockedClient.DescribeInternetGatewaysCalls())
+//
+//	len(mockedClient.DescribeInternetGatewaysCalls())
 func (mock *ClientMock) DescribeInternetGatewaysCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeInternetGatewaysInput
@@ -18020,7 +18262,8 @@ func (mock *ClientMock) DescribeIpamPools(ctx context.Context, params *ec2.Descr
 
 // DescribeIpamPoolsCalls gets all the calls that were made to DescribeIpamPools.
 // Check the length with:
-//     len(mockedClient.DescribeIpamPoolsCalls())
+//
+//	len(mockedClient.DescribeIpamPoolsCalls())
 func (mock *ClientMock) DescribeIpamPoolsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeIpamPoolsInput
@@ -18059,7 +18302,8 @@ func (mock *ClientMock) DescribeIpamScopes(ctx context.Context, params *ec2.Desc
 
 // DescribeIpamScopesCalls gets all the calls that were made to DescribeIpamScopes.
 // Check the length with:
-//     len(mockedClient.DescribeIpamScopesCalls())
+//
+//	len(mockedClient.DescribeIpamScopesCalls())
 func (mock *ClientMock) DescribeIpamScopesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeIpamScopesInput
@@ -18098,7 +18342,8 @@ func (mock *ClientMock) DescribeIpams(ctx context.Context, params *ec2.DescribeI
 
 // DescribeIpamsCalls gets all the calls that were made to DescribeIpams.
 // Check the length with:
-//     len(mockedClient.DescribeIpamsCalls())
+//
+//	len(mockedClient.DescribeIpamsCalls())
 func (mock *ClientMock) DescribeIpamsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeIpamsInput
@@ -18137,7 +18382,8 @@ func (mock *ClientMock) DescribeIpv6Pools(ctx context.Context, params *ec2.Descr
 
 // DescribeIpv6PoolsCalls gets all the calls that were made to DescribeIpv6Pools.
 // Check the length with:
-//     len(mockedClient.DescribeIpv6PoolsCalls())
+//
+//	len(mockedClient.DescribeIpv6PoolsCalls())
 func (mock *ClientMock) DescribeIpv6PoolsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeIpv6PoolsInput
@@ -18176,7 +18422,8 @@ func (mock *ClientMock) DescribeKeyPairs(ctx context.Context, params *ec2.Descri
 
 // DescribeKeyPairsCalls gets all the calls that were made to DescribeKeyPairs.
 // Check the length with:
-//     len(mockedClient.DescribeKeyPairsCalls())
+//
+//	len(mockedClient.DescribeKeyPairsCalls())
 func (mock *ClientMock) DescribeKeyPairsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeKeyPairsInput
@@ -18215,7 +18462,8 @@ func (mock *ClientMock) DescribeLaunchTemplateVersions(ctx context.Context, para
 
 // DescribeLaunchTemplateVersionsCalls gets all the calls that were made to DescribeLaunchTemplateVersions.
 // Check the length with:
-//     len(mockedClient.DescribeLaunchTemplateVersionsCalls())
+//
+//	len(mockedClient.DescribeLaunchTemplateVersionsCalls())
 func (mock *ClientMock) DescribeLaunchTemplateVersionsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeLaunchTemplateVersionsInput
@@ -18254,7 +18502,8 @@ func (mock *ClientMock) DescribeLaunchTemplates(ctx context.Context, params *ec2
 
 // DescribeLaunchTemplatesCalls gets all the calls that were made to DescribeLaunchTemplates.
 // Check the length with:
-//     len(mockedClient.DescribeLaunchTemplatesCalls())
+//
+//	len(mockedClient.DescribeLaunchTemplatesCalls())
 func (mock *ClientMock) DescribeLaunchTemplatesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeLaunchTemplatesInput
@@ -18293,7 +18542,8 @@ func (mock *ClientMock) DescribeLocalGatewayRouteTableVirtualInterfaceGroupAssoc
 
 // DescribeLocalGatewayRouteTableVirtualInterfaceGroupAssociationsCalls gets all the calls that were made to DescribeLocalGatewayRouteTableVirtualInterfaceGroupAssociations.
 // Check the length with:
-//     len(mockedClient.DescribeLocalGatewayRouteTableVirtualInterfaceGroupAssociationsCalls())
+//
+//	len(mockedClient.DescribeLocalGatewayRouteTableVirtualInterfaceGroupAssociationsCalls())
 func (mock *ClientMock) DescribeLocalGatewayRouteTableVirtualInterfaceGroupAssociationsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeLocalGatewayRouteTableVirtualInterfaceGroupAssociationsInput
@@ -18332,7 +18582,8 @@ func (mock *ClientMock) DescribeLocalGatewayRouteTableVpcAssociations(ctx contex
 
 // DescribeLocalGatewayRouteTableVpcAssociationsCalls gets all the calls that were made to DescribeLocalGatewayRouteTableVpcAssociations.
 // Check the length with:
-//     len(mockedClient.DescribeLocalGatewayRouteTableVpcAssociationsCalls())
+//
+//	len(mockedClient.DescribeLocalGatewayRouteTableVpcAssociationsCalls())
 func (mock *ClientMock) DescribeLocalGatewayRouteTableVpcAssociationsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeLocalGatewayRouteTableVpcAssociationsInput
@@ -18371,7 +18622,8 @@ func (mock *ClientMock) DescribeLocalGatewayRouteTables(ctx context.Context, par
 
 // DescribeLocalGatewayRouteTablesCalls gets all the calls that were made to DescribeLocalGatewayRouteTables.
 // Check the length with:
-//     len(mockedClient.DescribeLocalGatewayRouteTablesCalls())
+//
+//	len(mockedClient.DescribeLocalGatewayRouteTablesCalls())
 func (mock *ClientMock) DescribeLocalGatewayRouteTablesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeLocalGatewayRouteTablesInput
@@ -18410,7 +18662,8 @@ func (mock *ClientMock) DescribeLocalGatewayVirtualInterfaceGroups(ctx context.C
 
 // DescribeLocalGatewayVirtualInterfaceGroupsCalls gets all the calls that were made to DescribeLocalGatewayVirtualInterfaceGroups.
 // Check the length with:
-//     len(mockedClient.DescribeLocalGatewayVirtualInterfaceGroupsCalls())
+//
+//	len(mockedClient.DescribeLocalGatewayVirtualInterfaceGroupsCalls())
 func (mock *ClientMock) DescribeLocalGatewayVirtualInterfaceGroupsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeLocalGatewayVirtualInterfaceGroupsInput
@@ -18449,7 +18702,8 @@ func (mock *ClientMock) DescribeLocalGatewayVirtualInterfaces(ctx context.Contex
 
 // DescribeLocalGatewayVirtualInterfacesCalls gets all the calls that were made to DescribeLocalGatewayVirtualInterfaces.
 // Check the length with:
-//     len(mockedClient.DescribeLocalGatewayVirtualInterfacesCalls())
+//
+//	len(mockedClient.DescribeLocalGatewayVirtualInterfacesCalls())
 func (mock *ClientMock) DescribeLocalGatewayVirtualInterfacesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeLocalGatewayVirtualInterfacesInput
@@ -18488,7 +18742,8 @@ func (mock *ClientMock) DescribeLocalGateways(ctx context.Context, params *ec2.D
 
 // DescribeLocalGatewaysCalls gets all the calls that were made to DescribeLocalGateways.
 // Check the length with:
-//     len(mockedClient.DescribeLocalGatewaysCalls())
+//
+//	len(mockedClient.DescribeLocalGatewaysCalls())
 func (mock *ClientMock) DescribeLocalGatewaysCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeLocalGatewaysInput
@@ -18527,7 +18782,8 @@ func (mock *ClientMock) DescribeManagedPrefixLists(ctx context.Context, params *
 
 // DescribeManagedPrefixListsCalls gets all the calls that were made to DescribeManagedPrefixLists.
 // Check the length with:
-//     len(mockedClient.DescribeManagedPrefixListsCalls())
+//
+//	len(mockedClient.DescribeManagedPrefixListsCalls())
 func (mock *ClientMock) DescribeManagedPrefixListsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeManagedPrefixListsInput
@@ -18566,7 +18822,8 @@ func (mock *ClientMock) DescribeMovingAddresses(ctx context.Context, params *ec2
 
 // DescribeMovingAddressesCalls gets all the calls that were made to DescribeMovingAddresses.
 // Check the length with:
-//     len(mockedClient.DescribeMovingAddressesCalls())
+//
+//	len(mockedClient.DescribeMovingAddressesCalls())
 func (mock *ClientMock) DescribeMovingAddressesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeMovingAddressesInput
@@ -18605,7 +18862,8 @@ func (mock *ClientMock) DescribeNatGateways(ctx context.Context, params *ec2.Des
 
 // DescribeNatGatewaysCalls gets all the calls that were made to DescribeNatGateways.
 // Check the length with:
-//     len(mockedClient.DescribeNatGatewaysCalls())
+//
+//	len(mockedClient.DescribeNatGatewaysCalls())
 func (mock *ClientMock) DescribeNatGatewaysCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeNatGatewaysInput
@@ -18644,7 +18902,8 @@ func (mock *ClientMock) DescribeNetworkAcls(ctx context.Context, params *ec2.Des
 
 // DescribeNetworkAclsCalls gets all the calls that were made to DescribeNetworkAcls.
 // Check the length with:
-//     len(mockedClient.DescribeNetworkAclsCalls())
+//
+//	len(mockedClient.DescribeNetworkAclsCalls())
 func (mock *ClientMock) DescribeNetworkAclsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeNetworkAclsInput
@@ -18683,7 +18942,8 @@ func (mock *ClientMock) DescribeNetworkInsightsAccessScopeAnalyses(ctx context.C
 
 // DescribeNetworkInsightsAccessScopeAnalysesCalls gets all the calls that were made to DescribeNetworkInsightsAccessScopeAnalyses.
 // Check the length with:
-//     len(mockedClient.DescribeNetworkInsightsAccessScopeAnalysesCalls())
+//
+//	len(mockedClient.DescribeNetworkInsightsAccessScopeAnalysesCalls())
 func (mock *ClientMock) DescribeNetworkInsightsAccessScopeAnalysesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeNetworkInsightsAccessScopeAnalysesInput
@@ -18722,7 +18982,8 @@ func (mock *ClientMock) DescribeNetworkInsightsAccessScopes(ctx context.Context,
 
 // DescribeNetworkInsightsAccessScopesCalls gets all the calls that were made to DescribeNetworkInsightsAccessScopes.
 // Check the length with:
-//     len(mockedClient.DescribeNetworkInsightsAccessScopesCalls())
+//
+//	len(mockedClient.DescribeNetworkInsightsAccessScopesCalls())
 func (mock *ClientMock) DescribeNetworkInsightsAccessScopesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeNetworkInsightsAccessScopesInput
@@ -18761,7 +19022,8 @@ func (mock *ClientMock) DescribeNetworkInsightsAnalyses(ctx context.Context, par
 
 // DescribeNetworkInsightsAnalysesCalls gets all the calls that were made to DescribeNetworkInsightsAnalyses.
 // Check the length with:
-//     len(mockedClient.DescribeNetworkInsightsAnalysesCalls())
+//
+//	len(mockedClient.DescribeNetworkInsightsAnalysesCalls())
 func (mock *ClientMock) DescribeNetworkInsightsAnalysesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeNetworkInsightsAnalysesInput
@@ -18800,7 +19062,8 @@ func (mock *ClientMock) DescribeNetworkInsightsPaths(ctx context.Context, params
 
 // DescribeNetworkInsightsPathsCalls gets all the calls that were made to DescribeNetworkInsightsPaths.
 // Check the length with:
-//     len(mockedClient.DescribeNetworkInsightsPathsCalls())
+//
+//	len(mockedClient.DescribeNetworkInsightsPathsCalls())
 func (mock *ClientMock) DescribeNetworkInsightsPathsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeNetworkInsightsPathsInput
@@ -18839,7 +19102,8 @@ func (mock *ClientMock) DescribeNetworkInterfaceAttribute(ctx context.Context, p
 
 // DescribeNetworkInterfaceAttributeCalls gets all the calls that were made to DescribeNetworkInterfaceAttribute.
 // Check the length with:
-//     len(mockedClient.DescribeNetworkInterfaceAttributeCalls())
+//
+//	len(mockedClient.DescribeNetworkInterfaceAttributeCalls())
 func (mock *ClientMock) DescribeNetworkInterfaceAttributeCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeNetworkInterfaceAttributeInput
@@ -18878,7 +19142,8 @@ func (mock *ClientMock) DescribeNetworkInterfacePermissions(ctx context.Context,
 
 // DescribeNetworkInterfacePermissionsCalls gets all the calls that were made to DescribeNetworkInterfacePermissions.
 // Check the length with:
-//     len(mockedClient.DescribeNetworkInterfacePermissionsCalls())
+//
+//	len(mockedClient.DescribeNetworkInterfacePermissionsCalls())
 func (mock *ClientMock) DescribeNetworkInterfacePermissionsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeNetworkInterfacePermissionsInput
@@ -18917,7 +19182,8 @@ func (mock *ClientMock) DescribeNetworkInterfaces(ctx context.Context, params *e
 
 // DescribeNetworkInterfacesCalls gets all the calls that were made to DescribeNetworkInterfaces.
 // Check the length with:
-//     len(mockedClient.DescribeNetworkInterfacesCalls())
+//
+//	len(mockedClient.DescribeNetworkInterfacesCalls())
 func (mock *ClientMock) DescribeNetworkInterfacesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeNetworkInterfacesInput
@@ -18956,7 +19222,8 @@ func (mock *ClientMock) DescribePlacementGroups(ctx context.Context, params *ec2
 
 // DescribePlacementGroupsCalls gets all the calls that were made to DescribePlacementGroups.
 // Check the length with:
-//     len(mockedClient.DescribePlacementGroupsCalls())
+//
+//	len(mockedClient.DescribePlacementGroupsCalls())
 func (mock *ClientMock) DescribePlacementGroupsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribePlacementGroupsInput
@@ -18995,7 +19262,8 @@ func (mock *ClientMock) DescribePrefixLists(ctx context.Context, params *ec2.Des
 
 // DescribePrefixListsCalls gets all the calls that were made to DescribePrefixLists.
 // Check the length with:
-//     len(mockedClient.DescribePrefixListsCalls())
+//
+//	len(mockedClient.DescribePrefixListsCalls())
 func (mock *ClientMock) DescribePrefixListsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribePrefixListsInput
@@ -19034,7 +19302,8 @@ func (mock *ClientMock) DescribePrincipalIdFormat(ctx context.Context, params *e
 
 // DescribePrincipalIdFormatCalls gets all the calls that were made to DescribePrincipalIdFormat.
 // Check the length with:
-//     len(mockedClient.DescribePrincipalIdFormatCalls())
+//
+//	len(mockedClient.DescribePrincipalIdFormatCalls())
 func (mock *ClientMock) DescribePrincipalIdFormatCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribePrincipalIdFormatInput
@@ -19073,7 +19342,8 @@ func (mock *ClientMock) DescribePublicIpv4Pools(ctx context.Context, params *ec2
 
 // DescribePublicIpv4PoolsCalls gets all the calls that were made to DescribePublicIpv4Pools.
 // Check the length with:
-//     len(mockedClient.DescribePublicIpv4PoolsCalls())
+//
+//	len(mockedClient.DescribePublicIpv4PoolsCalls())
 func (mock *ClientMock) DescribePublicIpv4PoolsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribePublicIpv4PoolsInput
@@ -19112,7 +19382,8 @@ func (mock *ClientMock) DescribeRegions(ctx context.Context, params *ec2.Describ
 
 // DescribeRegionsCalls gets all the calls that were made to DescribeRegions.
 // Check the length with:
-//     len(mockedClient.DescribeRegionsCalls())
+//
+//	len(mockedClient.DescribeRegionsCalls())
 func (mock *ClientMock) DescribeRegionsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeRegionsInput
@@ -19151,7 +19422,8 @@ func (mock *ClientMock) DescribeReplaceRootVolumeTasks(ctx context.Context, para
 
 // DescribeReplaceRootVolumeTasksCalls gets all the calls that were made to DescribeReplaceRootVolumeTasks.
 // Check the length with:
-//     len(mockedClient.DescribeReplaceRootVolumeTasksCalls())
+//
+//	len(mockedClient.DescribeReplaceRootVolumeTasksCalls())
 func (mock *ClientMock) DescribeReplaceRootVolumeTasksCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeReplaceRootVolumeTasksInput
@@ -19190,7 +19462,8 @@ func (mock *ClientMock) DescribeReservedInstances(ctx context.Context, params *e
 
 // DescribeReservedInstancesCalls gets all the calls that were made to DescribeReservedInstances.
 // Check the length with:
-//     len(mockedClient.DescribeReservedInstancesCalls())
+//
+//	len(mockedClient.DescribeReservedInstancesCalls())
 func (mock *ClientMock) DescribeReservedInstancesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeReservedInstancesInput
@@ -19229,7 +19502,8 @@ func (mock *ClientMock) DescribeReservedInstancesListings(ctx context.Context, p
 
 // DescribeReservedInstancesListingsCalls gets all the calls that were made to DescribeReservedInstancesListings.
 // Check the length with:
-//     len(mockedClient.DescribeReservedInstancesListingsCalls())
+//
+//	len(mockedClient.DescribeReservedInstancesListingsCalls())
 func (mock *ClientMock) DescribeReservedInstancesListingsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeReservedInstancesListingsInput
@@ -19268,7 +19542,8 @@ func (mock *ClientMock) DescribeReservedInstancesModifications(ctx context.Conte
 
 // DescribeReservedInstancesModificationsCalls gets all the calls that were made to DescribeReservedInstancesModifications.
 // Check the length with:
-//     len(mockedClient.DescribeReservedInstancesModificationsCalls())
+//
+//	len(mockedClient.DescribeReservedInstancesModificationsCalls())
 func (mock *ClientMock) DescribeReservedInstancesModificationsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeReservedInstancesModificationsInput
@@ -19307,7 +19582,8 @@ func (mock *ClientMock) DescribeReservedInstancesOfferings(ctx context.Context, 
 
 // DescribeReservedInstancesOfferingsCalls gets all the calls that were made to DescribeReservedInstancesOfferings.
 // Check the length with:
-//     len(mockedClient.DescribeReservedInstancesOfferingsCalls())
+//
+//	len(mockedClient.DescribeReservedInstancesOfferingsCalls())
 func (mock *ClientMock) DescribeReservedInstancesOfferingsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeReservedInstancesOfferingsInput
@@ -19346,7 +19622,8 @@ func (mock *ClientMock) DescribeRouteTables(ctx context.Context, params *ec2.Des
 
 // DescribeRouteTablesCalls gets all the calls that were made to DescribeRouteTables.
 // Check the length with:
-//     len(mockedClient.DescribeRouteTablesCalls())
+//
+//	len(mockedClient.DescribeRouteTablesCalls())
 func (mock *ClientMock) DescribeRouteTablesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeRouteTablesInput
@@ -19385,7 +19662,8 @@ func (mock *ClientMock) DescribeScheduledInstanceAvailability(ctx context.Contex
 
 // DescribeScheduledInstanceAvailabilityCalls gets all the calls that were made to DescribeScheduledInstanceAvailability.
 // Check the length with:
-//     len(mockedClient.DescribeScheduledInstanceAvailabilityCalls())
+//
+//	len(mockedClient.DescribeScheduledInstanceAvailabilityCalls())
 func (mock *ClientMock) DescribeScheduledInstanceAvailabilityCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeScheduledInstanceAvailabilityInput
@@ -19424,7 +19702,8 @@ func (mock *ClientMock) DescribeScheduledInstances(ctx context.Context, params *
 
 // DescribeScheduledInstancesCalls gets all the calls that were made to DescribeScheduledInstances.
 // Check the length with:
-//     len(mockedClient.DescribeScheduledInstancesCalls())
+//
+//	len(mockedClient.DescribeScheduledInstancesCalls())
 func (mock *ClientMock) DescribeScheduledInstancesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeScheduledInstancesInput
@@ -19463,7 +19742,8 @@ func (mock *ClientMock) DescribeSecurityGroupReferences(ctx context.Context, par
 
 // DescribeSecurityGroupReferencesCalls gets all the calls that were made to DescribeSecurityGroupReferences.
 // Check the length with:
-//     len(mockedClient.DescribeSecurityGroupReferencesCalls())
+//
+//	len(mockedClient.DescribeSecurityGroupReferencesCalls())
 func (mock *ClientMock) DescribeSecurityGroupReferencesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeSecurityGroupReferencesInput
@@ -19502,7 +19782,8 @@ func (mock *ClientMock) DescribeSecurityGroupRules(ctx context.Context, params *
 
 // DescribeSecurityGroupRulesCalls gets all the calls that were made to DescribeSecurityGroupRules.
 // Check the length with:
-//     len(mockedClient.DescribeSecurityGroupRulesCalls())
+//
+//	len(mockedClient.DescribeSecurityGroupRulesCalls())
 func (mock *ClientMock) DescribeSecurityGroupRulesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeSecurityGroupRulesInput
@@ -19541,7 +19822,8 @@ func (mock *ClientMock) DescribeSecurityGroups(ctx context.Context, params *ec2.
 
 // DescribeSecurityGroupsCalls gets all the calls that were made to DescribeSecurityGroups.
 // Check the length with:
-//     len(mockedClient.DescribeSecurityGroupsCalls())
+//
+//	len(mockedClient.DescribeSecurityGroupsCalls())
 func (mock *ClientMock) DescribeSecurityGroupsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeSecurityGroupsInput
@@ -19580,7 +19862,8 @@ func (mock *ClientMock) DescribeSnapshotAttribute(ctx context.Context, params *e
 
 // DescribeSnapshotAttributeCalls gets all the calls that were made to DescribeSnapshotAttribute.
 // Check the length with:
-//     len(mockedClient.DescribeSnapshotAttributeCalls())
+//
+//	len(mockedClient.DescribeSnapshotAttributeCalls())
 func (mock *ClientMock) DescribeSnapshotAttributeCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeSnapshotAttributeInput
@@ -19619,7 +19902,8 @@ func (mock *ClientMock) DescribeSnapshotTierStatus(ctx context.Context, params *
 
 // DescribeSnapshotTierStatusCalls gets all the calls that were made to DescribeSnapshotTierStatus.
 // Check the length with:
-//     len(mockedClient.DescribeSnapshotTierStatusCalls())
+//
+//	len(mockedClient.DescribeSnapshotTierStatusCalls())
 func (mock *ClientMock) DescribeSnapshotTierStatusCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeSnapshotTierStatusInput
@@ -19658,7 +19942,8 @@ func (mock *ClientMock) DescribeSnapshots(ctx context.Context, params *ec2.Descr
 
 // DescribeSnapshotsCalls gets all the calls that were made to DescribeSnapshots.
 // Check the length with:
-//     len(mockedClient.DescribeSnapshotsCalls())
+//
+//	len(mockedClient.DescribeSnapshotsCalls())
 func (mock *ClientMock) DescribeSnapshotsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeSnapshotsInput
@@ -19697,7 +19982,8 @@ func (mock *ClientMock) DescribeSpotDatafeedSubscription(ctx context.Context, pa
 
 // DescribeSpotDatafeedSubscriptionCalls gets all the calls that were made to DescribeSpotDatafeedSubscription.
 // Check the length with:
-//     len(mockedClient.DescribeSpotDatafeedSubscriptionCalls())
+//
+//	len(mockedClient.DescribeSpotDatafeedSubscriptionCalls())
 func (mock *ClientMock) DescribeSpotDatafeedSubscriptionCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeSpotDatafeedSubscriptionInput
@@ -19736,7 +20022,8 @@ func (mock *ClientMock) DescribeSpotFleetInstances(ctx context.Context, params *
 
 // DescribeSpotFleetInstancesCalls gets all the calls that were made to DescribeSpotFleetInstances.
 // Check the length with:
-//     len(mockedClient.DescribeSpotFleetInstancesCalls())
+//
+//	len(mockedClient.DescribeSpotFleetInstancesCalls())
 func (mock *ClientMock) DescribeSpotFleetInstancesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeSpotFleetInstancesInput
@@ -19775,7 +20062,8 @@ func (mock *ClientMock) DescribeSpotFleetRequestHistory(ctx context.Context, par
 
 // DescribeSpotFleetRequestHistoryCalls gets all the calls that were made to DescribeSpotFleetRequestHistory.
 // Check the length with:
-//     len(mockedClient.DescribeSpotFleetRequestHistoryCalls())
+//
+//	len(mockedClient.DescribeSpotFleetRequestHistoryCalls())
 func (mock *ClientMock) DescribeSpotFleetRequestHistoryCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeSpotFleetRequestHistoryInput
@@ -19814,7 +20102,8 @@ func (mock *ClientMock) DescribeSpotFleetRequests(ctx context.Context, params *e
 
 // DescribeSpotFleetRequestsCalls gets all the calls that were made to DescribeSpotFleetRequests.
 // Check the length with:
-//     len(mockedClient.DescribeSpotFleetRequestsCalls())
+//
+//	len(mockedClient.DescribeSpotFleetRequestsCalls())
 func (mock *ClientMock) DescribeSpotFleetRequestsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeSpotFleetRequestsInput
@@ -19853,7 +20142,8 @@ func (mock *ClientMock) DescribeSpotInstanceRequests(ctx context.Context, params
 
 // DescribeSpotInstanceRequestsCalls gets all the calls that were made to DescribeSpotInstanceRequests.
 // Check the length with:
-//     len(mockedClient.DescribeSpotInstanceRequestsCalls())
+//
+//	len(mockedClient.DescribeSpotInstanceRequestsCalls())
 func (mock *ClientMock) DescribeSpotInstanceRequestsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeSpotInstanceRequestsInput
@@ -19892,7 +20182,8 @@ func (mock *ClientMock) DescribeSpotPriceHistory(ctx context.Context, params *ec
 
 // DescribeSpotPriceHistoryCalls gets all the calls that were made to DescribeSpotPriceHistory.
 // Check the length with:
-//     len(mockedClient.DescribeSpotPriceHistoryCalls())
+//
+//	len(mockedClient.DescribeSpotPriceHistoryCalls())
 func (mock *ClientMock) DescribeSpotPriceHistoryCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeSpotPriceHistoryInput
@@ -19931,7 +20222,8 @@ func (mock *ClientMock) DescribeStaleSecurityGroups(ctx context.Context, params 
 
 // DescribeStaleSecurityGroupsCalls gets all the calls that were made to DescribeStaleSecurityGroups.
 // Check the length with:
-//     len(mockedClient.DescribeStaleSecurityGroupsCalls())
+//
+//	len(mockedClient.DescribeStaleSecurityGroupsCalls())
 func (mock *ClientMock) DescribeStaleSecurityGroupsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeStaleSecurityGroupsInput
@@ -19970,7 +20262,8 @@ func (mock *ClientMock) DescribeStoreImageTasks(ctx context.Context, params *ec2
 
 // DescribeStoreImageTasksCalls gets all the calls that were made to DescribeStoreImageTasks.
 // Check the length with:
-//     len(mockedClient.DescribeStoreImageTasksCalls())
+//
+//	len(mockedClient.DescribeStoreImageTasksCalls())
 func (mock *ClientMock) DescribeStoreImageTasksCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeStoreImageTasksInput
@@ -20009,7 +20302,8 @@ func (mock *ClientMock) DescribeSubnets(ctx context.Context, params *ec2.Describ
 
 // DescribeSubnetsCalls gets all the calls that were made to DescribeSubnets.
 // Check the length with:
-//     len(mockedClient.DescribeSubnetsCalls())
+//
+//	len(mockedClient.DescribeSubnetsCalls())
 func (mock *ClientMock) DescribeSubnetsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeSubnetsInput
@@ -20048,7 +20342,8 @@ func (mock *ClientMock) DescribeTags(ctx context.Context, params *ec2.DescribeTa
 
 // DescribeTagsCalls gets all the calls that were made to DescribeTags.
 // Check the length with:
-//     len(mockedClient.DescribeTagsCalls())
+//
+//	len(mockedClient.DescribeTagsCalls())
 func (mock *ClientMock) DescribeTagsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeTagsInput
@@ -20087,7 +20382,8 @@ func (mock *ClientMock) DescribeTrafficMirrorFilters(ctx context.Context, params
 
 // DescribeTrafficMirrorFiltersCalls gets all the calls that were made to DescribeTrafficMirrorFilters.
 // Check the length with:
-//     len(mockedClient.DescribeTrafficMirrorFiltersCalls())
+//
+//	len(mockedClient.DescribeTrafficMirrorFiltersCalls())
 func (mock *ClientMock) DescribeTrafficMirrorFiltersCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeTrafficMirrorFiltersInput
@@ -20126,7 +20422,8 @@ func (mock *ClientMock) DescribeTrafficMirrorSessions(ctx context.Context, param
 
 // DescribeTrafficMirrorSessionsCalls gets all the calls that were made to DescribeTrafficMirrorSessions.
 // Check the length with:
-//     len(mockedClient.DescribeTrafficMirrorSessionsCalls())
+//
+//	len(mockedClient.DescribeTrafficMirrorSessionsCalls())
 func (mock *ClientMock) DescribeTrafficMirrorSessionsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeTrafficMirrorSessionsInput
@@ -20165,7 +20462,8 @@ func (mock *ClientMock) DescribeTrafficMirrorTargets(ctx context.Context, params
 
 // DescribeTrafficMirrorTargetsCalls gets all the calls that were made to DescribeTrafficMirrorTargets.
 // Check the length with:
-//     len(mockedClient.DescribeTrafficMirrorTargetsCalls())
+//
+//	len(mockedClient.DescribeTrafficMirrorTargetsCalls())
 func (mock *ClientMock) DescribeTrafficMirrorTargetsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeTrafficMirrorTargetsInput
@@ -20204,7 +20502,8 @@ func (mock *ClientMock) DescribeTransitGatewayAttachments(ctx context.Context, p
 
 // DescribeTransitGatewayAttachmentsCalls gets all the calls that were made to DescribeTransitGatewayAttachments.
 // Check the length with:
-//     len(mockedClient.DescribeTransitGatewayAttachmentsCalls())
+//
+//	len(mockedClient.DescribeTransitGatewayAttachmentsCalls())
 func (mock *ClientMock) DescribeTransitGatewayAttachmentsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeTransitGatewayAttachmentsInput
@@ -20243,7 +20542,8 @@ func (mock *ClientMock) DescribeTransitGatewayConnectPeers(ctx context.Context, 
 
 // DescribeTransitGatewayConnectPeersCalls gets all the calls that were made to DescribeTransitGatewayConnectPeers.
 // Check the length with:
-//     len(mockedClient.DescribeTransitGatewayConnectPeersCalls())
+//
+//	len(mockedClient.DescribeTransitGatewayConnectPeersCalls())
 func (mock *ClientMock) DescribeTransitGatewayConnectPeersCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeTransitGatewayConnectPeersInput
@@ -20282,7 +20582,8 @@ func (mock *ClientMock) DescribeTransitGatewayConnects(ctx context.Context, para
 
 // DescribeTransitGatewayConnectsCalls gets all the calls that were made to DescribeTransitGatewayConnects.
 // Check the length with:
-//     len(mockedClient.DescribeTransitGatewayConnectsCalls())
+//
+//	len(mockedClient.DescribeTransitGatewayConnectsCalls())
 func (mock *ClientMock) DescribeTransitGatewayConnectsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeTransitGatewayConnectsInput
@@ -20321,7 +20622,8 @@ func (mock *ClientMock) DescribeTransitGatewayMulticastDomains(ctx context.Conte
 
 // DescribeTransitGatewayMulticastDomainsCalls gets all the calls that were made to DescribeTransitGatewayMulticastDomains.
 // Check the length with:
-//     len(mockedClient.DescribeTransitGatewayMulticastDomainsCalls())
+//
+//	len(mockedClient.DescribeTransitGatewayMulticastDomainsCalls())
 func (mock *ClientMock) DescribeTransitGatewayMulticastDomainsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeTransitGatewayMulticastDomainsInput
@@ -20360,7 +20662,8 @@ func (mock *ClientMock) DescribeTransitGatewayPeeringAttachments(ctx context.Con
 
 // DescribeTransitGatewayPeeringAttachmentsCalls gets all the calls that were made to DescribeTransitGatewayPeeringAttachments.
 // Check the length with:
-//     len(mockedClient.DescribeTransitGatewayPeeringAttachmentsCalls())
+//
+//	len(mockedClient.DescribeTransitGatewayPeeringAttachmentsCalls())
 func (mock *ClientMock) DescribeTransitGatewayPeeringAttachmentsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeTransitGatewayPeeringAttachmentsInput
@@ -20399,7 +20702,8 @@ func (mock *ClientMock) DescribeTransitGatewayPolicyTables(ctx context.Context, 
 
 // DescribeTransitGatewayPolicyTablesCalls gets all the calls that were made to DescribeTransitGatewayPolicyTables.
 // Check the length with:
-//     len(mockedClient.DescribeTransitGatewayPolicyTablesCalls())
+//
+//	len(mockedClient.DescribeTransitGatewayPolicyTablesCalls())
 func (mock *ClientMock) DescribeTransitGatewayPolicyTablesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeTransitGatewayPolicyTablesInput
@@ -20438,7 +20742,8 @@ func (mock *ClientMock) DescribeTransitGatewayRouteTableAnnouncements(ctx contex
 
 // DescribeTransitGatewayRouteTableAnnouncementsCalls gets all the calls that were made to DescribeTransitGatewayRouteTableAnnouncements.
 // Check the length with:
-//     len(mockedClient.DescribeTransitGatewayRouteTableAnnouncementsCalls())
+//
+//	len(mockedClient.DescribeTransitGatewayRouteTableAnnouncementsCalls())
 func (mock *ClientMock) DescribeTransitGatewayRouteTableAnnouncementsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeTransitGatewayRouteTableAnnouncementsInput
@@ -20477,7 +20782,8 @@ func (mock *ClientMock) DescribeTransitGatewayRouteTables(ctx context.Context, p
 
 // DescribeTransitGatewayRouteTablesCalls gets all the calls that were made to DescribeTransitGatewayRouteTables.
 // Check the length with:
-//     len(mockedClient.DescribeTransitGatewayRouteTablesCalls())
+//
+//	len(mockedClient.DescribeTransitGatewayRouteTablesCalls())
 func (mock *ClientMock) DescribeTransitGatewayRouteTablesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeTransitGatewayRouteTablesInput
@@ -20516,7 +20822,8 @@ func (mock *ClientMock) DescribeTransitGatewayVpcAttachments(ctx context.Context
 
 // DescribeTransitGatewayVpcAttachmentsCalls gets all the calls that were made to DescribeTransitGatewayVpcAttachments.
 // Check the length with:
-//     len(mockedClient.DescribeTransitGatewayVpcAttachmentsCalls())
+//
+//	len(mockedClient.DescribeTransitGatewayVpcAttachmentsCalls())
 func (mock *ClientMock) DescribeTransitGatewayVpcAttachmentsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeTransitGatewayVpcAttachmentsInput
@@ -20555,7 +20862,8 @@ func (mock *ClientMock) DescribeTransitGateways(ctx context.Context, params *ec2
 
 // DescribeTransitGatewaysCalls gets all the calls that were made to DescribeTransitGateways.
 // Check the length with:
-//     len(mockedClient.DescribeTransitGatewaysCalls())
+//
+//	len(mockedClient.DescribeTransitGatewaysCalls())
 func (mock *ClientMock) DescribeTransitGatewaysCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeTransitGatewaysInput
@@ -20594,7 +20902,8 @@ func (mock *ClientMock) DescribeTrunkInterfaceAssociations(ctx context.Context, 
 
 // DescribeTrunkInterfaceAssociationsCalls gets all the calls that were made to DescribeTrunkInterfaceAssociations.
 // Check the length with:
-//     len(mockedClient.DescribeTrunkInterfaceAssociationsCalls())
+//
+//	len(mockedClient.DescribeTrunkInterfaceAssociationsCalls())
 func (mock *ClientMock) DescribeTrunkInterfaceAssociationsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeTrunkInterfaceAssociationsInput
@@ -20633,7 +20942,8 @@ func (mock *ClientMock) DescribeVolumeAttribute(ctx context.Context, params *ec2
 
 // DescribeVolumeAttributeCalls gets all the calls that were made to DescribeVolumeAttribute.
 // Check the length with:
-//     len(mockedClient.DescribeVolumeAttributeCalls())
+//
+//	len(mockedClient.DescribeVolumeAttributeCalls())
 func (mock *ClientMock) DescribeVolumeAttributeCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeVolumeAttributeInput
@@ -20672,7 +20982,8 @@ func (mock *ClientMock) DescribeVolumeStatus(ctx context.Context, params *ec2.De
 
 // DescribeVolumeStatusCalls gets all the calls that were made to DescribeVolumeStatus.
 // Check the length with:
-//     len(mockedClient.DescribeVolumeStatusCalls())
+//
+//	len(mockedClient.DescribeVolumeStatusCalls())
 func (mock *ClientMock) DescribeVolumeStatusCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeVolumeStatusInput
@@ -20711,7 +21022,8 @@ func (mock *ClientMock) DescribeVolumes(ctx context.Context, params *ec2.Describ
 
 // DescribeVolumesCalls gets all the calls that were made to DescribeVolumes.
 // Check the length with:
-//     len(mockedClient.DescribeVolumesCalls())
+//
+//	len(mockedClient.DescribeVolumesCalls())
 func (mock *ClientMock) DescribeVolumesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeVolumesInput
@@ -20750,7 +21062,8 @@ func (mock *ClientMock) DescribeVolumesModifications(ctx context.Context, params
 
 // DescribeVolumesModificationsCalls gets all the calls that were made to DescribeVolumesModifications.
 // Check the length with:
-//     len(mockedClient.DescribeVolumesModificationsCalls())
+//
+//	len(mockedClient.DescribeVolumesModificationsCalls())
 func (mock *ClientMock) DescribeVolumesModificationsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeVolumesModificationsInput
@@ -20789,7 +21102,8 @@ func (mock *ClientMock) DescribeVpcAttribute(ctx context.Context, params *ec2.De
 
 // DescribeVpcAttributeCalls gets all the calls that were made to DescribeVpcAttribute.
 // Check the length with:
-//     len(mockedClient.DescribeVpcAttributeCalls())
+//
+//	len(mockedClient.DescribeVpcAttributeCalls())
 func (mock *ClientMock) DescribeVpcAttributeCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeVpcAttributeInput
@@ -20828,7 +21142,8 @@ func (mock *ClientMock) DescribeVpcClassicLink(ctx context.Context, params *ec2.
 
 // DescribeVpcClassicLinkCalls gets all the calls that were made to DescribeVpcClassicLink.
 // Check the length with:
-//     len(mockedClient.DescribeVpcClassicLinkCalls())
+//
+//	len(mockedClient.DescribeVpcClassicLinkCalls())
 func (mock *ClientMock) DescribeVpcClassicLinkCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeVpcClassicLinkInput
@@ -20867,7 +21182,8 @@ func (mock *ClientMock) DescribeVpcClassicLinkDnsSupport(ctx context.Context, pa
 
 // DescribeVpcClassicLinkDnsSupportCalls gets all the calls that were made to DescribeVpcClassicLinkDnsSupport.
 // Check the length with:
-//     len(mockedClient.DescribeVpcClassicLinkDnsSupportCalls())
+//
+//	len(mockedClient.DescribeVpcClassicLinkDnsSupportCalls())
 func (mock *ClientMock) DescribeVpcClassicLinkDnsSupportCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeVpcClassicLinkDnsSupportInput
@@ -20906,7 +21222,8 @@ func (mock *ClientMock) DescribeVpcEndpointConnectionNotifications(ctx context.C
 
 // DescribeVpcEndpointConnectionNotificationsCalls gets all the calls that were made to DescribeVpcEndpointConnectionNotifications.
 // Check the length with:
-//     len(mockedClient.DescribeVpcEndpointConnectionNotificationsCalls())
+//
+//	len(mockedClient.DescribeVpcEndpointConnectionNotificationsCalls())
 func (mock *ClientMock) DescribeVpcEndpointConnectionNotificationsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeVpcEndpointConnectionNotificationsInput
@@ -20945,7 +21262,8 @@ func (mock *ClientMock) DescribeVpcEndpointConnections(ctx context.Context, para
 
 // DescribeVpcEndpointConnectionsCalls gets all the calls that were made to DescribeVpcEndpointConnections.
 // Check the length with:
-//     len(mockedClient.DescribeVpcEndpointConnectionsCalls())
+//
+//	len(mockedClient.DescribeVpcEndpointConnectionsCalls())
 func (mock *ClientMock) DescribeVpcEndpointConnectionsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeVpcEndpointConnectionsInput
@@ -20984,7 +21302,8 @@ func (mock *ClientMock) DescribeVpcEndpointServiceConfigurations(ctx context.Con
 
 // DescribeVpcEndpointServiceConfigurationsCalls gets all the calls that were made to DescribeVpcEndpointServiceConfigurations.
 // Check the length with:
-//     len(mockedClient.DescribeVpcEndpointServiceConfigurationsCalls())
+//
+//	len(mockedClient.DescribeVpcEndpointServiceConfigurationsCalls())
 func (mock *ClientMock) DescribeVpcEndpointServiceConfigurationsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeVpcEndpointServiceConfigurationsInput
@@ -21023,7 +21342,8 @@ func (mock *ClientMock) DescribeVpcEndpointServicePermissions(ctx context.Contex
 
 // DescribeVpcEndpointServicePermissionsCalls gets all the calls that were made to DescribeVpcEndpointServicePermissions.
 // Check the length with:
-//     len(mockedClient.DescribeVpcEndpointServicePermissionsCalls())
+//
+//	len(mockedClient.DescribeVpcEndpointServicePermissionsCalls())
 func (mock *ClientMock) DescribeVpcEndpointServicePermissionsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeVpcEndpointServicePermissionsInput
@@ -21062,7 +21382,8 @@ func (mock *ClientMock) DescribeVpcEndpointServices(ctx context.Context, params 
 
 // DescribeVpcEndpointServicesCalls gets all the calls that were made to DescribeVpcEndpointServices.
 // Check the length with:
-//     len(mockedClient.DescribeVpcEndpointServicesCalls())
+//
+//	len(mockedClient.DescribeVpcEndpointServicesCalls())
 func (mock *ClientMock) DescribeVpcEndpointServicesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeVpcEndpointServicesInput
@@ -21101,7 +21422,8 @@ func (mock *ClientMock) DescribeVpcEndpoints(ctx context.Context, params *ec2.De
 
 // DescribeVpcEndpointsCalls gets all the calls that were made to DescribeVpcEndpoints.
 // Check the length with:
-//     len(mockedClient.DescribeVpcEndpointsCalls())
+//
+//	len(mockedClient.DescribeVpcEndpointsCalls())
 func (mock *ClientMock) DescribeVpcEndpointsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeVpcEndpointsInput
@@ -21140,7 +21462,8 @@ func (mock *ClientMock) DescribeVpcPeeringConnections(ctx context.Context, param
 
 // DescribeVpcPeeringConnectionsCalls gets all the calls that were made to DescribeVpcPeeringConnections.
 // Check the length with:
-//     len(mockedClient.DescribeVpcPeeringConnectionsCalls())
+//
+//	len(mockedClient.DescribeVpcPeeringConnectionsCalls())
 func (mock *ClientMock) DescribeVpcPeeringConnectionsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeVpcPeeringConnectionsInput
@@ -21179,7 +21502,8 @@ func (mock *ClientMock) DescribeVpcs(ctx context.Context, params *ec2.DescribeVp
 
 // DescribeVpcsCalls gets all the calls that were made to DescribeVpcs.
 // Check the length with:
-//     len(mockedClient.DescribeVpcsCalls())
+//
+//	len(mockedClient.DescribeVpcsCalls())
 func (mock *ClientMock) DescribeVpcsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeVpcsInput
@@ -21218,7 +21542,8 @@ func (mock *ClientMock) DescribeVpnConnections(ctx context.Context, params *ec2.
 
 // DescribeVpnConnectionsCalls gets all the calls that were made to DescribeVpnConnections.
 // Check the length with:
-//     len(mockedClient.DescribeVpnConnectionsCalls())
+//
+//	len(mockedClient.DescribeVpnConnectionsCalls())
 func (mock *ClientMock) DescribeVpnConnectionsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeVpnConnectionsInput
@@ -21257,7 +21582,8 @@ func (mock *ClientMock) DescribeVpnGateways(ctx context.Context, params *ec2.Des
 
 // DescribeVpnGatewaysCalls gets all the calls that were made to DescribeVpnGateways.
 // Check the length with:
-//     len(mockedClient.DescribeVpnGatewaysCalls())
+//
+//	len(mockedClient.DescribeVpnGatewaysCalls())
 func (mock *ClientMock) DescribeVpnGatewaysCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DescribeVpnGatewaysInput
@@ -21296,7 +21622,8 @@ func (mock *ClientMock) DetachClassicLinkVpc(ctx context.Context, params *ec2.De
 
 // DetachClassicLinkVpcCalls gets all the calls that were made to DetachClassicLinkVpc.
 // Check the length with:
-//     len(mockedClient.DetachClassicLinkVpcCalls())
+//
+//	len(mockedClient.DetachClassicLinkVpcCalls())
 func (mock *ClientMock) DetachClassicLinkVpcCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DetachClassicLinkVpcInput
@@ -21335,7 +21662,8 @@ func (mock *ClientMock) DetachInternetGateway(ctx context.Context, params *ec2.D
 
 // DetachInternetGatewayCalls gets all the calls that were made to DetachInternetGateway.
 // Check the length with:
-//     len(mockedClient.DetachInternetGatewayCalls())
+//
+//	len(mockedClient.DetachInternetGatewayCalls())
 func (mock *ClientMock) DetachInternetGatewayCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DetachInternetGatewayInput
@@ -21374,7 +21702,8 @@ func (mock *ClientMock) DetachNetworkInterface(ctx context.Context, params *ec2.
 
 // DetachNetworkInterfaceCalls gets all the calls that were made to DetachNetworkInterface.
 // Check the length with:
-//     len(mockedClient.DetachNetworkInterfaceCalls())
+//
+//	len(mockedClient.DetachNetworkInterfaceCalls())
 func (mock *ClientMock) DetachNetworkInterfaceCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DetachNetworkInterfaceInput
@@ -21413,7 +21742,8 @@ func (mock *ClientMock) DetachVolume(ctx context.Context, params *ec2.DetachVolu
 
 // DetachVolumeCalls gets all the calls that were made to DetachVolume.
 // Check the length with:
-//     len(mockedClient.DetachVolumeCalls())
+//
+//	len(mockedClient.DetachVolumeCalls())
 func (mock *ClientMock) DetachVolumeCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DetachVolumeInput
@@ -21452,7 +21782,8 @@ func (mock *ClientMock) DetachVpnGateway(ctx context.Context, params *ec2.Detach
 
 // DetachVpnGatewayCalls gets all the calls that were made to DetachVpnGateway.
 // Check the length with:
-//     len(mockedClient.DetachVpnGatewayCalls())
+//
+//	len(mockedClient.DetachVpnGatewayCalls())
 func (mock *ClientMock) DetachVpnGatewayCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DetachVpnGatewayInput
@@ -21491,7 +21822,8 @@ func (mock *ClientMock) DisableEbsEncryptionByDefault(ctx context.Context, param
 
 // DisableEbsEncryptionByDefaultCalls gets all the calls that were made to DisableEbsEncryptionByDefault.
 // Check the length with:
-//     len(mockedClient.DisableEbsEncryptionByDefaultCalls())
+//
+//	len(mockedClient.DisableEbsEncryptionByDefaultCalls())
 func (mock *ClientMock) DisableEbsEncryptionByDefaultCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DisableEbsEncryptionByDefaultInput
@@ -21530,7 +21862,8 @@ func (mock *ClientMock) DisableFastLaunch(ctx context.Context, params *ec2.Disab
 
 // DisableFastLaunchCalls gets all the calls that were made to DisableFastLaunch.
 // Check the length with:
-//     len(mockedClient.DisableFastLaunchCalls())
+//
+//	len(mockedClient.DisableFastLaunchCalls())
 func (mock *ClientMock) DisableFastLaunchCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DisableFastLaunchInput
@@ -21569,7 +21902,8 @@ func (mock *ClientMock) DisableFastSnapshotRestores(ctx context.Context, params 
 
 // DisableFastSnapshotRestoresCalls gets all the calls that were made to DisableFastSnapshotRestores.
 // Check the length with:
-//     len(mockedClient.DisableFastSnapshotRestoresCalls())
+//
+//	len(mockedClient.DisableFastSnapshotRestoresCalls())
 func (mock *ClientMock) DisableFastSnapshotRestoresCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DisableFastSnapshotRestoresInput
@@ -21608,7 +21942,8 @@ func (mock *ClientMock) DisableImageDeprecation(ctx context.Context, params *ec2
 
 // DisableImageDeprecationCalls gets all the calls that were made to DisableImageDeprecation.
 // Check the length with:
-//     len(mockedClient.DisableImageDeprecationCalls())
+//
+//	len(mockedClient.DisableImageDeprecationCalls())
 func (mock *ClientMock) DisableImageDeprecationCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DisableImageDeprecationInput
@@ -21647,7 +21982,8 @@ func (mock *ClientMock) DisableIpamOrganizationAdminAccount(ctx context.Context,
 
 // DisableIpamOrganizationAdminAccountCalls gets all the calls that were made to DisableIpamOrganizationAdminAccount.
 // Check the length with:
-//     len(mockedClient.DisableIpamOrganizationAdminAccountCalls())
+//
+//	len(mockedClient.DisableIpamOrganizationAdminAccountCalls())
 func (mock *ClientMock) DisableIpamOrganizationAdminAccountCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DisableIpamOrganizationAdminAccountInput
@@ -21686,7 +22022,8 @@ func (mock *ClientMock) DisableSerialConsoleAccess(ctx context.Context, params *
 
 // DisableSerialConsoleAccessCalls gets all the calls that were made to DisableSerialConsoleAccess.
 // Check the length with:
-//     len(mockedClient.DisableSerialConsoleAccessCalls())
+//
+//	len(mockedClient.DisableSerialConsoleAccessCalls())
 func (mock *ClientMock) DisableSerialConsoleAccessCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DisableSerialConsoleAccessInput
@@ -21725,7 +22062,8 @@ func (mock *ClientMock) DisableTransitGatewayRouteTablePropagation(ctx context.C
 
 // DisableTransitGatewayRouteTablePropagationCalls gets all the calls that were made to DisableTransitGatewayRouteTablePropagation.
 // Check the length with:
-//     len(mockedClient.DisableTransitGatewayRouteTablePropagationCalls())
+//
+//	len(mockedClient.DisableTransitGatewayRouteTablePropagationCalls())
 func (mock *ClientMock) DisableTransitGatewayRouteTablePropagationCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DisableTransitGatewayRouteTablePropagationInput
@@ -21764,7 +22102,8 @@ func (mock *ClientMock) DisableVgwRoutePropagation(ctx context.Context, params *
 
 // DisableVgwRoutePropagationCalls gets all the calls that were made to DisableVgwRoutePropagation.
 // Check the length with:
-//     len(mockedClient.DisableVgwRoutePropagationCalls())
+//
+//	len(mockedClient.DisableVgwRoutePropagationCalls())
 func (mock *ClientMock) DisableVgwRoutePropagationCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DisableVgwRoutePropagationInput
@@ -21803,7 +22142,8 @@ func (mock *ClientMock) DisableVpcClassicLink(ctx context.Context, params *ec2.D
 
 // DisableVpcClassicLinkCalls gets all the calls that were made to DisableVpcClassicLink.
 // Check the length with:
-//     len(mockedClient.DisableVpcClassicLinkCalls())
+//
+//	len(mockedClient.DisableVpcClassicLinkCalls())
 func (mock *ClientMock) DisableVpcClassicLinkCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DisableVpcClassicLinkInput
@@ -21842,7 +22182,8 @@ func (mock *ClientMock) DisableVpcClassicLinkDnsSupport(ctx context.Context, par
 
 // DisableVpcClassicLinkDnsSupportCalls gets all the calls that were made to DisableVpcClassicLinkDnsSupport.
 // Check the length with:
-//     len(mockedClient.DisableVpcClassicLinkDnsSupportCalls())
+//
+//	len(mockedClient.DisableVpcClassicLinkDnsSupportCalls())
 func (mock *ClientMock) DisableVpcClassicLinkDnsSupportCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DisableVpcClassicLinkDnsSupportInput
@@ -21881,7 +22222,8 @@ func (mock *ClientMock) DisassociateAddress(ctx context.Context, params *ec2.Dis
 
 // DisassociateAddressCalls gets all the calls that were made to DisassociateAddress.
 // Check the length with:
-//     len(mockedClient.DisassociateAddressCalls())
+//
+//	len(mockedClient.DisassociateAddressCalls())
 func (mock *ClientMock) DisassociateAddressCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DisassociateAddressInput
@@ -21920,7 +22262,8 @@ func (mock *ClientMock) DisassociateClientVpnTargetNetwork(ctx context.Context, 
 
 // DisassociateClientVpnTargetNetworkCalls gets all the calls that were made to DisassociateClientVpnTargetNetwork.
 // Check the length with:
-//     len(mockedClient.DisassociateClientVpnTargetNetworkCalls())
+//
+//	len(mockedClient.DisassociateClientVpnTargetNetworkCalls())
 func (mock *ClientMock) DisassociateClientVpnTargetNetworkCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DisassociateClientVpnTargetNetworkInput
@@ -21959,7 +22302,8 @@ func (mock *ClientMock) DisassociateEnclaveCertificateIamRole(ctx context.Contex
 
 // DisassociateEnclaveCertificateIamRoleCalls gets all the calls that were made to DisassociateEnclaveCertificateIamRole.
 // Check the length with:
-//     len(mockedClient.DisassociateEnclaveCertificateIamRoleCalls())
+//
+//	len(mockedClient.DisassociateEnclaveCertificateIamRoleCalls())
 func (mock *ClientMock) DisassociateEnclaveCertificateIamRoleCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DisassociateEnclaveCertificateIamRoleInput
@@ -21998,7 +22342,8 @@ func (mock *ClientMock) DisassociateIamInstanceProfile(ctx context.Context, para
 
 // DisassociateIamInstanceProfileCalls gets all the calls that were made to DisassociateIamInstanceProfile.
 // Check the length with:
-//     len(mockedClient.DisassociateIamInstanceProfileCalls())
+//
+//	len(mockedClient.DisassociateIamInstanceProfileCalls())
 func (mock *ClientMock) DisassociateIamInstanceProfileCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DisassociateIamInstanceProfileInput
@@ -22037,7 +22382,8 @@ func (mock *ClientMock) DisassociateInstanceEventWindow(ctx context.Context, par
 
 // DisassociateInstanceEventWindowCalls gets all the calls that were made to DisassociateInstanceEventWindow.
 // Check the length with:
-//     len(mockedClient.DisassociateInstanceEventWindowCalls())
+//
+//	len(mockedClient.DisassociateInstanceEventWindowCalls())
 func (mock *ClientMock) DisassociateInstanceEventWindowCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DisassociateInstanceEventWindowInput
@@ -22076,7 +22422,8 @@ func (mock *ClientMock) DisassociateRouteTable(ctx context.Context, params *ec2.
 
 // DisassociateRouteTableCalls gets all the calls that were made to DisassociateRouteTable.
 // Check the length with:
-//     len(mockedClient.DisassociateRouteTableCalls())
+//
+//	len(mockedClient.DisassociateRouteTableCalls())
 func (mock *ClientMock) DisassociateRouteTableCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DisassociateRouteTableInput
@@ -22115,7 +22462,8 @@ func (mock *ClientMock) DisassociateSubnetCidrBlock(ctx context.Context, params 
 
 // DisassociateSubnetCidrBlockCalls gets all the calls that were made to DisassociateSubnetCidrBlock.
 // Check the length with:
-//     len(mockedClient.DisassociateSubnetCidrBlockCalls())
+//
+//	len(mockedClient.DisassociateSubnetCidrBlockCalls())
 func (mock *ClientMock) DisassociateSubnetCidrBlockCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DisassociateSubnetCidrBlockInput
@@ -22154,7 +22502,8 @@ func (mock *ClientMock) DisassociateTransitGatewayMulticastDomain(ctx context.Co
 
 // DisassociateTransitGatewayMulticastDomainCalls gets all the calls that were made to DisassociateTransitGatewayMulticastDomain.
 // Check the length with:
-//     len(mockedClient.DisassociateTransitGatewayMulticastDomainCalls())
+//
+//	len(mockedClient.DisassociateTransitGatewayMulticastDomainCalls())
 func (mock *ClientMock) DisassociateTransitGatewayMulticastDomainCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DisassociateTransitGatewayMulticastDomainInput
@@ -22193,7 +22542,8 @@ func (mock *ClientMock) DisassociateTransitGatewayPolicyTable(ctx context.Contex
 
 // DisassociateTransitGatewayPolicyTableCalls gets all the calls that were made to DisassociateTransitGatewayPolicyTable.
 // Check the length with:
-//     len(mockedClient.DisassociateTransitGatewayPolicyTableCalls())
+//
+//	len(mockedClient.DisassociateTransitGatewayPolicyTableCalls())
 func (mock *ClientMock) DisassociateTransitGatewayPolicyTableCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DisassociateTransitGatewayPolicyTableInput
@@ -22232,7 +22582,8 @@ func (mock *ClientMock) DisassociateTransitGatewayRouteTable(ctx context.Context
 
 // DisassociateTransitGatewayRouteTableCalls gets all the calls that were made to DisassociateTransitGatewayRouteTable.
 // Check the length with:
-//     len(mockedClient.DisassociateTransitGatewayRouteTableCalls())
+//
+//	len(mockedClient.DisassociateTransitGatewayRouteTableCalls())
 func (mock *ClientMock) DisassociateTransitGatewayRouteTableCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DisassociateTransitGatewayRouteTableInput
@@ -22271,7 +22622,8 @@ func (mock *ClientMock) DisassociateTrunkInterface(ctx context.Context, params *
 
 // DisassociateTrunkInterfaceCalls gets all the calls that were made to DisassociateTrunkInterface.
 // Check the length with:
-//     len(mockedClient.DisassociateTrunkInterfaceCalls())
+//
+//	len(mockedClient.DisassociateTrunkInterfaceCalls())
 func (mock *ClientMock) DisassociateTrunkInterfaceCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DisassociateTrunkInterfaceInput
@@ -22310,7 +22662,8 @@ func (mock *ClientMock) DisassociateVpcCidrBlock(ctx context.Context, params *ec
 
 // DisassociateVpcCidrBlockCalls gets all the calls that were made to DisassociateVpcCidrBlock.
 // Check the length with:
-//     len(mockedClient.DisassociateVpcCidrBlockCalls())
+//
+//	len(mockedClient.DisassociateVpcCidrBlockCalls())
 func (mock *ClientMock) DisassociateVpcCidrBlockCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.DisassociateVpcCidrBlockInput
@@ -22349,7 +22702,8 @@ func (mock *ClientMock) EnableEbsEncryptionByDefault(ctx context.Context, params
 
 // EnableEbsEncryptionByDefaultCalls gets all the calls that were made to EnableEbsEncryptionByDefault.
 // Check the length with:
-//     len(mockedClient.EnableEbsEncryptionByDefaultCalls())
+//
+//	len(mockedClient.EnableEbsEncryptionByDefaultCalls())
 func (mock *ClientMock) EnableEbsEncryptionByDefaultCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.EnableEbsEncryptionByDefaultInput
@@ -22388,7 +22742,8 @@ func (mock *ClientMock) EnableFastLaunch(ctx context.Context, params *ec2.Enable
 
 // EnableFastLaunchCalls gets all the calls that were made to EnableFastLaunch.
 // Check the length with:
-//     len(mockedClient.EnableFastLaunchCalls())
+//
+//	len(mockedClient.EnableFastLaunchCalls())
 func (mock *ClientMock) EnableFastLaunchCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.EnableFastLaunchInput
@@ -22427,7 +22782,8 @@ func (mock *ClientMock) EnableFastSnapshotRestores(ctx context.Context, params *
 
 // EnableFastSnapshotRestoresCalls gets all the calls that were made to EnableFastSnapshotRestores.
 // Check the length with:
-//     len(mockedClient.EnableFastSnapshotRestoresCalls())
+//
+//	len(mockedClient.EnableFastSnapshotRestoresCalls())
 func (mock *ClientMock) EnableFastSnapshotRestoresCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.EnableFastSnapshotRestoresInput
@@ -22466,7 +22822,8 @@ func (mock *ClientMock) EnableImageDeprecation(ctx context.Context, params *ec2.
 
 // EnableImageDeprecationCalls gets all the calls that were made to EnableImageDeprecation.
 // Check the length with:
-//     len(mockedClient.EnableImageDeprecationCalls())
+//
+//	len(mockedClient.EnableImageDeprecationCalls())
 func (mock *ClientMock) EnableImageDeprecationCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.EnableImageDeprecationInput
@@ -22505,7 +22862,8 @@ func (mock *ClientMock) EnableIpamOrganizationAdminAccount(ctx context.Context, 
 
 // EnableIpamOrganizationAdminAccountCalls gets all the calls that were made to EnableIpamOrganizationAdminAccount.
 // Check the length with:
-//     len(mockedClient.EnableIpamOrganizationAdminAccountCalls())
+//
+//	len(mockedClient.EnableIpamOrganizationAdminAccountCalls())
 func (mock *ClientMock) EnableIpamOrganizationAdminAccountCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.EnableIpamOrganizationAdminAccountInput
@@ -22544,7 +22902,8 @@ func (mock *ClientMock) EnableSerialConsoleAccess(ctx context.Context, params *e
 
 // EnableSerialConsoleAccessCalls gets all the calls that were made to EnableSerialConsoleAccess.
 // Check the length with:
-//     len(mockedClient.EnableSerialConsoleAccessCalls())
+//
+//	len(mockedClient.EnableSerialConsoleAccessCalls())
 func (mock *ClientMock) EnableSerialConsoleAccessCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.EnableSerialConsoleAccessInput
@@ -22583,7 +22942,8 @@ func (mock *ClientMock) EnableTransitGatewayRouteTablePropagation(ctx context.Co
 
 // EnableTransitGatewayRouteTablePropagationCalls gets all the calls that were made to EnableTransitGatewayRouteTablePropagation.
 // Check the length with:
-//     len(mockedClient.EnableTransitGatewayRouteTablePropagationCalls())
+//
+//	len(mockedClient.EnableTransitGatewayRouteTablePropagationCalls())
 func (mock *ClientMock) EnableTransitGatewayRouteTablePropagationCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.EnableTransitGatewayRouteTablePropagationInput
@@ -22622,7 +22982,8 @@ func (mock *ClientMock) EnableVgwRoutePropagation(ctx context.Context, params *e
 
 // EnableVgwRoutePropagationCalls gets all the calls that were made to EnableVgwRoutePropagation.
 // Check the length with:
-//     len(mockedClient.EnableVgwRoutePropagationCalls())
+//
+//	len(mockedClient.EnableVgwRoutePropagationCalls())
 func (mock *ClientMock) EnableVgwRoutePropagationCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.EnableVgwRoutePropagationInput
@@ -22661,7 +23022,8 @@ func (mock *ClientMock) EnableVolumeIO(ctx context.Context, params *ec2.EnableVo
 
 // EnableVolumeIOCalls gets all the calls that were made to EnableVolumeIO.
 // Check the length with:
-//     len(mockedClient.EnableVolumeIOCalls())
+//
+//	len(mockedClient.EnableVolumeIOCalls())
 func (mock *ClientMock) EnableVolumeIOCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.EnableVolumeIOInput
@@ -22700,7 +23062,8 @@ func (mock *ClientMock) EnableVpcClassicLink(ctx context.Context, params *ec2.En
 
 // EnableVpcClassicLinkCalls gets all the calls that were made to EnableVpcClassicLink.
 // Check the length with:
-//     len(mockedClient.EnableVpcClassicLinkCalls())
+//
+//	len(mockedClient.EnableVpcClassicLinkCalls())
 func (mock *ClientMock) EnableVpcClassicLinkCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.EnableVpcClassicLinkInput
@@ -22739,7 +23102,8 @@ func (mock *ClientMock) EnableVpcClassicLinkDnsSupport(ctx context.Context, para
 
 // EnableVpcClassicLinkDnsSupportCalls gets all the calls that were made to EnableVpcClassicLinkDnsSupport.
 // Check the length with:
-//     len(mockedClient.EnableVpcClassicLinkDnsSupportCalls())
+//
+//	len(mockedClient.EnableVpcClassicLinkDnsSupportCalls())
 func (mock *ClientMock) EnableVpcClassicLinkDnsSupportCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.EnableVpcClassicLinkDnsSupportInput
@@ -22778,7 +23142,8 @@ func (mock *ClientMock) ExportClientVpnClientCertificateRevocationList(ctx conte
 
 // ExportClientVpnClientCertificateRevocationListCalls gets all the calls that were made to ExportClientVpnClientCertificateRevocationList.
 // Check the length with:
-//     len(mockedClient.ExportClientVpnClientCertificateRevocationListCalls())
+//
+//	len(mockedClient.ExportClientVpnClientCertificateRevocationListCalls())
 func (mock *ClientMock) ExportClientVpnClientCertificateRevocationListCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ExportClientVpnClientCertificateRevocationListInput
@@ -22817,7 +23182,8 @@ func (mock *ClientMock) ExportClientVpnClientConfiguration(ctx context.Context, 
 
 // ExportClientVpnClientConfigurationCalls gets all the calls that were made to ExportClientVpnClientConfiguration.
 // Check the length with:
-//     len(mockedClient.ExportClientVpnClientConfigurationCalls())
+//
+//	len(mockedClient.ExportClientVpnClientConfigurationCalls())
 func (mock *ClientMock) ExportClientVpnClientConfigurationCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ExportClientVpnClientConfigurationInput
@@ -22856,7 +23222,8 @@ func (mock *ClientMock) ExportImage(ctx context.Context, params *ec2.ExportImage
 
 // ExportImageCalls gets all the calls that were made to ExportImage.
 // Check the length with:
-//     len(mockedClient.ExportImageCalls())
+//
+//	len(mockedClient.ExportImageCalls())
 func (mock *ClientMock) ExportImageCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ExportImageInput
@@ -22895,7 +23262,8 @@ func (mock *ClientMock) ExportTransitGatewayRoutes(ctx context.Context, params *
 
 // ExportTransitGatewayRoutesCalls gets all the calls that were made to ExportTransitGatewayRoutes.
 // Check the length with:
-//     len(mockedClient.ExportTransitGatewayRoutesCalls())
+//
+//	len(mockedClient.ExportTransitGatewayRoutesCalls())
 func (mock *ClientMock) ExportTransitGatewayRoutesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ExportTransitGatewayRoutesInput
@@ -22934,7 +23302,8 @@ func (mock *ClientMock) GetAssociatedEnclaveCertificateIamRoles(ctx context.Cont
 
 // GetAssociatedEnclaveCertificateIamRolesCalls gets all the calls that were made to GetAssociatedEnclaveCertificateIamRoles.
 // Check the length with:
-//     len(mockedClient.GetAssociatedEnclaveCertificateIamRolesCalls())
+//
+//	len(mockedClient.GetAssociatedEnclaveCertificateIamRolesCalls())
 func (mock *ClientMock) GetAssociatedEnclaveCertificateIamRolesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.GetAssociatedEnclaveCertificateIamRolesInput
@@ -22973,7 +23342,8 @@ func (mock *ClientMock) GetAssociatedIpv6PoolCidrs(ctx context.Context, params *
 
 // GetAssociatedIpv6PoolCidrsCalls gets all the calls that were made to GetAssociatedIpv6PoolCidrs.
 // Check the length with:
-//     len(mockedClient.GetAssociatedIpv6PoolCidrsCalls())
+//
+//	len(mockedClient.GetAssociatedIpv6PoolCidrsCalls())
 func (mock *ClientMock) GetAssociatedIpv6PoolCidrsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.GetAssociatedIpv6PoolCidrsInput
@@ -23012,7 +23382,8 @@ func (mock *ClientMock) GetCapacityReservationUsage(ctx context.Context, params 
 
 // GetCapacityReservationUsageCalls gets all the calls that were made to GetCapacityReservationUsage.
 // Check the length with:
-//     len(mockedClient.GetCapacityReservationUsageCalls())
+//
+//	len(mockedClient.GetCapacityReservationUsageCalls())
 func (mock *ClientMock) GetCapacityReservationUsageCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.GetCapacityReservationUsageInput
@@ -23051,7 +23422,8 @@ func (mock *ClientMock) GetCoipPoolUsage(ctx context.Context, params *ec2.GetCoi
 
 // GetCoipPoolUsageCalls gets all the calls that were made to GetCoipPoolUsage.
 // Check the length with:
-//     len(mockedClient.GetCoipPoolUsageCalls())
+//
+//	len(mockedClient.GetCoipPoolUsageCalls())
 func (mock *ClientMock) GetCoipPoolUsageCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.GetCoipPoolUsageInput
@@ -23090,7 +23462,8 @@ func (mock *ClientMock) GetConsoleOutput(ctx context.Context, params *ec2.GetCon
 
 // GetConsoleOutputCalls gets all the calls that were made to GetConsoleOutput.
 // Check the length with:
-//     len(mockedClient.GetConsoleOutputCalls())
+//
+//	len(mockedClient.GetConsoleOutputCalls())
 func (mock *ClientMock) GetConsoleOutputCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.GetConsoleOutputInput
@@ -23129,7 +23502,8 @@ func (mock *ClientMock) GetConsoleScreenshot(ctx context.Context, params *ec2.Ge
 
 // GetConsoleScreenshotCalls gets all the calls that were made to GetConsoleScreenshot.
 // Check the length with:
-//     len(mockedClient.GetConsoleScreenshotCalls())
+//
+//	len(mockedClient.GetConsoleScreenshotCalls())
 func (mock *ClientMock) GetConsoleScreenshotCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.GetConsoleScreenshotInput
@@ -23168,7 +23542,8 @@ func (mock *ClientMock) GetDefaultCreditSpecification(ctx context.Context, param
 
 // GetDefaultCreditSpecificationCalls gets all the calls that were made to GetDefaultCreditSpecification.
 // Check the length with:
-//     len(mockedClient.GetDefaultCreditSpecificationCalls())
+//
+//	len(mockedClient.GetDefaultCreditSpecificationCalls())
 func (mock *ClientMock) GetDefaultCreditSpecificationCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.GetDefaultCreditSpecificationInput
@@ -23207,7 +23582,8 @@ func (mock *ClientMock) GetEbsDefaultKmsKeyId(ctx context.Context, params *ec2.G
 
 // GetEbsDefaultKmsKeyIdCalls gets all the calls that were made to GetEbsDefaultKmsKeyId.
 // Check the length with:
-//     len(mockedClient.GetEbsDefaultKmsKeyIdCalls())
+//
+//	len(mockedClient.GetEbsDefaultKmsKeyIdCalls())
 func (mock *ClientMock) GetEbsDefaultKmsKeyIdCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.GetEbsDefaultKmsKeyIdInput
@@ -23246,7 +23622,8 @@ func (mock *ClientMock) GetEbsEncryptionByDefault(ctx context.Context, params *e
 
 // GetEbsEncryptionByDefaultCalls gets all the calls that were made to GetEbsEncryptionByDefault.
 // Check the length with:
-//     len(mockedClient.GetEbsEncryptionByDefaultCalls())
+//
+//	len(mockedClient.GetEbsEncryptionByDefaultCalls())
 func (mock *ClientMock) GetEbsEncryptionByDefaultCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.GetEbsEncryptionByDefaultInput
@@ -23285,7 +23662,8 @@ func (mock *ClientMock) GetFlowLogsIntegrationTemplate(ctx context.Context, para
 
 // GetFlowLogsIntegrationTemplateCalls gets all the calls that were made to GetFlowLogsIntegrationTemplate.
 // Check the length with:
-//     len(mockedClient.GetFlowLogsIntegrationTemplateCalls())
+//
+//	len(mockedClient.GetFlowLogsIntegrationTemplateCalls())
 func (mock *ClientMock) GetFlowLogsIntegrationTemplateCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.GetFlowLogsIntegrationTemplateInput
@@ -23324,7 +23702,8 @@ func (mock *ClientMock) GetGroupsForCapacityReservation(ctx context.Context, par
 
 // GetGroupsForCapacityReservationCalls gets all the calls that were made to GetGroupsForCapacityReservation.
 // Check the length with:
-//     len(mockedClient.GetGroupsForCapacityReservationCalls())
+//
+//	len(mockedClient.GetGroupsForCapacityReservationCalls())
 func (mock *ClientMock) GetGroupsForCapacityReservationCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.GetGroupsForCapacityReservationInput
@@ -23363,7 +23742,8 @@ func (mock *ClientMock) GetHostReservationPurchasePreview(ctx context.Context, p
 
 // GetHostReservationPurchasePreviewCalls gets all the calls that were made to GetHostReservationPurchasePreview.
 // Check the length with:
-//     len(mockedClient.GetHostReservationPurchasePreviewCalls())
+//
+//	len(mockedClient.GetHostReservationPurchasePreviewCalls())
 func (mock *ClientMock) GetHostReservationPurchasePreviewCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.GetHostReservationPurchasePreviewInput
@@ -23402,7 +23782,8 @@ func (mock *ClientMock) GetInstanceTypesFromInstanceRequirements(ctx context.Con
 
 // GetInstanceTypesFromInstanceRequirementsCalls gets all the calls that were made to GetInstanceTypesFromInstanceRequirements.
 // Check the length with:
-//     len(mockedClient.GetInstanceTypesFromInstanceRequirementsCalls())
+//
+//	len(mockedClient.GetInstanceTypesFromInstanceRequirementsCalls())
 func (mock *ClientMock) GetInstanceTypesFromInstanceRequirementsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.GetInstanceTypesFromInstanceRequirementsInput
@@ -23441,7 +23822,8 @@ func (mock *ClientMock) GetInstanceUefiData(ctx context.Context, params *ec2.Get
 
 // GetInstanceUefiDataCalls gets all the calls that were made to GetInstanceUefiData.
 // Check the length with:
-//     len(mockedClient.GetInstanceUefiDataCalls())
+//
+//	len(mockedClient.GetInstanceUefiDataCalls())
 func (mock *ClientMock) GetInstanceUefiDataCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.GetInstanceUefiDataInput
@@ -23480,7 +23862,8 @@ func (mock *ClientMock) GetIpamAddressHistory(ctx context.Context, params *ec2.G
 
 // GetIpamAddressHistoryCalls gets all the calls that were made to GetIpamAddressHistory.
 // Check the length with:
-//     len(mockedClient.GetIpamAddressHistoryCalls())
+//
+//	len(mockedClient.GetIpamAddressHistoryCalls())
 func (mock *ClientMock) GetIpamAddressHistoryCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.GetIpamAddressHistoryInput
@@ -23519,7 +23902,8 @@ func (mock *ClientMock) GetIpamPoolAllocations(ctx context.Context, params *ec2.
 
 // GetIpamPoolAllocationsCalls gets all the calls that were made to GetIpamPoolAllocations.
 // Check the length with:
-//     len(mockedClient.GetIpamPoolAllocationsCalls())
+//
+//	len(mockedClient.GetIpamPoolAllocationsCalls())
 func (mock *ClientMock) GetIpamPoolAllocationsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.GetIpamPoolAllocationsInput
@@ -23558,7 +23942,8 @@ func (mock *ClientMock) GetIpamPoolCidrs(ctx context.Context, params *ec2.GetIpa
 
 // GetIpamPoolCidrsCalls gets all the calls that were made to GetIpamPoolCidrs.
 // Check the length with:
-//     len(mockedClient.GetIpamPoolCidrsCalls())
+//
+//	len(mockedClient.GetIpamPoolCidrsCalls())
 func (mock *ClientMock) GetIpamPoolCidrsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.GetIpamPoolCidrsInput
@@ -23597,7 +23982,8 @@ func (mock *ClientMock) GetIpamResourceCidrs(ctx context.Context, params *ec2.Ge
 
 // GetIpamResourceCidrsCalls gets all the calls that were made to GetIpamResourceCidrs.
 // Check the length with:
-//     len(mockedClient.GetIpamResourceCidrsCalls())
+//
+//	len(mockedClient.GetIpamResourceCidrsCalls())
 func (mock *ClientMock) GetIpamResourceCidrsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.GetIpamResourceCidrsInput
@@ -23636,7 +24022,8 @@ func (mock *ClientMock) GetLaunchTemplateData(ctx context.Context, params *ec2.G
 
 // GetLaunchTemplateDataCalls gets all the calls that were made to GetLaunchTemplateData.
 // Check the length with:
-//     len(mockedClient.GetLaunchTemplateDataCalls())
+//
+//	len(mockedClient.GetLaunchTemplateDataCalls())
 func (mock *ClientMock) GetLaunchTemplateDataCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.GetLaunchTemplateDataInput
@@ -23675,7 +24062,8 @@ func (mock *ClientMock) GetManagedPrefixListAssociations(ctx context.Context, pa
 
 // GetManagedPrefixListAssociationsCalls gets all the calls that were made to GetManagedPrefixListAssociations.
 // Check the length with:
-//     len(mockedClient.GetManagedPrefixListAssociationsCalls())
+//
+//	len(mockedClient.GetManagedPrefixListAssociationsCalls())
 func (mock *ClientMock) GetManagedPrefixListAssociationsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.GetManagedPrefixListAssociationsInput
@@ -23714,7 +24102,8 @@ func (mock *ClientMock) GetManagedPrefixListEntries(ctx context.Context, params 
 
 // GetManagedPrefixListEntriesCalls gets all the calls that were made to GetManagedPrefixListEntries.
 // Check the length with:
-//     len(mockedClient.GetManagedPrefixListEntriesCalls())
+//
+//	len(mockedClient.GetManagedPrefixListEntriesCalls())
 func (mock *ClientMock) GetManagedPrefixListEntriesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.GetManagedPrefixListEntriesInput
@@ -23753,7 +24142,8 @@ func (mock *ClientMock) GetNetworkInsightsAccessScopeAnalysisFindings(ctx contex
 
 // GetNetworkInsightsAccessScopeAnalysisFindingsCalls gets all the calls that were made to GetNetworkInsightsAccessScopeAnalysisFindings.
 // Check the length with:
-//     len(mockedClient.GetNetworkInsightsAccessScopeAnalysisFindingsCalls())
+//
+//	len(mockedClient.GetNetworkInsightsAccessScopeAnalysisFindingsCalls())
 func (mock *ClientMock) GetNetworkInsightsAccessScopeAnalysisFindingsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.GetNetworkInsightsAccessScopeAnalysisFindingsInput
@@ -23792,7 +24182,8 @@ func (mock *ClientMock) GetNetworkInsightsAccessScopeContent(ctx context.Context
 
 // GetNetworkInsightsAccessScopeContentCalls gets all the calls that were made to GetNetworkInsightsAccessScopeContent.
 // Check the length with:
-//     len(mockedClient.GetNetworkInsightsAccessScopeContentCalls())
+//
+//	len(mockedClient.GetNetworkInsightsAccessScopeContentCalls())
 func (mock *ClientMock) GetNetworkInsightsAccessScopeContentCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.GetNetworkInsightsAccessScopeContentInput
@@ -23831,7 +24222,8 @@ func (mock *ClientMock) GetPasswordData(ctx context.Context, params *ec2.GetPass
 
 // GetPasswordDataCalls gets all the calls that were made to GetPasswordData.
 // Check the length with:
-//     len(mockedClient.GetPasswordDataCalls())
+//
+//	len(mockedClient.GetPasswordDataCalls())
 func (mock *ClientMock) GetPasswordDataCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.GetPasswordDataInput
@@ -23870,7 +24262,8 @@ func (mock *ClientMock) GetReservedInstancesExchangeQuote(ctx context.Context, p
 
 // GetReservedInstancesExchangeQuoteCalls gets all the calls that were made to GetReservedInstancesExchangeQuote.
 // Check the length with:
-//     len(mockedClient.GetReservedInstancesExchangeQuoteCalls())
+//
+//	len(mockedClient.GetReservedInstancesExchangeQuoteCalls())
 func (mock *ClientMock) GetReservedInstancesExchangeQuoteCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.GetReservedInstancesExchangeQuoteInput
@@ -23909,7 +24302,8 @@ func (mock *ClientMock) GetSerialConsoleAccessStatus(ctx context.Context, params
 
 // GetSerialConsoleAccessStatusCalls gets all the calls that were made to GetSerialConsoleAccessStatus.
 // Check the length with:
-//     len(mockedClient.GetSerialConsoleAccessStatusCalls())
+//
+//	len(mockedClient.GetSerialConsoleAccessStatusCalls())
 func (mock *ClientMock) GetSerialConsoleAccessStatusCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.GetSerialConsoleAccessStatusInput
@@ -23948,7 +24342,8 @@ func (mock *ClientMock) GetSpotPlacementScores(ctx context.Context, params *ec2.
 
 // GetSpotPlacementScoresCalls gets all the calls that were made to GetSpotPlacementScores.
 // Check the length with:
-//     len(mockedClient.GetSpotPlacementScoresCalls())
+//
+//	len(mockedClient.GetSpotPlacementScoresCalls())
 func (mock *ClientMock) GetSpotPlacementScoresCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.GetSpotPlacementScoresInput
@@ -23987,7 +24382,8 @@ func (mock *ClientMock) GetSubnetCidrReservations(ctx context.Context, params *e
 
 // GetSubnetCidrReservationsCalls gets all the calls that were made to GetSubnetCidrReservations.
 // Check the length with:
-//     len(mockedClient.GetSubnetCidrReservationsCalls())
+//
+//	len(mockedClient.GetSubnetCidrReservationsCalls())
 func (mock *ClientMock) GetSubnetCidrReservationsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.GetSubnetCidrReservationsInput
@@ -24026,7 +24422,8 @@ func (mock *ClientMock) GetTransitGatewayAttachmentPropagations(ctx context.Cont
 
 // GetTransitGatewayAttachmentPropagationsCalls gets all the calls that were made to GetTransitGatewayAttachmentPropagations.
 // Check the length with:
-//     len(mockedClient.GetTransitGatewayAttachmentPropagationsCalls())
+//
+//	len(mockedClient.GetTransitGatewayAttachmentPropagationsCalls())
 func (mock *ClientMock) GetTransitGatewayAttachmentPropagationsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.GetTransitGatewayAttachmentPropagationsInput
@@ -24065,7 +24462,8 @@ func (mock *ClientMock) GetTransitGatewayMulticastDomainAssociations(ctx context
 
 // GetTransitGatewayMulticastDomainAssociationsCalls gets all the calls that were made to GetTransitGatewayMulticastDomainAssociations.
 // Check the length with:
-//     len(mockedClient.GetTransitGatewayMulticastDomainAssociationsCalls())
+//
+//	len(mockedClient.GetTransitGatewayMulticastDomainAssociationsCalls())
 func (mock *ClientMock) GetTransitGatewayMulticastDomainAssociationsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.GetTransitGatewayMulticastDomainAssociationsInput
@@ -24104,7 +24502,8 @@ func (mock *ClientMock) GetTransitGatewayPolicyTableAssociations(ctx context.Con
 
 // GetTransitGatewayPolicyTableAssociationsCalls gets all the calls that were made to GetTransitGatewayPolicyTableAssociations.
 // Check the length with:
-//     len(mockedClient.GetTransitGatewayPolicyTableAssociationsCalls())
+//
+//	len(mockedClient.GetTransitGatewayPolicyTableAssociationsCalls())
 func (mock *ClientMock) GetTransitGatewayPolicyTableAssociationsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.GetTransitGatewayPolicyTableAssociationsInput
@@ -24143,7 +24542,8 @@ func (mock *ClientMock) GetTransitGatewayPolicyTableEntries(ctx context.Context,
 
 // GetTransitGatewayPolicyTableEntriesCalls gets all the calls that were made to GetTransitGatewayPolicyTableEntries.
 // Check the length with:
-//     len(mockedClient.GetTransitGatewayPolicyTableEntriesCalls())
+//
+//	len(mockedClient.GetTransitGatewayPolicyTableEntriesCalls())
 func (mock *ClientMock) GetTransitGatewayPolicyTableEntriesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.GetTransitGatewayPolicyTableEntriesInput
@@ -24182,7 +24582,8 @@ func (mock *ClientMock) GetTransitGatewayPrefixListReferences(ctx context.Contex
 
 // GetTransitGatewayPrefixListReferencesCalls gets all the calls that were made to GetTransitGatewayPrefixListReferences.
 // Check the length with:
-//     len(mockedClient.GetTransitGatewayPrefixListReferencesCalls())
+//
+//	len(mockedClient.GetTransitGatewayPrefixListReferencesCalls())
 func (mock *ClientMock) GetTransitGatewayPrefixListReferencesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.GetTransitGatewayPrefixListReferencesInput
@@ -24221,7 +24622,8 @@ func (mock *ClientMock) GetTransitGatewayRouteTableAssociations(ctx context.Cont
 
 // GetTransitGatewayRouteTableAssociationsCalls gets all the calls that were made to GetTransitGatewayRouteTableAssociations.
 // Check the length with:
-//     len(mockedClient.GetTransitGatewayRouteTableAssociationsCalls())
+//
+//	len(mockedClient.GetTransitGatewayRouteTableAssociationsCalls())
 func (mock *ClientMock) GetTransitGatewayRouteTableAssociationsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.GetTransitGatewayRouteTableAssociationsInput
@@ -24260,7 +24662,8 @@ func (mock *ClientMock) GetTransitGatewayRouteTablePropagations(ctx context.Cont
 
 // GetTransitGatewayRouteTablePropagationsCalls gets all the calls that were made to GetTransitGatewayRouteTablePropagations.
 // Check the length with:
-//     len(mockedClient.GetTransitGatewayRouteTablePropagationsCalls())
+//
+//	len(mockedClient.GetTransitGatewayRouteTablePropagationsCalls())
 func (mock *ClientMock) GetTransitGatewayRouteTablePropagationsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.GetTransitGatewayRouteTablePropagationsInput
@@ -24299,7 +24702,8 @@ func (mock *ClientMock) GetVpnConnectionDeviceSampleConfiguration(ctx context.Co
 
 // GetVpnConnectionDeviceSampleConfigurationCalls gets all the calls that were made to GetVpnConnectionDeviceSampleConfiguration.
 // Check the length with:
-//     len(mockedClient.GetVpnConnectionDeviceSampleConfigurationCalls())
+//
+//	len(mockedClient.GetVpnConnectionDeviceSampleConfigurationCalls())
 func (mock *ClientMock) GetVpnConnectionDeviceSampleConfigurationCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.GetVpnConnectionDeviceSampleConfigurationInput
@@ -24338,7 +24742,8 @@ func (mock *ClientMock) GetVpnConnectionDeviceTypes(ctx context.Context, params 
 
 // GetVpnConnectionDeviceTypesCalls gets all the calls that were made to GetVpnConnectionDeviceTypes.
 // Check the length with:
-//     len(mockedClient.GetVpnConnectionDeviceTypesCalls())
+//
+//	len(mockedClient.GetVpnConnectionDeviceTypesCalls())
 func (mock *ClientMock) GetVpnConnectionDeviceTypesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.GetVpnConnectionDeviceTypesInput
@@ -24377,7 +24782,8 @@ func (mock *ClientMock) ImportClientVpnClientCertificateRevocationList(ctx conte
 
 // ImportClientVpnClientCertificateRevocationListCalls gets all the calls that were made to ImportClientVpnClientCertificateRevocationList.
 // Check the length with:
-//     len(mockedClient.ImportClientVpnClientCertificateRevocationListCalls())
+//
+//	len(mockedClient.ImportClientVpnClientCertificateRevocationListCalls())
 func (mock *ClientMock) ImportClientVpnClientCertificateRevocationListCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ImportClientVpnClientCertificateRevocationListInput
@@ -24416,7 +24822,8 @@ func (mock *ClientMock) ImportImage(ctx context.Context, params *ec2.ImportImage
 
 // ImportImageCalls gets all the calls that were made to ImportImage.
 // Check the length with:
-//     len(mockedClient.ImportImageCalls())
+//
+//	len(mockedClient.ImportImageCalls())
 func (mock *ClientMock) ImportImageCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ImportImageInput
@@ -24455,7 +24862,8 @@ func (mock *ClientMock) ImportInstance(ctx context.Context, params *ec2.ImportIn
 
 // ImportInstanceCalls gets all the calls that were made to ImportInstance.
 // Check the length with:
-//     len(mockedClient.ImportInstanceCalls())
+//
+//	len(mockedClient.ImportInstanceCalls())
 func (mock *ClientMock) ImportInstanceCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ImportInstanceInput
@@ -24494,7 +24902,8 @@ func (mock *ClientMock) ImportKeyPair(ctx context.Context, params *ec2.ImportKey
 
 // ImportKeyPairCalls gets all the calls that were made to ImportKeyPair.
 // Check the length with:
-//     len(mockedClient.ImportKeyPairCalls())
+//
+//	len(mockedClient.ImportKeyPairCalls())
 func (mock *ClientMock) ImportKeyPairCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ImportKeyPairInput
@@ -24533,7 +24942,8 @@ func (mock *ClientMock) ImportSnapshot(ctx context.Context, params *ec2.ImportSn
 
 // ImportSnapshotCalls gets all the calls that were made to ImportSnapshot.
 // Check the length with:
-//     len(mockedClient.ImportSnapshotCalls())
+//
+//	len(mockedClient.ImportSnapshotCalls())
 func (mock *ClientMock) ImportSnapshotCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ImportSnapshotInput
@@ -24572,7 +24982,8 @@ func (mock *ClientMock) ImportVolume(ctx context.Context, params *ec2.ImportVolu
 
 // ImportVolumeCalls gets all the calls that were made to ImportVolume.
 // Check the length with:
-//     len(mockedClient.ImportVolumeCalls())
+//
+//	len(mockedClient.ImportVolumeCalls())
 func (mock *ClientMock) ImportVolumeCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ImportVolumeInput
@@ -24611,7 +25022,8 @@ func (mock *ClientMock) ListImagesInRecycleBin(ctx context.Context, params *ec2.
 
 // ListImagesInRecycleBinCalls gets all the calls that were made to ListImagesInRecycleBin.
 // Check the length with:
-//     len(mockedClient.ListImagesInRecycleBinCalls())
+//
+//	len(mockedClient.ListImagesInRecycleBinCalls())
 func (mock *ClientMock) ListImagesInRecycleBinCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ListImagesInRecycleBinInput
@@ -24650,7 +25062,8 @@ func (mock *ClientMock) ListSnapshotsInRecycleBin(ctx context.Context, params *e
 
 // ListSnapshotsInRecycleBinCalls gets all the calls that were made to ListSnapshotsInRecycleBin.
 // Check the length with:
-//     len(mockedClient.ListSnapshotsInRecycleBinCalls())
+//
+//	len(mockedClient.ListSnapshotsInRecycleBinCalls())
 func (mock *ClientMock) ListSnapshotsInRecycleBinCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ListSnapshotsInRecycleBinInput
@@ -24689,7 +25102,8 @@ func (mock *ClientMock) ModifyAddressAttribute(ctx context.Context, params *ec2.
 
 // ModifyAddressAttributeCalls gets all the calls that were made to ModifyAddressAttribute.
 // Check the length with:
-//     len(mockedClient.ModifyAddressAttributeCalls())
+//
+//	len(mockedClient.ModifyAddressAttributeCalls())
 func (mock *ClientMock) ModifyAddressAttributeCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyAddressAttributeInput
@@ -24728,7 +25142,8 @@ func (mock *ClientMock) ModifyAvailabilityZoneGroup(ctx context.Context, params 
 
 // ModifyAvailabilityZoneGroupCalls gets all the calls that were made to ModifyAvailabilityZoneGroup.
 // Check the length with:
-//     len(mockedClient.ModifyAvailabilityZoneGroupCalls())
+//
+//	len(mockedClient.ModifyAvailabilityZoneGroupCalls())
 func (mock *ClientMock) ModifyAvailabilityZoneGroupCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyAvailabilityZoneGroupInput
@@ -24767,7 +25182,8 @@ func (mock *ClientMock) ModifyCapacityReservation(ctx context.Context, params *e
 
 // ModifyCapacityReservationCalls gets all the calls that were made to ModifyCapacityReservation.
 // Check the length with:
-//     len(mockedClient.ModifyCapacityReservationCalls())
+//
+//	len(mockedClient.ModifyCapacityReservationCalls())
 func (mock *ClientMock) ModifyCapacityReservationCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyCapacityReservationInput
@@ -24806,7 +25222,8 @@ func (mock *ClientMock) ModifyCapacityReservationFleet(ctx context.Context, para
 
 // ModifyCapacityReservationFleetCalls gets all the calls that were made to ModifyCapacityReservationFleet.
 // Check the length with:
-//     len(mockedClient.ModifyCapacityReservationFleetCalls())
+//
+//	len(mockedClient.ModifyCapacityReservationFleetCalls())
 func (mock *ClientMock) ModifyCapacityReservationFleetCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyCapacityReservationFleetInput
@@ -24845,7 +25262,8 @@ func (mock *ClientMock) ModifyClientVpnEndpoint(ctx context.Context, params *ec2
 
 // ModifyClientVpnEndpointCalls gets all the calls that were made to ModifyClientVpnEndpoint.
 // Check the length with:
-//     len(mockedClient.ModifyClientVpnEndpointCalls())
+//
+//	len(mockedClient.ModifyClientVpnEndpointCalls())
 func (mock *ClientMock) ModifyClientVpnEndpointCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyClientVpnEndpointInput
@@ -24884,7 +25302,8 @@ func (mock *ClientMock) ModifyDefaultCreditSpecification(ctx context.Context, pa
 
 // ModifyDefaultCreditSpecificationCalls gets all the calls that were made to ModifyDefaultCreditSpecification.
 // Check the length with:
-//     len(mockedClient.ModifyDefaultCreditSpecificationCalls())
+//
+//	len(mockedClient.ModifyDefaultCreditSpecificationCalls())
 func (mock *ClientMock) ModifyDefaultCreditSpecificationCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyDefaultCreditSpecificationInput
@@ -24923,7 +25342,8 @@ func (mock *ClientMock) ModifyEbsDefaultKmsKeyId(ctx context.Context, params *ec
 
 // ModifyEbsDefaultKmsKeyIdCalls gets all the calls that were made to ModifyEbsDefaultKmsKeyId.
 // Check the length with:
-//     len(mockedClient.ModifyEbsDefaultKmsKeyIdCalls())
+//
+//	len(mockedClient.ModifyEbsDefaultKmsKeyIdCalls())
 func (mock *ClientMock) ModifyEbsDefaultKmsKeyIdCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyEbsDefaultKmsKeyIdInput
@@ -24962,7 +25382,8 @@ func (mock *ClientMock) ModifyFleet(ctx context.Context, params *ec2.ModifyFleet
 
 // ModifyFleetCalls gets all the calls that were made to ModifyFleet.
 // Check the length with:
-//     len(mockedClient.ModifyFleetCalls())
+//
+//	len(mockedClient.ModifyFleetCalls())
 func (mock *ClientMock) ModifyFleetCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyFleetInput
@@ -25001,7 +25422,8 @@ func (mock *ClientMock) ModifyFpgaImageAttribute(ctx context.Context, params *ec
 
 // ModifyFpgaImageAttributeCalls gets all the calls that were made to ModifyFpgaImageAttribute.
 // Check the length with:
-//     len(mockedClient.ModifyFpgaImageAttributeCalls())
+//
+//	len(mockedClient.ModifyFpgaImageAttributeCalls())
 func (mock *ClientMock) ModifyFpgaImageAttributeCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyFpgaImageAttributeInput
@@ -25040,7 +25462,8 @@ func (mock *ClientMock) ModifyHosts(ctx context.Context, params *ec2.ModifyHosts
 
 // ModifyHostsCalls gets all the calls that were made to ModifyHosts.
 // Check the length with:
-//     len(mockedClient.ModifyHostsCalls())
+//
+//	len(mockedClient.ModifyHostsCalls())
 func (mock *ClientMock) ModifyHostsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyHostsInput
@@ -25079,7 +25502,8 @@ func (mock *ClientMock) ModifyIdFormat(ctx context.Context, params *ec2.ModifyId
 
 // ModifyIdFormatCalls gets all the calls that were made to ModifyIdFormat.
 // Check the length with:
-//     len(mockedClient.ModifyIdFormatCalls())
+//
+//	len(mockedClient.ModifyIdFormatCalls())
 func (mock *ClientMock) ModifyIdFormatCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyIdFormatInput
@@ -25118,7 +25542,8 @@ func (mock *ClientMock) ModifyIdentityIdFormat(ctx context.Context, params *ec2.
 
 // ModifyIdentityIdFormatCalls gets all the calls that were made to ModifyIdentityIdFormat.
 // Check the length with:
-//     len(mockedClient.ModifyIdentityIdFormatCalls())
+//
+//	len(mockedClient.ModifyIdentityIdFormatCalls())
 func (mock *ClientMock) ModifyIdentityIdFormatCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyIdentityIdFormatInput
@@ -25157,7 +25582,8 @@ func (mock *ClientMock) ModifyImageAttribute(ctx context.Context, params *ec2.Mo
 
 // ModifyImageAttributeCalls gets all the calls that were made to ModifyImageAttribute.
 // Check the length with:
-//     len(mockedClient.ModifyImageAttributeCalls())
+//
+//	len(mockedClient.ModifyImageAttributeCalls())
 func (mock *ClientMock) ModifyImageAttributeCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyImageAttributeInput
@@ -25196,7 +25622,8 @@ func (mock *ClientMock) ModifyInstanceAttribute(ctx context.Context, params *ec2
 
 // ModifyInstanceAttributeCalls gets all the calls that were made to ModifyInstanceAttribute.
 // Check the length with:
-//     len(mockedClient.ModifyInstanceAttributeCalls())
+//
+//	len(mockedClient.ModifyInstanceAttributeCalls())
 func (mock *ClientMock) ModifyInstanceAttributeCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyInstanceAttributeInput
@@ -25235,7 +25662,8 @@ func (mock *ClientMock) ModifyInstanceCapacityReservationAttributes(ctx context.
 
 // ModifyInstanceCapacityReservationAttributesCalls gets all the calls that were made to ModifyInstanceCapacityReservationAttributes.
 // Check the length with:
-//     len(mockedClient.ModifyInstanceCapacityReservationAttributesCalls())
+//
+//	len(mockedClient.ModifyInstanceCapacityReservationAttributesCalls())
 func (mock *ClientMock) ModifyInstanceCapacityReservationAttributesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyInstanceCapacityReservationAttributesInput
@@ -25274,7 +25702,8 @@ func (mock *ClientMock) ModifyInstanceCreditSpecification(ctx context.Context, p
 
 // ModifyInstanceCreditSpecificationCalls gets all the calls that were made to ModifyInstanceCreditSpecification.
 // Check the length with:
-//     len(mockedClient.ModifyInstanceCreditSpecificationCalls())
+//
+//	len(mockedClient.ModifyInstanceCreditSpecificationCalls())
 func (mock *ClientMock) ModifyInstanceCreditSpecificationCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyInstanceCreditSpecificationInput
@@ -25313,7 +25742,8 @@ func (mock *ClientMock) ModifyInstanceEventStartTime(ctx context.Context, params
 
 // ModifyInstanceEventStartTimeCalls gets all the calls that were made to ModifyInstanceEventStartTime.
 // Check the length with:
-//     len(mockedClient.ModifyInstanceEventStartTimeCalls())
+//
+//	len(mockedClient.ModifyInstanceEventStartTimeCalls())
 func (mock *ClientMock) ModifyInstanceEventStartTimeCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyInstanceEventStartTimeInput
@@ -25352,7 +25782,8 @@ func (mock *ClientMock) ModifyInstanceEventWindow(ctx context.Context, params *e
 
 // ModifyInstanceEventWindowCalls gets all the calls that were made to ModifyInstanceEventWindow.
 // Check the length with:
-//     len(mockedClient.ModifyInstanceEventWindowCalls())
+//
+//	len(mockedClient.ModifyInstanceEventWindowCalls())
 func (mock *ClientMock) ModifyInstanceEventWindowCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyInstanceEventWindowInput
@@ -25391,7 +25822,8 @@ func (mock *ClientMock) ModifyInstanceMaintenanceOptions(ctx context.Context, pa
 
 // ModifyInstanceMaintenanceOptionsCalls gets all the calls that were made to ModifyInstanceMaintenanceOptions.
 // Check the length with:
-//     len(mockedClient.ModifyInstanceMaintenanceOptionsCalls())
+//
+//	len(mockedClient.ModifyInstanceMaintenanceOptionsCalls())
 func (mock *ClientMock) ModifyInstanceMaintenanceOptionsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyInstanceMaintenanceOptionsInput
@@ -25430,7 +25862,8 @@ func (mock *ClientMock) ModifyInstanceMetadataOptions(ctx context.Context, param
 
 // ModifyInstanceMetadataOptionsCalls gets all the calls that were made to ModifyInstanceMetadataOptions.
 // Check the length with:
-//     len(mockedClient.ModifyInstanceMetadataOptionsCalls())
+//
+//	len(mockedClient.ModifyInstanceMetadataOptionsCalls())
 func (mock *ClientMock) ModifyInstanceMetadataOptionsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyInstanceMetadataOptionsInput
@@ -25469,7 +25902,8 @@ func (mock *ClientMock) ModifyInstancePlacement(ctx context.Context, params *ec2
 
 // ModifyInstancePlacementCalls gets all the calls that were made to ModifyInstancePlacement.
 // Check the length with:
-//     len(mockedClient.ModifyInstancePlacementCalls())
+//
+//	len(mockedClient.ModifyInstancePlacementCalls())
 func (mock *ClientMock) ModifyInstancePlacementCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyInstancePlacementInput
@@ -25508,7 +25942,8 @@ func (mock *ClientMock) ModifyIpam(ctx context.Context, params *ec2.ModifyIpamIn
 
 // ModifyIpamCalls gets all the calls that were made to ModifyIpam.
 // Check the length with:
-//     len(mockedClient.ModifyIpamCalls())
+//
+//	len(mockedClient.ModifyIpamCalls())
 func (mock *ClientMock) ModifyIpamCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyIpamInput
@@ -25547,7 +25982,8 @@ func (mock *ClientMock) ModifyIpamPool(ctx context.Context, params *ec2.ModifyIp
 
 // ModifyIpamPoolCalls gets all the calls that were made to ModifyIpamPool.
 // Check the length with:
-//     len(mockedClient.ModifyIpamPoolCalls())
+//
+//	len(mockedClient.ModifyIpamPoolCalls())
 func (mock *ClientMock) ModifyIpamPoolCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyIpamPoolInput
@@ -25586,7 +26022,8 @@ func (mock *ClientMock) ModifyIpamResourceCidr(ctx context.Context, params *ec2.
 
 // ModifyIpamResourceCidrCalls gets all the calls that were made to ModifyIpamResourceCidr.
 // Check the length with:
-//     len(mockedClient.ModifyIpamResourceCidrCalls())
+//
+//	len(mockedClient.ModifyIpamResourceCidrCalls())
 func (mock *ClientMock) ModifyIpamResourceCidrCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyIpamResourceCidrInput
@@ -25625,7 +26062,8 @@ func (mock *ClientMock) ModifyIpamScope(ctx context.Context, params *ec2.ModifyI
 
 // ModifyIpamScopeCalls gets all the calls that were made to ModifyIpamScope.
 // Check the length with:
-//     len(mockedClient.ModifyIpamScopeCalls())
+//
+//	len(mockedClient.ModifyIpamScopeCalls())
 func (mock *ClientMock) ModifyIpamScopeCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyIpamScopeInput
@@ -25664,7 +26102,8 @@ func (mock *ClientMock) ModifyLaunchTemplate(ctx context.Context, params *ec2.Mo
 
 // ModifyLaunchTemplateCalls gets all the calls that were made to ModifyLaunchTemplate.
 // Check the length with:
-//     len(mockedClient.ModifyLaunchTemplateCalls())
+//
+//	len(mockedClient.ModifyLaunchTemplateCalls())
 func (mock *ClientMock) ModifyLaunchTemplateCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyLaunchTemplateInput
@@ -25703,7 +26142,8 @@ func (mock *ClientMock) ModifyManagedPrefixList(ctx context.Context, params *ec2
 
 // ModifyManagedPrefixListCalls gets all the calls that were made to ModifyManagedPrefixList.
 // Check the length with:
-//     len(mockedClient.ModifyManagedPrefixListCalls())
+//
+//	len(mockedClient.ModifyManagedPrefixListCalls())
 func (mock *ClientMock) ModifyManagedPrefixListCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyManagedPrefixListInput
@@ -25742,7 +26182,8 @@ func (mock *ClientMock) ModifyNetworkInterfaceAttribute(ctx context.Context, par
 
 // ModifyNetworkInterfaceAttributeCalls gets all the calls that were made to ModifyNetworkInterfaceAttribute.
 // Check the length with:
-//     len(mockedClient.ModifyNetworkInterfaceAttributeCalls())
+//
+//	len(mockedClient.ModifyNetworkInterfaceAttributeCalls())
 func (mock *ClientMock) ModifyNetworkInterfaceAttributeCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyNetworkInterfaceAttributeInput
@@ -25781,7 +26222,8 @@ func (mock *ClientMock) ModifyPrivateDnsNameOptions(ctx context.Context, params 
 
 // ModifyPrivateDnsNameOptionsCalls gets all the calls that were made to ModifyPrivateDnsNameOptions.
 // Check the length with:
-//     len(mockedClient.ModifyPrivateDnsNameOptionsCalls())
+//
+//	len(mockedClient.ModifyPrivateDnsNameOptionsCalls())
 func (mock *ClientMock) ModifyPrivateDnsNameOptionsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyPrivateDnsNameOptionsInput
@@ -25820,7 +26262,8 @@ func (mock *ClientMock) ModifyReservedInstances(ctx context.Context, params *ec2
 
 // ModifyReservedInstancesCalls gets all the calls that were made to ModifyReservedInstances.
 // Check the length with:
-//     len(mockedClient.ModifyReservedInstancesCalls())
+//
+//	len(mockedClient.ModifyReservedInstancesCalls())
 func (mock *ClientMock) ModifyReservedInstancesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyReservedInstancesInput
@@ -25859,7 +26302,8 @@ func (mock *ClientMock) ModifySecurityGroupRules(ctx context.Context, params *ec
 
 // ModifySecurityGroupRulesCalls gets all the calls that were made to ModifySecurityGroupRules.
 // Check the length with:
-//     len(mockedClient.ModifySecurityGroupRulesCalls())
+//
+//	len(mockedClient.ModifySecurityGroupRulesCalls())
 func (mock *ClientMock) ModifySecurityGroupRulesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifySecurityGroupRulesInput
@@ -25898,7 +26342,8 @@ func (mock *ClientMock) ModifySnapshotAttribute(ctx context.Context, params *ec2
 
 // ModifySnapshotAttributeCalls gets all the calls that were made to ModifySnapshotAttribute.
 // Check the length with:
-//     len(mockedClient.ModifySnapshotAttributeCalls())
+//
+//	len(mockedClient.ModifySnapshotAttributeCalls())
 func (mock *ClientMock) ModifySnapshotAttributeCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifySnapshotAttributeInput
@@ -25937,7 +26382,8 @@ func (mock *ClientMock) ModifySnapshotTier(ctx context.Context, params *ec2.Modi
 
 // ModifySnapshotTierCalls gets all the calls that were made to ModifySnapshotTier.
 // Check the length with:
-//     len(mockedClient.ModifySnapshotTierCalls())
+//
+//	len(mockedClient.ModifySnapshotTierCalls())
 func (mock *ClientMock) ModifySnapshotTierCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifySnapshotTierInput
@@ -25976,7 +26422,8 @@ func (mock *ClientMock) ModifySpotFleetRequest(ctx context.Context, params *ec2.
 
 // ModifySpotFleetRequestCalls gets all the calls that were made to ModifySpotFleetRequest.
 // Check the length with:
-//     len(mockedClient.ModifySpotFleetRequestCalls())
+//
+//	len(mockedClient.ModifySpotFleetRequestCalls())
 func (mock *ClientMock) ModifySpotFleetRequestCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifySpotFleetRequestInput
@@ -26015,7 +26462,8 @@ func (mock *ClientMock) ModifySubnetAttribute(ctx context.Context, params *ec2.M
 
 // ModifySubnetAttributeCalls gets all the calls that were made to ModifySubnetAttribute.
 // Check the length with:
-//     len(mockedClient.ModifySubnetAttributeCalls())
+//
+//	len(mockedClient.ModifySubnetAttributeCalls())
 func (mock *ClientMock) ModifySubnetAttributeCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifySubnetAttributeInput
@@ -26054,7 +26502,8 @@ func (mock *ClientMock) ModifyTrafficMirrorFilterNetworkServices(ctx context.Con
 
 // ModifyTrafficMirrorFilterNetworkServicesCalls gets all the calls that were made to ModifyTrafficMirrorFilterNetworkServices.
 // Check the length with:
-//     len(mockedClient.ModifyTrafficMirrorFilterNetworkServicesCalls())
+//
+//	len(mockedClient.ModifyTrafficMirrorFilterNetworkServicesCalls())
 func (mock *ClientMock) ModifyTrafficMirrorFilterNetworkServicesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyTrafficMirrorFilterNetworkServicesInput
@@ -26093,7 +26542,8 @@ func (mock *ClientMock) ModifyTrafficMirrorFilterRule(ctx context.Context, param
 
 // ModifyTrafficMirrorFilterRuleCalls gets all the calls that were made to ModifyTrafficMirrorFilterRule.
 // Check the length with:
-//     len(mockedClient.ModifyTrafficMirrorFilterRuleCalls())
+//
+//	len(mockedClient.ModifyTrafficMirrorFilterRuleCalls())
 func (mock *ClientMock) ModifyTrafficMirrorFilterRuleCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyTrafficMirrorFilterRuleInput
@@ -26132,7 +26582,8 @@ func (mock *ClientMock) ModifyTrafficMirrorSession(ctx context.Context, params *
 
 // ModifyTrafficMirrorSessionCalls gets all the calls that were made to ModifyTrafficMirrorSession.
 // Check the length with:
-//     len(mockedClient.ModifyTrafficMirrorSessionCalls())
+//
+//	len(mockedClient.ModifyTrafficMirrorSessionCalls())
 func (mock *ClientMock) ModifyTrafficMirrorSessionCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyTrafficMirrorSessionInput
@@ -26171,7 +26622,8 @@ func (mock *ClientMock) ModifyTransitGateway(ctx context.Context, params *ec2.Mo
 
 // ModifyTransitGatewayCalls gets all the calls that were made to ModifyTransitGateway.
 // Check the length with:
-//     len(mockedClient.ModifyTransitGatewayCalls())
+//
+//	len(mockedClient.ModifyTransitGatewayCalls())
 func (mock *ClientMock) ModifyTransitGatewayCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyTransitGatewayInput
@@ -26210,7 +26662,8 @@ func (mock *ClientMock) ModifyTransitGatewayPrefixListReference(ctx context.Cont
 
 // ModifyTransitGatewayPrefixListReferenceCalls gets all the calls that were made to ModifyTransitGatewayPrefixListReference.
 // Check the length with:
-//     len(mockedClient.ModifyTransitGatewayPrefixListReferenceCalls())
+//
+//	len(mockedClient.ModifyTransitGatewayPrefixListReferenceCalls())
 func (mock *ClientMock) ModifyTransitGatewayPrefixListReferenceCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyTransitGatewayPrefixListReferenceInput
@@ -26249,7 +26702,8 @@ func (mock *ClientMock) ModifyTransitGatewayVpcAttachment(ctx context.Context, p
 
 // ModifyTransitGatewayVpcAttachmentCalls gets all the calls that were made to ModifyTransitGatewayVpcAttachment.
 // Check the length with:
-//     len(mockedClient.ModifyTransitGatewayVpcAttachmentCalls())
+//
+//	len(mockedClient.ModifyTransitGatewayVpcAttachmentCalls())
 func (mock *ClientMock) ModifyTransitGatewayVpcAttachmentCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyTransitGatewayVpcAttachmentInput
@@ -26288,7 +26742,8 @@ func (mock *ClientMock) ModifyVolume(ctx context.Context, params *ec2.ModifyVolu
 
 // ModifyVolumeCalls gets all the calls that were made to ModifyVolume.
 // Check the length with:
-//     len(mockedClient.ModifyVolumeCalls())
+//
+//	len(mockedClient.ModifyVolumeCalls())
 func (mock *ClientMock) ModifyVolumeCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyVolumeInput
@@ -26327,7 +26782,8 @@ func (mock *ClientMock) ModifyVolumeAttribute(ctx context.Context, params *ec2.M
 
 // ModifyVolumeAttributeCalls gets all the calls that were made to ModifyVolumeAttribute.
 // Check the length with:
-//     len(mockedClient.ModifyVolumeAttributeCalls())
+//
+//	len(mockedClient.ModifyVolumeAttributeCalls())
 func (mock *ClientMock) ModifyVolumeAttributeCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyVolumeAttributeInput
@@ -26366,7 +26822,8 @@ func (mock *ClientMock) ModifyVpcAttribute(ctx context.Context, params *ec2.Modi
 
 // ModifyVpcAttributeCalls gets all the calls that were made to ModifyVpcAttribute.
 // Check the length with:
-//     len(mockedClient.ModifyVpcAttributeCalls())
+//
+//	len(mockedClient.ModifyVpcAttributeCalls())
 func (mock *ClientMock) ModifyVpcAttributeCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyVpcAttributeInput
@@ -26405,7 +26862,8 @@ func (mock *ClientMock) ModifyVpcEndpoint(ctx context.Context, params *ec2.Modif
 
 // ModifyVpcEndpointCalls gets all the calls that were made to ModifyVpcEndpoint.
 // Check the length with:
-//     len(mockedClient.ModifyVpcEndpointCalls())
+//
+//	len(mockedClient.ModifyVpcEndpointCalls())
 func (mock *ClientMock) ModifyVpcEndpointCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyVpcEndpointInput
@@ -26444,7 +26902,8 @@ func (mock *ClientMock) ModifyVpcEndpointConnectionNotification(ctx context.Cont
 
 // ModifyVpcEndpointConnectionNotificationCalls gets all the calls that were made to ModifyVpcEndpointConnectionNotification.
 // Check the length with:
-//     len(mockedClient.ModifyVpcEndpointConnectionNotificationCalls())
+//
+//	len(mockedClient.ModifyVpcEndpointConnectionNotificationCalls())
 func (mock *ClientMock) ModifyVpcEndpointConnectionNotificationCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyVpcEndpointConnectionNotificationInput
@@ -26483,7 +26942,8 @@ func (mock *ClientMock) ModifyVpcEndpointServiceConfiguration(ctx context.Contex
 
 // ModifyVpcEndpointServiceConfigurationCalls gets all the calls that were made to ModifyVpcEndpointServiceConfiguration.
 // Check the length with:
-//     len(mockedClient.ModifyVpcEndpointServiceConfigurationCalls())
+//
+//	len(mockedClient.ModifyVpcEndpointServiceConfigurationCalls())
 func (mock *ClientMock) ModifyVpcEndpointServiceConfigurationCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyVpcEndpointServiceConfigurationInput
@@ -26522,7 +26982,8 @@ func (mock *ClientMock) ModifyVpcEndpointServicePayerResponsibility(ctx context.
 
 // ModifyVpcEndpointServicePayerResponsibilityCalls gets all the calls that were made to ModifyVpcEndpointServicePayerResponsibility.
 // Check the length with:
-//     len(mockedClient.ModifyVpcEndpointServicePayerResponsibilityCalls())
+//
+//	len(mockedClient.ModifyVpcEndpointServicePayerResponsibilityCalls())
 func (mock *ClientMock) ModifyVpcEndpointServicePayerResponsibilityCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyVpcEndpointServicePayerResponsibilityInput
@@ -26561,7 +27022,8 @@ func (mock *ClientMock) ModifyVpcEndpointServicePermissions(ctx context.Context,
 
 // ModifyVpcEndpointServicePermissionsCalls gets all the calls that were made to ModifyVpcEndpointServicePermissions.
 // Check the length with:
-//     len(mockedClient.ModifyVpcEndpointServicePermissionsCalls())
+//
+//	len(mockedClient.ModifyVpcEndpointServicePermissionsCalls())
 func (mock *ClientMock) ModifyVpcEndpointServicePermissionsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyVpcEndpointServicePermissionsInput
@@ -26600,7 +27062,8 @@ func (mock *ClientMock) ModifyVpcPeeringConnectionOptions(ctx context.Context, p
 
 // ModifyVpcPeeringConnectionOptionsCalls gets all the calls that were made to ModifyVpcPeeringConnectionOptions.
 // Check the length with:
-//     len(mockedClient.ModifyVpcPeeringConnectionOptionsCalls())
+//
+//	len(mockedClient.ModifyVpcPeeringConnectionOptionsCalls())
 func (mock *ClientMock) ModifyVpcPeeringConnectionOptionsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyVpcPeeringConnectionOptionsInput
@@ -26639,7 +27102,8 @@ func (mock *ClientMock) ModifyVpcTenancy(ctx context.Context, params *ec2.Modify
 
 // ModifyVpcTenancyCalls gets all the calls that were made to ModifyVpcTenancy.
 // Check the length with:
-//     len(mockedClient.ModifyVpcTenancyCalls())
+//
+//	len(mockedClient.ModifyVpcTenancyCalls())
 func (mock *ClientMock) ModifyVpcTenancyCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyVpcTenancyInput
@@ -26678,7 +27142,8 @@ func (mock *ClientMock) ModifyVpnConnection(ctx context.Context, params *ec2.Mod
 
 // ModifyVpnConnectionCalls gets all the calls that were made to ModifyVpnConnection.
 // Check the length with:
-//     len(mockedClient.ModifyVpnConnectionCalls())
+//
+//	len(mockedClient.ModifyVpnConnectionCalls())
 func (mock *ClientMock) ModifyVpnConnectionCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyVpnConnectionInput
@@ -26717,7 +27182,8 @@ func (mock *ClientMock) ModifyVpnConnectionOptions(ctx context.Context, params *
 
 // ModifyVpnConnectionOptionsCalls gets all the calls that were made to ModifyVpnConnectionOptions.
 // Check the length with:
-//     len(mockedClient.ModifyVpnConnectionOptionsCalls())
+//
+//	len(mockedClient.ModifyVpnConnectionOptionsCalls())
 func (mock *ClientMock) ModifyVpnConnectionOptionsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyVpnConnectionOptionsInput
@@ -26756,7 +27222,8 @@ func (mock *ClientMock) ModifyVpnTunnelCertificate(ctx context.Context, params *
 
 // ModifyVpnTunnelCertificateCalls gets all the calls that were made to ModifyVpnTunnelCertificate.
 // Check the length with:
-//     len(mockedClient.ModifyVpnTunnelCertificateCalls())
+//
+//	len(mockedClient.ModifyVpnTunnelCertificateCalls())
 func (mock *ClientMock) ModifyVpnTunnelCertificateCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyVpnTunnelCertificateInput
@@ -26795,7 +27262,8 @@ func (mock *ClientMock) ModifyVpnTunnelOptions(ctx context.Context, params *ec2.
 
 // ModifyVpnTunnelOptionsCalls gets all the calls that were made to ModifyVpnTunnelOptions.
 // Check the length with:
-//     len(mockedClient.ModifyVpnTunnelOptionsCalls())
+//
+//	len(mockedClient.ModifyVpnTunnelOptionsCalls())
 func (mock *ClientMock) ModifyVpnTunnelOptionsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ModifyVpnTunnelOptionsInput
@@ -26834,7 +27302,8 @@ func (mock *ClientMock) MonitorInstances(ctx context.Context, params *ec2.Monito
 
 // MonitorInstancesCalls gets all the calls that were made to MonitorInstances.
 // Check the length with:
-//     len(mockedClient.MonitorInstancesCalls())
+//
+//	len(mockedClient.MonitorInstancesCalls())
 func (mock *ClientMock) MonitorInstancesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.MonitorInstancesInput
@@ -26873,7 +27342,8 @@ func (mock *ClientMock) MoveAddressToVpc(ctx context.Context, params *ec2.MoveAd
 
 // MoveAddressToVpcCalls gets all the calls that were made to MoveAddressToVpc.
 // Check the length with:
-//     len(mockedClient.MoveAddressToVpcCalls())
+//
+//	len(mockedClient.MoveAddressToVpcCalls())
 func (mock *ClientMock) MoveAddressToVpcCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.MoveAddressToVpcInput
@@ -26912,7 +27382,8 @@ func (mock *ClientMock) MoveByoipCidrToIpam(ctx context.Context, params *ec2.Mov
 
 // MoveByoipCidrToIpamCalls gets all the calls that were made to MoveByoipCidrToIpam.
 // Check the length with:
-//     len(mockedClient.MoveByoipCidrToIpamCalls())
+//
+//	len(mockedClient.MoveByoipCidrToIpamCalls())
 func (mock *ClientMock) MoveByoipCidrToIpamCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.MoveByoipCidrToIpamInput
@@ -26951,7 +27422,8 @@ func (mock *ClientMock) ProvisionByoipCidr(ctx context.Context, params *ec2.Prov
 
 // ProvisionByoipCidrCalls gets all the calls that were made to ProvisionByoipCidr.
 // Check the length with:
-//     len(mockedClient.ProvisionByoipCidrCalls())
+//
+//	len(mockedClient.ProvisionByoipCidrCalls())
 func (mock *ClientMock) ProvisionByoipCidrCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ProvisionByoipCidrInput
@@ -26990,7 +27462,8 @@ func (mock *ClientMock) ProvisionIpamPoolCidr(ctx context.Context, params *ec2.P
 
 // ProvisionIpamPoolCidrCalls gets all the calls that were made to ProvisionIpamPoolCidr.
 // Check the length with:
-//     len(mockedClient.ProvisionIpamPoolCidrCalls())
+//
+//	len(mockedClient.ProvisionIpamPoolCidrCalls())
 func (mock *ClientMock) ProvisionIpamPoolCidrCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ProvisionIpamPoolCidrInput
@@ -27029,7 +27502,8 @@ func (mock *ClientMock) ProvisionPublicIpv4PoolCidr(ctx context.Context, params 
 
 // ProvisionPublicIpv4PoolCidrCalls gets all the calls that were made to ProvisionPublicIpv4PoolCidr.
 // Check the length with:
-//     len(mockedClient.ProvisionPublicIpv4PoolCidrCalls())
+//
+//	len(mockedClient.ProvisionPublicIpv4PoolCidrCalls())
 func (mock *ClientMock) ProvisionPublicIpv4PoolCidrCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ProvisionPublicIpv4PoolCidrInput
@@ -27068,7 +27542,8 @@ func (mock *ClientMock) PurchaseHostReservation(ctx context.Context, params *ec2
 
 // PurchaseHostReservationCalls gets all the calls that were made to PurchaseHostReservation.
 // Check the length with:
-//     len(mockedClient.PurchaseHostReservationCalls())
+//
+//	len(mockedClient.PurchaseHostReservationCalls())
 func (mock *ClientMock) PurchaseHostReservationCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.PurchaseHostReservationInput
@@ -27107,7 +27582,8 @@ func (mock *ClientMock) PurchaseReservedInstancesOffering(ctx context.Context, p
 
 // PurchaseReservedInstancesOfferingCalls gets all the calls that were made to PurchaseReservedInstancesOffering.
 // Check the length with:
-//     len(mockedClient.PurchaseReservedInstancesOfferingCalls())
+//
+//	len(mockedClient.PurchaseReservedInstancesOfferingCalls())
 func (mock *ClientMock) PurchaseReservedInstancesOfferingCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.PurchaseReservedInstancesOfferingInput
@@ -27146,7 +27622,8 @@ func (mock *ClientMock) PurchaseScheduledInstances(ctx context.Context, params *
 
 // PurchaseScheduledInstancesCalls gets all the calls that were made to PurchaseScheduledInstances.
 // Check the length with:
-//     len(mockedClient.PurchaseScheduledInstancesCalls())
+//
+//	len(mockedClient.PurchaseScheduledInstancesCalls())
 func (mock *ClientMock) PurchaseScheduledInstancesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.PurchaseScheduledInstancesInput
@@ -27185,7 +27662,8 @@ func (mock *ClientMock) RebootInstances(ctx context.Context, params *ec2.RebootI
 
 // RebootInstancesCalls gets all the calls that were made to RebootInstances.
 // Check the length with:
-//     len(mockedClient.RebootInstancesCalls())
+//
+//	len(mockedClient.RebootInstancesCalls())
 func (mock *ClientMock) RebootInstancesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.RebootInstancesInput
@@ -27224,7 +27702,8 @@ func (mock *ClientMock) RegisterImage(ctx context.Context, params *ec2.RegisterI
 
 // RegisterImageCalls gets all the calls that were made to RegisterImage.
 // Check the length with:
-//     len(mockedClient.RegisterImageCalls())
+//
+//	len(mockedClient.RegisterImageCalls())
 func (mock *ClientMock) RegisterImageCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.RegisterImageInput
@@ -27263,7 +27742,8 @@ func (mock *ClientMock) RegisterInstanceEventNotificationAttributes(ctx context.
 
 // RegisterInstanceEventNotificationAttributesCalls gets all the calls that were made to RegisterInstanceEventNotificationAttributes.
 // Check the length with:
-//     len(mockedClient.RegisterInstanceEventNotificationAttributesCalls())
+//
+//	len(mockedClient.RegisterInstanceEventNotificationAttributesCalls())
 func (mock *ClientMock) RegisterInstanceEventNotificationAttributesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.RegisterInstanceEventNotificationAttributesInput
@@ -27302,7 +27782,8 @@ func (mock *ClientMock) RegisterTransitGatewayMulticastGroupMembers(ctx context.
 
 // RegisterTransitGatewayMulticastGroupMembersCalls gets all the calls that were made to RegisterTransitGatewayMulticastGroupMembers.
 // Check the length with:
-//     len(mockedClient.RegisterTransitGatewayMulticastGroupMembersCalls())
+//
+//	len(mockedClient.RegisterTransitGatewayMulticastGroupMembersCalls())
 func (mock *ClientMock) RegisterTransitGatewayMulticastGroupMembersCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.RegisterTransitGatewayMulticastGroupMembersInput
@@ -27341,7 +27822,8 @@ func (mock *ClientMock) RegisterTransitGatewayMulticastGroupSources(ctx context.
 
 // RegisterTransitGatewayMulticastGroupSourcesCalls gets all the calls that were made to RegisterTransitGatewayMulticastGroupSources.
 // Check the length with:
-//     len(mockedClient.RegisterTransitGatewayMulticastGroupSourcesCalls())
+//
+//	len(mockedClient.RegisterTransitGatewayMulticastGroupSourcesCalls())
 func (mock *ClientMock) RegisterTransitGatewayMulticastGroupSourcesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.RegisterTransitGatewayMulticastGroupSourcesInput
@@ -27380,7 +27862,8 @@ func (mock *ClientMock) RejectTransitGatewayMulticastDomainAssociations(ctx cont
 
 // RejectTransitGatewayMulticastDomainAssociationsCalls gets all the calls that were made to RejectTransitGatewayMulticastDomainAssociations.
 // Check the length with:
-//     len(mockedClient.RejectTransitGatewayMulticastDomainAssociationsCalls())
+//
+//	len(mockedClient.RejectTransitGatewayMulticastDomainAssociationsCalls())
 func (mock *ClientMock) RejectTransitGatewayMulticastDomainAssociationsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.RejectTransitGatewayMulticastDomainAssociationsInput
@@ -27419,7 +27902,8 @@ func (mock *ClientMock) RejectTransitGatewayPeeringAttachment(ctx context.Contex
 
 // RejectTransitGatewayPeeringAttachmentCalls gets all the calls that were made to RejectTransitGatewayPeeringAttachment.
 // Check the length with:
-//     len(mockedClient.RejectTransitGatewayPeeringAttachmentCalls())
+//
+//	len(mockedClient.RejectTransitGatewayPeeringAttachmentCalls())
 func (mock *ClientMock) RejectTransitGatewayPeeringAttachmentCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.RejectTransitGatewayPeeringAttachmentInput
@@ -27458,7 +27942,8 @@ func (mock *ClientMock) RejectTransitGatewayVpcAttachment(ctx context.Context, p
 
 // RejectTransitGatewayVpcAttachmentCalls gets all the calls that were made to RejectTransitGatewayVpcAttachment.
 // Check the length with:
-//     len(mockedClient.RejectTransitGatewayVpcAttachmentCalls())
+//
+//	len(mockedClient.RejectTransitGatewayVpcAttachmentCalls())
 func (mock *ClientMock) RejectTransitGatewayVpcAttachmentCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.RejectTransitGatewayVpcAttachmentInput
@@ -27497,7 +27982,8 @@ func (mock *ClientMock) RejectVpcEndpointConnections(ctx context.Context, params
 
 // RejectVpcEndpointConnectionsCalls gets all the calls that were made to RejectVpcEndpointConnections.
 // Check the length with:
-//     len(mockedClient.RejectVpcEndpointConnectionsCalls())
+//
+//	len(mockedClient.RejectVpcEndpointConnectionsCalls())
 func (mock *ClientMock) RejectVpcEndpointConnectionsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.RejectVpcEndpointConnectionsInput
@@ -27536,7 +28022,8 @@ func (mock *ClientMock) RejectVpcPeeringConnection(ctx context.Context, params *
 
 // RejectVpcPeeringConnectionCalls gets all the calls that were made to RejectVpcPeeringConnection.
 // Check the length with:
-//     len(mockedClient.RejectVpcPeeringConnectionCalls())
+//
+//	len(mockedClient.RejectVpcPeeringConnectionCalls())
 func (mock *ClientMock) RejectVpcPeeringConnectionCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.RejectVpcPeeringConnectionInput
@@ -27575,7 +28062,8 @@ func (mock *ClientMock) ReleaseAddress(ctx context.Context, params *ec2.ReleaseA
 
 // ReleaseAddressCalls gets all the calls that were made to ReleaseAddress.
 // Check the length with:
-//     len(mockedClient.ReleaseAddressCalls())
+//
+//	len(mockedClient.ReleaseAddressCalls())
 func (mock *ClientMock) ReleaseAddressCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ReleaseAddressInput
@@ -27614,7 +28102,8 @@ func (mock *ClientMock) ReleaseHosts(ctx context.Context, params *ec2.ReleaseHos
 
 // ReleaseHostsCalls gets all the calls that were made to ReleaseHosts.
 // Check the length with:
-//     len(mockedClient.ReleaseHostsCalls())
+//
+//	len(mockedClient.ReleaseHostsCalls())
 func (mock *ClientMock) ReleaseHostsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ReleaseHostsInput
@@ -27653,7 +28142,8 @@ func (mock *ClientMock) ReleaseIpamPoolAllocation(ctx context.Context, params *e
 
 // ReleaseIpamPoolAllocationCalls gets all the calls that were made to ReleaseIpamPoolAllocation.
 // Check the length with:
-//     len(mockedClient.ReleaseIpamPoolAllocationCalls())
+//
+//	len(mockedClient.ReleaseIpamPoolAllocationCalls())
 func (mock *ClientMock) ReleaseIpamPoolAllocationCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ReleaseIpamPoolAllocationInput
@@ -27692,7 +28182,8 @@ func (mock *ClientMock) ReplaceIamInstanceProfileAssociation(ctx context.Context
 
 // ReplaceIamInstanceProfileAssociationCalls gets all the calls that were made to ReplaceIamInstanceProfileAssociation.
 // Check the length with:
-//     len(mockedClient.ReplaceIamInstanceProfileAssociationCalls())
+//
+//	len(mockedClient.ReplaceIamInstanceProfileAssociationCalls())
 func (mock *ClientMock) ReplaceIamInstanceProfileAssociationCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ReplaceIamInstanceProfileAssociationInput
@@ -27731,7 +28222,8 @@ func (mock *ClientMock) ReplaceNetworkAclAssociation(ctx context.Context, params
 
 // ReplaceNetworkAclAssociationCalls gets all the calls that were made to ReplaceNetworkAclAssociation.
 // Check the length with:
-//     len(mockedClient.ReplaceNetworkAclAssociationCalls())
+//
+//	len(mockedClient.ReplaceNetworkAclAssociationCalls())
 func (mock *ClientMock) ReplaceNetworkAclAssociationCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ReplaceNetworkAclAssociationInput
@@ -27770,7 +28262,8 @@ func (mock *ClientMock) ReplaceNetworkAclEntry(ctx context.Context, params *ec2.
 
 // ReplaceNetworkAclEntryCalls gets all the calls that were made to ReplaceNetworkAclEntry.
 // Check the length with:
-//     len(mockedClient.ReplaceNetworkAclEntryCalls())
+//
+//	len(mockedClient.ReplaceNetworkAclEntryCalls())
 func (mock *ClientMock) ReplaceNetworkAclEntryCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ReplaceNetworkAclEntryInput
@@ -27809,7 +28302,8 @@ func (mock *ClientMock) ReplaceRoute(ctx context.Context, params *ec2.ReplaceRou
 
 // ReplaceRouteCalls gets all the calls that were made to ReplaceRoute.
 // Check the length with:
-//     len(mockedClient.ReplaceRouteCalls())
+//
+//	len(mockedClient.ReplaceRouteCalls())
 func (mock *ClientMock) ReplaceRouteCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ReplaceRouteInput
@@ -27848,7 +28342,8 @@ func (mock *ClientMock) ReplaceRouteTableAssociation(ctx context.Context, params
 
 // ReplaceRouteTableAssociationCalls gets all the calls that were made to ReplaceRouteTableAssociation.
 // Check the length with:
-//     len(mockedClient.ReplaceRouteTableAssociationCalls())
+//
+//	len(mockedClient.ReplaceRouteTableAssociationCalls())
 func (mock *ClientMock) ReplaceRouteTableAssociationCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ReplaceRouteTableAssociationInput
@@ -27887,7 +28382,8 @@ func (mock *ClientMock) ReplaceTransitGatewayRoute(ctx context.Context, params *
 
 // ReplaceTransitGatewayRouteCalls gets all the calls that were made to ReplaceTransitGatewayRoute.
 // Check the length with:
-//     len(mockedClient.ReplaceTransitGatewayRouteCalls())
+//
+//	len(mockedClient.ReplaceTransitGatewayRouteCalls())
 func (mock *ClientMock) ReplaceTransitGatewayRouteCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ReplaceTransitGatewayRouteInput
@@ -27926,7 +28422,8 @@ func (mock *ClientMock) ReportInstanceStatus(ctx context.Context, params *ec2.Re
 
 // ReportInstanceStatusCalls gets all the calls that were made to ReportInstanceStatus.
 // Check the length with:
-//     len(mockedClient.ReportInstanceStatusCalls())
+//
+//	len(mockedClient.ReportInstanceStatusCalls())
 func (mock *ClientMock) ReportInstanceStatusCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ReportInstanceStatusInput
@@ -27965,7 +28462,8 @@ func (mock *ClientMock) RequestSpotFleet(ctx context.Context, params *ec2.Reques
 
 // RequestSpotFleetCalls gets all the calls that were made to RequestSpotFleet.
 // Check the length with:
-//     len(mockedClient.RequestSpotFleetCalls())
+//
+//	len(mockedClient.RequestSpotFleetCalls())
 func (mock *ClientMock) RequestSpotFleetCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.RequestSpotFleetInput
@@ -28004,7 +28502,8 @@ func (mock *ClientMock) RequestSpotInstances(ctx context.Context, params *ec2.Re
 
 // RequestSpotInstancesCalls gets all the calls that were made to RequestSpotInstances.
 // Check the length with:
-//     len(mockedClient.RequestSpotInstancesCalls())
+//
+//	len(mockedClient.RequestSpotInstancesCalls())
 func (mock *ClientMock) RequestSpotInstancesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.RequestSpotInstancesInput
@@ -28043,7 +28542,8 @@ func (mock *ClientMock) ResetAddressAttribute(ctx context.Context, params *ec2.R
 
 // ResetAddressAttributeCalls gets all the calls that were made to ResetAddressAttribute.
 // Check the length with:
-//     len(mockedClient.ResetAddressAttributeCalls())
+//
+//	len(mockedClient.ResetAddressAttributeCalls())
 func (mock *ClientMock) ResetAddressAttributeCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ResetAddressAttributeInput
@@ -28082,7 +28582,8 @@ func (mock *ClientMock) ResetEbsDefaultKmsKeyId(ctx context.Context, params *ec2
 
 // ResetEbsDefaultKmsKeyIdCalls gets all the calls that were made to ResetEbsDefaultKmsKeyId.
 // Check the length with:
-//     len(mockedClient.ResetEbsDefaultKmsKeyIdCalls())
+//
+//	len(mockedClient.ResetEbsDefaultKmsKeyIdCalls())
 func (mock *ClientMock) ResetEbsDefaultKmsKeyIdCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ResetEbsDefaultKmsKeyIdInput
@@ -28121,7 +28622,8 @@ func (mock *ClientMock) ResetFpgaImageAttribute(ctx context.Context, params *ec2
 
 // ResetFpgaImageAttributeCalls gets all the calls that were made to ResetFpgaImageAttribute.
 // Check the length with:
-//     len(mockedClient.ResetFpgaImageAttributeCalls())
+//
+//	len(mockedClient.ResetFpgaImageAttributeCalls())
 func (mock *ClientMock) ResetFpgaImageAttributeCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ResetFpgaImageAttributeInput
@@ -28160,7 +28662,8 @@ func (mock *ClientMock) ResetImageAttribute(ctx context.Context, params *ec2.Res
 
 // ResetImageAttributeCalls gets all the calls that were made to ResetImageAttribute.
 // Check the length with:
-//     len(mockedClient.ResetImageAttributeCalls())
+//
+//	len(mockedClient.ResetImageAttributeCalls())
 func (mock *ClientMock) ResetImageAttributeCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ResetImageAttributeInput
@@ -28199,7 +28702,8 @@ func (mock *ClientMock) ResetInstanceAttribute(ctx context.Context, params *ec2.
 
 // ResetInstanceAttributeCalls gets all the calls that were made to ResetInstanceAttribute.
 // Check the length with:
-//     len(mockedClient.ResetInstanceAttributeCalls())
+//
+//	len(mockedClient.ResetInstanceAttributeCalls())
 func (mock *ClientMock) ResetInstanceAttributeCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ResetInstanceAttributeInput
@@ -28238,7 +28742,8 @@ func (mock *ClientMock) ResetNetworkInterfaceAttribute(ctx context.Context, para
 
 // ResetNetworkInterfaceAttributeCalls gets all the calls that were made to ResetNetworkInterfaceAttribute.
 // Check the length with:
-//     len(mockedClient.ResetNetworkInterfaceAttributeCalls())
+//
+//	len(mockedClient.ResetNetworkInterfaceAttributeCalls())
 func (mock *ClientMock) ResetNetworkInterfaceAttributeCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ResetNetworkInterfaceAttributeInput
@@ -28277,7 +28782,8 @@ func (mock *ClientMock) ResetSnapshotAttribute(ctx context.Context, params *ec2.
 
 // ResetSnapshotAttributeCalls gets all the calls that were made to ResetSnapshotAttribute.
 // Check the length with:
-//     len(mockedClient.ResetSnapshotAttributeCalls())
+//
+//	len(mockedClient.ResetSnapshotAttributeCalls())
 func (mock *ClientMock) ResetSnapshotAttributeCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.ResetSnapshotAttributeInput
@@ -28316,7 +28822,8 @@ func (mock *ClientMock) RestoreAddressToClassic(ctx context.Context, params *ec2
 
 // RestoreAddressToClassicCalls gets all the calls that were made to RestoreAddressToClassic.
 // Check the length with:
-//     len(mockedClient.RestoreAddressToClassicCalls())
+//
+//	len(mockedClient.RestoreAddressToClassicCalls())
 func (mock *ClientMock) RestoreAddressToClassicCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.RestoreAddressToClassicInput
@@ -28355,7 +28862,8 @@ func (mock *ClientMock) RestoreImageFromRecycleBin(ctx context.Context, params *
 
 // RestoreImageFromRecycleBinCalls gets all the calls that were made to RestoreImageFromRecycleBin.
 // Check the length with:
-//     len(mockedClient.RestoreImageFromRecycleBinCalls())
+//
+//	len(mockedClient.RestoreImageFromRecycleBinCalls())
 func (mock *ClientMock) RestoreImageFromRecycleBinCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.RestoreImageFromRecycleBinInput
@@ -28394,7 +28902,8 @@ func (mock *ClientMock) RestoreManagedPrefixListVersion(ctx context.Context, par
 
 // RestoreManagedPrefixListVersionCalls gets all the calls that were made to RestoreManagedPrefixListVersion.
 // Check the length with:
-//     len(mockedClient.RestoreManagedPrefixListVersionCalls())
+//
+//	len(mockedClient.RestoreManagedPrefixListVersionCalls())
 func (mock *ClientMock) RestoreManagedPrefixListVersionCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.RestoreManagedPrefixListVersionInput
@@ -28433,7 +28942,8 @@ func (mock *ClientMock) RestoreSnapshotFromRecycleBin(ctx context.Context, param
 
 // RestoreSnapshotFromRecycleBinCalls gets all the calls that were made to RestoreSnapshotFromRecycleBin.
 // Check the length with:
-//     len(mockedClient.RestoreSnapshotFromRecycleBinCalls())
+//
+//	len(mockedClient.RestoreSnapshotFromRecycleBinCalls())
 func (mock *ClientMock) RestoreSnapshotFromRecycleBinCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.RestoreSnapshotFromRecycleBinInput
@@ -28472,7 +28982,8 @@ func (mock *ClientMock) RestoreSnapshotTier(ctx context.Context, params *ec2.Res
 
 // RestoreSnapshotTierCalls gets all the calls that were made to RestoreSnapshotTier.
 // Check the length with:
-//     len(mockedClient.RestoreSnapshotTierCalls())
+//
+//	len(mockedClient.RestoreSnapshotTierCalls())
 func (mock *ClientMock) RestoreSnapshotTierCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.RestoreSnapshotTierInput
@@ -28511,7 +29022,8 @@ func (mock *ClientMock) RevokeClientVpnIngress(ctx context.Context, params *ec2.
 
 // RevokeClientVpnIngressCalls gets all the calls that were made to RevokeClientVpnIngress.
 // Check the length with:
-//     len(mockedClient.RevokeClientVpnIngressCalls())
+//
+//	len(mockedClient.RevokeClientVpnIngressCalls())
 func (mock *ClientMock) RevokeClientVpnIngressCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.RevokeClientVpnIngressInput
@@ -28550,7 +29062,8 @@ func (mock *ClientMock) RevokeSecurityGroupEgress(ctx context.Context, params *e
 
 // RevokeSecurityGroupEgressCalls gets all the calls that were made to RevokeSecurityGroupEgress.
 // Check the length with:
-//     len(mockedClient.RevokeSecurityGroupEgressCalls())
+//
+//	len(mockedClient.RevokeSecurityGroupEgressCalls())
 func (mock *ClientMock) RevokeSecurityGroupEgressCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.RevokeSecurityGroupEgressInput
@@ -28589,7 +29102,8 @@ func (mock *ClientMock) RevokeSecurityGroupIngress(ctx context.Context, params *
 
 // RevokeSecurityGroupIngressCalls gets all the calls that were made to RevokeSecurityGroupIngress.
 // Check the length with:
-//     len(mockedClient.RevokeSecurityGroupIngressCalls())
+//
+//	len(mockedClient.RevokeSecurityGroupIngressCalls())
 func (mock *ClientMock) RevokeSecurityGroupIngressCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.RevokeSecurityGroupIngressInput
@@ -28628,7 +29142,8 @@ func (mock *ClientMock) RunInstances(ctx context.Context, params *ec2.RunInstanc
 
 // RunInstancesCalls gets all the calls that were made to RunInstances.
 // Check the length with:
-//     len(mockedClient.RunInstancesCalls())
+//
+//	len(mockedClient.RunInstancesCalls())
 func (mock *ClientMock) RunInstancesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.RunInstancesInput
@@ -28667,7 +29182,8 @@ func (mock *ClientMock) RunScheduledInstances(ctx context.Context, params *ec2.R
 
 // RunScheduledInstancesCalls gets all the calls that were made to RunScheduledInstances.
 // Check the length with:
-//     len(mockedClient.RunScheduledInstancesCalls())
+//
+//	len(mockedClient.RunScheduledInstancesCalls())
 func (mock *ClientMock) RunScheduledInstancesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.RunScheduledInstancesInput
@@ -28706,7 +29222,8 @@ func (mock *ClientMock) SearchLocalGatewayRoutes(ctx context.Context, params *ec
 
 // SearchLocalGatewayRoutesCalls gets all the calls that were made to SearchLocalGatewayRoutes.
 // Check the length with:
-//     len(mockedClient.SearchLocalGatewayRoutesCalls())
+//
+//	len(mockedClient.SearchLocalGatewayRoutesCalls())
 func (mock *ClientMock) SearchLocalGatewayRoutesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.SearchLocalGatewayRoutesInput
@@ -28745,7 +29262,8 @@ func (mock *ClientMock) SearchTransitGatewayMulticastGroups(ctx context.Context,
 
 // SearchTransitGatewayMulticastGroupsCalls gets all the calls that were made to SearchTransitGatewayMulticastGroups.
 // Check the length with:
-//     len(mockedClient.SearchTransitGatewayMulticastGroupsCalls())
+//
+//	len(mockedClient.SearchTransitGatewayMulticastGroupsCalls())
 func (mock *ClientMock) SearchTransitGatewayMulticastGroupsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.SearchTransitGatewayMulticastGroupsInput
@@ -28784,7 +29302,8 @@ func (mock *ClientMock) SearchTransitGatewayRoutes(ctx context.Context, params *
 
 // SearchTransitGatewayRoutesCalls gets all the calls that were made to SearchTransitGatewayRoutes.
 // Check the length with:
-//     len(mockedClient.SearchTransitGatewayRoutesCalls())
+//
+//	len(mockedClient.SearchTransitGatewayRoutesCalls())
 func (mock *ClientMock) SearchTransitGatewayRoutesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.SearchTransitGatewayRoutesInput
@@ -28823,7 +29342,8 @@ func (mock *ClientMock) SendDiagnosticInterrupt(ctx context.Context, params *ec2
 
 // SendDiagnosticInterruptCalls gets all the calls that were made to SendDiagnosticInterrupt.
 // Check the length with:
-//     len(mockedClient.SendDiagnosticInterruptCalls())
+//
+//	len(mockedClient.SendDiagnosticInterruptCalls())
 func (mock *ClientMock) SendDiagnosticInterruptCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.SendDiagnosticInterruptInput
@@ -28862,7 +29382,8 @@ func (mock *ClientMock) StartInstances(ctx context.Context, params *ec2.StartIns
 
 // StartInstancesCalls gets all the calls that were made to StartInstances.
 // Check the length with:
-//     len(mockedClient.StartInstancesCalls())
+//
+//	len(mockedClient.StartInstancesCalls())
 func (mock *ClientMock) StartInstancesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.StartInstancesInput
@@ -28901,7 +29422,8 @@ func (mock *ClientMock) StartNetworkInsightsAccessScopeAnalysis(ctx context.Cont
 
 // StartNetworkInsightsAccessScopeAnalysisCalls gets all the calls that were made to StartNetworkInsightsAccessScopeAnalysis.
 // Check the length with:
-//     len(mockedClient.StartNetworkInsightsAccessScopeAnalysisCalls())
+//
+//	len(mockedClient.StartNetworkInsightsAccessScopeAnalysisCalls())
 func (mock *ClientMock) StartNetworkInsightsAccessScopeAnalysisCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.StartNetworkInsightsAccessScopeAnalysisInput
@@ -28940,7 +29462,8 @@ func (mock *ClientMock) StartNetworkInsightsAnalysis(ctx context.Context, params
 
 // StartNetworkInsightsAnalysisCalls gets all the calls that were made to StartNetworkInsightsAnalysis.
 // Check the length with:
-//     len(mockedClient.StartNetworkInsightsAnalysisCalls())
+//
+//	len(mockedClient.StartNetworkInsightsAnalysisCalls())
 func (mock *ClientMock) StartNetworkInsightsAnalysisCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.StartNetworkInsightsAnalysisInput
@@ -28979,7 +29502,8 @@ func (mock *ClientMock) StartVpcEndpointServicePrivateDnsVerification(ctx contex
 
 // StartVpcEndpointServicePrivateDnsVerificationCalls gets all the calls that were made to StartVpcEndpointServicePrivateDnsVerification.
 // Check the length with:
-//     len(mockedClient.StartVpcEndpointServicePrivateDnsVerificationCalls())
+//
+//	len(mockedClient.StartVpcEndpointServicePrivateDnsVerificationCalls())
 func (mock *ClientMock) StartVpcEndpointServicePrivateDnsVerificationCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.StartVpcEndpointServicePrivateDnsVerificationInput
@@ -29018,7 +29542,8 @@ func (mock *ClientMock) StopInstances(ctx context.Context, params *ec2.StopInsta
 
 // StopInstancesCalls gets all the calls that were made to StopInstances.
 // Check the length with:
-//     len(mockedClient.StopInstancesCalls())
+//
+//	len(mockedClient.StopInstancesCalls())
 func (mock *ClientMock) StopInstancesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.StopInstancesInput
@@ -29057,7 +29582,8 @@ func (mock *ClientMock) TerminateClientVpnConnections(ctx context.Context, param
 
 // TerminateClientVpnConnectionsCalls gets all the calls that were made to TerminateClientVpnConnections.
 // Check the length with:
-//     len(mockedClient.TerminateClientVpnConnectionsCalls())
+//
+//	len(mockedClient.TerminateClientVpnConnectionsCalls())
 func (mock *ClientMock) TerminateClientVpnConnectionsCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.TerminateClientVpnConnectionsInput
@@ -29096,7 +29622,8 @@ func (mock *ClientMock) TerminateInstances(ctx context.Context, params *ec2.Term
 
 // TerminateInstancesCalls gets all the calls that were made to TerminateInstances.
 // Check the length with:
-//     len(mockedClient.TerminateInstancesCalls())
+//
+//	len(mockedClient.TerminateInstancesCalls())
 func (mock *ClientMock) TerminateInstancesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.TerminateInstancesInput
@@ -29135,7 +29662,8 @@ func (mock *ClientMock) UnassignIpv6Addresses(ctx context.Context, params *ec2.U
 
 // UnassignIpv6AddressesCalls gets all the calls that were made to UnassignIpv6Addresses.
 // Check the length with:
-//     len(mockedClient.UnassignIpv6AddressesCalls())
+//
+//	len(mockedClient.UnassignIpv6AddressesCalls())
 func (mock *ClientMock) UnassignIpv6AddressesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.UnassignIpv6AddressesInput
@@ -29174,7 +29702,8 @@ func (mock *ClientMock) UnassignPrivateIpAddresses(ctx context.Context, params *
 
 // UnassignPrivateIpAddressesCalls gets all the calls that were made to UnassignPrivateIpAddresses.
 // Check the length with:
-//     len(mockedClient.UnassignPrivateIpAddressesCalls())
+//
+//	len(mockedClient.UnassignPrivateIpAddressesCalls())
 func (mock *ClientMock) UnassignPrivateIpAddressesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.UnassignPrivateIpAddressesInput
@@ -29213,7 +29742,8 @@ func (mock *ClientMock) UnmonitorInstances(ctx context.Context, params *ec2.Unmo
 
 // UnmonitorInstancesCalls gets all the calls that were made to UnmonitorInstances.
 // Check the length with:
-//     len(mockedClient.UnmonitorInstancesCalls())
+//
+//	len(mockedClient.UnmonitorInstancesCalls())
 func (mock *ClientMock) UnmonitorInstancesCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.UnmonitorInstancesInput
@@ -29252,7 +29782,8 @@ func (mock *ClientMock) UpdateSecurityGroupRuleDescriptionsEgress(ctx context.Co
 
 // UpdateSecurityGroupRuleDescriptionsEgressCalls gets all the calls that were made to UpdateSecurityGroupRuleDescriptionsEgress.
 // Check the length with:
-//     len(mockedClient.UpdateSecurityGroupRuleDescriptionsEgressCalls())
+//
+//	len(mockedClient.UpdateSecurityGroupRuleDescriptionsEgressCalls())
 func (mock *ClientMock) UpdateSecurityGroupRuleDescriptionsEgressCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.UpdateSecurityGroupRuleDescriptionsEgressInput
@@ -29291,7 +29822,8 @@ func (mock *ClientMock) UpdateSecurityGroupRuleDescriptionsIngress(ctx context.C
 
 // UpdateSecurityGroupRuleDescriptionsIngressCalls gets all the calls that were made to UpdateSecurityGroupRuleDescriptionsIngress.
 // Check the length with:
-//     len(mockedClient.UpdateSecurityGroupRuleDescriptionsIngressCalls())
+//
+//	len(mockedClient.UpdateSecurityGroupRuleDescriptionsIngressCalls())
 func (mock *ClientMock) UpdateSecurityGroupRuleDescriptionsIngressCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.UpdateSecurityGroupRuleDescriptionsIngressInput
@@ -29330,7 +29862,8 @@ func (mock *ClientMock) WithdrawByoipCidr(ctx context.Context, params *ec2.Withd
 
 // WithdrawByoipCidrCalls gets all the calls that were made to WithdrawByoipCidr.
 // Check the length with:
-//     len(mockedClient.WithdrawByoipCidrCalls())
+//
+//	len(mockedClient.WithdrawByoipCidrCalls())
 func (mock *ClientMock) WithdrawByoipCidrCalls() []struct {
 	Ctx    context.Context
 	Params *ec2.WithdrawByoipCidrInput

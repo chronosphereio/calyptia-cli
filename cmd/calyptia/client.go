@@ -75,8 +75,8 @@ type Client interface {
 	ValidateConfig(ctx context.Context, agentType types.AgentType, payload types.ValidatingConfig) (types.ValidatedConfig, error)
 
 	ProjectMetrics(ctx context.Context, projectID string, params types.MetricsParams) (types.ProjectMetrics, error)
-	AgentMetrics(ctx context.Context, agentID string, params types.MetricsParams) (types.AgentMetrics, error)
-	PipelineMetrics(ctx context.Context, pipelineID string, params types.MetricsParams) (types.AgentMetrics, error)
+	AgentMetricsV1(ctx context.Context, agentID string, params types.MetricsParams) (types.AgentMetrics, error)
+	PipelineMetricsV1(ctx context.Context, pipelineID string, params types.MetricsParams) (types.AgentMetrics, error)
 
 	CreateEnvironment(ctx context.Context, projectID string, payload types.CreateEnvironment) (types.CreatedEnvironment, error)
 	DeleteEnvironment(ctx context.Context, environmentID string) error

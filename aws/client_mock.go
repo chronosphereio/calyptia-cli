@@ -14,61 +14,61 @@ var _ Client = &ClientMock{}
 
 // ClientMock is a mock implementation of Client.
 //
-// 	func TestSomethingThatUsesClient(t *testing.T) {
+//	func TestSomethingThatUsesClient(t *testing.T) {
 //
-// 		// make and configure a mocked Client
-// 		mockedClient := &ClientMock{
-// 			CreateInstanceFunc: func(ctx context.Context, in *CreateInstanceParams) (CreatedInstance, error) {
-// 				panic("mock out the CreateInstance method")
-// 			},
-// 			CreateUserdataFunc: func(in *CreateUserDataParams) (string, error) {
-// 				panic("mock out the CreateUserdata method")
-// 			},
-// 			DeleteInstanceFunc: func(ctx context.Context, instanceID string) error {
-// 				panic("mock out the DeleteInstance method")
-// 			},
-// 			DeleteKeyPairFunc: func(ctx context.Context, keyPairID string) error {
-// 				panic("mock out the DeleteKeyPair method")
-// 			},
-// 			DeleteResourcesFunc: func(ctx context.Context, resources []Resource) error {
-// 				panic("mock out the DeleteResources method")
-// 			},
-// 			DeleteSecurityGroupFunc: func(ctx context.Context, securityGroupName string) error {
-// 				panic("mock out the DeleteSecurityGroup method")
-// 			},
-// 			EnsureAndAssociateElasticIPv4AddressFunc: func(ctx context.Context, instanceID string, environment string, elasticIPv4AddressPool string, elasticIPv4Address string) (string, error) {
-// 				panic("mock out the EnsureAndAssociateElasticIPv4Address method")
-// 			},
-// 			EnsureInstanceTypeFunc: func(ctx context.Context, instanceTypeName string) (string, error) {
-// 				panic("mock out the EnsureInstanceType method")
-// 			},
-// 			EnsureKeyPairFunc: func(ctx context.Context, keyPairName string, environment string) (string, error) {
-// 				panic("mock out the EnsureKeyPair method")
-// 			},
-// 			EnsureSecurityGroupFunc: func(ctx context.Context, securityGroupName string, environment string, vpcID string) (string, error) {
-// 				panic("mock out the EnsureSecurityGroup method")
-// 			},
-// 			EnsureSecurityGroupIngressRulesFunc: func(ctx context.Context, securityGroupID string) error {
-// 				panic("mock out the EnsureSecurityGroupIngressRules method")
-// 			},
-// 			EnsureSubnetFunc: func(ctx context.Context, subNetID string) (string, error) {
-// 				panic("mock out the EnsureSubnet method")
-// 			},
-// 			FindMatchingAMIFunc: func(ctx context.Context, useTestImages bool, region string, version string) (string, error) {
-// 				panic("mock out the FindMatchingAMI method")
-// 			},
-// 			GetResourcesByTagsFunc: func(ctx context.Context, tags TagSpec) ([]Resource, error) {
-// 				panic("mock out the GetResourcesByTags method")
-// 			},
-// 			InstanceStateFunc: func(ctx context.Context, instanceID string) (string, error) {
-// 				panic("mock out the InstanceState method")
-// 			},
-// 		}
+//		// make and configure a mocked Client
+//		mockedClient := &ClientMock{
+//			CreateInstanceFunc: func(ctx context.Context, in *CreateInstanceParams) (CreatedInstance, error) {
+//				panic("mock out the CreateInstance method")
+//			},
+//			CreateUserdataFunc: func(in *CreateUserDataParams) (string, error) {
+//				panic("mock out the CreateUserdata method")
+//			},
+//			DeleteInstanceFunc: func(ctx context.Context, instanceID string) error {
+//				panic("mock out the DeleteInstance method")
+//			},
+//			DeleteKeyPairFunc: func(ctx context.Context, keyPairID string) error {
+//				panic("mock out the DeleteKeyPair method")
+//			},
+//			DeleteResourcesFunc: func(ctx context.Context, resources []Resource) error {
+//				panic("mock out the DeleteResources method")
+//			},
+//			DeleteSecurityGroupFunc: func(ctx context.Context, securityGroupName string) error {
+//				panic("mock out the DeleteSecurityGroup method")
+//			},
+//			EnsureAndAssociateElasticIPv4AddressFunc: func(ctx context.Context, instanceID string, environment string, elasticIPv4AddressPool string, elasticIPv4Address string) (string, error) {
+//				panic("mock out the EnsureAndAssociateElasticIPv4Address method")
+//			},
+//			EnsureInstanceTypeFunc: func(ctx context.Context, instanceTypeName string) (string, error) {
+//				panic("mock out the EnsureInstanceType method")
+//			},
+//			EnsureKeyPairFunc: func(ctx context.Context, keyPairName string, environment string) (string, error) {
+//				panic("mock out the EnsureKeyPair method")
+//			},
+//			EnsureSecurityGroupFunc: func(ctx context.Context, securityGroupName string, environment string, vpcID string) (string, error) {
+//				panic("mock out the EnsureSecurityGroup method")
+//			},
+//			EnsureSecurityGroupIngressRulesFunc: func(ctx context.Context, securityGroupID string) error {
+//				panic("mock out the EnsureSecurityGroupIngressRules method")
+//			},
+//			EnsureSubnetFunc: func(ctx context.Context, subNetID string) (string, error) {
+//				panic("mock out the EnsureSubnet method")
+//			},
+//			FindMatchingAMIFunc: func(ctx context.Context, useTestImages bool, region string, version string) (string, error) {
+//				panic("mock out the FindMatchingAMI method")
+//			},
+//			GetResourcesByTagsFunc: func(ctx context.Context, tags TagSpec) ([]Resource, error) {
+//				panic("mock out the GetResourcesByTags method")
+//			},
+//			InstanceStateFunc: func(ctx context.Context, instanceID string) (string, error) {
+//				panic("mock out the InstanceState method")
+//			},
+//		}
 //
-// 		// use mockedClient in code that requires Client
-// 		// and then make assertions.
+//		// use mockedClient in code that requires Client
+//		// and then make assertions.
 //
-// 	}
+//	}
 type ClientMock struct {
 	// CreateInstanceFunc mocks the CreateInstance method.
 	CreateInstanceFunc func(ctx context.Context, in *CreateInstanceParams) (CreatedInstance, error)
@@ -274,7 +274,8 @@ func (mock *ClientMock) CreateInstance(ctx context.Context, in *CreateInstancePa
 
 // CreateInstanceCalls gets all the calls that were made to CreateInstance.
 // Check the length with:
-//     len(mockedClient.CreateInstanceCalls())
+//
+//	len(mockedClient.CreateInstanceCalls())
 func (mock *ClientMock) CreateInstanceCalls() []struct {
 	Ctx context.Context
 	In  *CreateInstanceParams
@@ -307,7 +308,8 @@ func (mock *ClientMock) CreateUserdata(in *CreateUserDataParams) (string, error)
 
 // CreateUserdataCalls gets all the calls that were made to CreateUserdata.
 // Check the length with:
-//     len(mockedClient.CreateUserdataCalls())
+//
+//	len(mockedClient.CreateUserdataCalls())
 func (mock *ClientMock) CreateUserdataCalls() []struct {
 	In *CreateUserDataParams
 } {
@@ -340,7 +342,8 @@ func (mock *ClientMock) DeleteInstance(ctx context.Context, instanceID string) e
 
 // DeleteInstanceCalls gets all the calls that were made to DeleteInstance.
 // Check the length with:
-//     len(mockedClient.DeleteInstanceCalls())
+//
+//	len(mockedClient.DeleteInstanceCalls())
 func (mock *ClientMock) DeleteInstanceCalls() []struct {
 	Ctx        context.Context
 	InstanceID string
@@ -375,7 +378,8 @@ func (mock *ClientMock) DeleteKeyPair(ctx context.Context, keyPairID string) err
 
 // DeleteKeyPairCalls gets all the calls that were made to DeleteKeyPair.
 // Check the length with:
-//     len(mockedClient.DeleteKeyPairCalls())
+//
+//	len(mockedClient.DeleteKeyPairCalls())
 func (mock *ClientMock) DeleteKeyPairCalls() []struct {
 	Ctx       context.Context
 	KeyPairID string
@@ -410,7 +414,8 @@ func (mock *ClientMock) DeleteResources(ctx context.Context, resources []Resourc
 
 // DeleteResourcesCalls gets all the calls that were made to DeleteResources.
 // Check the length with:
-//     len(mockedClient.DeleteResourcesCalls())
+//
+//	len(mockedClient.DeleteResourcesCalls())
 func (mock *ClientMock) DeleteResourcesCalls() []struct {
 	Ctx       context.Context
 	Resources []Resource
@@ -445,7 +450,8 @@ func (mock *ClientMock) DeleteSecurityGroup(ctx context.Context, securityGroupNa
 
 // DeleteSecurityGroupCalls gets all the calls that were made to DeleteSecurityGroup.
 // Check the length with:
-//     len(mockedClient.DeleteSecurityGroupCalls())
+//
+//	len(mockedClient.DeleteSecurityGroupCalls())
 func (mock *ClientMock) DeleteSecurityGroupCalls() []struct {
 	Ctx               context.Context
 	SecurityGroupName string
@@ -486,7 +492,8 @@ func (mock *ClientMock) EnsureAndAssociateElasticIPv4Address(ctx context.Context
 
 // EnsureAndAssociateElasticIPv4AddressCalls gets all the calls that were made to EnsureAndAssociateElasticIPv4Address.
 // Check the length with:
-//     len(mockedClient.EnsureAndAssociateElasticIPv4AddressCalls())
+//
+//	len(mockedClient.EnsureAndAssociateElasticIPv4AddressCalls())
 func (mock *ClientMock) EnsureAndAssociateElasticIPv4AddressCalls() []struct {
 	Ctx                    context.Context
 	InstanceID             string
@@ -527,7 +534,8 @@ func (mock *ClientMock) EnsureInstanceType(ctx context.Context, instanceTypeName
 
 // EnsureInstanceTypeCalls gets all the calls that were made to EnsureInstanceType.
 // Check the length with:
-//     len(mockedClient.EnsureInstanceTypeCalls())
+//
+//	len(mockedClient.EnsureInstanceTypeCalls())
 func (mock *ClientMock) EnsureInstanceTypeCalls() []struct {
 	Ctx              context.Context
 	InstanceTypeName string
@@ -564,7 +572,8 @@ func (mock *ClientMock) EnsureKeyPair(ctx context.Context, keyPairName string, e
 
 // EnsureKeyPairCalls gets all the calls that were made to EnsureKeyPair.
 // Check the length with:
-//     len(mockedClient.EnsureKeyPairCalls())
+//
+//	len(mockedClient.EnsureKeyPairCalls())
 func (mock *ClientMock) EnsureKeyPairCalls() []struct {
 	Ctx         context.Context
 	KeyPairName string
@@ -605,7 +614,8 @@ func (mock *ClientMock) EnsureSecurityGroup(ctx context.Context, securityGroupNa
 
 // EnsureSecurityGroupCalls gets all the calls that were made to EnsureSecurityGroup.
 // Check the length with:
-//     len(mockedClient.EnsureSecurityGroupCalls())
+//
+//	len(mockedClient.EnsureSecurityGroupCalls())
 func (mock *ClientMock) EnsureSecurityGroupCalls() []struct {
 	Ctx               context.Context
 	SecurityGroupName string
@@ -644,7 +654,8 @@ func (mock *ClientMock) EnsureSecurityGroupIngressRules(ctx context.Context, sec
 
 // EnsureSecurityGroupIngressRulesCalls gets all the calls that were made to EnsureSecurityGroupIngressRules.
 // Check the length with:
-//     len(mockedClient.EnsureSecurityGroupIngressRulesCalls())
+//
+//	len(mockedClient.EnsureSecurityGroupIngressRulesCalls())
 func (mock *ClientMock) EnsureSecurityGroupIngressRulesCalls() []struct {
 	Ctx             context.Context
 	SecurityGroupID string
@@ -679,7 +690,8 @@ func (mock *ClientMock) EnsureSubnet(ctx context.Context, subNetID string) (stri
 
 // EnsureSubnetCalls gets all the calls that were made to EnsureSubnet.
 // Check the length with:
-//     len(mockedClient.EnsureSubnetCalls())
+//
+//	len(mockedClient.EnsureSubnetCalls())
 func (mock *ClientMock) EnsureSubnetCalls() []struct {
 	Ctx      context.Context
 	SubNetID string
@@ -718,7 +730,8 @@ func (mock *ClientMock) FindMatchingAMI(ctx context.Context, useTestImages bool,
 
 // FindMatchingAMICalls gets all the calls that were made to FindMatchingAMI.
 // Check the length with:
-//     len(mockedClient.FindMatchingAMICalls())
+//
+//	len(mockedClient.FindMatchingAMICalls())
 func (mock *ClientMock) FindMatchingAMICalls() []struct {
 	Ctx           context.Context
 	UseTestImages bool
@@ -757,7 +770,8 @@ func (mock *ClientMock) GetResourcesByTags(ctx context.Context, tags TagSpec) ([
 
 // GetResourcesByTagsCalls gets all the calls that were made to GetResourcesByTags.
 // Check the length with:
-//     len(mockedClient.GetResourcesByTagsCalls())
+//
+//	len(mockedClient.GetResourcesByTagsCalls())
 func (mock *ClientMock) GetResourcesByTagsCalls() []struct {
 	Ctx  context.Context
 	Tags TagSpec
@@ -792,7 +806,8 @@ func (mock *ClientMock) InstanceState(ctx context.Context, instanceID string) (s
 
 // InstanceStateCalls gets all the calls that were made to InstanceState.
 // Check the length with:
-//     len(mockedClient.InstanceStateCalls())
+//
+//	len(mockedClient.InstanceStateCalls())
 func (mock *ClientMock) InstanceStateCalls() []struct {
 	Ctx        context.Context
 	InstanceID string

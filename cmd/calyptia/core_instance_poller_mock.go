@@ -14,19 +14,19 @@ var _ CoreInstancePoller = &CoreInstancePollerMock{}
 
 // CoreInstancePollerMock is a mock implementation of CoreInstancePoller.
 //
-// 	func TestSomethingThatUsesCoreInstancePoller(t *testing.T) {
+//	func TestSomethingThatUsesCoreInstancePoller(t *testing.T) {
 //
-// 		// make and configure a mocked CoreInstancePoller
-// 		mockedCoreInstancePoller := &CoreInstancePollerMock{
-// 			ReadyFunc: func(ctx context.Context, environment string, name string) (string, error) {
-// 				panic("mock out the Ready method")
-// 			},
-// 		}
+//		// make and configure a mocked CoreInstancePoller
+//		mockedCoreInstancePoller := &CoreInstancePollerMock{
+//			ReadyFunc: func(ctx context.Context, environment string, name string) (string, error) {
+//				panic("mock out the Ready method")
+//			},
+//		}
 //
-// 		// use mockedCoreInstancePoller in code that requires CoreInstancePoller
-// 		// and then make assertions.
+//		// use mockedCoreInstancePoller in code that requires CoreInstancePoller
+//		// and then make assertions.
 //
-// 	}
+//	}
 type CoreInstancePollerMock struct {
 	// ReadyFunc mocks the Ready method.
 	ReadyFunc func(ctx context.Context, environment string, name string) (string, error)
@@ -68,7 +68,8 @@ func (mock *CoreInstancePollerMock) Ready(ctx context.Context, environment strin
 
 // ReadyCalls gets all the calls that were made to Ready.
 // Check the length with:
-//     len(mockedCoreInstancePoller.ReadyCalls())
+//
+//	len(mockedCoreInstancePoller.ReadyCalls())
 func (mock *CoreInstancePollerMock) ReadyCalls() []struct {
 	Ctx         context.Context
 	Environment string

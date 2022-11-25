@@ -29,8 +29,8 @@ var _ Client = &ClientMock{}
 //			AgentConfigHistoryFunc: func(ctx context.Context, agentID string, params cloud.AgentConfigHistoryParams) (cloud.AgentConfigHistory, error) {
 //				panic("mock out the AgentConfigHistory method")
 //			},
-//			AgentMetricsFunc: func(ctx context.Context, agentID string, params cloud.MetricsParams) (cloud.AgentMetrics, error) {
-//				panic("mock out the AgentMetrics method")
+//			AgentMetricsV1Func: func(ctx context.Context, agentID string, params cloud.MetricsParams) (cloud.AgentMetrics, error) {
+//				panic("mock out the AgentMetricsV1 method")
 //			},
 //			AgentsFunc: func(ctx context.Context, projectID string, params cloud.AgentsParams) (cloud.Agents, error) {
 //				panic("mock out the Agents method")
@@ -146,8 +146,8 @@ var _ Client = &ClientMock{}
 //			PipelineFilesFunc: func(ctx context.Context, pipelineID string, params cloud.PipelineFilesParams) (cloud.PipelineFiles, error) {
 //				panic("mock out the PipelineFiles method")
 //			},
-//			PipelineMetricsFunc: func(ctx context.Context, pipelineID string, params cloud.MetricsParams) (cloud.AgentMetrics, error) {
-//				panic("mock out the PipelineMetrics method")
+//			PipelineMetricsV1Func: func(ctx context.Context, pipelineID string, params cloud.MetricsParams) (cloud.AgentMetrics, error) {
+//				panic("mock out the PipelineMetricsV1 method")
 //			},
 //			PipelinePortFunc: func(ctx context.Context, portID string) (cloud.PipelinePort, error) {
 //				panic("mock out the PipelinePort method")
@@ -258,8 +258,8 @@ type ClientMock struct {
 	// AgentConfigHistoryFunc mocks the AgentConfigHistory method.
 	AgentConfigHistoryFunc func(ctx context.Context, agentID string, params cloud.AgentConfigHistoryParams) (cloud.AgentConfigHistory, error)
 
-	// AgentMetricsFunc mocks the AgentMetrics method.
-	AgentMetricsFunc func(ctx context.Context, agentID string, params cloud.MetricsParams) (cloud.AgentMetrics, error)
+	// AgentMetricsV1Func mocks the AgentMetricsV1 method.
+	AgentMetricsV1Func func(ctx context.Context, agentID string, params cloud.MetricsParams) (cloud.AgentMetrics, error)
 
 	// AgentsFunc mocks the Agents method.
 	AgentsFunc func(ctx context.Context, projectID string, params cloud.AgentsParams) (cloud.Agents, error)
@@ -375,8 +375,8 @@ type ClientMock struct {
 	// PipelineFilesFunc mocks the PipelineFiles method.
 	PipelineFilesFunc func(ctx context.Context, pipelineID string, params cloud.PipelineFilesParams) (cloud.PipelineFiles, error)
 
-	// PipelineMetricsFunc mocks the PipelineMetrics method.
-	PipelineMetricsFunc func(ctx context.Context, pipelineID string, params cloud.MetricsParams) (cloud.AgentMetrics, error)
+	// PipelineMetricsV1Func mocks the PipelineMetricsV1 method.
+	PipelineMetricsV1Func func(ctx context.Context, pipelineID string, params cloud.MetricsParams) (cloud.AgentMetrics, error)
 
 	// PipelinePortFunc mocks the PipelinePort method.
 	PipelinePortFunc func(ctx context.Context, portID string) (cloud.PipelinePort, error)
@@ -496,8 +496,8 @@ type ClientMock struct {
 			// Params is the params argument value.
 			Params cloud.AgentConfigHistoryParams
 		}
-		// AgentMetrics holds details about calls to the AgentMetrics method.
-		AgentMetrics []struct {
+		// AgentMetricsV1 holds details about calls to the AgentMetricsV1 method.
+		AgentMetricsV1 []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// AgentID is the agentID argument value.
@@ -815,8 +815,8 @@ type ClientMock struct {
 			// Params is the params argument value.
 			Params cloud.PipelineFilesParams
 		}
-		// PipelineMetrics holds details about calls to the PipelineMetrics method.
-		PipelineMetrics []struct {
+		// PipelineMetricsV1 holds details about calls to the PipelineMetricsV1 method.
+		PipelineMetricsV1 []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// PipelineID is the pipelineID argument value.
@@ -1091,7 +1091,7 @@ type ClientMock struct {
 	lockActiveTraceSession          sync.RWMutex
 	lockAgent                       sync.RWMutex
 	lockAgentConfigHistory          sync.RWMutex
-	lockAgentMetrics                sync.RWMutex
+	lockAgentMetricsV1              sync.RWMutex
 	lockAgents                      sync.RWMutex
 	lockAggregator                  sync.RWMutex
 	lockAggregators                 sync.RWMutex
@@ -1130,7 +1130,7 @@ type ClientMock struct {
 	lockPipelineConfigHistory       sync.RWMutex
 	lockPipelineFile                sync.RWMutex
 	lockPipelineFiles               sync.RWMutex
-	lockPipelineMetrics             sync.RWMutex
+	lockPipelineMetricsV1           sync.RWMutex
 	lockPipelinePort                sync.RWMutex
 	lockPipelinePorts               sync.RWMutex
 	lockPipelineSecret              sync.RWMutex
@@ -1288,8 +1288,8 @@ func (mock *ClientMock) AgentConfigHistoryCalls() []struct {
 	return calls
 }
 
-// AgentMetrics calls AgentMetricsFunc.
-func (mock *ClientMock) AgentMetrics(ctx context.Context, agentID string, params cloud.MetricsParams) (cloud.AgentMetrics, error) {
+// AgentMetricsV1 calls AgentMetricsV1Func.
+func (mock *ClientMock) AgentMetricsV1(ctx context.Context, agentID string, params cloud.MetricsParams) (cloud.AgentMetrics, error) {
 	callInfo := struct {
 		Ctx     context.Context
 		AgentID string
@@ -1299,24 +1299,24 @@ func (mock *ClientMock) AgentMetrics(ctx context.Context, agentID string, params
 		AgentID: agentID,
 		Params:  params,
 	}
-	mock.lockAgentMetrics.Lock()
-	mock.calls.AgentMetrics = append(mock.calls.AgentMetrics, callInfo)
-	mock.lockAgentMetrics.Unlock()
-	if mock.AgentMetricsFunc == nil {
+	mock.lockAgentMetricsV1.Lock()
+	mock.calls.AgentMetricsV1 = append(mock.calls.AgentMetricsV1, callInfo)
+	mock.lockAgentMetricsV1.Unlock()
+	if mock.AgentMetricsV1Func == nil {
 		var (
 			agentMetricsOut cloud.AgentMetrics
 			errOut          error
 		)
 		return agentMetricsOut, errOut
 	}
-	return mock.AgentMetricsFunc(ctx, agentID, params)
+	return mock.AgentMetricsV1Func(ctx, agentID, params)
 }
 
-// AgentMetricsCalls gets all the calls that were made to AgentMetrics.
+// AgentMetricsV1Calls gets all the calls that were made to AgentMetricsV1.
 // Check the length with:
 //
-//	len(mockedClient.AgentMetricsCalls())
-func (mock *ClientMock) AgentMetricsCalls() []struct {
+//	len(mockedClient.AgentMetricsV1Calls())
+func (mock *ClientMock) AgentMetricsV1Calls() []struct {
 	Ctx     context.Context
 	AgentID string
 	Params  cloud.MetricsParams
@@ -1326,9 +1326,9 @@ func (mock *ClientMock) AgentMetricsCalls() []struct {
 		AgentID string
 		Params  cloud.MetricsParams
 	}
-	mock.lockAgentMetrics.RLock()
-	calls = mock.calls.AgentMetrics
-	mock.lockAgentMetrics.RUnlock()
+	mock.lockAgentMetricsV1.RLock()
+	calls = mock.calls.AgentMetricsV1
+	mock.lockAgentMetricsV1.RUnlock()
 	return calls
 }
 
@@ -2925,8 +2925,8 @@ func (mock *ClientMock) PipelineFilesCalls() []struct {
 	return calls
 }
 
-// PipelineMetrics calls PipelineMetricsFunc.
-func (mock *ClientMock) PipelineMetrics(ctx context.Context, pipelineID string, params cloud.MetricsParams) (cloud.AgentMetrics, error) {
+// PipelineMetricsV1 calls PipelineMetricsV1Func.
+func (mock *ClientMock) PipelineMetricsV1(ctx context.Context, pipelineID string, params cloud.MetricsParams) (cloud.AgentMetrics, error) {
 	callInfo := struct {
 		Ctx        context.Context
 		PipelineID string
@@ -2936,24 +2936,24 @@ func (mock *ClientMock) PipelineMetrics(ctx context.Context, pipelineID string, 
 		PipelineID: pipelineID,
 		Params:     params,
 	}
-	mock.lockPipelineMetrics.Lock()
-	mock.calls.PipelineMetrics = append(mock.calls.PipelineMetrics, callInfo)
-	mock.lockPipelineMetrics.Unlock()
-	if mock.PipelineMetricsFunc == nil {
+	mock.lockPipelineMetricsV1.Lock()
+	mock.calls.PipelineMetricsV1 = append(mock.calls.PipelineMetricsV1, callInfo)
+	mock.lockPipelineMetricsV1.Unlock()
+	if mock.PipelineMetricsV1Func == nil {
 		var (
 			agentMetricsOut cloud.AgentMetrics
 			errOut          error
 		)
 		return agentMetricsOut, errOut
 	}
-	return mock.PipelineMetricsFunc(ctx, pipelineID, params)
+	return mock.PipelineMetricsV1Func(ctx, pipelineID, params)
 }
 
-// PipelineMetricsCalls gets all the calls that were made to PipelineMetrics.
+// PipelineMetricsV1Calls gets all the calls that were made to PipelineMetricsV1.
 // Check the length with:
 //
-//	len(mockedClient.PipelineMetricsCalls())
-func (mock *ClientMock) PipelineMetricsCalls() []struct {
+//	len(mockedClient.PipelineMetricsV1Calls())
+func (mock *ClientMock) PipelineMetricsV1Calls() []struct {
 	Ctx        context.Context
 	PipelineID string
 	Params     cloud.MetricsParams
@@ -2963,9 +2963,9 @@ func (mock *ClientMock) PipelineMetricsCalls() []struct {
 		PipelineID string
 		Params     cloud.MetricsParams
 	}
-	mock.lockPipelineMetrics.RLock()
-	calls = mock.calls.PipelineMetrics
-	mock.lockPipelineMetrics.RUnlock()
+	mock.lockPipelineMetricsV1.RLock()
+	calls = mock.calls.PipelineMetricsV1
+	mock.lockPipelineMetricsV1.RUnlock()
 	return calls
 }
 
