@@ -12,7 +12,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
-	fluentbit_config "github.com/calyptia/go-fluentbit-config"
+	fluentbitconfig "github.com/calyptia/go-fluentbit-config"
 )
 
 func newCmdCreateConfigSection(config *config) *cobra.Command {
@@ -130,17 +130,17 @@ func pluginNames(kind string) []string {
 		out = append(out, s)
 	}
 	if kind == "" || kind == "input" {
-		for _, in := range fluentbit_config.DefaultSchema.Inputs {
+		for _, in := range fluentbitconfig.DefaultSchema.Inputs {
 			add(in.Name)
 		}
 	}
 	if kind == "" || kind == "filter" {
-		for _, f := range fluentbit_config.DefaultSchema.Filters {
+		for _, f := range fluentbitconfig.DefaultSchema.Filters {
 			add(f.Name)
 		}
 	}
 	if kind == "" || kind == "output" {
-		for _, o := range fluentbit_config.DefaultSchema.Outputs {
+		for _, o := range fluentbitconfig.DefaultSchema.Outputs {
 			add(o.Name)
 		}
 	}
@@ -156,7 +156,7 @@ func pluginProps(kind, name string) []string {
 	}
 
 	var out []string
-	add := func(sec fluentbit_config.SchemaSection) {
+	add := func(sec fluentbitconfig.SchemaSection) {
 		if !strings.EqualFold(sec.Name, name) {
 			return
 		}
@@ -173,15 +173,15 @@ func pluginProps(kind, name string) []string {
 	}
 	switch kind {
 	case "input":
-		for _, in := range fluentbit_config.DefaultSchema.Inputs {
+		for _, in := range fluentbitconfig.DefaultSchema.Inputs {
 			add(in)
 		}
 	case "filter":
-		for _, f := range fluentbit_config.DefaultSchema.Filters {
+		for _, f := range fluentbitconfig.DefaultSchema.Filters {
 			add(f)
 		}
 	case "output":
-		for _, o := range fluentbit_config.DefaultSchema.Outputs {
+		for _, o := range fluentbitconfig.DefaultSchema.Outputs {
 			add(o)
 		}
 	}

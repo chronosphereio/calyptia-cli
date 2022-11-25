@@ -11,7 +11,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
-	fluentbit_config "github.com/calyptia/go-fluentbit-config"
+	fluentbitconfig "github.com/calyptia/go-fluentbit-config"
 )
 
 func newCmdCreateTraceSession(config *config) *cobra.Command {
@@ -90,15 +90,29 @@ func (config *config) completePipelinePlugins(pipelineKey string, cmd *cobra.Com
 		return nil, cobra.ShellCompDirectiveError
 	}
 
-	cfg, err := parsePipelineConfig(pipeline.Config)
+	conf, err := fluentbitconfig.ParseAs(pipeline.Config.RawConfig, fluentbitconfig.Format(pipeline.Config.ConfigFormat))
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveError
 	}
 
+	// TODO: use instance id instead of name.
+
 	var out []string
-	for _, sec := range cfg.Sections {
-		if sec.Type == fluentbit_config.InputSection || sec.Type == fluentbit_config.FilterSection || sec.Type == fluentbit_config.OutputSection {
-			out = append(out, sec.ID)
+	for _, byName := range conf.Pipeline.Inputs {
+		for name := range byName {
+			out = append(out, name)
+		}
+	}
+
+	for _, byName := range conf.Pipeline.Filters {
+		for name := range byName {
+			out = append(out, name)
+		}
+	}
+
+	for _, byName := range conf.Pipeline.Outputs {
+		for name := range byName {
+			out = append(out, name)
 		}
 	}
 

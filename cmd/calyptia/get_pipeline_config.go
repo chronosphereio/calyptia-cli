@@ -11,7 +11,6 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
-	fluentbit_config "github.com/calyptia/go-fluentbit-config"
 )
 
 func newCmdGetPipelineConfigHistory(config *config) *cobra.Command {
@@ -73,15 +72,4 @@ func renderPipelineConfigHistory(w io.Writer, cc []types.PipelineConfig) {
 		fmt.Fprintf(tw, "%s\t%s\n", c.ID, fmtTime(c.CreatedAt))
 	}
 	tw.Flush()
-}
-
-func parsePipelineConfig(pipConf types.PipelineConfig) (*fluentbit_config.Config, error) {
-	switch pipConf.ConfigFormat {
-	case types.ConfigFormatJSON:
-		return fluentbit_config.ParseJSON([]byte(pipConf.RawConfig))
-	case types.ConfigFormatYAML:
-		return fluentbit_config.ParseYAML([]byte(pipConf.RawConfig))
-	default:
-		return fluentbit_config.ParseINI([]byte(pipConf.RawConfig))
-	}
 }

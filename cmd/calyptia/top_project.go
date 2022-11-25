@@ -27,7 +27,8 @@ func newCmdTopProject(config *config) *cobra.Command {
 		Use:   "project",
 		Short: "Display metrics from the current project",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return tea.NewProgram(initialProjectModel(config.ctx, config.cloud, config.projectID, start, interval, last), tea.WithAltScreen()).Start()
+			_, err := tea.NewProgram(initialProjectModel(config.ctx, config.cloud, config.projectID, start, interval, last), tea.WithAltScreen()).Run()
+			return err
 		},
 	}
 
@@ -133,7 +134,7 @@ func (m ProjectModel) loadData(ctx context.Context, skipError bool) tea.Cmd {
 					}
 
 					g2.Go(func() error {
-						agentMetrics, err := m.cloud.AgentMetrics(gctx2, agent.ID, cloud.MetricsParams{
+						agentMetrics, err := m.cloud.AgentMetricsV1(gctx2, agent.ID, cloud.MetricsParams{
 							Start:    m.metricsStart,
 							Interval: m.metricsInterval,
 						})

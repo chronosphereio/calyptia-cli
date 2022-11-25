@@ -26,7 +26,8 @@ func newCmdTopPipeline(config *config) *cobra.Command {
 		ValidArgsFunction: config.completePipelines,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			pipelineKey := args[0]
-			return tea.NewProgram(initialPipelineModel(config.ctx, config.cloud, config.projectID, pipelineKey, start, interval), tea.WithAltScreen()).Start()
+			_, err := tea.NewProgram(initialPipelineModel(config.ctx, config.cloud, config.projectID, pipelineKey, start, interval), tea.WithAltScreen()).Run()
+			return err
 		},
 	}
 
@@ -134,7 +135,7 @@ type GotPipelineID struct {
 func (m PipelineModel) loadData(ctx context.Context, withPipeline, skipError bool) tea.Cmd {
 	return func() tea.Msg {
 		if !withPipeline {
-			metrics, err := m.cloud.PipelineMetrics(ctx, m.pipelineID, cloud.MetricsParams{
+			metrics, err := m.cloud.PipelineMetricsV1(ctx, m.pipelineID, cloud.MetricsParams{
 				Start:    m.metricsStart,
 				Interval: m.metricsInterval,
 			})
@@ -167,7 +168,7 @@ func (m PipelineModel) loadData(ctx context.Context, withPipeline, skipError boo
 		})
 		g.Go(func() error {
 			var err error
-			pipelineMetrics, err = m.cloud.PipelineMetrics(gctx, m.pipelineID, cloud.MetricsParams{
+			pipelineMetrics, err = m.cloud.PipelineMetricsV1(gctx, m.pipelineID, cloud.MetricsParams{
 				Start:    m.metricsStart,
 				Interval: m.metricsInterval,
 			})
