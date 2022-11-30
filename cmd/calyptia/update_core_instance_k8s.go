@@ -3,11 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
-
 	"github.com/spf13/cobra"
 	apiv1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
+	"strconv"
 
 	cloud "github.com/calyptia/api/types"
 	"github.com/calyptia/cli/k8s"
@@ -18,6 +18,7 @@ func newCmdUpdateCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 	var (
 		disableClusterLogging bool
 		enableClusterLogging  bool
+		noTLSVerify           bool
 	)
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	configOverrides := &clientcmd.ConfigOverrides{}
@@ -80,7 +81,6 @@ func newCmdUpdateCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 			}
 
 			if newVersion != "" {
-				coreDockerImage := fmt.Sprintf("%s:%s", defaultCoreDockerImage, newVersion)
 				var clientSet kubernetes.Interface
 				if testClientSet != nil {
 					clientSet = testClientSet
@@ -104,12 +104,15 @@ func newCmdUpdateCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 					ProjectToken: config.projectToken,
 					CloudBaseURL: config.baseURL,
 				}
+				label := fmt.Sprintf("%s=%s,!%s", k8s.LabelAggregatorID, agg.ID, k8s.LabelPipelineID)
+
+				coreDockerImage := fmt.Sprintf("%s:%s", defaultCoreDockerImage, newVersion)
 
 				if err := k8sClient.EnsureOwnNamespace(ctx); err != nil {
 					return fmt.Errorf("could not ensure kubernetes namespace exists: %w", err)
 				}
-				label := fmt.Sprintf("%s=%s,!%s", k8s.LabelAggregatorID, agg.ID, k8s.LabelPipelineID)
-				if err := k8sClient.UpdateDeploymentByLabel(ctx, label, coreDockerImage); err != nil {
+
+				if err := k8sClient.UpdateDeploymentByLabel(ctx, label, coreDockerImage, strconv.FormatBool(!noTLSVerify)); err != nil {
 					return fmt.Errorf("could not update kubernetes deployment: %w", err)
 				}
 
@@ -130,6 +133,7 @@ func newCmdUpdateCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 	fs.BoolVar(&enableClusterLogging, "enable-cluster-logging", false, "Enable cluster logging functionality")
 	fs.BoolVar(&disableClusterLogging, "disable-cluster-logging", false, "Disable cluster logging functionality")
+	fs.BoolVar(&noTLSVerify, "no-tls-verify", false, "Disable TLS verification when connecting to Calyptia Cloud API.")
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
 	_ = cmd.RegisterFlagCompletionFunc("version", config.completeCoreContainerVersion)

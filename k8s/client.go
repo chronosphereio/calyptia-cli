@@ -25,6 +25,7 @@ const (
 	clusterRoleBindingObjectType objectType = "cluster-role-binding"
 	secretObjectType             objectType = "secret"
 	serviceAccountObjectType     objectType = "service-account"
+	coreTLSVerifyEnvVar          string     = "CORE_TLS_VERIFY"
 )
 
 var (
@@ -209,7 +210,7 @@ func (client *Client) CreateDeployment(
 									Value: fmt.Sprintf("nats://tcp-4222-nats-messaging.%s.svc.cluster.local:4222", client.Namespace),
 								},
 								{
-									Name:  "CORE_TLS_VERIFY",
+									Name:  coreTLSVerifyEnvVar,
 									Value: strconv.FormatBool(tlsVerify),
 								},
 							},
@@ -263,7 +264,7 @@ func (client *Client) FindServicesByLabel(ctx context.Context, label, ns string)
 	return client.CoreV1().Services(ns).List(ctx, metav1.ListOptions{LabelSelector: label})
 }
 
-func (client *Client) UpdateDeploymentByLabel(ctx context.Context, label, newImage string) error {
+func (client *Client) UpdateDeploymentByLabel(ctx context.Context, label, newImage, tlsVerify string) error {
 	deploymentList, err := client.FindDeploymentByLabel(ctx, label)
 	if err != nil {
 		return err
@@ -275,7 +276,30 @@ func (client *Client) UpdateDeploymentByLabel(ctx context.Context, label, newIma
 	if len(deployment.Spec.Template.Spec.Containers) == 0 {
 		return fmt.Errorf("no container found in deployment %s", deployment.Name)
 	}
+
 	deployment.Spec.Template.Spec.Containers[0].Image = newImage
+
+	envVars := deployment.Spec.Template.Spec.Containers[0].Env
+
+	found := false
+	for idx, envVar := range envVars {
+		if envVar.Name == coreTLSVerifyEnvVar {
+			if envVar.Value != tlsVerify {
+				envVars[idx].Value = tlsVerify
+			}
+			found = true
+		}
+	}
+
+	if !found {
+		envVars = append(envVars, apiv1.EnvVar{
+			Name:  coreTLSVerifyEnvVar,
+			Value: tlsVerify,
+		})
+	}
+
+	deployment.Spec.Template.Spec.Containers[0].Env = envVars
+
 	_, err = client.AppsV1().Deployments(client.Namespace).Update(ctx, &deployment, metav1.UpdateOptions{})
 	if err != nil {
 		return err
