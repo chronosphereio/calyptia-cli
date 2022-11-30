@@ -20,6 +20,7 @@ func newCmdConfig(config *cfg.Config) *cobra.Command {
 		cnfg.NewCmdConfigSetURL(config),
 		cnfg.NewCmdConfigCurrentURL(config),
 		cnfg.NewCmdConfigUnsetURL(config),
+		cnfg.NewCmdCheckInstall(config),
 	)
 
 	return cmd

@@ -75,6 +75,14 @@ func NewRootCmd(ctx context.Context) *cobra.Command {
 		Short:         "Calyptia Cloud CLI",
 		SilenceErrors: true,
 		SilenceUsage:  true,
+		PreRun: func(cmd *cobra.Command, args []string) {
+			if _, err = config.LocalData.Get(cnfg.KeyCliHealth); errors.Is(err, localdata.ErrNotFound) {
+				cnfg.CheckInstall(config)
+			}
+			if !errors.Is(err, localdata.ErrNotFound) {
+				cobra.CheckErr(fmt.Errorf("could not retrieve your stored token: %w", err))
+			}
+		},
 	}
 
 	cmd.SetOut(os.Stdout)
