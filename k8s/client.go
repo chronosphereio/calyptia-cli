@@ -255,6 +255,10 @@ func (client *Client) DeleteSecretByLabel(ctx context.Context, label, ns string)
 	return client.CoreV1().Secrets(ns).DeleteCollection(ctx, metav1.DeleteOptions{}, metav1.ListOptions{LabelSelector: label})
 }
 
+func (client *Client) DeleteConfigMapsByLabel(ctx context.Context, label, ns string) error {
+	return client.CoreV1().ConfigMaps(ns).DeleteCollection(ctx, metav1.DeleteOptions{}, metav1.ListOptions{LabelSelector: label})
+}
+
 func (client *Client) FindServicesByLabel(ctx context.Context, label, ns string) (*apiv1.ServiceList, error) {
 	return client.CoreV1().Services(ns).List(ctx, metav1.ListOptions{LabelSelector: label})
 }

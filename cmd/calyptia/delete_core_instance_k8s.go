@@ -197,6 +197,16 @@ func newCmdDeleteCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 						cmd.PrintErrf("Error: could not delete secret %q: %v\n", secret, err)
 					}
 				}
+
+				err = k8sClient.DeleteConfigMapsByLabel(ctx, label, ns.Name)
+				if err != nil {
+					if !skipError {
+						return err
+					} else {
+						cmd.PrintErrf("Error: could not delete config map: %w", err)
+					}
+				}
+
 			}
 
 			cmd.Printf("Successfully deleted %d kubernetes resources\n", itemsToDelete)
@@ -254,6 +264,13 @@ func listDeletionsByLabel(ctx context.Context, k8sClient *k8s.Client, cmd *cobra
 		if err != nil {
 			return 0, err
 		}
+
+		count, err = listConfigMaps(ctx, k8sClient, cmd, label, ns.Name)
+		itemsToDelete += count
+		if err != nil {
+			return 0, err
+		}
+
 	}
 
 	count, err := listRoleBindings(ctx, k8sClient, cmd, label)
@@ -325,6 +342,26 @@ func listServiceAccounts(ctx context.Context, k8sClient *k8s.Client, cmd *cobra.
 	}
 
 	return len(serviceAccounts.Items), nil
+}
+
+func listConfigMaps(ctx context.Context, k8sClient *k8s.Client, cmd *cobra.Command, label, ns string) (int, error) {
+	configMaps, err := k8sClient.CoreV1().ConfigMaps(ns).List(ctx, metav1.ListOptions{
+		LabelSelector: label,
+	})
+	if err != nil {
+		return 0, err
+	}
+
+	if len(configMaps.Items) == 0 {
+		return 0, nil
+	}
+
+	cmd.Println("ConfigMaps:")
+	for _, item := range configMaps.Items {
+		cmd.Printf(itemToDeleteFormat, clusterLevelNamespace, item.Name)
+	}
+
+	return len(configMaps.Items), nil
 }
 
 func listClusterRoles(ctx context.Context, k8sClient *k8s.Client, cmd *cobra.Command, label string) (int, error) {
