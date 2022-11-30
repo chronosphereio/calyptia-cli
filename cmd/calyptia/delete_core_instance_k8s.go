@@ -203,7 +203,7 @@ func newCmdDeleteCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 					if !skipError {
 						return err
 					} else {
-						cmd.PrintErrf("Error: could not delete config map: %w", err)
+						cmd.PrintErrf("Error: could not delete config map: %v", err)
 					}
 				}
 
