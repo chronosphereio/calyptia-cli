@@ -12,7 +12,7 @@ import (
 	cloud "github.com/calyptia/api/types"
 )
 
-func newCmdGetAggregators(config *config) *cobra.Command {
+func newCmdGetCoreInstances(config *config) *cobra.Command {
 	var last uint
 	var showIDs bool
 	var showMetadata bool
@@ -101,7 +101,7 @@ func newCmdGetAggregators(config *config) *cobra.Command {
 	return cmd
 }
 
-func (config *config) completeAggregators(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+func (config *config) completeCoreInstances(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	aa, err := config.cloud.Aggregators(config.ctx, config.projectID, cloud.AggregatorsParams{})
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveError
@@ -111,11 +111,11 @@ func (config *config) completeAggregators(cmd *cobra.Command, args []string, toC
 		return nil, cobra.ShellCompDirectiveNoFileComp
 	}
 
-	return aggregatorsKeys(aa.Items), cobra.ShellCompDirectiveNoFileComp
+	return coreInstancesKeys(aa.Items), cobra.ShellCompDirectiveNoFileComp
 }
 
-// aggregatorsKeys returns unique aggregator names first and then IDs.
-func aggregatorsKeys(aa []cloud.Aggregator) []string {
+// coreInstancesKeys returns unique core instance names first and then IDs.
+func coreInstancesKeys(aa []cloud.Aggregator) []string {
 	namesCount := map[string]int{}
 	for _, a := range aa {
 		if _, ok := namesCount[a.Name]; ok {
@@ -147,9 +147,9 @@ func aggregatorsKeys(aa []cloud.Aggregator) []string {
 	return out
 }
 
-func (config *config) loadAggregatorID(aggregatorKey string, environmentID string) (string, error) {
+func (config *config) loadCoreInstanceID(instanceKey string, environmentID string) (string, error) {
 	params := cloud.AggregatorsParams{
-		Name: &aggregatorKey,
+		Name: &instanceKey,
 		Last: ptr(uint(2)),
 	}
 
@@ -162,17 +162,17 @@ func (config *config) loadAggregatorID(aggregatorKey string, environmentID strin
 		return "", err
 	}
 
-	if len(aa.Items) != 1 && !validUUID(aggregatorKey) {
+	if len(aa.Items) != 1 && !validUUID(instanceKey) {
 		if len(aa.Items) != 0 {
-			return "", fmt.Errorf("ambiguous core instance name %q, use ID instead", aggregatorKey)
+			return "", fmt.Errorf("ambiguous core instance name %q, use ID instead", instanceKey)
 		}
 
-		return "", fmt.Errorf("could not find core instance %q", aggregatorKey)
+		return "", fmt.Errorf("could not find core instance %q", instanceKey)
 	}
 
 	if len(aa.Items) == 1 {
 		return aa.Items[0].ID, nil
 	}
 
-	return aggregatorKey, nil
+	return instanceKey, nil
 }

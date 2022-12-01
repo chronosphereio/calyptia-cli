@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -24,7 +23,7 @@ func newCmdGetIngestCheck(c *config) *cobra.Command {
 		Short: "Get a specific ingest check",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx := context.Background()
+			ctx := cmd.Context()
 			id := args[0]
 			check, err := c.cloud.IngestCheck(ctx, id)
 			if err != nil {
@@ -84,8 +83,8 @@ func newCmdGetIngestChecks(c *config) *cobra.Command {
 		Short: "Get a list of ingest checks",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx := context.Background()
-			id := args[0]
+			ctx := cmd.Context()
+			instanceKey := args[0]
 			var environmentID string
 			if environment != "" {
 				var err error
@@ -94,11 +93,13 @@ func newCmdGetIngestChecks(c *config) *cobra.Command {
 					return err
 				}
 			}
-			aggregatorID, err := c.loadAggregatorID(id, environmentID)
+
+			instanceID, err := c.loadCoreInstanceID(instanceKey, environmentID)
 			if err != nil {
 				return err
 			}
-			check, err := c.cloud.IngestChecks(ctx, aggregatorID, types.IngestChecksParams{Last: &last})
+
+			check, err := c.cloud.IngestChecks(ctx, instanceID, types.IngestChecksParams{Last: &last})
 			if err != nil {
 				return err
 			}
@@ -106,6 +107,7 @@ func newCmdGetIngestChecks(c *config) *cobra.Command {
 			if strings.HasPrefix(outputFormat, "go-template") {
 				return applyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, check.Items)
 			}
+
 			switch outputFormat {
 			case "table":
 				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 3, 1, ' ', 0)

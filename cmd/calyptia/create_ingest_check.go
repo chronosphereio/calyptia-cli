@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/spf13/cobra"
@@ -22,7 +21,7 @@ func newCmdCreateIngestCheck(config *config) *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			coreInstance := args[0]
-			ctx := context.Background()
+			ctx := cmd.Context()
 
 			params := types.CreateIngestCheck{}
 			if configSectionID == "" {
@@ -46,7 +45,7 @@ func newCmdCreateIngestCheck(config *config) *cobra.Command {
 					return err
 				}
 			}
-			coreInstanceID, err := config.loadAggregatorID(coreInstance, environmentID)
+			coreInstanceID, err := config.loadCoreInstanceID(coreInstance, environmentID)
 			if err != nil {
 				return err
 			}

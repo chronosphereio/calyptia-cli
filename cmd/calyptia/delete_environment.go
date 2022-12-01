@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"os"
 
@@ -19,7 +18,7 @@ func newCmdDeleteEnvironment(c *config) *cobra.Command {
 		Short: "Delete an environment",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			name := args[0]
-			ctx := context.Background()
+			ctx := cmd.Context()
 			environments, err := c.cloud.Environments(ctx, c.projectID, types.EnvironmentsParams{Name: &name})
 			if err != nil {
 				return err
@@ -29,7 +28,7 @@ func newCmdDeleteEnvironment(c *config) *cobra.Command {
 			}
 			environment := environments.Items[0]
 			if !confirmDelete {
-				cmd.Print("This will remove ALL your agents, aggregators. Do you confirm? [y/N] ")
+				cmd.Print("This will remove ALL your agents and core instances associated. Do you confirm? [y/N] ")
 				confirmDelete, err = readConfirm(cmd.InOrStdin())
 				if err != nil {
 					return err

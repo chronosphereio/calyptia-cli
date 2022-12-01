@@ -1,8 +1,6 @@
 package main
 
 import (
-	"context"
-
 	"github.com/spf13/cobra"
 
 	"github.com/calyptia/api/types"
@@ -15,7 +13,7 @@ func newCmdCreateEnvironment(c *config) *cobra.Command {
 		Short: "Create an environment",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			name := args[0]
-			ctx := context.Background()
+			ctx := cmd.Context()
 			environment := types.CreateEnvironment{Name: name}
 			createEnvironment, err := c.cloud.CreateEnvironment(ctx, c.projectID, environment)
 			if err != nil {

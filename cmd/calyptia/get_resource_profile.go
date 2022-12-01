@@ -13,7 +13,7 @@ import (
 )
 
 func newCmdGetResourceProfiles(config *config) *cobra.Command {
-	var aggregatorKey string
+	var instanceKey string
 	var last uint
 	var outputFormat, goTemplate string
 	var showIDs bool
@@ -21,7 +21,7 @@ func newCmdGetResourceProfiles(config *config) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:   "resource_profiles",
-		Short: "Display latest resource profiles from an aggregator",
+		Short: "Display latest resource profiles from a core instance",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var environmentID string
 			if environment != "" {
@@ -32,12 +32,12 @@ func newCmdGetResourceProfiles(config *config) *cobra.Command {
 				}
 			}
 
-			aggregatorID, err := config.loadAggregatorID(aggregatorKey, environmentID)
+			instanceID, err := config.loadCoreInstanceID(instanceKey, environmentID)
 			if err != nil {
 				return err
 			}
 
-			pp, err := config.cloud.ResourceProfiles(config.ctx, aggregatorID, cloud.ResourceProfilesParams{
+			pp, err := config.cloud.ResourceProfiles(config.ctx, instanceID, cloud.ResourceProfilesParams{
 				Last: &last,
 			})
 			if err != nil {
@@ -74,18 +74,22 @@ func newCmdGetResourceProfiles(config *config) *cobra.Command {
 	}
 
 	fs := cmd.Flags()
-	fs.StringVar(&aggregatorKey, "aggregator", "", "Parent aggregator ID or name")
+	fs.StringVar(&instanceKey, "aggregator", "", "Parent core instance ID or name")
+	fs.StringVar(&instanceKey, "core-instance", "", "Parent core instance ID or name")
 	fs.UintVarP(&last, "last", "l", 0, "Last `N` pipelines. 0 means no limit")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include resource profile IDs in table output")
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
+	_ = cmd.RegisterFlagCompletionFunc("aggregator", config.completeCoreInstances)
+	_ = cmd.RegisterFlagCompletionFunc("core-instance", config.completeCoreInstances)
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
-	_ = cmd.RegisterFlagCompletionFunc("aggregator", config.completeAggregators)
 
-	_ = cmd.MarkFlagRequired("aggregator") // TODO: use default aggregator ID from config cmd.
+	_ = fs.MarkDeprecated("aggregator", "use --core-instance instead")
+
+	_ = cmd.MarkFlagRequired("core-instance") // TODO: use default core instance ID from config cmd.
 
 	return cmd
 }

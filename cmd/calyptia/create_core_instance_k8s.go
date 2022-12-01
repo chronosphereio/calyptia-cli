@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/spf13/cobra"
@@ -37,7 +36,7 @@ func newCmdCreateCoreInstanceOnK8s(config *config, testClientSet kubernetes.Inte
 		Aliases: []string{"kube", "k8s"},
 		Short:   "Setup a new core instance on Kubernetes",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx := context.Background()
+			ctx := cmd.Context()
 
 			coreDockerImage := fmt.Sprintf("%s:%s", defaultCoreDockerImage, coreInstanceVersion)
 

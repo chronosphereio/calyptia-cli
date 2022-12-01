@@ -17,7 +17,7 @@ func Test_newCmdGetPipelines(t *testing.T) {
 		cmd.SilenceErrors = true
 		cmd.SilenceUsage = true
 		got := cmd.Execute()
-		wantErrMsg(t, `required flag(s) "aggregator" not set`, got)
+		wantErrMsg(t, `required flag(s) "core-instance" not set`, got)
 	})
 
 	t.Run("error", func(t *testing.T) {
@@ -29,7 +29,7 @@ func Test_newCmdGetPipelines(t *testing.T) {
 		}))
 		cmd.SilenceErrors = true
 		cmd.SilenceUsage = true
-		cmd.SetArgs([]string{"--aggregator=" + zeroUUID4})
+		cmd.SetArgs([]string{"--core-instance=" + zeroUUID4})
 		got := cmd.Execute()
 		wantEq(t, want, got)
 	})
@@ -64,7 +64,7 @@ func Test_newCmdGetPipelines(t *testing.T) {
 			},
 		}))
 		cmd.SetOutput(got)
-		cmd.SetArgs([]string{"--aggregator=" + zeroUUID4, "--last=2"})
+		cmd.SetArgs([]string{"--core-instance=" + zeroUUID4, "--last=2"})
 
 		err := cmd.Execute()
 		wantEq(t, nil, err)
@@ -75,7 +75,7 @@ func Test_newCmdGetPipelines(t *testing.T) {
 
 		t.Run("show_ids", func(t *testing.T) {
 			got.Reset()
-			cmd.SetArgs([]string{"--aggregator=" + zeroUUID4, "--show-ids"})
+			cmd.SetArgs([]string{"--core-instance=" + zeroUUID4, "--show-ids"})
 
 			err := cmd.Execute()
 			wantEq(t, nil, err)
@@ -91,7 +91,7 @@ func Test_newCmdGetPipelines(t *testing.T) {
 			want, err := json.Marshal(want.Items)
 			wantEq(t, nil, err)
 
-			cmd.SetArgs([]string{"--aggregator=" + zeroUUID4, "--output-format=json"})
+			cmd.SetArgs([]string{"--core-instance=" + zeroUUID4, "--output-format=json"})
 
 			err = cmd.Execute()
 			wantEq(t, nil, err)

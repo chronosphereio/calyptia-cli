@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"os"
 	"strings"
@@ -29,7 +28,7 @@ func newCmdDeleteCoreInstanceOnAWS(config *config, client awsclient.Client) *cob
 		Aliases:           []string{"ec2", "amazon"},
 		Short:             "Delete a core instance from Amazon EC2",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.completeAggregators,
+		ValidArgsFunction: config.completeCoreInstances,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var err error
 
@@ -44,14 +43,14 @@ func newCmdDeleteCoreInstanceOnAWS(config *config, client awsclient.Client) *cob
 				}
 			}
 
-			coreInstanceID, err := config.loadAggregatorID(coreInstanceName, environmentID)
+			coreInstanceID, err := config.loadCoreInstanceID(coreInstanceName, environmentID)
 			if !skipError && err != nil {
 				return fmt.Errorf("could not load core instance ID: %w", err)
 			}
 
 			// TODO: Make sure to delete core instance from Cloud even if we cannot connect to AWS.
 
-			ctx := context.Background()
+			ctx := cmd.Context()
 			if client == nil {
 				client, err = awsclient.New(ctx, coreInstanceName, region, credentials, profileFile, profileName, false)
 				if err != nil {

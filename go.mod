@@ -6,15 +6,15 @@ replace github.com/calyptia/cli/k8s => ./k8s
 
 require (
 	code.cloudfoundry.org/bytefmt v0.0.0-20211005130812-5bb3c17173e5
-	github.com/Masterminds/sprig/v3 v3.2.2
+	github.com/Masterminds/sprig/v3 v3.2.3
 	github.com/alecthomas/assert/v2 v2.2.0
 	github.com/aws/aws-sdk-go-v2 v1.17.1
 	github.com/aws/aws-sdk-go-v2/config v1.18.3
-	github.com/aws/aws-sdk-go-v2/service/ec2 v1.72.1
+	github.com/aws/aws-sdk-go-v2/service/ec2 v1.74.0
 	github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi v1.13.24
 	github.com/calyptia/api v0.18.0
-	github.com/calyptia/cli/k8s v0.0.0-00010101000000-000000000000
-	github.com/calyptia/core-images-index/go-index v0.0.0-20221116233725-4605bae0d6fe
+	github.com/calyptia/cli/k8s v0.0.0-20221201171221-2b555a293aec
+	github.com/calyptia/core-images-index/go-index v0.0.0-20221130114452-c20fcb0bef8b
 	github.com/calyptia/go-bubble-table v0.2.1
 	github.com/calyptia/go-fluentbit-config v0.7.0-rc.3
 	github.com/charmbracelet/bubbletea v0.23.1
@@ -27,7 +27,7 @@ require (
 	github.com/sethvargo/go-retry v0.2.3
 	github.com/spf13/cobra v1.6.1
 	github.com/zalando/go-keyring v0.2.1
-	golang.org/x/exp v0.0.0-20221114191408-850992195362
+	golang.org/x/exp v0.0.0-20221126150942-6ab00d035af9
 	golang.org/x/sync v0.1.0
 	golang.org/x/term v0.2.0
 	golang.org/x/time v0.2.0
@@ -42,7 +42,7 @@ require (
 	cloud.google.com/go/compute v1.12.1 // indirect
 	cloud.google.com/go/compute/metadata v0.2.1 // indirect
 	github.com/Masterminds/goutils v1.1.1 // indirect
-	github.com/Masterminds/semver/v3 v3.1.1 // indirect
+	github.com/Masterminds/semver/v3 v3.2.0 // indirect
 	github.com/alecthomas/repr v0.1.1 // indirect
 	github.com/alessio/shellescape v1.4.1 // indirect
 	github.com/aws/aws-sdk-go-v2/credentials v1.13.3 // indirect
@@ -78,9 +78,9 @@ require (
 	github.com/googleapis/gax-go/v2 v2.7.0 // indirect
 	github.com/hashicorp/go-version v1.6.0 // indirect
 	github.com/hexops/gotextdiff v1.0.3 // indirect
-	github.com/huandu/xstrings v1.3.3 // indirect
+	github.com/huandu/xstrings v1.4.0 // indirect
 	github.com/imdario/mergo v0.3.13 // indirect
-	github.com/inconshreveable/mousetrap v1.0.1 // indirect
+	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
@@ -114,14 +114,14 @@ require (
 	golang.org/x/text v0.4.0 // indirect
 	golang.org/x/tools v0.3.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
-	google.golang.org/genproto v0.0.0-20221118155620-16455021b5e6 // indirect
+	google.golang.org/genproto v0.0.0-20221201164419-0e50fba7f41c // indirect
 	google.golang.org/grpc v1.51.0 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	k8s.io/klog/v2 v2.80.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20221123214604-86e75ddd809a // indirect
-	k8s.io/utils v0.0.0-20221108210102-8e77b1f39fe2 // indirect
+	k8s.io/utils v0.0.0-20221128185143-99ec85e7a448 // indirect
 	sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.2.3 // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/spf13/cobra"
@@ -20,7 +19,7 @@ func newCmdUpdateEnvironment(c *config) *cobra.Command {
 			if name == newName {
 				return fmt.Errorf("environment name unchanged")
 			}
-			ctx := context.Background()
+			ctx := cmd.Context()
 			environments, err := c.cloud.Environments(ctx, c.projectID, types.EnvironmentsParams{Name: &name})
 			if err != nil {
 				return err

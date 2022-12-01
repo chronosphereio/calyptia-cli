@@ -124,7 +124,7 @@ func newCmdCreateCoreInstanceOnAWS(config *config, client awsclient.Client, poll
 				err         error
 			)
 
-			ctx := context.Background()
+			ctx := cmd.Context()
 
 			if client == nil {
 				client, err = awsclient.New(ctx, coreInstanceName, region, credentials, profileFile, profileName, debug)

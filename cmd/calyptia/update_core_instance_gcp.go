@@ -12,7 +12,7 @@ func newCmdUpdateCoreInstanceOnGCP(config *config) *cobra.Command {
 		Aliases:           []string{"google", "gce"},
 		Short:             "Update a core instance from Google Compute Engine (TODO)",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.completeAggregators,
+		ValidArgsFunction: config.completeCoreInstances,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return errors.New("not implemented")
 		},

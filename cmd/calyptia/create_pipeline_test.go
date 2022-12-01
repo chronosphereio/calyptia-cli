@@ -40,7 +40,7 @@ func Test_newCmdCreatePipeline(t *testing.T) {
 	cmd.SilenceErrors = true
 	cmd.SilenceUsage = true
 	cmd.SetArgs([]string{
-		"--aggregator", "want_aggregator",
+		"--core-instance", "want_aggregator",
 		"--name", "want_name",
 		"--replicas", "33",
 		"--config-file", configFile.Name(),

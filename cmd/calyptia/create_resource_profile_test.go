@@ -35,7 +35,7 @@ func Test_newCmdCreateResourceProfile(t *testing.T) {
 	cmd.SilenceErrors = true
 	cmd.SilenceUsage = true
 	cmd.SetArgs([]string{
-		"--aggregator", "want_aggregator",
+		"--core-instance", "want_aggregator",
 		"--name", "want_name",
 		"--spec", spec.Name(),
 	})

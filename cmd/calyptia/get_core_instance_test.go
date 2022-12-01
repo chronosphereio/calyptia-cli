@@ -22,7 +22,7 @@ func Test_newCmdGetAggregators(t *testing.T) {
 
 	t.Run("empty", func(t *testing.T) {
 		got := &bytes.Buffer{}
-		cmd := newCmdGetAggregators(configWithMock(nil))
+		cmd := newCmdGetCoreInstances(configWithMock(nil))
 		cmd.SetOutput(got)
 
 		err := cmd.Execute()
@@ -41,7 +41,7 @@ func Test_newCmdGetAggregators(t *testing.T) {
 
 	t.Run("error", func(t *testing.T) {
 		want := errors.New("internal error")
-		cmd := newCmdGetAggregators(configWithMock(&ClientMock{
+		cmd := newCmdGetCoreInstances(configWithMock(&ClientMock{
 			AggregatorsFunc: func(ctx context.Context, projectID string, params cloud.AggregatorsParams) (cloud.Aggregators, error) {
 				return cloud.Aggregators{}, want
 			},
@@ -79,7 +79,7 @@ func Test_newCmdGetAggregators(t *testing.T) {
 			}},
 		}
 		got := &bytes.Buffer{}
-		cmd := newCmdGetAggregators(configWithMock(&ClientMock{
+		cmd := newCmdGetCoreInstances(configWithMock(&ClientMock{
 			AggregatorsFunc: func(ctx context.Context, projectID string, params cloud.AggregatorsParams) (cloud.Aggregators, error) {
 				wantNoEq(t, nil, params.Last)
 				wantEq(t, uint(2), *params.Last)
@@ -155,7 +155,7 @@ func Test_aggregatorsKeys(t *testing.T) {
 	}
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
-			if got := aggregatorsKeys(tc.given); !reflect.DeepEqual(got, tc.want) {
+			if got := coreInstancesKeys(tc.given); !reflect.DeepEqual(got, tc.want) {
 				t.Errorf("Aggregators.Keys(%+v) = %v, want %v", tc.given, got, tc.want)
 			}
 		})

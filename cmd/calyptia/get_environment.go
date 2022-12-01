@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -61,7 +60,7 @@ func newCmdGetEnvironment(c *config) *cobra.Command {
 		Use:   "environment",
 		Short: "Get environments",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx := context.Background()
+			ctx := cmd.Context()
 			ee, err := c.cloud.Environments(ctx, c.projectID, cloud.EnvironmentsParams{Last: &last})
 			if err != nil {
 				return err

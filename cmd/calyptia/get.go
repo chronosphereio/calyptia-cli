@@ -12,7 +12,7 @@ func newCmdGet(config *config) *cobra.Command {
 		newCmdGetMembers(config),
 		newCmdGetAgents(config),
 		newCmdGetAgent(config),
-		newCmdGetAggregators(config),
+		newCmdGetCoreInstances(config),
 		newCmdGetPipelines(config),
 		newCmdGetPipeline(config),
 		newCmdGetEndpoints(config),

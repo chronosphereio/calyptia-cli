@@ -11,11 +11,11 @@ func newCmdUpdate(config *config) *cobra.Command {
 	cmd.AddCommand(
 		newCmdUpdateProject(config),
 		newCmdUpdateAgent(config),
+		newCmdUpdateCoreInstance(config),
 		newCmdUpdatePipeline(config),
 		newCmdUpdatePipelineSecret(config),
 		newCmdUpdatePipelineFile(config),
 		newCmdUpdateEndpoint(config),
-		newCmdUpdateCoreInstance(config),
 		newCmdUpdateEnvironment(config),
 		newCmdUpdateConfigSection(config),
 		newCmdUpdateConfigSectionSet(config),

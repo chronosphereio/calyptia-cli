@@ -47,7 +47,7 @@ func newCmdDeleteCoreInstances(config *config) *cobra.Command {
 			}
 
 			if !confirmed {
-				cmd.Printf("You are about to delete:\n\n%s\n\nAre you sure you want to delete all of them? (y/N) ", strings.Join(aggregatorsKeys(aa.Items), "\n"))
+				cmd.Printf("You are about to delete:\n\n%s\n\nAre you sure you want to delete all of them? (y/N) ", strings.Join(coreInstancesKeys(aa.Items), "\n"))
 				confirmed, err := readConfirm(cmd.InOrStdin())
 				if err != nil {
 					return err
@@ -59,17 +59,17 @@ func newCmdDeleteCoreInstances(config *config) *cobra.Command {
 				}
 			}
 
-			aggregatorIDs := make([]string, len(aa.Items))
+			instanceIDs := make([]string, len(aa.Items))
 			for i, a := range aa.Items {
-				aggregatorIDs[i] = a.ID
+				instanceIDs[i] = a.ID
 			}
 
-			err = config.cloud.DeleteAggregators(ctx, config.projectID, aggregatorIDs...)
+			err = config.cloud.DeleteAggregators(ctx, config.projectID, instanceIDs...)
 			if err != nil {
 				return fmt.Errorf("delete core instances: %w", err)
 			}
 
-			cmd.Printf("Successfully deleted %d core instances\n", len(aggregatorIDs))
+			cmd.Printf("Successfully deleted %d core instances\n", len(instanceIDs))
 
 			return nil
 		},
