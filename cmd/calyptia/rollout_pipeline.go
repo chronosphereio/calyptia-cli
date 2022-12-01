@@ -15,7 +15,7 @@ import (
 func newCmdRolloutPipeline(config *config) *cobra.Command {
 	var stepsBack uint
 	var toConfigID string
-	var autoCreatePortsFromConfig bool
+	var autoCreatePortsFromConfig, skipConfigValidation bool
 	var outputFormat, goTemplate string
 
 	cmd := &cobra.Command{
@@ -67,6 +67,7 @@ func newCmdRolloutPipeline(config *config) *cobra.Command {
 			updated, err := config.cloud.UpdatePipeline(config.ctx, pipelineID, cloud.UpdatePipeline{
 				RawConfig:                 &rawConfig,
 				AutoCreatePortsFromConfig: &autoCreatePortsFromConfig,
+				SkipConfigValidation:      skipConfigValidation,
 			})
 			if err != nil {
 				return err
@@ -104,6 +105,7 @@ func newCmdRolloutPipeline(config *config) *cobra.Command {
 	fs.BoolVar(&autoCreatePortsFromConfig, "auto-create-ports", true, "Automatically create pipeline ports from config")
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
+	fs.BoolVar(&skipConfigValidation, "skip-config-validation", false, "Opt-in to skip config validation (Use with caution as this option might be removed soon)")
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
 
