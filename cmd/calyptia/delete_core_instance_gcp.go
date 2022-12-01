@@ -26,7 +26,7 @@ func newCmdDeleteCoreInstanceOnGCP(config *config, client gcp.Client) *cobra.Com
 		Aliases:           []string{"google", "gce"},
 		Short:             "Delete a core instance from Google Compute Engine",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.completeAggregators,
+		ValidArgsFunction: config.completeCoreInstances,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			coreInstanceName := args[0]
 			ctx := cmd.Context()

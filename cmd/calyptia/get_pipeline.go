@@ -15,7 +15,7 @@ import (
 )
 
 func newCmdGetPipelines(config *config) *cobra.Command {
-	var aggregatorKey string
+	var coreInstanceKey string
 	var last uint
 	var outputFormat, goTemplate string
 	var showIDs bool
@@ -24,7 +24,7 @@ func newCmdGetPipelines(config *config) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:   "pipelines",
-		Short: "Display latest pipelines from an aggregator",
+		Short: "Display latest pipelines from an core_instance",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var environmentID string
 			if environment != "" {
@@ -34,12 +34,12 @@ func newCmdGetPipelines(config *config) *cobra.Command {
 					return err
 				}
 			}
-			aggregatorID, err := config.loadAggregatorID(aggregatorKey, environmentID)
+			coreInstanceID, err := config.loadCoreInstanceID(coreInstanceKey, environmentID)
 			if err != nil {
 				return err
 			}
 
-			pp, err := config.cloud.Pipelines(config.ctx, aggregatorID, cloud.PipelinesParams{
+			pp, err := config.cloud.Pipelines(config.ctx, coreInstanceID, cloud.PipelinesParams{
 				Last:                     &last,
 				RenderWithConfigSections: renderWithConfigSections,
 			})
@@ -77,7 +77,7 @@ func newCmdGetPipelines(config *config) *cobra.Command {
 	}
 
 	fs := cmd.Flags()
-	fs.StringVar(&aggregatorKey, "aggregator", "", "Parent aggregator ID or name")
+	fs.StringVar(&coreInstanceKey, "core_instance", "", "Parent core_instance ID or name")
 	fs.UintVarP(&last, "last", "l", 0, "Last `N` pipelines. 0 means no limit")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include pipeline IDs in table output")
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
@@ -87,9 +87,9 @@ func newCmdGetPipelines(config *config) *cobra.Command {
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
-	_ = cmd.RegisterFlagCompletionFunc("aggregator", config.completeAggregators)
+	_ = cmd.RegisterFlagCompletionFunc("core_instance", config.completeCoreInstances)
 
-	_ = cmd.MarkFlagRequired("aggregator") // TODO: use default aggregator ID from config cmd.
+	_ = cmd.MarkFlagRequired("core_instance") // TODO: use default core instance ID from config cmd.
 
 	return cmd
 }
@@ -250,7 +250,7 @@ func newCmdGetPipeline(config *config) *cobra.Command {
 func (config *config) fetchAllPipelines() ([]cloud.Pipeline, error) {
 	aa, err := config.cloud.Aggregators(config.ctx, config.projectID, cloud.AggregatorsParams{})
 	if err != nil {
-		return nil, fmt.Errorf("could not prefetch aggregators: %w", err)
+		return nil, fmt.Errorf("could not prefetch core_instances: %w", err)
 	}
 
 	if len(aa.Items) == 0 {

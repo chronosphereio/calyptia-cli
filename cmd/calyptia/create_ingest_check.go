@@ -46,7 +46,7 @@ func newCmdCreateIngestCheck(config *config) *cobra.Command {
 					return err
 				}
 			}
-			coreInstanceID, err := config.loadAggregatorID(coreInstance, environmentID)
+			coreInstanceID, err := config.loadCoreInstanceID(coreInstance, environmentID)
 			if err != nil {
 				return err
 			}

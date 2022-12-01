@@ -18,14 +18,14 @@ func Test_newCmdGetResourceProfiles(t *testing.T) {
 		cmd.SetOutput(got)
 
 		err := cmd.Execute()
-		wantErrMsg(t, `required flag(s) "aggregator" not set`, err)
+		wantErrMsg(t, `required flag(s) "core_instance" not set`, err)
 	})
 
 	t.Run("empty", func(t *testing.T) {
 		got := &bytes.Buffer{}
 		cmd := newCmdGetResourceProfiles(configWithMock(nil))
 		cmd.SetOutput(got)
-		cmd.SetArgs([]string{"--aggregator=" + zeroUUID4})
+		cmd.SetArgs([]string{"--core_instance=" + zeroUUID4})
 
 		err := cmd.Execute()
 		wantEq(t, nil, err)
@@ -33,7 +33,7 @@ func Test_newCmdGetResourceProfiles(t *testing.T) {
 
 		t.Run("with_ids", func(t *testing.T) {
 			got.Reset()
-			cmd.SetArgs([]string{"--aggregator=" + zeroUUID4, "--show-ids"})
+			cmd.SetArgs([]string{"--core_instance=" + zeroUUID4, "--show-ids"})
 
 			err := cmd.Execute()
 			wantEq(t, nil, err)
@@ -44,11 +44,11 @@ func Test_newCmdGetResourceProfiles(t *testing.T) {
 	t.Run("error", func(t *testing.T) {
 		want := errors.New("internal error")
 		cmd := newCmdGetResourceProfiles(configWithMock(&ClientMock{
-			ResourceProfilesFunc: func(ctx context.Context, aggregatorID string, params cloud.ResourceProfilesParams) (cloud.ResourceProfiles, error) {
+			ResourceProfilesFunc: func(ctx context.Context, coreInstanceID string, params cloud.ResourceProfilesParams) (cloud.ResourceProfiles, error) {
 				return cloud.ResourceProfiles{}, want
 			},
 		}))
-		cmd.SetArgs([]string{"--aggregator=" + zeroUUID4})
+		cmd.SetArgs([]string{"--core_instance=" + zeroUUID4})
 		cmd.SilenceErrors = true
 		cmd.SilenceUsage = true
 
@@ -91,13 +91,13 @@ func Test_newCmdGetResourceProfiles(t *testing.T) {
 		}
 		got := &bytes.Buffer{}
 		cmd := newCmdGetResourceProfiles(configWithMock(&ClientMock{
-			ResourceProfilesFunc: func(ctx context.Context, aggregatorID string, params cloud.ResourceProfilesParams) (cloud.ResourceProfiles, error) {
+			ResourceProfilesFunc: func(ctx context.Context, coreInstanceID string, params cloud.ResourceProfilesParams) (cloud.ResourceProfiles, error) {
 				wantNoEq(t, nil, params.Last)
 				wantEq(t, uint(2), *params.Last)
 				return want, nil
 			},
 		}))
-		cmd.SetArgs([]string{"--aggregator=" + zeroUUID4, "--last=2"})
+		cmd.SetArgs([]string{"--core_instance=" + zeroUUID4, "--last=2"})
 		cmd.SetOutput(got)
 
 		err := cmd.Execute()
@@ -109,7 +109,7 @@ func Test_newCmdGetResourceProfiles(t *testing.T) {
 
 		t.Run("with_ids", func(t *testing.T) {
 			got.Reset()
-			cmd.SetArgs([]string{"--aggregator=" + zeroUUID4, "--show-ids"})
+			cmd.SetArgs([]string{"--core_instance=" + zeroUUID4, "--show-ids"})
 
 			err := cmd.Execute()
 			wantEq(t, nil, err)
@@ -124,7 +124,7 @@ func Test_newCmdGetResourceProfiles(t *testing.T) {
 			wantEq(t, nil, err)
 
 			got.Reset()
-			cmd.SetArgs([]string{"--aggregator=" + zeroUUID4, "--output-format=json"})
+			cmd.SetArgs([]string{"--core_instance=" + zeroUUID4, "--output-format=json"})
 
 			err = cmd.Execute()
 			wantEq(t, nil, err)

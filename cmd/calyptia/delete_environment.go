@@ -29,7 +29,7 @@ func newCmdDeleteEnvironment(c *config) *cobra.Command {
 			}
 			environment := environments.Items[0]
 			if !confirmDelete {
-				cmd.Print("This will remove ALL your agents, aggregators. Do you confirm? [y/N] ")
+				cmd.Print("This will remove ALL your agents, core_instances. Do you confirm? [y/N] ")
 				confirmDelete, err = readConfirm(cmd.InOrStdin())
 				if err != nil {
 					return err

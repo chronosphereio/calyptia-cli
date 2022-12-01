@@ -18,7 +18,7 @@ import (
 )
 
 func newCmdCreatePipeline(config *config) *cobra.Command {
-	var aggregatorKey string
+	var coreInstanceKey string
 	var name string
 	var replicasCount uint
 	var configFile string
@@ -95,12 +95,12 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 				}
 			}
 
-			aggregatorID, err := config.loadAggregatorID(aggregatorKey, environmentID)
+			coreInstanceID, err := config.loadCoreInstanceID(coreInstanceKey, environmentID)
 			if err != nil {
 				return err
 			}
 
-			a, err := config.cloud.CreatePipeline(config.ctx, aggregatorID, cloud.CreatePipeline{
+			a, err := config.cloud.CreatePipeline(config.ctx, coreInstanceID, cloud.CreatePipeline{
 				Name:                      name,
 				ReplicasCount:             replicasCount,
 				RawConfig:                 string(rawConfig),
@@ -141,7 +141,7 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 	}
 
 	fs := cmd.Flags()
-	fs.StringVar(&aggregatorKey, "aggregator", "", "Parent aggregator ID or name")
+	fs.StringVar(&coreInstanceKey, "core_instance", "", "Parent core_instance ID or name")
 	fs.StringVar(&name, "name", "", "Pipeline name; leave it empty to generate a random name")
 	fs.UintVar(&replicasCount, "replicas", 1, "Pipeline replica size")
 	fs.StringVar(&configFile, "config-file", "fluent-bit.conf", "Fluent Bit config file used by pipeline")
@@ -159,14 +159,14 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
-	_ = cmd.RegisterFlagCompletionFunc("aggregator", config.completeAggregators)
+	_ = cmd.RegisterFlagCompletionFunc("core_instance", config.completeCoreInstances)
 	_ = cmd.RegisterFlagCompletionFunc("secrets-format", func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
 		return []string{"auto", "env", "json", "yaml"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("resource-profile", config.completeResourceProfiles)
 
-	_ = cmd.MarkFlagRequired("aggregator") // TODO: use default aggregator key from config cmd.
+	_ = cmd.MarkFlagRequired("core_instance") // TODO: use default core_instance key from config cmd.
 
 	return cmd
 }

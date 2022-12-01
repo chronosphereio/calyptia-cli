@@ -18,8 +18,8 @@ func Test_newCmdCreateResourceProfile(t *testing.T) {
 		AggregatorsFunc: func(ctx context.Context, projectID string, params types.AggregatorsParams) (types.Aggregators, error) {
 			return types.Aggregators{
 				Items: []types.Aggregator{{
-					ID:   "want_aggregator",
-					Name: "want_aggregator",
+					ID:   "want_core_instance",
+					Name: "want_core_instance",
 				}},
 			}, nil
 		},
@@ -35,7 +35,7 @@ func Test_newCmdCreateResourceProfile(t *testing.T) {
 	cmd.SilenceErrors = true
 	cmd.SilenceUsage = true
 	cmd.SetArgs([]string{
-		"--aggregator", "want_aggregator",
+		"--core_instance", "want_core_instance",
 		"--name", "want_name",
 		"--spec", spec.Name(),
 	})
@@ -49,6 +49,6 @@ func Test_newCmdCreateResourceProfile(t *testing.T) {
 	wantEq(t, 1, len(calls))
 
 	call := calls[0]
-	wantEq(t, "want_aggregator", call.AggregatorID)
+	wantEq(t, "want_core_instance", call.AggregatorID)
 	wantEq(t, "want_name", call.Payload.Name)
 }
