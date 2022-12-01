@@ -24,7 +24,7 @@ func newCmdGetPipelines(config *config) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:   "pipelines",
-		Short: "Display latest pipelines from an core_instance",
+		Short: "Display latest pipelines from a core_instance",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var environmentID string
 			if environment != "" {
