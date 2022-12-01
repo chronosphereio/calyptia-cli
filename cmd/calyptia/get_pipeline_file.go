@@ -103,7 +103,11 @@ func newCmdGetPipelineFile(config *config) *cobra.Command {
 			}
 
 			if onlyContents {
-				cmd.Print(file.Contents)
+				if !file.Encrypted {
+					cmd.Print(string(file.Contents))
+				} else {
+					cmd.Print(file.Contents)
+				}
 				return nil
 			}
 
