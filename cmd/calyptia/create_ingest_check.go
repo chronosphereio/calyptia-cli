@@ -17,7 +17,7 @@ func newCmdCreateIngestCheck(config *config) *cobra.Command {
 		environment     string
 	)
 	cmd := &cobra.Command{
-		Use:   "ingest-check CORE_INSTANCE",
+		Use:   "ingest_check CORE_INSTANCE",
 		Short: "Create an ingest check",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {

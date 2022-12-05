@@ -74,7 +74,7 @@ func newCmdGetResourceProfiles(config *config) *cobra.Command {
 	}
 
 	fs := cmd.Flags()
-	fs.StringVar(&coreInstanceKey, "core_instance", "", "Parent core_instance ID or name")
+	fs.StringVar(&coreInstanceKey, "core-instance", "", "Parent core-instance ID or name")
 	fs.UintVarP(&last, "last", "l", 0, "Last `N` pipelines. 0 means no limit")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include resource profile IDs in table output")
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
@@ -83,9 +83,9 @@ func newCmdGetResourceProfiles(config *config) *cobra.Command {
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
-	_ = cmd.RegisterFlagCompletionFunc("core_instance", config.completeCoreInstances)
+	_ = cmd.RegisterFlagCompletionFunc("core-instance", config.completeCoreInstances)
 
-	_ = cmd.MarkFlagRequired("core_instance") // TODO: use default aggregator ID from config cmd.
+	_ = cmd.MarkFlagRequired("core-instance") // TODO: use default aggregator ID from config cmd.
 
 	return cmd
 }

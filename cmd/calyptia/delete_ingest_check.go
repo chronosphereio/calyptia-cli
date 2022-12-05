@@ -8,7 +8,7 @@ import (
 
 func newCmdDeleteIngestCheck(c *config) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "ingest-check INGEST_CHECK_ID",
+		Use:   "ingest_check INGEST_CHECK_ID",
 		Short: "Delete a specific ingest check",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {

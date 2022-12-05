@@ -127,13 +127,13 @@ func newCmdDeletePipelines(config *config) *cobra.Command {
 
 	fs := cmd.Flags()
 	fs.BoolVarP(&confirmed, "yes", "y", isNonInteractive, "Confirm deletion")
-	fs.StringVar(&coreInstanceKey, "core_instance", "", "Parent core_instance ID or name")
+	fs.StringVar(&coreInstanceKey, "core-instance", "", "Parent core-instance ID or name")
 	fs.StringVar(&environmentKey, "environment", "", "Calyptia environment ID or name")
 
-	_ = cmd.RegisterFlagCompletionFunc("core_instance", config.completeCoreInstances)
+	_ = cmd.RegisterFlagCompletionFunc("core-instance", config.completeCoreInstances)
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
 
-	_ = cmd.MarkFlagRequired("core_instance")
+	_ = cmd.MarkFlagRequired("core-instance")
 
 	return cmd
 }

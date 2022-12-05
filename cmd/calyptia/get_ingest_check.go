@@ -20,7 +20,7 @@ func newCmdGetIngestCheck(c *config) *cobra.Command {
 		goTemplate   string
 	)
 	cmd := &cobra.Command{
-		Use:   "ingest-check INGEST_CHECK_ID",
+		Use:   "ingest_check INGEST_CHECK_ID",
 		Short: "Get a specific ingest check",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -80,7 +80,7 @@ func newCmdGetIngestChecks(c *config) *cobra.Command {
 		environment  string
 	)
 	cmd := &cobra.Command{
-		Use:   "ingest-checks CORE_INSTANCE",
+		Use:   "ingest_checks CORE_INSTANCE",
 		Short: "Get a list of ingest checks",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
