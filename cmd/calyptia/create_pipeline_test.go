@@ -23,7 +23,7 @@ func Test_newCmdCreatePipeline(t *testing.T) {
 		AggregatorsFunc: func(ctx context.Context, projectID string, params types.AggregatorsParams) (types.Aggregators, error) {
 			return types.Aggregators{
 				Items: []types.Aggregator{{
-					ID: "want_core_instance",
+					ID: "want_core-instance",
 				}},
 			}, nil
 		},
@@ -40,7 +40,7 @@ func Test_newCmdCreatePipeline(t *testing.T) {
 	cmd.SilenceErrors = true
 	cmd.SilenceUsage = true
 	cmd.SetArgs([]string{
-		"--core_instance", "want_core_instance",
+		"--core-instance", "want_core-instance",
 		"--name", "want_name",
 		"--replicas", "33",
 		"--config-file", configFile.Name(),
@@ -58,7 +58,7 @@ func Test_newCmdCreatePipeline(t *testing.T) {
 	wantEq(t, 1, len(calls))
 
 	call := calls[0]
-	wantEq(t, "want_core_instance", call.AggregatorID)
+	wantEq(t, "want_core-instance", call.AggregatorID)
 	wantEq(t, "want_name", call.Payload.Name)
 	wantEq(t, uint(33), call.Payload.ReplicasCount)
 	wantEq(t, 1, len(call.Payload.Files))

@@ -18,14 +18,14 @@ func Test_newCmdGetResourceProfiles(t *testing.T) {
 		cmd.SetOutput(got)
 
 		err := cmd.Execute()
-		wantErrMsg(t, `required flag(s) "core_instance" not set`, err)
+		wantErrMsg(t, `required flag(s) "core-instance" not set`, err)
 	})
 
 	t.Run("empty", func(t *testing.T) {
 		got := &bytes.Buffer{}
 		cmd := newCmdGetResourceProfiles(configWithMock(nil))
 		cmd.SetOutput(got)
-		cmd.SetArgs([]string{"--core_instance=" + zeroUUID4})
+		cmd.SetArgs([]string{"--core-instance=" + zeroUUID4})
 
 		err := cmd.Execute()
 		wantEq(t, nil, err)
@@ -33,7 +33,7 @@ func Test_newCmdGetResourceProfiles(t *testing.T) {
 
 		t.Run("with_ids", func(t *testing.T) {
 			got.Reset()
-			cmd.SetArgs([]string{"--core_instance=" + zeroUUID4, "--show-ids"})
+			cmd.SetArgs([]string{"--core-instance=" + zeroUUID4, "--show-ids"})
 
 			err := cmd.Execute()
 			wantEq(t, nil, err)
@@ -48,7 +48,7 @@ func Test_newCmdGetResourceProfiles(t *testing.T) {
 				return cloud.ResourceProfiles{}, want
 			},
 		}))
-		cmd.SetArgs([]string{"--core_instance=" + zeroUUID4})
+		cmd.SetArgs([]string{"--core-instance=" + zeroUUID4})
 		cmd.SilenceErrors = true
 		cmd.SilenceUsage = true
 
@@ -97,7 +97,7 @@ func Test_newCmdGetResourceProfiles(t *testing.T) {
 				return want, nil
 			},
 		}))
-		cmd.SetArgs([]string{"--core_instance=" + zeroUUID4, "--last=2"})
+		cmd.SetArgs([]string{"--core-instance=" + zeroUUID4, "--last=2"})
 		cmd.SetOutput(got)
 
 		err := cmd.Execute()
@@ -109,7 +109,7 @@ func Test_newCmdGetResourceProfiles(t *testing.T) {
 
 		t.Run("with_ids", func(t *testing.T) {
 			got.Reset()
-			cmd.SetArgs([]string{"--core_instance=" + zeroUUID4, "--show-ids"})
+			cmd.SetArgs([]string{"--core-instance=" + zeroUUID4, "--show-ids"})
 
 			err := cmd.Execute()
 			wantEq(t, nil, err)
@@ -124,7 +124,7 @@ func Test_newCmdGetResourceProfiles(t *testing.T) {
 			wantEq(t, nil, err)
 
 			got.Reset()
-			cmd.SetArgs([]string{"--core_instance=" + zeroUUID4, "--output-format=json"})
+			cmd.SetArgs([]string{"--core-instance=" + zeroUUID4, "--output-format=json"})
 
 			err = cmd.Execute()
 			wantEq(t, nil, err)

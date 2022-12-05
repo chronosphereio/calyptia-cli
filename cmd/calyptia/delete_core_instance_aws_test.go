@@ -112,7 +112,7 @@ func Test_newCmdDeleteCoreInstanceOnAWS(t *testing.T) {
 		)
 
 		cmd.SetOut(&got)
-		cmd.SetArgs([]string{"core_instance", "--environment", "default"})
+		cmd.SetArgs([]string{"core-instance", "--environment", "default"})
 
 		err := cmd.Execute()
 		wantNoEq(t, nil, err)
@@ -138,7 +138,7 @@ func Test_newCmdDeleteCoreInstanceOnAWS(t *testing.T) {
 						return types.Environments{Items: []types.Environment{{Name: "default"}}}, nil
 					},
 					AggregatorsFunc: func(ctx context.Context, projectID string, params types.AggregatorsParams) (types.Aggregators, error) {
-						return types.Aggregators{}, fmt.Errorf("could not get core_instance")
+						return types.Aggregators{}, fmt.Errorf("could not get core-instance")
 					},
 				}),
 			&aws.ClientMock{
@@ -159,7 +159,7 @@ func Test_newCmdDeleteCoreInstanceOnAWS(t *testing.T) {
 
 		err := cmd.Execute()
 		wantNoEq(t, nil, err)
-		wantErrMsg(t, `could not load core instance ID: could not get core_instance`, err)
+		wantErrMsg(t, `could not load core instance ID: could not get core-instance`, err)
 
 	})
 
