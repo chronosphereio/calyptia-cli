@@ -27,10 +27,10 @@ func newCmdUpdateCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 		Aliases:           []string{"kube", "k8s"},
 		Short:             "update a core instance from kubernetes",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.completeAggregators,
+		ValidArgsFunction: config.completeCoreInstances,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.Background()
-			aggregatorKey := args[0]
+			coreInstanceKey := args[0]
 
 			var environmentID string
 			if environment != "" {
@@ -40,12 +40,12 @@ func newCmdUpdateCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 					return err
 				}
 			}
-			aggregatorID, err := config.loadAggregatorID(aggregatorKey, environmentID)
+			coreInstanceID, err := config.loadCoreInstanceID(coreInstanceKey, environmentID)
 			if err != nil {
 				return err
 			}
 
-			if aggregatorKey == newName {
+			if coreInstanceKey == newName {
 				return fmt.Errorf("cannot update core instance with the same name")
 			}
 
@@ -66,12 +66,12 @@ func newCmdUpdateCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 				opts.ClusterLogging = &disableClusterLogging
 			}
 
-			err = config.cloud.UpdateAggregator(config.ctx, aggregatorID, opts)
+			err = config.cloud.UpdateAggregator(config.ctx, coreInstanceID, opts)
 			if err != nil {
 				return fmt.Errorf("could not update core instance at calyptia cloud: %w", err)
 			}
 
-			agg, err := config.cloud.Aggregator(ctx, aggregatorID)
+			agg, err := config.cloud.Aggregator(ctx, coreInstanceID)
 			if err != nil {
 				return err
 			}

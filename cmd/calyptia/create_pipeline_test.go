@@ -23,7 +23,7 @@ func Test_newCmdCreatePipeline(t *testing.T) {
 		AggregatorsFunc: func(ctx context.Context, projectID string, params types.AggregatorsParams) (types.Aggregators, error) {
 			return types.Aggregators{
 				Items: []types.Aggregator{{
-					ID: "want_aggregator",
+					ID: "want_core_instance",
 				}},
 			}, nil
 		},
@@ -40,7 +40,7 @@ func Test_newCmdCreatePipeline(t *testing.T) {
 	cmd.SilenceErrors = true
 	cmd.SilenceUsage = true
 	cmd.SetArgs([]string{
-		"--aggregator", "want_aggregator",
+		"--core_instance", "want_core_instance",
 		"--name", "want_name",
 		"--replicas", "33",
 		"--config-file", configFile.Name(),
@@ -58,7 +58,7 @@ func Test_newCmdCreatePipeline(t *testing.T) {
 	wantEq(t, 1, len(calls))
 
 	call := calls[0]
-	wantEq(t, "want_aggregator", call.AggregatorID)
+	wantEq(t, "want_core_instance", call.AggregatorID)
 	wantEq(t, "want_name", call.Payload.Name)
 	wantEq(t, uint(33), call.Payload.ReplicasCount)
 	wantEq(t, 1, len(call.Payload.Files))
@@ -68,5 +68,5 @@ func Test_newCmdCreatePipeline(t *testing.T) {
 	wantEq(t, 1, len(call.Payload.Secrets))
 	wantEq(t, "FOO", call.Payload.Secrets[0].Key)
 	wantEq(t, []byte("BAR"), call.Payload.Secrets[0].Value)
-	wantEq(t, json.RawMessage([]byte(`{"foo":"bar"}`)), *call.Payload.Metadata)
+	wantEq(t, json.RawMessage(`{"foo":"bar"}`), *call.Payload.Metadata)
 }

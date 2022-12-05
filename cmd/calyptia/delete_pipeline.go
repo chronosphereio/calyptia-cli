@@ -60,7 +60,7 @@ func newCmdDeletePipeline(config *config) *cobra.Command {
 
 func newCmdDeletePipelines(config *config) *cobra.Command {
 	var confirmed bool
-	var aggregatorKey string
+	var coreInstanceKey string
 	var environmentKey string
 
 	cmd := &cobra.Command{
@@ -77,12 +77,12 @@ func newCmdDeletePipelines(config *config) *cobra.Command {
 				}
 			}
 
-			aggregatorID, err := config.loadAggregatorID(aggregatorKey, environmentID)
+			coreInstanceID, err := config.loadCoreInstanceID(coreInstanceKey, environmentID)
 			if err != nil {
 				return err
 			}
 
-			pp, err := config.cloud.Pipelines(ctx, aggregatorID, types.PipelinesParams{
+			pp, err := config.cloud.Pipelines(ctx, coreInstanceID, types.PipelinesParams{
 				Last: ptr(uint(0)),
 			})
 			if err != nil {
@@ -112,7 +112,7 @@ func newCmdDeletePipelines(config *config) *cobra.Command {
 				pipelineIDs[i] = p.ID
 			}
 
-			err = config.cloud.DeletePipelines(ctx, aggregatorID, pipelineIDs...)
+			err = config.cloud.DeletePipelines(ctx, coreInstanceID, pipelineIDs...)
 			if err != nil {
 				return fmt.Errorf("delete pipelines: %w", err)
 			}
@@ -127,13 +127,13 @@ func newCmdDeletePipelines(config *config) *cobra.Command {
 
 	fs := cmd.Flags()
 	fs.BoolVarP(&confirmed, "yes", "y", isNonInteractive, "Confirm deletion")
-	fs.StringVar(&aggregatorKey, "aggregator", "", "Parent aggregator ID or name")
+	fs.StringVar(&coreInstanceKey, "core_instance", "", "Parent core_instance ID or name")
 	fs.StringVar(&environmentKey, "environment", "", "Calyptia environment ID or name")
 
-	_ = cmd.RegisterFlagCompletionFunc("aggregator", config.completeAggregators)
+	_ = cmd.RegisterFlagCompletionFunc("core_instance", config.completeCoreInstances)
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
 
-	_ = cmd.MarkFlagRequired("aggregator")
+	_ = cmd.MarkFlagRequired("core_instance")
 
 	return cmd
 }

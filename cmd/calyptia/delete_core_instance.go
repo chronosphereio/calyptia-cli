@@ -15,7 +15,7 @@ import (
 func newCmdDeleteCoreInstance(config *config, testClientSet kubernetes.Interface) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "core_instance",
-		Aliases: []string{"instance", "aggregator"},
+		Aliases: []string{"instance", "core_instance"},
 		Short:   "Delete a core instance from either Kubernetes, Amazon EC2, or Google Compute Engine",
 	}
 	cmd.AddCommand(
@@ -47,7 +47,7 @@ func newCmdDeleteCoreInstances(config *config) *cobra.Command {
 			}
 
 			if !confirmed {
-				cmd.Printf("You are about to delete:\n\n%s\n\nAre you sure you want to delete all of them? (y/N) ", strings.Join(aggregatorsKeys(aa.Items), "\n"))
+				cmd.Printf("You are about to delete:\n\n%s\n\nAre you sure you want to delete all of them? (y/N) ", strings.Join(coreInstanceKeys(aa.Items), "\n"))
 				confirmed, err := readConfirm(cmd.InOrStdin())
 				if err != nil {
 					return err

@@ -43,7 +43,7 @@ var resourceProfileSpecExample = func() string {
 }()
 
 func newCmdCreateResourceProfile(config *config) *cobra.Command {
-	var aggregatorKey string
+	var coreInstanceKey string
 	var name string
 	var specFile string
 	var outputFormat, goTemplate string
@@ -51,7 +51,7 @@ func newCmdCreateResourceProfile(config *config) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:   "resource_profile",
-		Short: "Create a new resource profile attached to an aggregator",
+		Short: "Create a new resource profile attached to a core_instance",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			rawSpec, err := readFile(specFile)
 			if err != nil {
@@ -73,7 +73,7 @@ func newCmdCreateResourceProfile(config *config) *cobra.Command {
 				}
 			}
 
-			aggregatorID, err := config.loadAggregatorID(aggregatorKey, environmentID)
+			aggregatorID, err := config.loadCoreInstanceID(coreInstanceKey, environmentID)
 			if err != nil {
 				return err
 			}
@@ -117,7 +117,7 @@ func newCmdCreateResourceProfile(config *config) *cobra.Command {
 	}
 
 	fs := cmd.Flags()
-	fs.StringVar(&aggregatorKey, "aggregator", "", "Parent aggregator ID or name")
+	fs.StringVar(&coreInstanceKey, "core_instance", "", "Parent core_instance ID or name")
 	fs.StringVar(&name, "name", "", "Resource profile name")
 	fs.StringVar(&specFile, "spec", "", "Take spec from JSON file. Example:\n"+resourceProfileSpecExample)
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
@@ -125,13 +125,13 @@ func newCmdCreateResourceProfile(config *config) *cobra.Command {
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
-	_ = cmd.RegisterFlagCompletionFunc("aggregator", config.completeAggregators)
+	_ = cmd.RegisterFlagCompletionFunc("core_instance", config.completeCoreInstances)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("name", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return nil, cobra.ShellCompDirectiveNoFileComp
 	})
 
-	_ = cmd.MarkFlagRequired("aggregator") // TODO: use default aggregator key from config cmd.
+	_ = cmd.MarkFlagRequired("core_instance") // TODO: use default core_instance key from config cmd.
 	_ = cmd.MarkFlagRequired("name")
 	_ = cmd.MarkFlagRequired("spec")
 

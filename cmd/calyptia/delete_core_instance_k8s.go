@@ -31,7 +31,7 @@ func newCmdDeleteCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 		Aliases:           []string{"kube", "k8s"},
 		Short:             "Delete a core instance and all of its kubernetes resources",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.completeAggregators,
+		ValidArgsFunction: config.completeCoreInstances,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.Background()
 			var environmentID string
@@ -43,15 +43,14 @@ func newCmdDeleteCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 				}
 			}
 
-			aggregatorKey := args[0]
-
-			aggregatorID, err := config.loadAggregatorID(aggregatorKey, environmentID)
+			coreInstanceKey := args[0]
+			coreInstanceID, err := config.loadCoreInstanceID(coreInstanceKey, environmentID)
 			if err != nil {
 				return err
 			}
 
 			if !confirmed {
-				cmd.Printf("Are you sure you want to delete core instance with id %q and all of its associated kubernetes resources? (y/N) ", aggregatorID)
+				cmd.Printf("Are you sure you want to delete core instance with id %q and all of its associated kubernetes resources? (y/N) ", coreInstanceID)
 				confirmed, err := readConfirm(cmd.InOrStdin())
 				if err != nil {
 					return err
@@ -63,7 +62,7 @@ func newCmdDeleteCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 				}
 			}
 
-			agg, err := config.cloud.Aggregator(ctx, aggregatorID)
+			agg, err := config.cloud.Aggregator(ctx, coreInstanceID)
 			if err != nil {
 				return err
 			}
