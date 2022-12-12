@@ -102,23 +102,42 @@ func (client *Client) CreateSecret(ctx context.Context, agg cloud.CreatedAggrega
 	}, metav1.CreateOptions{})
 }
 
-func (client *Client) CreateClusterRole(ctx context.Context, agg cloud.CreatedAggregator) (*rbacv1.ClusterRole, error) {
+type ClusterRoleOpt struct {
+	EnableOpenShift bool
+}
+
+func (client *Client) CreateClusterRole(ctx context.Context, agg cloud.CreatedAggregator, opts ...ClusterRoleOpt) (*rbacv1.ClusterRole, error) {
+	apiGroups := []string{"", "apps", "batch", "policy"}
+	resources := []string{
+		"namespaces",
+		"deployments",
+		"daemonsets",
+		"replicasets",
+		"pods",
+		"services",
+		"configmaps",
+		"deployments/scale",
+		"secrets",
+		"nodes/proxy",
+		"nodes",
+		"jobs",
+		"podsecuritypolicies",
+	}
+
+	if len(opts) > 0 {
+		enableOpenShift := opts[0].EnableOpenShift
+		if enableOpenShift {
+			apiGroups = append(apiGroups, "security.openshift.io")
+			resources = append(resources, "securitycontextconstraints")
+		}
+	}
+
 	return client.RbacV1().ClusterRoles().Create(ctx, &rbacv1.ClusterRole{
 		ObjectMeta: client.getObjectMeta(agg, clusterRoleObjectType),
 		Rules: []rbacv1.PolicyRule{
 			{
-				APIGroups: []string{"", "apps"},
-				Resources: []string{
-					"namespaces",
-					"deployments",
-					"daemonsets",
-					"replicasets",
-					"pods",
-					"services",
-					"configmaps",
-					"deployments/scale",
-					"secrets",
-				},
+				APIGroups: apiGroups,
+				Resources: resources,
 				Verbs: []string{
 					"get",
 					"list",
@@ -128,6 +147,7 @@ func (client *Client) CreateClusterRole(ctx context.Context, agg cloud.CreatedAg
 					"update",
 					"watch",
 					"deletecollection",
+					"use",
 				},
 			},
 		},
