@@ -24,7 +24,7 @@ require (
 	github.com/joho/godotenv v1.4.0
 	github.com/matryer/moq v0.3.0
 	github.com/pkg/errors v0.9.1
-	github.com/sethvargo/go-retry v0.2.3
+	github.com/sethvargo/go-retry v0.2.4
 	github.com/spf13/cobra v1.6.1
 	github.com/zalando/go-keyring v0.2.1
 	golang.org/x/exp v0.0.0-20221211140036-ad323defaf05
