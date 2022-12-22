@@ -20,12 +20,13 @@ import (
 type objectType string
 
 const (
-	deploymentObjectType         objectType = "deployment"
-	clusterRoleObjectType        objectType = "cluster-role"
-	clusterRoleBindingObjectType objectType = "cluster-role-binding"
-	secretObjectType             objectType = "secret"
-	serviceAccountObjectType     objectType = "service-account"
-	coreTLSVerifyEnvVar          string     = "CORE_TLS_VERIFY"
+	deploymentObjectType          objectType = "deployment"
+	clusterRoleObjectType         objectType = "cluster-role"
+	clusterRoleBindingObjectType  objectType = "cluster-role-binding"
+	secretObjectType              objectType = "secret"
+	serviceAccountObjectType      objectType = "service-account"
+	coreTLSVerifyEnvVar           string     = "CORE_TLS_VERIFY"
+	coreSkipServiceCreationEnvVar string     = "CORE_INSTANCE_SKIP_SERVICE_CREATION"
 )
 
 var (
@@ -189,6 +190,7 @@ func (client *Client) CreateDeployment(
 	agg cloud.CreatedCoreInstance,
 	serviceAccount *apiv1.ServiceAccount,
 	tlsVerify bool,
+	skipServiceCreation bool,
 ) (*appsv1.Deployment, error) {
 	labels := client.LabelsFunc()
 
@@ -214,7 +216,7 @@ func (client *Client) CreateDeployment(
 							Args:            []string{"-debug=true"},
 							Env: []apiv1.EnvVar{
 								{
-									Name:  "CoreInstance_NAME",
+									Name:  "AGGREGATOR_NAME",
 									Value: agg.Name,
 								},
 								{
@@ -222,7 +224,7 @@ func (client *Client) CreateDeployment(
 									Value: client.ProjectToken,
 								},
 								{
-									Name:  "CoreInstance_FLUENTBIT_CLOUD_URL",
+									Name:  "AGGREGATOR_FLUENTBIT_CLOUD_URL",
 									Value: client.CloudBaseURL,
 								},
 								{
@@ -232,6 +234,10 @@ func (client *Client) CreateDeployment(
 								{
 									Name:  coreTLSVerifyEnvVar,
 									Value: strconv.FormatBool(tlsVerify),
+								},
+								{
+									Name:  coreSkipServiceCreationEnvVar,
+									Value: strconv.FormatBool(skipServiceCreation),
 								},
 							},
 						},
