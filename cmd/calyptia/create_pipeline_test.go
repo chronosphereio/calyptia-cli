@@ -20,14 +20,14 @@ func Test_newCmdCreatePipeline(t *testing.T) {
 
 	got := &bytes.Buffer{}
 	mock := &ClientMock{
-		AggregatorsFunc: func(ctx context.Context, projectID string, params types.AggregatorsParams) (types.Aggregators, error) {
-			return types.Aggregators{
-				Items: []types.Aggregator{{
+		CoreInstancesFunc: func(ctx context.Context, projectID string, params types.CoreInstancesParams) (types.CoreInstances, error) {
+			return types.CoreInstances{
+				Items: []types.CoreInstance{{
 					ID: "want_core_instance",
 				}},
 			}, nil
 		},
-		CreatePipelineFunc: func(ctx context.Context, aggregatorID string, payload types.CreatePipeline) (types.CreatedPipeline, error) {
+		CreatePipelineFunc: func(ctx context.Context, CoreInstanceID string, payload types.CreatePipeline) (types.CreatedPipeline, error) {
 			return types.CreatedPipeline{
 				ID:        "want_pipeline_id",
 				Name:      "want_name",
@@ -58,7 +58,7 @@ func Test_newCmdCreatePipeline(t *testing.T) {
 	wantEq(t, 1, len(calls))
 
 	call := calls[0]
-	wantEq(t, "want_core_instance", call.AggregatorID)
+	wantEq(t, "want_core_instance", call.InstanceID)
 	wantEq(t, "want_name", call.Payload.Name)
 	wantEq(t, uint(33), call.Payload.ReplicasCount)
 	wantEq(t, 1, len(call.Payload.Files))

@@ -248,7 +248,7 @@ func newCmdGetPipeline(config *config) *cobra.Command {
 }
 
 func (config *config) fetchAllPipelines() ([]cloud.Pipeline, error) {
-	aa, err := config.cloud.Aggregators(config.ctx, config.projectID, cloud.AggregatorsParams{})
+	aa, err := config.cloud.CoreInstances(config.ctx, config.projectID, cloud.CoreInstancesParams{})
 	if err != nil {
 		return nil, fmt.Errorf("could not prefetch core-instances: %w", err)
 	}

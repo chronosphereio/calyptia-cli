@@ -42,7 +42,7 @@ type Client struct {
 	LabelsFunc   func() map[string]string
 }
 
-func (client *Client) getObjectMeta(agg cloud.CreatedAggregator, objectType objectType) metav1.ObjectMeta {
+func (client *Client) getObjectMeta(agg cloud.CreatedCoreInstance, objectType objectType) metav1.ObjectMeta {
 	name := fmt.Sprintf("%s-%s-%s", agg.Name, agg.EnvironmentName, objectType)
 	if !strings.HasPrefix(name, defaultObjectMetaNamePrefix) {
 		name = fmt.Sprintf("%s-%s", defaultObjectMetaNamePrefix, name)
@@ -92,7 +92,7 @@ func (client *Client) createOwnNamespace(ctx context.Context) (*apiv1.Namespace,
 	}, metav1.CreateOptions{})
 }
 
-func (client *Client) CreateSecret(ctx context.Context, agg cloud.CreatedAggregator) (*apiv1.Secret, error) {
+func (client *Client) CreateSecret(ctx context.Context, agg cloud.CreatedCoreInstance) (*apiv1.Secret, error) {
 	metadata := client.getObjectMeta(agg, secretObjectType)
 	return client.CoreV1().Secrets(client.Namespace).Create(ctx, &apiv1.Secret{
 		ObjectMeta: metadata,
@@ -106,7 +106,7 @@ type ClusterRoleOpt struct {
 	EnableOpenShift bool
 }
 
-func (client *Client) CreateClusterRole(ctx context.Context, agg cloud.CreatedAggregator, opts ...ClusterRoleOpt) (*rbacv1.ClusterRole, error) {
+func (client *Client) CreateClusterRole(ctx context.Context, agg cloud.CreatedCoreInstance, opts ...ClusterRoleOpt) (*rbacv1.ClusterRole, error) {
 	apiGroups := []string{"", "apps", "batch", "policy"}
 	resources := []string{
 		"namespaces",
@@ -154,7 +154,7 @@ func (client *Client) CreateClusterRole(ctx context.Context, agg cloud.CreatedAg
 	}, metav1.CreateOptions{})
 }
 
-func (client *Client) CreateServiceAccount(ctx context.Context, agg cloud.CreatedAggregator) (*apiv1.ServiceAccount, error) {
+func (client *Client) CreateServiceAccount(ctx context.Context, agg cloud.CreatedCoreInstance) (*apiv1.ServiceAccount, error) {
 	return client.CoreV1().ServiceAccounts(client.Namespace).Create(ctx, &apiv1.ServiceAccount{
 		ObjectMeta: client.getObjectMeta(agg, serviceAccountObjectType),
 	}, metav1.CreateOptions{})
@@ -162,7 +162,7 @@ func (client *Client) CreateServiceAccount(ctx context.Context, agg cloud.Create
 
 func (client *Client) CreateClusterRoleBinding(
 	ctx context.Context,
-	agg cloud.CreatedAggregator,
+	agg cloud.CreatedCoreInstance,
 	clusterRole *rbacv1.ClusterRole,
 	serviceAccount *apiv1.ServiceAccount,
 ) (*rbacv1.ClusterRoleBinding, error) {
@@ -186,7 +186,7 @@ func (client *Client) CreateClusterRoleBinding(
 func (client *Client) CreateDeployment(
 	ctx context.Context,
 	image string,
-	agg cloud.CreatedAggregator,
+	agg cloud.CreatedCoreInstance,
 	serviceAccount *apiv1.ServiceAccount,
 	tlsVerify bool,
 ) (*appsv1.Deployment, error) {
@@ -214,7 +214,7 @@ func (client *Client) CreateDeployment(
 							Args:            []string{"-debug=true"},
 							Env: []apiv1.EnvVar{
 								{
-									Name:  "AGGREGATOR_NAME",
+									Name:  "CoreInstance_NAME",
 									Value: agg.Name,
 								},
 								{
@@ -222,7 +222,7 @@ func (client *Client) CreateDeployment(
 									Value: client.ProjectToken,
 								},
 								{
-									Name:  "AGGREGATOR_FLUENTBIT_CLOUD_URL",
+									Name:  "CoreInstance_FLUENTBIT_CLOUD_URL",
 									Value: client.CloudBaseURL,
 								},
 								{

@@ -44,9 +44,9 @@ type (
 )
 
 func (c *DefaultCoreInstancePoller) Ready(ctx context.Context, environment, name string) (string, error) {
-	var instance types.Aggregator
+	var instance types.CoreInstance
 
-	params := types.AggregatorsParams{
+	params := types.CoreInstancesParams{
 		Name: &name,
 	}
 
@@ -66,7 +66,7 @@ func (c *DefaultCoreInstancePoller) Ready(ctx context.Context, environment, name
 	}
 
 	err := retry.Do(ctx, coreInstanceUpCheckMaxDuration(), func(ctx context.Context) error {
-		instances, err := c.config.cloud.Aggregators(ctx, c.config.projectID, params)
+		instances, err := c.config.cloud.CoreInstances(ctx, c.config.projectID, params)
 
 		if err != nil {
 			return retry.RetryableError(err)
@@ -77,7 +77,7 @@ func (c *DefaultCoreInstancePoller) Ready(ctx context.Context, environment, name
 		}
 
 		instance = instances.Items[0]
-		if instance.Status != types.AggregatorStatusRunning {
+		if instance.Status != types.CoreInstanceStatusRunning {
 			return retry.RetryableError(errCoreInstanceNotRunning)
 		}
 		return nil
@@ -199,10 +199,10 @@ func newCmdCreateCoreInstanceOnAWS(config *config, client awsclient.Client, poll
 				return fmt.Errorf("calyptia core instance not ready: %w", err)
 			}
 
-			metadata := types.AggregatorMetadata{
+			metadata := types.CoreInstanceMetadata{
 				MetadataAWS: awsInstance.MetadataAWS,
 			}
-			err = config.cloud.UpdateAggregator(ctx, coreInstanceID, types.UpdateAggregator{
+			err = config.cloud.UpdateCoreInstance(ctx, coreInstanceID, types.UpdateCoreInstance{
 				Metadata: &metadata,
 			})
 
@@ -260,9 +260,9 @@ func coreInstanceNameExists(ctx context.Context, config *config, environment, na
 	return true, nil
 }
 
-func getCoreInstanceByName(ctx context.Context, config *config, environment, name string) (*types.Aggregator, error) {
-	var out *types.Aggregator
-	params := types.AggregatorsParams{
+func getCoreInstanceByName(ctx context.Context, config *config, environment, name string) (*types.CoreInstance, error) {
+	var out *types.CoreInstance
+	params := types.CoreInstancesParams{
 		Name: &name,
 	}
 
@@ -281,7 +281,7 @@ func getCoreInstanceByName(ctx context.Context, config *config, environment, nam
 		params.EnvironmentID = &envs.Items[0].ID
 	}
 
-	coreInstances, err := config.cloud.Aggregators(ctx, config.projectID, params)
+	coreInstances, err := config.cloud.CoreInstances(ctx, config.projectID, params)
 
 	if err != nil {
 		return out, err

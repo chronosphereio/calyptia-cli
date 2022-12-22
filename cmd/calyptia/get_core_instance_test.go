@@ -12,8 +12,8 @@ import (
 	cloud "github.com/calyptia/api/types"
 )
 
-func Test_newCmdGetAggregators(t *testing.T) {
-	metadata := cloud.AggregatorMetadata{
+func Test_newCmdGetCoreInstances(t *testing.T) {
+	metadata := cloud.CoreInstanceMetadata{
 		MetadataK8S: cloud.MetadataK8S{
 			ClusterVersion:  "1.21.1",
 			ClusterPlatform: "linux/arm64",
@@ -42,8 +42,8 @@ func Test_newCmdGetAggregators(t *testing.T) {
 	t.Run("error", func(t *testing.T) {
 		want := errors.New("internal error")
 		cmd := newCmdGetCoreInstances(configWithMock(&ClientMock{
-			AggregatorsFunc: func(ctx context.Context, projectID string, params cloud.AggregatorsParams) (cloud.Aggregators, error) {
-				return cloud.Aggregators{}, want
+			CoreInstancesFunc: func(ctx context.Context, projectID string, params cloud.CoreInstancesParams) (cloud.CoreInstances, error) {
+				return cloud.CoreInstances{}, want
 			},
 		}))
 		cmd.SilenceErrors = true
@@ -55,15 +55,15 @@ func Test_newCmdGetAggregators(t *testing.T) {
 
 	t.Run("ok", func(t *testing.T) {
 		now := time.Now().Truncate(time.Second)
-		want := cloud.Aggregators{
-			Items: []cloud.Aggregator{{
+		want := cloud.CoreInstances{
+			Items: []cloud.CoreInstance{{
 				ID:              "id_1",
 				Name:            "name_1",
 				Version:         "0.2.3",
 				EnvironmentName: "default",
 				Tags:            []string{"one", "two"},
 				PipelinesCount:  1,
-				Status:          cloud.AggregatorStatusRunning,
+				Status:          cloud.CoreInstanceStatusRunning,
 				CreatedAt:       now.Add(-time.Hour),
 				Metadata:        metadata,
 			}, {
@@ -72,7 +72,7 @@ func Test_newCmdGetAggregators(t *testing.T) {
 				Version:         "0.2.3",
 				EnvironmentName: "default",
 				PipelinesCount:  2,
-				Status:          cloud.AggregatorStatusRunning,
+				Status:          cloud.CoreInstanceStatusRunning,
 				Tags:            []string{"three", "four"},
 				CreatedAt:       now.Add(time.Minute * -10),
 				Metadata:        metadata,
@@ -80,7 +80,7 @@ func Test_newCmdGetAggregators(t *testing.T) {
 		}
 		got := &bytes.Buffer{}
 		cmd := newCmdGetCoreInstances(configWithMock(&ClientMock{
-			AggregatorsFunc: func(ctx context.Context, projectID string, params cloud.AggregatorsParams) (cloud.Aggregators, error) {
+			CoreInstancesFunc: func(ctx context.Context, projectID string, params cloud.CoreInstancesParams) (cloud.CoreInstances, error) {
 				wantNoEq(t, nil, params.Last)
 				wantEq(t, uint(2), *params.Last)
 				return want, nil
@@ -134,29 +134,29 @@ func Test_newCmdGetAggregators(t *testing.T) {
 	})
 }
 
-func Test_aggregatorsKeys(t *testing.T) {
+func Test_CoreInstancesKeys(t *testing.T) {
 	tt := []struct {
 		name  string
-		given []cloud.Aggregator
+		given []cloud.CoreInstance
 		want  []string
 	}{
 		{
-			given: []cloud.Aggregator{{ID: "id-1", Name: "name-1"}, {ID: "id-2", Name: "name-2"}},
+			given: []cloud.CoreInstance{{ID: "id-1", Name: "name-1"}, {ID: "id-2", Name: "name-2"}},
 			want:  []string{"name-1", "name-2"},
 		},
 		{
-			given: []cloud.Aggregator{{ID: "id-1", Name: "name"}, {ID: "id-2", Name: "name"}},
+			given: []cloud.CoreInstance{{ID: "id-1", Name: "name"}, {ID: "id-2", Name: "name"}},
 			want:  []string{"id-1", "id-2"},
 		},
 		{
-			given: []cloud.Aggregator{{ID: "id-1", Name: "name"}, {ID: "id-2", Name: "name"}, {ID: "id-3", Name: "other-name"}},
+			given: []cloud.CoreInstance{{ID: "id-1", Name: "name"}, {ID: "id-2", Name: "name"}, {ID: "id-3", Name: "other-name"}},
 			want:  []string{"id-1", "id-2", "other-name"},
 		},
 	}
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
 			if got := coreInstanceKeys(tc.given); !reflect.DeepEqual(got, tc.want) {
-				t.Errorf("Aggregators.Keys(%+v) = %v, want %v", tc.given, got, tc.want)
+				t.Errorf("CoreInstances.Keys(%+v) = %v, want %v", tc.given, got, tc.want)
 			}
 		})
 	}

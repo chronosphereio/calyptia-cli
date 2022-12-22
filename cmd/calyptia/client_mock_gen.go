@@ -5,9 +5,8 @@ package main
 
 import (
 	"context"
-	"sync"
-
 	cloud "github.com/calyptia/api/types"
+	"sync"
 )
 
 // Ensure, that ClientMock does implement Client.
@@ -20,6 +19,9 @@ var _ Client = &ClientMock{}
 //
 //		// make and configure a mocked Client
 //		mockedClient := &ClientMock{
+//			AcceptInvitationFunc: func(ctx context.Context, payload cloud.AcceptInvitation) error {
+//				panic("mock out the AcceptInvitation method")
+//			},
 //			ActiveTraceSessionFunc: func(ctx context.Context, pipelineID string) (cloud.TraceSession, error) {
 //				panic("mock out the ActiveTraceSession method")
 //			},
@@ -29,17 +31,29 @@ var _ Client = &ClientMock{}
 //			AgentConfigHistoryFunc: func(ctx context.Context, agentID string, params cloud.AgentConfigHistoryParams) (cloud.AgentConfigHistory, error) {
 //				panic("mock out the AgentConfigHistory method")
 //			},
+//			AgentMetricsFunc: func(ctx context.Context, agentID string, params cloud.MetricsParams) (cloud.MetricsSummary, error) {
+//				panic("mock out the AgentMetrics method")
+//			},
+//			AgentMetricsByPluginFunc: func(ctx context.Context, agentID string, params cloud.MetricsParams) (cloud.MetricsSummaryPlugin, error) {
+//				panic("mock out the AgentMetricsByPlugin method")
+//			},
+//			AgentMetricsOverTimeByPluginFunc: func(ctx context.Context, agentID string, params cloud.MetricsParams) (cloud.MetricsOverTimeByPlugin, error) {
+//				panic("mock out the AgentMetricsOverTimeByPlugin method")
+//			},
 //			AgentMetricsV1Func: func(ctx context.Context, agentID string, params cloud.MetricsParams) (cloud.AgentMetrics, error) {
 //				panic("mock out the AgentMetricsV1 method")
+//			},
+//			AgentOverTimeMetricsFunc: func(ctx context.Context, agentID string, params cloud.MetricsParams) (cloud.MetricsOverTime, error) {
+//				panic("mock out the AgentOverTimeMetrics method")
 //			},
 //			AgentsFunc: func(ctx context.Context, projectID string, params cloud.AgentsParams) (cloud.Agents, error) {
 //				panic("mock out the Agents method")
 //			},
-//			AggregatorFunc: func(ctx context.Context, aggregatorID string) (cloud.Aggregator, error) {
-//				panic("mock out the Aggregator method")
+//			ClusterObjectFunc: func(ctx context.Context, checkID string) (cloud.ClusterObject, error) {
+//				panic("mock out the ClusterObject method")
 //			},
-//			AggregatorsFunc: func(ctx context.Context, projectID string, params cloud.AggregatorsParams) (cloud.Aggregators, error) {
-//				panic("mock out the Aggregators method")
+//			ClusterObjectsFunc: func(ctx context.Context, coreInstanceID string, params cloud.ClusterObjectParams) (cloud.ClusterObjects, error) {
+//				panic("mock out the ClusterObjects method")
 //			},
 //			ConfigSectionFunc: func(ctx context.Context, configSectionID string) (cloud.ConfigSection, error) {
 //				panic("mock out the ConfigSection method")
@@ -47,11 +61,47 @@ var _ Client = &ClientMock{}
 //			ConfigSectionsFunc: func(ctx context.Context, projectID string, params cloud.ConfigSectionsParams) (cloud.ConfigSections, error) {
 //				panic("mock out the ConfigSections method")
 //			},
-//			CreateAggregatorFunc: func(ctx context.Context, payload cloud.CreateAggregator) (cloud.CreatedAggregator, error) {
-//				panic("mock out the CreateAggregator method")
+//			CoreInstanceFunc: func(ctx context.Context, instanceID string) (cloud.CoreInstance, error) {
+//				panic("mock out the CoreInstance method")
+//			},
+//			CoreInstanceCheckFunc: func(ctx context.Context, checkID string) (cloud.CoreInstanceCheck, error) {
+//				panic("mock out the CoreInstanceCheck method")
+//			},
+//			CoreInstanceChecksFunc: func(ctx context.Context, coreInstanceID string, params cloud.CoreInstanceChecksParams) (cloud.CoreInstanceChecks, error) {
+//				panic("mock out the CoreInstanceChecks method")
+//			},
+//			CoreInstanceMetricsFunc: func(ctx context.Context, coreInstanceID string, params cloud.MetricsParams) (cloud.MetricsSummary, error) {
+//				panic("mock out the CoreInstanceMetrics method")
+//			},
+//			CoreInstanceMetricsByPluginFunc: func(ctx context.Context, coreInstanceID string, params cloud.MetricsParams) (cloud.MetricsSummaryPlugin, error) {
+//				panic("mock out the CoreInstanceMetricsByPlugin method")
+//			},
+//			CoreInstanceMetricsOverTimeByPluginFunc: func(ctx context.Context, coreInstanceID string, params cloud.MetricsParams) (cloud.MetricsOverTimeByPlugin, error) {
+//				panic("mock out the CoreInstanceMetricsOverTimeByPlugin method")
+//			},
+//			CoreInstanceMetricsV1Func: func(ctx context.Context, instanceID string, params cloud.MetricsParams) (cloud.CoreInstanceMetricsV1, error) {
+//				panic("mock out the CoreInstanceMetricsV1 method")
+//			},
+//			CoreInstanceOverTimeMetricsFunc: func(ctx context.Context, coreInstanceID string, params cloud.MetricsParams) (cloud.MetricsOverTime, error) {
+//				panic("mock out the CoreInstanceOverTimeMetrics method")
+//			},
+//			CoreInstancePingFunc: func(ctx context.Context, instanceID string) (cloud.CoreInstancePingResponse, error) {
+//				panic("mock out the CoreInstancePing method")
+//			},
+//			CoreInstancesFunc: func(ctx context.Context, projectID string, params cloud.CoreInstancesParams) (cloud.CoreInstances, error) {
+//				panic("mock out the CoreInstances method")
+//			},
+//			CreateClusterObjectFunc: func(ctx context.Context, coreInstanceID string, payload cloud.CreateClusterObject) (cloud.CreatedClusterObject, error) {
+//				panic("mock out the CreateClusterObject method")
 //			},
 //			CreateConfigSectionFunc: func(ctx context.Context, projectID string, in cloud.CreateConfigSection) (cloud.CreatedConfigSection, error) {
 //				panic("mock out the CreateConfigSection method")
+//			},
+//			CreateCoreInstanceFunc: func(ctx context.Context, payload cloud.CreateCoreInstance) (cloud.CreatedCoreInstance, error) {
+//				panic("mock out the CreateCoreInstance method")
+//			},
+//			CreateCoreInstanceCheckFunc: func(ctx context.Context, coreInstanceID string, payload cloud.CreateCoreInstanceCheck) (cloud.CreatedCoreInstanceCheck, error) {
+//				panic("mock out the CreateCoreInstanceCheck method")
 //			},
 //			CreateEnvironmentFunc: func(ctx context.Context, projectID string, payload cloud.CreateEnvironment) (cloud.CreatedEnvironment, error) {
 //				panic("mock out the CreateEnvironment method")
@@ -62,8 +112,11 @@ var _ Client = &ClientMock{}
 //			CreateInvitationFunc: func(ctx context.Context, projectID string, payload cloud.CreateInvitation) error {
 //				panic("mock out the CreateInvitation method")
 //			},
-//			CreatePipelineFunc: func(ctx context.Context, aggregatorID string, payload cloud.CreatePipeline) (cloud.CreatedPipeline, error) {
+//			CreatePipelineFunc: func(ctx context.Context, instanceID string, payload cloud.CreatePipeline) (cloud.CreatedPipeline, error) {
 //				panic("mock out the CreatePipeline method")
+//			},
+//			CreatePipelineCheckFunc: func(ctx context.Context, pipelineID string, payload cloud.CreatePipelineCheck) (cloud.CreatedPipelineCheck, error) {
+//				panic("mock out the CreatePipelineCheck method")
 //			},
 //			CreatePipelineFileFunc: func(ctx context.Context, pipelineID string, payload cloud.CreatePipelineFile) (cloud.CreatedPipelineFile, error) {
 //				panic("mock out the CreatePipelineFile method")
@@ -74,8 +127,20 @@ var _ Client = &ClientMock{}
 //			CreatePipelineSecretFunc: func(ctx context.Context, pipelineID string, payload cloud.CreatePipelineSecret) (cloud.CreatedPipelineSecret, error) {
 //				panic("mock out the CreatePipelineSecret method")
 //			},
-//			CreateResourceProfileFunc: func(ctx context.Context, aggregatorID string, payload cloud.CreateResourceProfile) (cloud.CreatedResourceProfile, error) {
+//			CreateProcessingRuleFunc: func(ctx context.Context, in cloud.CreateProcessingRule) (cloud.CreatedProcessingRule, error) {
+//				panic("mock out the CreateProcessingRule method")
+//			},
+//			CreateProjectFunc: func(ctx context.Context, payload cloud.CreateProject) (cloud.CreatedProject, error) {
+//				panic("mock out the CreateProject method")
+//			},
+//			CreateResourceProfileFunc: func(ctx context.Context, instanceID string, payload cloud.CreateResourceProfile) (cloud.CreatedResourceProfile, error) {
 //				panic("mock out the CreateResourceProfile method")
+//			},
+//			CreateTokenFunc: func(ctx context.Context, projectID string, payload cloud.CreateToken) (cloud.Token, error) {
+//				panic("mock out the CreateToken method")
+//			},
+//			CreateTraceRecordFunc: func(ctx context.Context, pipelineID string, in cloud.CreateTraceRecord) (cloud.CreatedTraceRecord, error) {
+//				panic("mock out the CreateTraceRecord method")
 //			},
 //			CreateTraceSessionFunc: func(ctx context.Context, pipelineID string, in cloud.CreateTraceSession) (cloud.CreatedTraceSession, error) {
 //				panic("mock out the CreateTraceSession method")
@@ -86,14 +151,20 @@ var _ Client = &ClientMock{}
 //			DeleteAgentsFunc: func(ctx context.Context, projectID string, agentIDs ...string) error {
 //				panic("mock out the DeleteAgents method")
 //			},
-//			DeleteAggregatorFunc: func(ctx context.Context, aggregatorID string) error {
-//				panic("mock out the DeleteAggregator method")
-//			},
-//			DeleteAggregatorsFunc: func(ctx context.Context, projectID string, aggregatorIDs ...string) error {
-//				panic("mock out the DeleteAggregators method")
+//			DeleteClusterObjectFunc: func(ctx context.Context, checkID string) error {
+//				panic("mock out the DeleteClusterObject method")
 //			},
 //			DeleteConfigSectionFunc: func(ctx context.Context, configSectionID string) error {
 //				panic("mock out the DeleteConfigSection method")
+//			},
+//			DeleteCoreInstanceFunc: func(ctx context.Context, instanceID string) error {
+//				panic("mock out the DeleteCoreInstance method")
+//			},
+//			DeleteCoreInstanceCheckFunc: func(ctx context.Context, checkID string) error {
+//				panic("mock out the DeleteCoreInstanceCheck method")
+//			},
+//			DeleteCoreInstancesFunc: func(ctx context.Context, projectID string, instanceIDs ...string) error {
+//				panic("mock out the DeleteCoreInstances method")
 //			},
 //			DeleteEnvironmentFunc: func(ctx context.Context, environmentID string) error {
 //				panic("mock out the DeleteEnvironment method")
@@ -104,6 +175,12 @@ var _ Client = &ClientMock{}
 //			DeletePipelineFunc: func(ctx context.Context, pipelineID string) error {
 //				panic("mock out the DeletePipeline method")
 //			},
+//			DeletePipelineCheckFunc: func(ctx context.Context, checkID string) error {
+//				panic("mock out the DeletePipelineCheck method")
+//			},
+//			DeletePipelineClusterObjectsFunc: func(ctx context.Context, pipelineID string, clusterObjectIDs ...string) error {
+//				panic("mock out the DeletePipelineClusterObjects method")
+//			},
 //			DeletePipelineFileFunc: func(ctx context.Context, fileID string) error {
 //				panic("mock out the DeletePipelineFile method")
 //			},
@@ -113,8 +190,11 @@ var _ Client = &ClientMock{}
 //			DeletePipelineSecretFunc: func(ctx context.Context, secretID string) error {
 //				panic("mock out the DeletePipelineSecret method")
 //			},
-//			DeletePipelinesFunc: func(ctx context.Context, aggregatorID string, pipelineIDs ...string) error {
+//			DeletePipelinesFunc: func(ctx context.Context, instanceID string, pipelineIDs ...string) error {
 //				panic("mock out the DeletePipelines method")
+//			},
+//			DeleteProcessingRuleFunc: func(ctx context.Context, processingRuleID string) error {
+//				panic("mock out the DeleteProcessingRule method")
 //			},
 //			DeleteResourceProfileFunc: func(ctx context.Context, resourceProfileID string) error {
 //				panic("mock out the DeleteResourceProfile method")
@@ -137,6 +217,15 @@ var _ Client = &ClientMock{}
 //			PipelineFunc: func(ctx context.Context, pipelineID string, params cloud.PipelineParams) (cloud.Pipeline, error) {
 //				panic("mock out the Pipeline method")
 //			},
+//			PipelineCheckFunc: func(ctx context.Context, checkID string) (cloud.PipelineCheck, error) {
+//				panic("mock out the PipelineCheck method")
+//			},
+//			PipelineChecksFunc: func(ctx context.Context, pipelineID string, params cloud.PipelineChecksParams) (cloud.PipelineChecks, error) {
+//				panic("mock out the PipelineChecks method")
+//			},
+//			PipelineClusterObjectsFunc: func(ctx context.Context, pipelineID string, params cloud.PipelineClusterObjectsParams) (cloud.ClusterObjects, error) {
+//				panic("mock out the PipelineClusterObjects method")
+//			},
 //			PipelineConfigHistoryFunc: func(ctx context.Context, pipelineID string, params cloud.PipelineConfigHistoryParams) (cloud.PipelineConfigHistory, error) {
 //				panic("mock out the PipelineConfigHistory method")
 //			},
@@ -146,8 +235,20 @@ var _ Client = &ClientMock{}
 //			PipelineFilesFunc: func(ctx context.Context, pipelineID string, params cloud.PipelineFilesParams) (cloud.PipelineFiles, error) {
 //				panic("mock out the PipelineFiles method")
 //			},
+//			PipelineMetricsFunc: func(ctx context.Context, pipelineID string, params cloud.MetricsParams) (cloud.MetricsSummary, error) {
+//				panic("mock out the PipelineMetrics method")
+//			},
+//			PipelineMetricsByPluginFunc: func(ctx context.Context, pipelineID string, params cloud.MetricsParams) (cloud.MetricsSummaryPlugin, error) {
+//				panic("mock out the PipelineMetricsByPlugin method")
+//			},
+//			PipelineMetricsOverTimeByPluginFunc: func(ctx context.Context, pipelineID string, params cloud.MetricsParams) (cloud.MetricsOverTimeByPlugin, error) {
+//				panic("mock out the PipelineMetricsOverTimeByPlugin method")
+//			},
 //			PipelineMetricsV1Func: func(ctx context.Context, pipelineID string, params cloud.MetricsParams) (cloud.AgentMetrics, error) {
 //				panic("mock out the PipelineMetricsV1 method")
+//			},
+//			PipelineOverTimeMetricsFunc: func(ctx context.Context, pipelineID string, params cloud.MetricsParams) (cloud.MetricsOverTime, error) {
+//				panic("mock out the PipelineOverTimeMetrics method")
 //			},
 //			PipelinePortFunc: func(ctx context.Context, portID string) (cloud.PipelinePort, error) {
 //				panic("mock out the PipelinePort method")
@@ -164,17 +265,32 @@ var _ Client = &ClientMock{}
 //			PipelineStatusHistoryFunc: func(ctx context.Context, pipelineID string, params cloud.PipelineStatusHistoryParams) (cloud.PipelineStatusHistory, error) {
 //				panic("mock out the PipelineStatusHistory method")
 //			},
-//			PipelinesFunc: func(ctx context.Context, aggregatorID string, params cloud.PipelinesParams) (cloud.Pipelines, error) {
+//			PipelinesFunc: func(ctx context.Context, instanceID string, params cloud.PipelinesParams) (cloud.Pipelines, error) {
 //				panic("mock out the Pipelines method")
+//			},
+//			PipelinesMetricsV1Func: func(ctx context.Context, instanceID string, params cloud.PipelinesMetricsParams) (cloud.PipelinesMetrics, error) {
+//				panic("mock out the PipelinesMetricsV1 method")
+//			},
+//			PreviewProcessingRuleFunc: func(ctx context.Context, in cloud.PreviewProcessingRule) ([]cloud.FluentBitLog, error) {
+//				panic("mock out the PreviewProcessingRule method")
+//			},
+//			ProcessingRuleFunc: func(ctx context.Context, processingRuleID string) (cloud.ProcessingRule, error) {
+//				panic("mock out the ProcessingRule method")
+//			},
+//			ProcessingRulesFunc: func(ctx context.Context, params cloud.ProcessingRulesParams) (cloud.ProcessingRules, error) {
+//				panic("mock out the ProcessingRules method")
 //			},
 //			ProjectFunc: func(ctx context.Context, projectID string) (cloud.Project, error) {
 //				panic("mock out the Project method")
 //			},
-//			ProjectMetricsFunc: func(ctx context.Context, projectID string, params cloud.MetricsParams) (cloud.ProjectMetrics, error) {
-//				panic("mock out the ProjectMetrics method")
+//			ProjectMetricsV1Func: func(ctx context.Context, projectID string, params cloud.MetricsParams) (cloud.ProjectMetrics, error) {
+//				panic("mock out the ProjectMetricsV1 method")
 //			},
 //			ProjectPipelinesFunc: func(ctx context.Context, projectID string, params cloud.PipelinesParams) (cloud.Pipelines, error) {
 //				panic("mock out the ProjectPipelines method")
+//			},
+//			ProjectsFunc: func(ctx context.Context, params cloud.ProjectsParams) (cloud.Projects, error) {
+//				panic("mock out the Projects method")
 //			},
 //			RegisterAgentFunc: func(ctx context.Context, payload cloud.RegisterAgent) (cloud.RegisteredAgent, error) {
 //				panic("mock out the RegisterAgent method")
@@ -182,14 +298,32 @@ var _ Client = &ClientMock{}
 //			ResourceProfileFunc: func(ctx context.Context, resourceProfileID string) (cloud.ResourceProfile, error) {
 //				panic("mock out the ResourceProfile method")
 //			},
-//			ResourceProfilesFunc: func(ctx context.Context, aggregatorID string, params cloud.ResourceProfilesParams) (cloud.ResourceProfiles, error) {
+//			ResourceProfilesFunc: func(ctx context.Context, instanceID string, params cloud.ResourceProfilesParams) (cloud.ResourceProfiles, error) {
 //				panic("mock out the ResourceProfiles method")
+//			},
+//			SendVerificationEmailFunc: func(ctx context.Context) error {
+//				panic("mock out the SendVerificationEmail method")
+//			},
+//			SetAgentTokenFunc: func(s string)  {
+//				panic("mock out the SetAgentToken method")
+//			},
+//			SetCoreInstanceTokenFunc: func(s string)  {
+//				panic("mock out the SetCoreInstanceToken method")
+//			},
+//			SetProjectTokenFunc: func(s string)  {
+//				panic("mock out the SetProjectToken method")
+//			},
+//			SetUserAgentFunc: func(s string)  {
+//				panic("mock out the SetUserAgent method")
 //			},
 //			TerminateActiveTraceSessionFunc: func(ctx context.Context, pipelineID string) (cloud.TerminatedTraceSession, error) {
 //				panic("mock out the TerminateActiveTraceSession method")
 //			},
 //			TokenFunc: func(ctx context.Context, tokenID string) (cloud.Token, error) {
 //				panic("mock out the Token method")
+//			},
+//			TokensFunc: func(ctx context.Context, projectID string, params cloud.TokensParams) (cloud.Tokens, error) {
+//				panic("mock out the Tokens method")
 //			},
 //			TraceRecordsFunc: func(ctx context.Context, sessionID string, params cloud.TraceRecordsParams) (cloud.TraceRecords, error) {
 //				panic("mock out the TraceRecords method")
@@ -203,8 +337,8 @@ var _ Client = &ClientMock{}
 //			UpdateAgentFunc: func(ctx context.Context, agentID string, payload cloud.UpdateAgent) error {
 //				panic("mock out the UpdateAgent method")
 //			},
-//			UpdateAggregatorFunc: func(ctx context.Context, aggregatorID string, payload cloud.UpdateAggregator) error {
-//				panic("mock out the UpdateAggregator method")
+//			UpdateClusterObjectFunc: func(ctx context.Context, checkID string, opts cloud.UpdateClusterObject) error {
+//				panic("mock out the UpdateClusterObject method")
 //			},
 //			UpdateConfigSectionFunc: func(ctx context.Context, configSectionID string, in cloud.UpdateConfigSection) (cloud.UpdatedConfigSection, error) {
 //				panic("mock out the UpdateConfigSection method")
@@ -212,11 +346,26 @@ var _ Client = &ClientMock{}
 //			UpdateConfigSectionSetFunc: func(ctx context.Context, pipelineID string, configSectionIDs ...string) error {
 //				panic("mock out the UpdateConfigSectionSet method")
 //			},
+//			UpdateCoreInstanceFunc: func(ctx context.Context, instanceID string, payload cloud.UpdateCoreInstance) error {
+//				panic("mock out the UpdateCoreInstance method")
+//			},
+//			UpdateCoreInstanceCheckFunc: func(ctx context.Context, checkID string, opts cloud.UpdateCoreInstanceCheck) error {
+//				panic("mock out the UpdateCoreInstanceCheck method")
+//			},
 //			UpdateEnvironmentFunc: func(ctx context.Context, environmentID string, payload cloud.UpdateEnvironment) error {
 //				panic("mock out the UpdateEnvironment method")
 //			},
+//			UpdateIngestCheckFunc: func(ctx context.Context, checkID string, opts cloud.UpdateIngestCheck) error {
+//				panic("mock out the UpdateIngestCheck method")
+//			},
 //			UpdatePipelineFunc: func(ctx context.Context, pipelineID string, opts cloud.UpdatePipeline) (cloud.UpdatedPipeline, error) {
 //				panic("mock out the UpdatePipeline method")
+//			},
+//			UpdatePipelineCheckFunc: func(ctx context.Context, checkID string, opts cloud.UpdatePipelineCheck) error {
+//				panic("mock out the UpdatePipelineCheck method")
+//			},
+//			UpdatePipelineClusterObjectsFunc: func(ctx context.Context, pipelineID string, opts cloud.UpdatePipelineClusterObjects) error {
+//				panic("mock out the UpdatePipelineClusterObjects method")
 //			},
 //			UpdatePipelineFileFunc: func(ctx context.Context, fileID string, opts cloud.UpdatePipelineFile) error {
 //				panic("mock out the UpdatePipelineFile method")
@@ -226,6 +375,9 @@ var _ Client = &ClientMock{}
 //			},
 //			UpdatePipelineSecretFunc: func(ctx context.Context, secretID string, opts cloud.UpdatePipelineSecret) error {
 //				panic("mock out the UpdatePipelineSecret method")
+//			},
+//			UpdateProcessingRuleFunc: func(ctx context.Context, in cloud.UpdateProcessingRule) (cloud.UpdatedProcessingRule, error) {
+//				panic("mock out the UpdateProcessingRule method")
 //			},
 //			UpdateProjectFunc: func(ctx context.Context, projectID string, opts cloud.UpdateProject) error {
 //				panic("mock out the UpdateProject method")
@@ -242,6 +394,9 @@ var _ Client = &ClientMock{}
 //			ValidateConfigFunc: func(ctx context.Context, agentType cloud.AgentType, payload cloud.ValidatingConfig) (cloud.ValidatedConfig, error) {
 //				panic("mock out the ValidateConfig method")
 //			},
+//			ValidateConfigV2Func: func(ctx context.Context, payload cloud.ValidatingConfig) (cloud.ValidatedConfigV2, error) {
+//				panic("mock out the ValidateConfigV2 method")
+//			},
 //		}
 //
 //		// use mockedClient in code that requires Client
@@ -249,6 +404,9 @@ var _ Client = &ClientMock{}
 //
 //	}
 type ClientMock struct {
+	// AcceptInvitationFunc mocks the AcceptInvitation method.
+	AcceptInvitationFunc func(ctx context.Context, payload cloud.AcceptInvitation) error
+
 	// ActiveTraceSessionFunc mocks the ActiveTraceSession method.
 	ActiveTraceSessionFunc func(ctx context.Context, pipelineID string) (cloud.TraceSession, error)
 
@@ -258,17 +416,29 @@ type ClientMock struct {
 	// AgentConfigHistoryFunc mocks the AgentConfigHistory method.
 	AgentConfigHistoryFunc func(ctx context.Context, agentID string, params cloud.AgentConfigHistoryParams) (cloud.AgentConfigHistory, error)
 
+	// AgentMetricsFunc mocks the AgentMetrics method.
+	AgentMetricsFunc func(ctx context.Context, agentID string, params cloud.MetricsParams) (cloud.MetricsSummary, error)
+
+	// AgentMetricsByPluginFunc mocks the AgentMetricsByPlugin method.
+	AgentMetricsByPluginFunc func(ctx context.Context, agentID string, params cloud.MetricsParams) (cloud.MetricsSummaryPlugin, error)
+
+	// AgentMetricsOverTimeByPluginFunc mocks the AgentMetricsOverTimeByPlugin method.
+	AgentMetricsOverTimeByPluginFunc func(ctx context.Context, agentID string, params cloud.MetricsParams) (cloud.MetricsOverTimeByPlugin, error)
+
 	// AgentMetricsV1Func mocks the AgentMetricsV1 method.
 	AgentMetricsV1Func func(ctx context.Context, agentID string, params cloud.MetricsParams) (cloud.AgentMetrics, error)
+
+	// AgentOverTimeMetricsFunc mocks the AgentOverTimeMetrics method.
+	AgentOverTimeMetricsFunc func(ctx context.Context, agentID string, params cloud.MetricsParams) (cloud.MetricsOverTime, error)
 
 	// AgentsFunc mocks the Agents method.
 	AgentsFunc func(ctx context.Context, projectID string, params cloud.AgentsParams) (cloud.Agents, error)
 
-	// AggregatorFunc mocks the Aggregator method.
-	AggregatorFunc func(ctx context.Context, aggregatorID string) (cloud.Aggregator, error)
+	// ClusterObjectFunc mocks the ClusterObject method.
+	ClusterObjectFunc func(ctx context.Context, checkID string) (cloud.ClusterObject, error)
 
-	// AggregatorsFunc mocks the Aggregators method.
-	AggregatorsFunc func(ctx context.Context, projectID string, params cloud.AggregatorsParams) (cloud.Aggregators, error)
+	// ClusterObjectsFunc mocks the ClusterObjects method.
+	ClusterObjectsFunc func(ctx context.Context, coreInstanceID string, params cloud.ClusterObjectParams) (cloud.ClusterObjects, error)
 
 	// ConfigSectionFunc mocks the ConfigSection method.
 	ConfigSectionFunc func(ctx context.Context, configSectionID string) (cloud.ConfigSection, error)
@@ -276,11 +446,47 @@ type ClientMock struct {
 	// ConfigSectionsFunc mocks the ConfigSections method.
 	ConfigSectionsFunc func(ctx context.Context, projectID string, params cloud.ConfigSectionsParams) (cloud.ConfigSections, error)
 
-	// CreateAggregatorFunc mocks the CreateAggregator method.
-	CreateAggregatorFunc func(ctx context.Context, payload cloud.CreateAggregator) (cloud.CreatedAggregator, error)
+	// CoreInstanceFunc mocks the CoreInstance method.
+	CoreInstanceFunc func(ctx context.Context, instanceID string) (cloud.CoreInstance, error)
+
+	// CoreInstanceCheckFunc mocks the CoreInstanceCheck method.
+	CoreInstanceCheckFunc func(ctx context.Context, checkID string) (cloud.CoreInstanceCheck, error)
+
+	// CoreInstanceChecksFunc mocks the CoreInstanceChecks method.
+	CoreInstanceChecksFunc func(ctx context.Context, coreInstanceID string, params cloud.CoreInstanceChecksParams) (cloud.CoreInstanceChecks, error)
+
+	// CoreInstanceMetricsFunc mocks the CoreInstanceMetrics method.
+	CoreInstanceMetricsFunc func(ctx context.Context, coreInstanceID string, params cloud.MetricsParams) (cloud.MetricsSummary, error)
+
+	// CoreInstanceMetricsByPluginFunc mocks the CoreInstanceMetricsByPlugin method.
+	CoreInstanceMetricsByPluginFunc func(ctx context.Context, coreInstanceID string, params cloud.MetricsParams) (cloud.MetricsSummaryPlugin, error)
+
+	// CoreInstanceMetricsOverTimeByPluginFunc mocks the CoreInstanceMetricsOverTimeByPlugin method.
+	CoreInstanceMetricsOverTimeByPluginFunc func(ctx context.Context, coreInstanceID string, params cloud.MetricsParams) (cloud.MetricsOverTimeByPlugin, error)
+
+	// CoreInstanceMetricsV1Func mocks the CoreInstanceMetricsV1 method.
+	CoreInstanceMetricsV1Func func(ctx context.Context, instanceID string, params cloud.MetricsParams) (cloud.CoreInstanceMetricsV1, error)
+
+	// CoreInstanceOverTimeMetricsFunc mocks the CoreInstanceOverTimeMetrics method.
+	CoreInstanceOverTimeMetricsFunc func(ctx context.Context, coreInstanceID string, params cloud.MetricsParams) (cloud.MetricsOverTime, error)
+
+	// CoreInstancePingFunc mocks the CoreInstancePing method.
+	CoreInstancePingFunc func(ctx context.Context, instanceID string) (cloud.CoreInstancePingResponse, error)
+
+	// CoreInstancesFunc mocks the CoreInstances method.
+	CoreInstancesFunc func(ctx context.Context, projectID string, params cloud.CoreInstancesParams) (cloud.CoreInstances, error)
+
+	// CreateClusterObjectFunc mocks the CreateClusterObject method.
+	CreateClusterObjectFunc func(ctx context.Context, coreInstanceID string, payload cloud.CreateClusterObject) (cloud.CreatedClusterObject, error)
 
 	// CreateConfigSectionFunc mocks the CreateConfigSection method.
 	CreateConfigSectionFunc func(ctx context.Context, projectID string, in cloud.CreateConfigSection) (cloud.CreatedConfigSection, error)
+
+	// CreateCoreInstanceFunc mocks the CreateCoreInstance method.
+	CreateCoreInstanceFunc func(ctx context.Context, payload cloud.CreateCoreInstance) (cloud.CreatedCoreInstance, error)
+
+	// CreateCoreInstanceCheckFunc mocks the CreateCoreInstanceCheck method.
+	CreateCoreInstanceCheckFunc func(ctx context.Context, coreInstanceID string, payload cloud.CreateCoreInstanceCheck) (cloud.CreatedCoreInstanceCheck, error)
 
 	// CreateEnvironmentFunc mocks the CreateEnvironment method.
 	CreateEnvironmentFunc func(ctx context.Context, projectID string, payload cloud.CreateEnvironment) (cloud.CreatedEnvironment, error)
@@ -292,7 +498,10 @@ type ClientMock struct {
 	CreateInvitationFunc func(ctx context.Context, projectID string, payload cloud.CreateInvitation) error
 
 	// CreatePipelineFunc mocks the CreatePipeline method.
-	CreatePipelineFunc func(ctx context.Context, aggregatorID string, payload cloud.CreatePipeline) (cloud.CreatedPipeline, error)
+	CreatePipelineFunc func(ctx context.Context, instanceID string, payload cloud.CreatePipeline) (cloud.CreatedPipeline, error)
+
+	// CreatePipelineCheckFunc mocks the CreatePipelineCheck method.
+	CreatePipelineCheckFunc func(ctx context.Context, pipelineID string, payload cloud.CreatePipelineCheck) (cloud.CreatedPipelineCheck, error)
 
 	// CreatePipelineFileFunc mocks the CreatePipelineFile method.
 	CreatePipelineFileFunc func(ctx context.Context, pipelineID string, payload cloud.CreatePipelineFile) (cloud.CreatedPipelineFile, error)
@@ -303,8 +512,20 @@ type ClientMock struct {
 	// CreatePipelineSecretFunc mocks the CreatePipelineSecret method.
 	CreatePipelineSecretFunc func(ctx context.Context, pipelineID string, payload cloud.CreatePipelineSecret) (cloud.CreatedPipelineSecret, error)
 
+	// CreateProcessingRuleFunc mocks the CreateProcessingRule method.
+	CreateProcessingRuleFunc func(ctx context.Context, in cloud.CreateProcessingRule) (cloud.CreatedProcessingRule, error)
+
+	// CreateProjectFunc mocks the CreateProject method.
+	CreateProjectFunc func(ctx context.Context, payload cloud.CreateProject) (cloud.CreatedProject, error)
+
 	// CreateResourceProfileFunc mocks the CreateResourceProfile method.
-	CreateResourceProfileFunc func(ctx context.Context, aggregatorID string, payload cloud.CreateResourceProfile) (cloud.CreatedResourceProfile, error)
+	CreateResourceProfileFunc func(ctx context.Context, instanceID string, payload cloud.CreateResourceProfile) (cloud.CreatedResourceProfile, error)
+
+	// CreateTokenFunc mocks the CreateToken method.
+	CreateTokenFunc func(ctx context.Context, projectID string, payload cloud.CreateToken) (cloud.Token, error)
+
+	// CreateTraceRecordFunc mocks the CreateTraceRecord method.
+	CreateTraceRecordFunc func(ctx context.Context, pipelineID string, in cloud.CreateTraceRecord) (cloud.CreatedTraceRecord, error)
 
 	// CreateTraceSessionFunc mocks the CreateTraceSession method.
 	CreateTraceSessionFunc func(ctx context.Context, pipelineID string, in cloud.CreateTraceSession) (cloud.CreatedTraceSession, error)
@@ -315,14 +536,20 @@ type ClientMock struct {
 	// DeleteAgentsFunc mocks the DeleteAgents method.
 	DeleteAgentsFunc func(ctx context.Context, projectID string, agentIDs ...string) error
 
-	// DeleteAggregatorFunc mocks the DeleteAggregator method.
-	DeleteAggregatorFunc func(ctx context.Context, aggregatorID string) error
-
-	// DeleteAggregatorsFunc mocks the DeleteAggregators method.
-	DeleteAggregatorsFunc func(ctx context.Context, projectID string, aggregatorIDs ...string) error
+	// DeleteClusterObjectFunc mocks the DeleteClusterObject method.
+	DeleteClusterObjectFunc func(ctx context.Context, checkID string) error
 
 	// DeleteConfigSectionFunc mocks the DeleteConfigSection method.
 	DeleteConfigSectionFunc func(ctx context.Context, configSectionID string) error
+
+	// DeleteCoreInstanceFunc mocks the DeleteCoreInstance method.
+	DeleteCoreInstanceFunc func(ctx context.Context, instanceID string) error
+
+	// DeleteCoreInstanceCheckFunc mocks the DeleteCoreInstanceCheck method.
+	DeleteCoreInstanceCheckFunc func(ctx context.Context, checkID string) error
+
+	// DeleteCoreInstancesFunc mocks the DeleteCoreInstances method.
+	DeleteCoreInstancesFunc func(ctx context.Context, projectID string, instanceIDs ...string) error
 
 	// DeleteEnvironmentFunc mocks the DeleteEnvironment method.
 	DeleteEnvironmentFunc func(ctx context.Context, environmentID string) error
@@ -332,6 +559,12 @@ type ClientMock struct {
 
 	// DeletePipelineFunc mocks the DeletePipeline method.
 	DeletePipelineFunc func(ctx context.Context, pipelineID string) error
+
+	// DeletePipelineCheckFunc mocks the DeletePipelineCheck method.
+	DeletePipelineCheckFunc func(ctx context.Context, checkID string) error
+
+	// DeletePipelineClusterObjectsFunc mocks the DeletePipelineClusterObjects method.
+	DeletePipelineClusterObjectsFunc func(ctx context.Context, pipelineID string, clusterObjectIDs ...string) error
 
 	// DeletePipelineFileFunc mocks the DeletePipelineFile method.
 	DeletePipelineFileFunc func(ctx context.Context, fileID string) error
@@ -343,7 +576,10 @@ type ClientMock struct {
 	DeletePipelineSecretFunc func(ctx context.Context, secretID string) error
 
 	// DeletePipelinesFunc mocks the DeletePipelines method.
-	DeletePipelinesFunc func(ctx context.Context, aggregatorID string, pipelineIDs ...string) error
+	DeletePipelinesFunc func(ctx context.Context, instanceID string, pipelineIDs ...string) error
+
+	// DeleteProcessingRuleFunc mocks the DeleteProcessingRule method.
+	DeleteProcessingRuleFunc func(ctx context.Context, processingRuleID string) error
 
 	// DeleteResourceProfileFunc mocks the DeleteResourceProfile method.
 	DeleteResourceProfileFunc func(ctx context.Context, resourceProfileID string) error
@@ -366,6 +602,15 @@ type ClientMock struct {
 	// PipelineFunc mocks the Pipeline method.
 	PipelineFunc func(ctx context.Context, pipelineID string, params cloud.PipelineParams) (cloud.Pipeline, error)
 
+	// PipelineCheckFunc mocks the PipelineCheck method.
+	PipelineCheckFunc func(ctx context.Context, checkID string) (cloud.PipelineCheck, error)
+
+	// PipelineChecksFunc mocks the PipelineChecks method.
+	PipelineChecksFunc func(ctx context.Context, pipelineID string, params cloud.PipelineChecksParams) (cloud.PipelineChecks, error)
+
+	// PipelineClusterObjectsFunc mocks the PipelineClusterObjects method.
+	PipelineClusterObjectsFunc func(ctx context.Context, pipelineID string, params cloud.PipelineClusterObjectsParams) (cloud.ClusterObjects, error)
+
 	// PipelineConfigHistoryFunc mocks the PipelineConfigHistory method.
 	PipelineConfigHistoryFunc func(ctx context.Context, pipelineID string, params cloud.PipelineConfigHistoryParams) (cloud.PipelineConfigHistory, error)
 
@@ -375,8 +620,20 @@ type ClientMock struct {
 	// PipelineFilesFunc mocks the PipelineFiles method.
 	PipelineFilesFunc func(ctx context.Context, pipelineID string, params cloud.PipelineFilesParams) (cloud.PipelineFiles, error)
 
+	// PipelineMetricsFunc mocks the PipelineMetrics method.
+	PipelineMetricsFunc func(ctx context.Context, pipelineID string, params cloud.MetricsParams) (cloud.MetricsSummary, error)
+
+	// PipelineMetricsByPluginFunc mocks the PipelineMetricsByPlugin method.
+	PipelineMetricsByPluginFunc func(ctx context.Context, pipelineID string, params cloud.MetricsParams) (cloud.MetricsSummaryPlugin, error)
+
+	// PipelineMetricsOverTimeByPluginFunc mocks the PipelineMetricsOverTimeByPlugin method.
+	PipelineMetricsOverTimeByPluginFunc func(ctx context.Context, pipelineID string, params cloud.MetricsParams) (cloud.MetricsOverTimeByPlugin, error)
+
 	// PipelineMetricsV1Func mocks the PipelineMetricsV1 method.
 	PipelineMetricsV1Func func(ctx context.Context, pipelineID string, params cloud.MetricsParams) (cloud.AgentMetrics, error)
+
+	// PipelineOverTimeMetricsFunc mocks the PipelineOverTimeMetrics method.
+	PipelineOverTimeMetricsFunc func(ctx context.Context, pipelineID string, params cloud.MetricsParams) (cloud.MetricsOverTime, error)
 
 	// PipelinePortFunc mocks the PipelinePort method.
 	PipelinePortFunc func(ctx context.Context, portID string) (cloud.PipelinePort, error)
@@ -394,16 +651,31 @@ type ClientMock struct {
 	PipelineStatusHistoryFunc func(ctx context.Context, pipelineID string, params cloud.PipelineStatusHistoryParams) (cloud.PipelineStatusHistory, error)
 
 	// PipelinesFunc mocks the Pipelines method.
-	PipelinesFunc func(ctx context.Context, aggregatorID string, params cloud.PipelinesParams) (cloud.Pipelines, error)
+	PipelinesFunc func(ctx context.Context, instanceID string, params cloud.PipelinesParams) (cloud.Pipelines, error)
+
+	// PipelinesMetricsV1Func mocks the PipelinesMetricsV1 method.
+	PipelinesMetricsV1Func func(ctx context.Context, instanceID string, params cloud.PipelinesMetricsParams) (cloud.PipelinesMetrics, error)
+
+	// PreviewProcessingRuleFunc mocks the PreviewProcessingRule method.
+	PreviewProcessingRuleFunc func(ctx context.Context, in cloud.PreviewProcessingRule) ([]cloud.FluentBitLog, error)
+
+	// ProcessingRuleFunc mocks the ProcessingRule method.
+	ProcessingRuleFunc func(ctx context.Context, processingRuleID string) (cloud.ProcessingRule, error)
+
+	// ProcessingRulesFunc mocks the ProcessingRules method.
+	ProcessingRulesFunc func(ctx context.Context, params cloud.ProcessingRulesParams) (cloud.ProcessingRules, error)
 
 	// ProjectFunc mocks the Project method.
 	ProjectFunc func(ctx context.Context, projectID string) (cloud.Project, error)
 
-	// ProjectMetricsFunc mocks the ProjectMetrics method.
-	ProjectMetricsFunc func(ctx context.Context, projectID string, params cloud.MetricsParams) (cloud.ProjectMetrics, error)
+	// ProjectMetricsV1Func mocks the ProjectMetricsV1 method.
+	ProjectMetricsV1Func func(ctx context.Context, projectID string, params cloud.MetricsParams) (cloud.ProjectMetrics, error)
 
 	// ProjectPipelinesFunc mocks the ProjectPipelines method.
 	ProjectPipelinesFunc func(ctx context.Context, projectID string, params cloud.PipelinesParams) (cloud.Pipelines, error)
+
+	// ProjectsFunc mocks the Projects method.
+	ProjectsFunc func(ctx context.Context, params cloud.ProjectsParams) (cloud.Projects, error)
 
 	// RegisterAgentFunc mocks the RegisterAgent method.
 	RegisterAgentFunc func(ctx context.Context, payload cloud.RegisterAgent) (cloud.RegisteredAgent, error)
@@ -412,13 +684,31 @@ type ClientMock struct {
 	ResourceProfileFunc func(ctx context.Context, resourceProfileID string) (cloud.ResourceProfile, error)
 
 	// ResourceProfilesFunc mocks the ResourceProfiles method.
-	ResourceProfilesFunc func(ctx context.Context, aggregatorID string, params cloud.ResourceProfilesParams) (cloud.ResourceProfiles, error)
+	ResourceProfilesFunc func(ctx context.Context, instanceID string, params cloud.ResourceProfilesParams) (cloud.ResourceProfiles, error)
+
+	// SendVerificationEmailFunc mocks the SendVerificationEmail method.
+	SendVerificationEmailFunc func(ctx context.Context) error
+
+	// SetAgentTokenFunc mocks the SetAgentToken method.
+	SetAgentTokenFunc func(s string)
+
+	// SetCoreInstanceTokenFunc mocks the SetCoreInstanceToken method.
+	SetCoreInstanceTokenFunc func(s string)
+
+	// SetProjectTokenFunc mocks the SetProjectToken method.
+	SetProjectTokenFunc func(s string)
+
+	// SetUserAgentFunc mocks the SetUserAgent method.
+	SetUserAgentFunc func(s string)
 
 	// TerminateActiveTraceSessionFunc mocks the TerminateActiveTraceSession method.
 	TerminateActiveTraceSessionFunc func(ctx context.Context, pipelineID string) (cloud.TerminatedTraceSession, error)
 
 	// TokenFunc mocks the Token method.
 	TokenFunc func(ctx context.Context, tokenID string) (cloud.Token, error)
+
+	// TokensFunc mocks the Tokens method.
+	TokensFunc func(ctx context.Context, projectID string, params cloud.TokensParams) (cloud.Tokens, error)
 
 	// TraceRecordsFunc mocks the TraceRecords method.
 	TraceRecordsFunc func(ctx context.Context, sessionID string, params cloud.TraceRecordsParams) (cloud.TraceRecords, error)
@@ -432,8 +722,8 @@ type ClientMock struct {
 	// UpdateAgentFunc mocks the UpdateAgent method.
 	UpdateAgentFunc func(ctx context.Context, agentID string, payload cloud.UpdateAgent) error
 
-	// UpdateAggregatorFunc mocks the UpdateAggregator method.
-	UpdateAggregatorFunc func(ctx context.Context, aggregatorID string, payload cloud.UpdateAggregator) error
+	// UpdateClusterObjectFunc mocks the UpdateClusterObject method.
+	UpdateClusterObjectFunc func(ctx context.Context, checkID string, opts cloud.UpdateClusterObject) error
 
 	// UpdateConfigSectionFunc mocks the UpdateConfigSection method.
 	UpdateConfigSectionFunc func(ctx context.Context, configSectionID string, in cloud.UpdateConfigSection) (cloud.UpdatedConfigSection, error)
@@ -441,11 +731,26 @@ type ClientMock struct {
 	// UpdateConfigSectionSetFunc mocks the UpdateConfigSectionSet method.
 	UpdateConfigSectionSetFunc func(ctx context.Context, pipelineID string, configSectionIDs ...string) error
 
+	// UpdateCoreInstanceFunc mocks the UpdateCoreInstance method.
+	UpdateCoreInstanceFunc func(ctx context.Context, instanceID string, payload cloud.UpdateCoreInstance) error
+
+	// UpdateCoreInstanceCheckFunc mocks the UpdateCoreInstanceCheck method.
+	UpdateCoreInstanceCheckFunc func(ctx context.Context, checkID string, opts cloud.UpdateCoreInstanceCheck) error
+
 	// UpdateEnvironmentFunc mocks the UpdateEnvironment method.
 	UpdateEnvironmentFunc func(ctx context.Context, environmentID string, payload cloud.UpdateEnvironment) error
 
+	// UpdateIngestCheckFunc mocks the UpdateIngestCheck method.
+	UpdateIngestCheckFunc func(ctx context.Context, checkID string, opts cloud.UpdateIngestCheck) error
+
 	// UpdatePipelineFunc mocks the UpdatePipeline method.
 	UpdatePipelineFunc func(ctx context.Context, pipelineID string, opts cloud.UpdatePipeline) (cloud.UpdatedPipeline, error)
+
+	// UpdatePipelineCheckFunc mocks the UpdatePipelineCheck method.
+	UpdatePipelineCheckFunc func(ctx context.Context, checkID string, opts cloud.UpdatePipelineCheck) error
+
+	// UpdatePipelineClusterObjectsFunc mocks the UpdatePipelineClusterObjects method.
+	UpdatePipelineClusterObjectsFunc func(ctx context.Context, pipelineID string, opts cloud.UpdatePipelineClusterObjects) error
 
 	// UpdatePipelineFileFunc mocks the UpdatePipelineFile method.
 	UpdatePipelineFileFunc func(ctx context.Context, fileID string, opts cloud.UpdatePipelineFile) error
@@ -455,6 +760,9 @@ type ClientMock struct {
 
 	// UpdatePipelineSecretFunc mocks the UpdatePipelineSecret method.
 	UpdatePipelineSecretFunc func(ctx context.Context, secretID string, opts cloud.UpdatePipelineSecret) error
+
+	// UpdateProcessingRuleFunc mocks the UpdateProcessingRule method.
+	UpdateProcessingRuleFunc func(ctx context.Context, in cloud.UpdateProcessingRule) (cloud.UpdatedProcessingRule, error)
 
 	// UpdateProjectFunc mocks the UpdateProject method.
 	UpdateProjectFunc func(ctx context.Context, projectID string, opts cloud.UpdateProject) error
@@ -471,8 +779,18 @@ type ClientMock struct {
 	// ValidateConfigFunc mocks the ValidateConfig method.
 	ValidateConfigFunc func(ctx context.Context, agentType cloud.AgentType, payload cloud.ValidatingConfig) (cloud.ValidatedConfig, error)
 
+	// ValidateConfigV2Func mocks the ValidateConfigV2 method.
+	ValidateConfigV2Func func(ctx context.Context, payload cloud.ValidatingConfig) (cloud.ValidatedConfigV2, error)
+
 	// calls tracks calls to the methods.
 	calls struct {
+		// AcceptInvitation holds details about calls to the AcceptInvitation method.
+		AcceptInvitation []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Payload is the payload argument value.
+			Payload cloud.AcceptInvitation
+		}
 		// ActiveTraceSession holds details about calls to the ActiveTraceSession method.
 		ActiveTraceSession []struct {
 			// Ctx is the ctx argument value.
@@ -496,8 +814,44 @@ type ClientMock struct {
 			// Params is the params argument value.
 			Params cloud.AgentConfigHistoryParams
 		}
+		// AgentMetrics holds details about calls to the AgentMetrics method.
+		AgentMetrics []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// AgentID is the agentID argument value.
+			AgentID string
+			// Params is the params argument value.
+			Params cloud.MetricsParams
+		}
+		// AgentMetricsByPlugin holds details about calls to the AgentMetricsByPlugin method.
+		AgentMetricsByPlugin []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// AgentID is the agentID argument value.
+			AgentID string
+			// Params is the params argument value.
+			Params cloud.MetricsParams
+		}
+		// AgentMetricsOverTimeByPlugin holds details about calls to the AgentMetricsOverTimeByPlugin method.
+		AgentMetricsOverTimeByPlugin []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// AgentID is the agentID argument value.
+			AgentID string
+			// Params is the params argument value.
+			Params cloud.MetricsParams
+		}
 		// AgentMetricsV1 holds details about calls to the AgentMetricsV1 method.
 		AgentMetricsV1 []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// AgentID is the agentID argument value.
+			AgentID string
+			// Params is the params argument value.
+			Params cloud.MetricsParams
+		}
+		// AgentOverTimeMetrics holds details about calls to the AgentOverTimeMetrics method.
+		AgentOverTimeMetrics []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// AgentID is the agentID argument value.
@@ -514,21 +868,21 @@ type ClientMock struct {
 			// Params is the params argument value.
 			Params cloud.AgentsParams
 		}
-		// Aggregator holds details about calls to the Aggregator method.
-		Aggregator []struct {
+		// ClusterObject holds details about calls to the ClusterObject method.
+		ClusterObject []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
-			// AggregatorID is the aggregatorID argument value.
-			AggregatorID string
+			// CheckID is the checkID argument value.
+			CheckID string
 		}
-		// Aggregators holds details about calls to the Aggregators method.
-		Aggregators []struct {
+		// ClusterObjects holds details about calls to the ClusterObjects method.
+		ClusterObjects []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
-			// ProjectID is the projectID argument value.
-			ProjectID string
+			// CoreInstanceID is the coreInstanceID argument value.
+			CoreInstanceID string
 			// Params is the params argument value.
-			Params cloud.AggregatorsParams
+			Params cloud.ClusterObjectParams
 		}
 		// ConfigSection holds details about calls to the ConfigSection method.
 		ConfigSection []struct {
@@ -546,12 +900,98 @@ type ClientMock struct {
 			// Params is the params argument value.
 			Params cloud.ConfigSectionsParams
 		}
-		// CreateAggregator holds details about calls to the CreateAggregator method.
-		CreateAggregator []struct {
+		// CoreInstance holds details about calls to the CoreInstance method.
+		CoreInstance []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
+			// InstanceID is the instanceID argument value.
+			InstanceID string
+		}
+		// CoreInstanceCheck holds details about calls to the CoreInstanceCheck method.
+		CoreInstanceCheck []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// CheckID is the checkID argument value.
+			CheckID string
+		}
+		// CoreInstanceChecks holds details about calls to the CoreInstanceChecks method.
+		CoreInstanceChecks []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// CoreInstanceID is the coreInstanceID argument value.
+			CoreInstanceID string
+			// Params is the params argument value.
+			Params cloud.CoreInstanceChecksParams
+		}
+		// CoreInstanceMetrics holds details about calls to the CoreInstanceMetrics method.
+		CoreInstanceMetrics []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// CoreInstanceID is the coreInstanceID argument value.
+			CoreInstanceID string
+			// Params is the params argument value.
+			Params cloud.MetricsParams
+		}
+		// CoreInstanceMetricsByPlugin holds details about calls to the CoreInstanceMetricsByPlugin method.
+		CoreInstanceMetricsByPlugin []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// CoreInstanceID is the coreInstanceID argument value.
+			CoreInstanceID string
+			// Params is the params argument value.
+			Params cloud.MetricsParams
+		}
+		// CoreInstanceMetricsOverTimeByPlugin holds details about calls to the CoreInstanceMetricsOverTimeByPlugin method.
+		CoreInstanceMetricsOverTimeByPlugin []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// CoreInstanceID is the coreInstanceID argument value.
+			CoreInstanceID string
+			// Params is the params argument value.
+			Params cloud.MetricsParams
+		}
+		// CoreInstanceMetricsV1 holds details about calls to the CoreInstanceMetricsV1 method.
+		CoreInstanceMetricsV1 []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// InstanceID is the instanceID argument value.
+			InstanceID string
+			// Params is the params argument value.
+			Params cloud.MetricsParams
+		}
+		// CoreInstanceOverTimeMetrics holds details about calls to the CoreInstanceOverTimeMetrics method.
+		CoreInstanceOverTimeMetrics []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// CoreInstanceID is the coreInstanceID argument value.
+			CoreInstanceID string
+			// Params is the params argument value.
+			Params cloud.MetricsParams
+		}
+		// CoreInstancePing holds details about calls to the CoreInstancePing method.
+		CoreInstancePing []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// InstanceID is the instanceID argument value.
+			InstanceID string
+		}
+		// CoreInstances holds details about calls to the CoreInstances method.
+		CoreInstances []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ProjectID is the projectID argument value.
+			ProjectID string
+			// Params is the params argument value.
+			Params cloud.CoreInstancesParams
+		}
+		// CreateClusterObject holds details about calls to the CreateClusterObject method.
+		CreateClusterObject []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// CoreInstanceID is the coreInstanceID argument value.
+			CoreInstanceID string
 			// Payload is the payload argument value.
-			Payload cloud.CreateAggregator
+			Payload cloud.CreateClusterObject
 		}
 		// CreateConfigSection holds details about calls to the CreateConfigSection method.
 		CreateConfigSection []struct {
@@ -561,6 +1001,22 @@ type ClientMock struct {
 			ProjectID string
 			// In is the in argument value.
 			In cloud.CreateConfigSection
+		}
+		// CreateCoreInstance holds details about calls to the CreateCoreInstance method.
+		CreateCoreInstance []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Payload is the payload argument value.
+			Payload cloud.CreateCoreInstance
+		}
+		// CreateCoreInstanceCheck holds details about calls to the CreateCoreInstanceCheck method.
+		CreateCoreInstanceCheck []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// CoreInstanceID is the coreInstanceID argument value.
+			CoreInstanceID string
+			// Payload is the payload argument value.
+			Payload cloud.CreateCoreInstanceCheck
 		}
 		// CreateEnvironment holds details about calls to the CreateEnvironment method.
 		CreateEnvironment []struct {
@@ -593,10 +1049,19 @@ type ClientMock struct {
 		CreatePipeline []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
-			// AggregatorID is the aggregatorID argument value.
-			AggregatorID string
+			// InstanceID is the instanceID argument value.
+			InstanceID string
 			// Payload is the payload argument value.
 			Payload cloud.CreatePipeline
+		}
+		// CreatePipelineCheck holds details about calls to the CreatePipelineCheck method.
+		CreatePipelineCheck []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PipelineID is the pipelineID argument value.
+			PipelineID string
+			// Payload is the payload argument value.
+			Payload cloud.CreatePipelineCheck
 		}
 		// CreatePipelineFile holds details about calls to the CreatePipelineFile method.
 		CreatePipelineFile []struct {
@@ -625,14 +1090,46 @@ type ClientMock struct {
 			// Payload is the payload argument value.
 			Payload cloud.CreatePipelineSecret
 		}
+		// CreateProcessingRule holds details about calls to the CreateProcessingRule method.
+		CreateProcessingRule []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// In is the in argument value.
+			In cloud.CreateProcessingRule
+		}
+		// CreateProject holds details about calls to the CreateProject method.
+		CreateProject []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Payload is the payload argument value.
+			Payload cloud.CreateProject
+		}
 		// CreateResourceProfile holds details about calls to the CreateResourceProfile method.
 		CreateResourceProfile []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
-			// AggregatorID is the aggregatorID argument value.
-			AggregatorID string
+			// InstanceID is the instanceID argument value.
+			InstanceID string
 			// Payload is the payload argument value.
 			Payload cloud.CreateResourceProfile
+		}
+		// CreateToken holds details about calls to the CreateToken method.
+		CreateToken []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ProjectID is the projectID argument value.
+			ProjectID string
+			// Payload is the payload argument value.
+			Payload cloud.CreateToken
+		}
+		// CreateTraceRecord holds details about calls to the CreateTraceRecord method.
+		CreateTraceRecord []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PipelineID is the pipelineID argument value.
+			PipelineID string
+			// In is the in argument value.
+			In cloud.CreateTraceRecord
 		}
 		// CreateTraceSession holds details about calls to the CreateTraceSession method.
 		CreateTraceSession []struct {
@@ -659,21 +1156,12 @@ type ClientMock struct {
 			// AgentIDs is the agentIDs argument value.
 			AgentIDs []string
 		}
-		// DeleteAggregator holds details about calls to the DeleteAggregator method.
-		DeleteAggregator []struct {
+		// DeleteClusterObject holds details about calls to the DeleteClusterObject method.
+		DeleteClusterObject []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
-			// AggregatorID is the aggregatorID argument value.
-			AggregatorID string
-		}
-		// DeleteAggregators holds details about calls to the DeleteAggregators method.
-		DeleteAggregators []struct {
-			// Ctx is the ctx argument value.
-			Ctx context.Context
-			// ProjectID is the projectID argument value.
-			ProjectID string
-			// AggregatorIDs is the aggregatorIDs argument value.
-			AggregatorIDs []string
+			// CheckID is the checkID argument value.
+			CheckID string
 		}
 		// DeleteConfigSection holds details about calls to the DeleteConfigSection method.
 		DeleteConfigSection []struct {
@@ -681,6 +1169,29 @@ type ClientMock struct {
 			Ctx context.Context
 			// ConfigSectionID is the configSectionID argument value.
 			ConfigSectionID string
+		}
+		// DeleteCoreInstance holds details about calls to the DeleteCoreInstance method.
+		DeleteCoreInstance []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// InstanceID is the instanceID argument value.
+			InstanceID string
+		}
+		// DeleteCoreInstanceCheck holds details about calls to the DeleteCoreInstanceCheck method.
+		DeleteCoreInstanceCheck []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// CheckID is the checkID argument value.
+			CheckID string
+		}
+		// DeleteCoreInstances holds details about calls to the DeleteCoreInstances method.
+		DeleteCoreInstances []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ProjectID is the projectID argument value.
+			ProjectID string
+			// InstanceIDs is the instanceIDs argument value.
+			InstanceIDs []string
 		}
 		// DeleteEnvironment holds details about calls to the DeleteEnvironment method.
 		DeleteEnvironment []struct {
@@ -702,6 +1213,22 @@ type ClientMock struct {
 			Ctx context.Context
 			// PipelineID is the pipelineID argument value.
 			PipelineID string
+		}
+		// DeletePipelineCheck holds details about calls to the DeletePipelineCheck method.
+		DeletePipelineCheck []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// CheckID is the checkID argument value.
+			CheckID string
+		}
+		// DeletePipelineClusterObjects holds details about calls to the DeletePipelineClusterObjects method.
+		DeletePipelineClusterObjects []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PipelineID is the pipelineID argument value.
+			PipelineID string
+			// ClusterObjectIDs is the clusterObjectIDs argument value.
+			ClusterObjectIDs []string
 		}
 		// DeletePipelineFile holds details about calls to the DeletePipelineFile method.
 		DeletePipelineFile []struct {
@@ -728,10 +1255,17 @@ type ClientMock struct {
 		DeletePipelines []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
-			// AggregatorID is the aggregatorID argument value.
-			AggregatorID string
+			// InstanceID is the instanceID argument value.
+			InstanceID string
 			// PipelineIDs is the pipelineIDs argument value.
 			PipelineIDs []string
+		}
+		// DeleteProcessingRule holds details about calls to the DeleteProcessingRule method.
+		DeleteProcessingRule []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ProcessingRuleID is the processingRuleID argument value.
+			ProcessingRuleID string
 		}
 		// DeleteResourceProfile holds details about calls to the DeleteResourceProfile method.
 		DeleteResourceProfile []struct {
@@ -790,6 +1324,31 @@ type ClientMock struct {
 			// Params is the params argument value.
 			Params cloud.PipelineParams
 		}
+		// PipelineCheck holds details about calls to the PipelineCheck method.
+		PipelineCheck []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// CheckID is the checkID argument value.
+			CheckID string
+		}
+		// PipelineChecks holds details about calls to the PipelineChecks method.
+		PipelineChecks []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PipelineID is the pipelineID argument value.
+			PipelineID string
+			// Params is the params argument value.
+			Params cloud.PipelineChecksParams
+		}
+		// PipelineClusterObjects holds details about calls to the PipelineClusterObjects method.
+		PipelineClusterObjects []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PipelineID is the pipelineID argument value.
+			PipelineID string
+			// Params is the params argument value.
+			Params cloud.PipelineClusterObjectsParams
+		}
 		// PipelineConfigHistory holds details about calls to the PipelineConfigHistory method.
 		PipelineConfigHistory []struct {
 			// Ctx is the ctx argument value.
@@ -815,8 +1374,44 @@ type ClientMock struct {
 			// Params is the params argument value.
 			Params cloud.PipelineFilesParams
 		}
+		// PipelineMetrics holds details about calls to the PipelineMetrics method.
+		PipelineMetrics []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PipelineID is the pipelineID argument value.
+			PipelineID string
+			// Params is the params argument value.
+			Params cloud.MetricsParams
+		}
+		// PipelineMetricsByPlugin holds details about calls to the PipelineMetricsByPlugin method.
+		PipelineMetricsByPlugin []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PipelineID is the pipelineID argument value.
+			PipelineID string
+			// Params is the params argument value.
+			Params cloud.MetricsParams
+		}
+		// PipelineMetricsOverTimeByPlugin holds details about calls to the PipelineMetricsOverTimeByPlugin method.
+		PipelineMetricsOverTimeByPlugin []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PipelineID is the pipelineID argument value.
+			PipelineID string
+			// Params is the params argument value.
+			Params cloud.MetricsParams
+		}
 		// PipelineMetricsV1 holds details about calls to the PipelineMetricsV1 method.
 		PipelineMetricsV1 []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PipelineID is the pipelineID argument value.
+			PipelineID string
+			// Params is the params argument value.
+			Params cloud.MetricsParams
+		}
+		// PipelineOverTimeMetrics holds details about calls to the PipelineOverTimeMetrics method.
+		PipelineOverTimeMetrics []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// PipelineID is the pipelineID argument value.
@@ -869,10 +1464,40 @@ type ClientMock struct {
 		Pipelines []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
-			// AggregatorID is the aggregatorID argument value.
-			AggregatorID string
+			// InstanceID is the instanceID argument value.
+			InstanceID string
 			// Params is the params argument value.
 			Params cloud.PipelinesParams
+		}
+		// PipelinesMetricsV1 holds details about calls to the PipelinesMetricsV1 method.
+		PipelinesMetricsV1 []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// InstanceID is the instanceID argument value.
+			InstanceID string
+			// Params is the params argument value.
+			Params cloud.PipelinesMetricsParams
+		}
+		// PreviewProcessingRule holds details about calls to the PreviewProcessingRule method.
+		PreviewProcessingRule []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// In is the in argument value.
+			In cloud.PreviewProcessingRule
+		}
+		// ProcessingRule holds details about calls to the ProcessingRule method.
+		ProcessingRule []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ProcessingRuleID is the processingRuleID argument value.
+			ProcessingRuleID string
+		}
+		// ProcessingRules holds details about calls to the ProcessingRules method.
+		ProcessingRules []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Params is the params argument value.
+			Params cloud.ProcessingRulesParams
 		}
 		// Project holds details about calls to the Project method.
 		Project []struct {
@@ -881,8 +1506,8 @@ type ClientMock struct {
 			// ProjectID is the projectID argument value.
 			ProjectID string
 		}
-		// ProjectMetrics holds details about calls to the ProjectMetrics method.
-		ProjectMetrics []struct {
+		// ProjectMetricsV1 holds details about calls to the ProjectMetricsV1 method.
+		ProjectMetricsV1 []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// ProjectID is the projectID argument value.
@@ -898,6 +1523,13 @@ type ClientMock struct {
 			ProjectID string
 			// Params is the params argument value.
 			Params cloud.PipelinesParams
+		}
+		// Projects holds details about calls to the Projects method.
+		Projects []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Params is the params argument value.
+			Params cloud.ProjectsParams
 		}
 		// RegisterAgent holds details about calls to the RegisterAgent method.
 		RegisterAgent []struct {
@@ -917,10 +1549,35 @@ type ClientMock struct {
 		ResourceProfiles []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
-			// AggregatorID is the aggregatorID argument value.
-			AggregatorID string
+			// InstanceID is the instanceID argument value.
+			InstanceID string
 			// Params is the params argument value.
 			Params cloud.ResourceProfilesParams
+		}
+		// SendVerificationEmail holds details about calls to the SendVerificationEmail method.
+		SendVerificationEmail []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+		}
+		// SetAgentToken holds details about calls to the SetAgentToken method.
+		SetAgentToken []struct {
+			// S is the s argument value.
+			S string
+		}
+		// SetCoreInstanceToken holds details about calls to the SetCoreInstanceToken method.
+		SetCoreInstanceToken []struct {
+			// S is the s argument value.
+			S string
+		}
+		// SetProjectToken holds details about calls to the SetProjectToken method.
+		SetProjectToken []struct {
+			// S is the s argument value.
+			S string
+		}
+		// SetUserAgent holds details about calls to the SetUserAgent method.
+		SetUserAgent []struct {
+			// S is the s argument value.
+			S string
 		}
 		// TerminateActiveTraceSession holds details about calls to the TerminateActiveTraceSession method.
 		TerminateActiveTraceSession []struct {
@@ -935,6 +1592,15 @@ type ClientMock struct {
 			Ctx context.Context
 			// TokenID is the tokenID argument value.
 			TokenID string
+		}
+		// Tokens holds details about calls to the Tokens method.
+		Tokens []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ProjectID is the projectID argument value.
+			ProjectID string
+			// Params is the params argument value.
+			Params cloud.TokensParams
 		}
 		// TraceRecords holds details about calls to the TraceRecords method.
 		TraceRecords []struct {
@@ -970,14 +1636,14 @@ type ClientMock struct {
 			// Payload is the payload argument value.
 			Payload cloud.UpdateAgent
 		}
-		// UpdateAggregator holds details about calls to the UpdateAggregator method.
-		UpdateAggregator []struct {
+		// UpdateClusterObject holds details about calls to the UpdateClusterObject method.
+		UpdateClusterObject []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
-			// AggregatorID is the aggregatorID argument value.
-			AggregatorID string
-			// Payload is the payload argument value.
-			Payload cloud.UpdateAggregator
+			// CheckID is the checkID argument value.
+			CheckID string
+			// Opts is the opts argument value.
+			Opts cloud.UpdateClusterObject
 		}
 		// UpdateConfigSection holds details about calls to the UpdateConfigSection method.
 		UpdateConfigSection []struct {
@@ -997,6 +1663,24 @@ type ClientMock struct {
 			// ConfigSectionIDs is the configSectionIDs argument value.
 			ConfigSectionIDs []string
 		}
+		// UpdateCoreInstance holds details about calls to the UpdateCoreInstance method.
+		UpdateCoreInstance []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// InstanceID is the instanceID argument value.
+			InstanceID string
+			// Payload is the payload argument value.
+			Payload cloud.UpdateCoreInstance
+		}
+		// UpdateCoreInstanceCheck holds details about calls to the UpdateCoreInstanceCheck method.
+		UpdateCoreInstanceCheck []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// CheckID is the checkID argument value.
+			CheckID string
+			// Opts is the opts argument value.
+			Opts cloud.UpdateCoreInstanceCheck
+		}
 		// UpdateEnvironment holds details about calls to the UpdateEnvironment method.
 		UpdateEnvironment []struct {
 			// Ctx is the ctx argument value.
@@ -1006,6 +1690,15 @@ type ClientMock struct {
 			// Payload is the payload argument value.
 			Payload cloud.UpdateEnvironment
 		}
+		// UpdateIngestCheck holds details about calls to the UpdateIngestCheck method.
+		UpdateIngestCheck []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// CheckID is the checkID argument value.
+			CheckID string
+			// Opts is the opts argument value.
+			Opts cloud.UpdateIngestCheck
+		}
 		// UpdatePipeline holds details about calls to the UpdatePipeline method.
 		UpdatePipeline []struct {
 			// Ctx is the ctx argument value.
@@ -1014,6 +1707,24 @@ type ClientMock struct {
 			PipelineID string
 			// Opts is the opts argument value.
 			Opts cloud.UpdatePipeline
+		}
+		// UpdatePipelineCheck holds details about calls to the UpdatePipelineCheck method.
+		UpdatePipelineCheck []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// CheckID is the checkID argument value.
+			CheckID string
+			// Opts is the opts argument value.
+			Opts cloud.UpdatePipelineCheck
+		}
+		// UpdatePipelineClusterObjects holds details about calls to the UpdatePipelineClusterObjects method.
+		UpdatePipelineClusterObjects []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PipelineID is the pipelineID argument value.
+			PipelineID string
+			// Opts is the opts argument value.
+			Opts cloud.UpdatePipelineClusterObjects
 		}
 		// UpdatePipelineFile holds details about calls to the UpdatePipelineFile method.
 		UpdatePipelineFile []struct {
@@ -1041,6 +1752,13 @@ type ClientMock struct {
 			SecretID string
 			// Opts is the opts argument value.
 			Opts cloud.UpdatePipelineSecret
+		}
+		// UpdateProcessingRule holds details about calls to the UpdateProcessingRule method.
+		UpdateProcessingRule []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// In is the in argument value.
+			In cloud.UpdateProcessingRule
 		}
 		// UpdateProject holds details about calls to the UpdateProject method.
 		UpdateProject []struct {
@@ -1087,81 +1805,179 @@ type ClientMock struct {
 			// Payload is the payload argument value.
 			Payload cloud.ValidatingConfig
 		}
+		// ValidateConfigV2 holds details about calls to the ValidateConfigV2 method.
+		ValidateConfigV2 []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Payload is the payload argument value.
+			Payload cloud.ValidatingConfig
+		}
 	}
-	lockActiveTraceSession          sync.RWMutex
-	lockAgent                       sync.RWMutex
-	lockAgentConfigHistory          sync.RWMutex
-	lockAgentMetricsV1              sync.RWMutex
-	lockAgents                      sync.RWMutex
-	lockAggregator                  sync.RWMutex
-	lockAggregators                 sync.RWMutex
-	lockConfigSection               sync.RWMutex
-	lockConfigSections              sync.RWMutex
-	lockCreateAggregator            sync.RWMutex
-	lockCreateConfigSection         sync.RWMutex
-	lockCreateEnvironment           sync.RWMutex
-	lockCreateIngestCheck           sync.RWMutex
-	lockCreateInvitation            sync.RWMutex
-	lockCreatePipeline              sync.RWMutex
-	lockCreatePipelineFile          sync.RWMutex
-	lockCreatePipelinePort          sync.RWMutex
-	lockCreatePipelineSecret        sync.RWMutex
-	lockCreateResourceProfile       sync.RWMutex
-	lockCreateTraceSession          sync.RWMutex
-	lockDeleteAgent                 sync.RWMutex
-	lockDeleteAgents                sync.RWMutex
-	lockDeleteAggregator            sync.RWMutex
-	lockDeleteAggregators           sync.RWMutex
-	lockDeleteConfigSection         sync.RWMutex
-	lockDeleteEnvironment           sync.RWMutex
-	lockDeleteIngestCheck           sync.RWMutex
-	lockDeletePipeline              sync.RWMutex
-	lockDeletePipelineFile          sync.RWMutex
-	lockDeletePipelinePort          sync.RWMutex
-	lockDeletePipelineSecret        sync.RWMutex
-	lockDeletePipelines             sync.RWMutex
-	lockDeleteResourceProfile       sync.RWMutex
-	lockDeleteToken                 sync.RWMutex
-	lockEnvironments                sync.RWMutex
-	lockIngestCheck                 sync.RWMutex
-	lockIngestChecks                sync.RWMutex
-	lockMembers                     sync.RWMutex
-	lockPipeline                    sync.RWMutex
-	lockPipelineConfigHistory       sync.RWMutex
-	lockPipelineFile                sync.RWMutex
-	lockPipelineFiles               sync.RWMutex
-	lockPipelineMetricsV1           sync.RWMutex
-	lockPipelinePort                sync.RWMutex
-	lockPipelinePorts               sync.RWMutex
-	lockPipelineSecret              sync.RWMutex
-	lockPipelineSecrets             sync.RWMutex
-	lockPipelineStatusHistory       sync.RWMutex
-	lockPipelines                   sync.RWMutex
-	lockProject                     sync.RWMutex
-	lockProjectMetrics              sync.RWMutex
-	lockProjectPipelines            sync.RWMutex
-	lockRegisterAgent               sync.RWMutex
-	lockResourceProfile             sync.RWMutex
-	lockResourceProfiles            sync.RWMutex
-	lockTerminateActiveTraceSession sync.RWMutex
-	lockToken                       sync.RWMutex
-	lockTraceRecords                sync.RWMutex
-	lockTraceSession                sync.RWMutex
-	lockTraceSessions               sync.RWMutex
-	lockUpdateAgent                 sync.RWMutex
-	lockUpdateAggregator            sync.RWMutex
-	lockUpdateConfigSection         sync.RWMutex
-	lockUpdateConfigSectionSet      sync.RWMutex
-	lockUpdateEnvironment           sync.RWMutex
-	lockUpdatePipeline              sync.RWMutex
-	lockUpdatePipelineFile          sync.RWMutex
-	lockUpdatePipelinePort          sync.RWMutex
-	lockUpdatePipelineSecret        sync.RWMutex
-	lockUpdateProject               sync.RWMutex
-	lockUpdateResourceProfile       sync.RWMutex
-	lockUpdateToken                 sync.RWMutex
-	lockUpdateTraceSession          sync.RWMutex
-	lockValidateConfig              sync.RWMutex
+	lockAcceptInvitation                    sync.RWMutex
+	lockActiveTraceSession                  sync.RWMutex
+	lockAgent                               sync.RWMutex
+	lockAgentConfigHistory                  sync.RWMutex
+	lockAgentMetrics                        sync.RWMutex
+	lockAgentMetricsByPlugin                sync.RWMutex
+	lockAgentMetricsOverTimeByPlugin        sync.RWMutex
+	lockAgentMetricsV1                      sync.RWMutex
+	lockAgentOverTimeMetrics                sync.RWMutex
+	lockAgents                              sync.RWMutex
+	lockClusterObject                       sync.RWMutex
+	lockClusterObjects                      sync.RWMutex
+	lockConfigSection                       sync.RWMutex
+	lockConfigSections                      sync.RWMutex
+	lockCoreInstance                        sync.RWMutex
+	lockCoreInstanceCheck                   sync.RWMutex
+	lockCoreInstanceChecks                  sync.RWMutex
+	lockCoreInstanceMetrics                 sync.RWMutex
+	lockCoreInstanceMetricsByPlugin         sync.RWMutex
+	lockCoreInstanceMetricsOverTimeByPlugin sync.RWMutex
+	lockCoreInstanceMetricsV1               sync.RWMutex
+	lockCoreInstanceOverTimeMetrics         sync.RWMutex
+	lockCoreInstancePing                    sync.RWMutex
+	lockCoreInstances                       sync.RWMutex
+	lockCreateClusterObject                 sync.RWMutex
+	lockCreateConfigSection                 sync.RWMutex
+	lockCreateCoreInstance                  sync.RWMutex
+	lockCreateCoreInstanceCheck             sync.RWMutex
+	lockCreateEnvironment                   sync.RWMutex
+	lockCreateIngestCheck                   sync.RWMutex
+	lockCreateInvitation                    sync.RWMutex
+	lockCreatePipeline                      sync.RWMutex
+	lockCreatePipelineCheck                 sync.RWMutex
+	lockCreatePipelineFile                  sync.RWMutex
+	lockCreatePipelinePort                  sync.RWMutex
+	lockCreatePipelineSecret                sync.RWMutex
+	lockCreateProcessingRule                sync.RWMutex
+	lockCreateProject                       sync.RWMutex
+	lockCreateResourceProfile               sync.RWMutex
+	lockCreateToken                         sync.RWMutex
+	lockCreateTraceRecord                   sync.RWMutex
+	lockCreateTraceSession                  sync.RWMutex
+	lockDeleteAgent                         sync.RWMutex
+	lockDeleteAgents                        sync.RWMutex
+	lockDeleteClusterObject                 sync.RWMutex
+	lockDeleteConfigSection                 sync.RWMutex
+	lockDeleteCoreInstance                  sync.RWMutex
+	lockDeleteCoreInstanceCheck             sync.RWMutex
+	lockDeleteCoreInstances                 sync.RWMutex
+	lockDeleteEnvironment                   sync.RWMutex
+	lockDeleteIngestCheck                   sync.RWMutex
+	lockDeletePipeline                      sync.RWMutex
+	lockDeletePipelineCheck                 sync.RWMutex
+	lockDeletePipelineClusterObjects        sync.RWMutex
+	lockDeletePipelineFile                  sync.RWMutex
+	lockDeletePipelinePort                  sync.RWMutex
+	lockDeletePipelineSecret                sync.RWMutex
+	lockDeletePipelines                     sync.RWMutex
+	lockDeleteProcessingRule                sync.RWMutex
+	lockDeleteResourceProfile               sync.RWMutex
+	lockDeleteToken                         sync.RWMutex
+	lockEnvironments                        sync.RWMutex
+	lockIngestCheck                         sync.RWMutex
+	lockIngestChecks                        sync.RWMutex
+	lockMembers                             sync.RWMutex
+	lockPipeline                            sync.RWMutex
+	lockPipelineCheck                       sync.RWMutex
+	lockPipelineChecks                      sync.RWMutex
+	lockPipelineClusterObjects              sync.RWMutex
+	lockPipelineConfigHistory               sync.RWMutex
+	lockPipelineFile                        sync.RWMutex
+	lockPipelineFiles                       sync.RWMutex
+	lockPipelineMetrics                     sync.RWMutex
+	lockPipelineMetricsByPlugin             sync.RWMutex
+	lockPipelineMetricsOverTimeByPlugin     sync.RWMutex
+	lockPipelineMetricsV1                   sync.RWMutex
+	lockPipelineOverTimeMetrics             sync.RWMutex
+	lockPipelinePort                        sync.RWMutex
+	lockPipelinePorts                       sync.RWMutex
+	lockPipelineSecret                      sync.RWMutex
+	lockPipelineSecrets                     sync.RWMutex
+	lockPipelineStatusHistory               sync.RWMutex
+	lockPipelines                           sync.RWMutex
+	lockPipelinesMetricsV1                  sync.RWMutex
+	lockPreviewProcessingRule               sync.RWMutex
+	lockProcessingRule                      sync.RWMutex
+	lockProcessingRules                     sync.RWMutex
+	lockProject                             sync.RWMutex
+	lockProjectMetricsV1                    sync.RWMutex
+	lockProjectPipelines                    sync.RWMutex
+	lockProjects                            sync.RWMutex
+	lockRegisterAgent                       sync.RWMutex
+	lockResourceProfile                     sync.RWMutex
+	lockResourceProfiles                    sync.RWMutex
+	lockSendVerificationEmail               sync.RWMutex
+	lockSetAgentToken                       sync.RWMutex
+	lockSetCoreInstanceToken                sync.RWMutex
+	lockSetProjectToken                     sync.RWMutex
+	lockSetUserAgent                        sync.RWMutex
+	lockTerminateActiveTraceSession         sync.RWMutex
+	lockToken                               sync.RWMutex
+	lockTokens                              sync.RWMutex
+	lockTraceRecords                        sync.RWMutex
+	lockTraceSession                        sync.RWMutex
+	lockTraceSessions                       sync.RWMutex
+	lockUpdateAgent                         sync.RWMutex
+	lockUpdateClusterObject                 sync.RWMutex
+	lockUpdateConfigSection                 sync.RWMutex
+	lockUpdateConfigSectionSet              sync.RWMutex
+	lockUpdateCoreInstance                  sync.RWMutex
+	lockUpdateCoreInstanceCheck             sync.RWMutex
+	lockUpdateEnvironment                   sync.RWMutex
+	lockUpdateIngestCheck                   sync.RWMutex
+	lockUpdatePipeline                      sync.RWMutex
+	lockUpdatePipelineCheck                 sync.RWMutex
+	lockUpdatePipelineClusterObjects        sync.RWMutex
+	lockUpdatePipelineFile                  sync.RWMutex
+	lockUpdatePipelinePort                  sync.RWMutex
+	lockUpdatePipelineSecret                sync.RWMutex
+	lockUpdateProcessingRule                sync.RWMutex
+	lockUpdateProject                       sync.RWMutex
+	lockUpdateResourceProfile               sync.RWMutex
+	lockUpdateToken                         sync.RWMutex
+	lockUpdateTraceSession                  sync.RWMutex
+	lockValidateConfig                      sync.RWMutex
+	lockValidateConfigV2                    sync.RWMutex
+}
+
+// AcceptInvitation calls AcceptInvitationFunc.
+func (mock *ClientMock) AcceptInvitation(ctx context.Context, payload cloud.AcceptInvitation) error {
+	callInfo := struct {
+		Ctx     context.Context
+		Payload cloud.AcceptInvitation
+	}{
+		Ctx:     ctx,
+		Payload: payload,
+	}
+	mock.lockAcceptInvitation.Lock()
+	mock.calls.AcceptInvitation = append(mock.calls.AcceptInvitation, callInfo)
+	mock.lockAcceptInvitation.Unlock()
+	if mock.AcceptInvitationFunc == nil {
+		var (
+			errOut error
+		)
+		return errOut
+	}
+	return mock.AcceptInvitationFunc(ctx, payload)
+}
+
+// AcceptInvitationCalls gets all the calls that were made to AcceptInvitation.
+// Check the length with:
+//
+//	len(mockedClient.AcceptInvitationCalls())
+func (mock *ClientMock) AcceptInvitationCalls() []struct {
+	Ctx     context.Context
+	Payload cloud.AcceptInvitation
+} {
+	var calls []struct {
+		Ctx     context.Context
+		Payload cloud.AcceptInvitation
+	}
+	mock.lockAcceptInvitation.RLock()
+	calls = mock.calls.AcceptInvitation
+	mock.lockAcceptInvitation.RUnlock()
+	return calls
 }
 
 // ActiveTraceSession calls ActiveTraceSessionFunc.
@@ -1288,6 +2104,138 @@ func (mock *ClientMock) AgentConfigHistoryCalls() []struct {
 	return calls
 }
 
+// AgentMetrics calls AgentMetricsFunc.
+func (mock *ClientMock) AgentMetrics(ctx context.Context, agentID string, params cloud.MetricsParams) (cloud.MetricsSummary, error) {
+	callInfo := struct {
+		Ctx     context.Context
+		AgentID string
+		Params  cloud.MetricsParams
+	}{
+		Ctx:     ctx,
+		AgentID: agentID,
+		Params:  params,
+	}
+	mock.lockAgentMetrics.Lock()
+	mock.calls.AgentMetrics = append(mock.calls.AgentMetrics, callInfo)
+	mock.lockAgentMetrics.Unlock()
+	if mock.AgentMetricsFunc == nil {
+		var (
+			metricsSummaryOut cloud.MetricsSummary
+			errOut            error
+		)
+		return metricsSummaryOut, errOut
+	}
+	return mock.AgentMetricsFunc(ctx, agentID, params)
+}
+
+// AgentMetricsCalls gets all the calls that were made to AgentMetrics.
+// Check the length with:
+//
+//	len(mockedClient.AgentMetricsCalls())
+func (mock *ClientMock) AgentMetricsCalls() []struct {
+	Ctx     context.Context
+	AgentID string
+	Params  cloud.MetricsParams
+} {
+	var calls []struct {
+		Ctx     context.Context
+		AgentID string
+		Params  cloud.MetricsParams
+	}
+	mock.lockAgentMetrics.RLock()
+	calls = mock.calls.AgentMetrics
+	mock.lockAgentMetrics.RUnlock()
+	return calls
+}
+
+// AgentMetricsByPlugin calls AgentMetricsByPluginFunc.
+func (mock *ClientMock) AgentMetricsByPlugin(ctx context.Context, agentID string, params cloud.MetricsParams) (cloud.MetricsSummaryPlugin, error) {
+	callInfo := struct {
+		Ctx     context.Context
+		AgentID string
+		Params  cloud.MetricsParams
+	}{
+		Ctx:     ctx,
+		AgentID: agentID,
+		Params:  params,
+	}
+	mock.lockAgentMetricsByPlugin.Lock()
+	mock.calls.AgentMetricsByPlugin = append(mock.calls.AgentMetricsByPlugin, callInfo)
+	mock.lockAgentMetricsByPlugin.Unlock()
+	if mock.AgentMetricsByPluginFunc == nil {
+		var (
+			metricsSummaryPluginOut cloud.MetricsSummaryPlugin
+			errOut                  error
+		)
+		return metricsSummaryPluginOut, errOut
+	}
+	return mock.AgentMetricsByPluginFunc(ctx, agentID, params)
+}
+
+// AgentMetricsByPluginCalls gets all the calls that were made to AgentMetricsByPlugin.
+// Check the length with:
+//
+//	len(mockedClient.AgentMetricsByPluginCalls())
+func (mock *ClientMock) AgentMetricsByPluginCalls() []struct {
+	Ctx     context.Context
+	AgentID string
+	Params  cloud.MetricsParams
+} {
+	var calls []struct {
+		Ctx     context.Context
+		AgentID string
+		Params  cloud.MetricsParams
+	}
+	mock.lockAgentMetricsByPlugin.RLock()
+	calls = mock.calls.AgentMetricsByPlugin
+	mock.lockAgentMetricsByPlugin.RUnlock()
+	return calls
+}
+
+// AgentMetricsOverTimeByPlugin calls AgentMetricsOverTimeByPluginFunc.
+func (mock *ClientMock) AgentMetricsOverTimeByPlugin(ctx context.Context, agentID string, params cloud.MetricsParams) (cloud.MetricsOverTimeByPlugin, error) {
+	callInfo := struct {
+		Ctx     context.Context
+		AgentID string
+		Params  cloud.MetricsParams
+	}{
+		Ctx:     ctx,
+		AgentID: agentID,
+		Params:  params,
+	}
+	mock.lockAgentMetricsOverTimeByPlugin.Lock()
+	mock.calls.AgentMetricsOverTimeByPlugin = append(mock.calls.AgentMetricsOverTimeByPlugin, callInfo)
+	mock.lockAgentMetricsOverTimeByPlugin.Unlock()
+	if mock.AgentMetricsOverTimeByPluginFunc == nil {
+		var (
+			metricsOverTimeByPluginOut cloud.MetricsOverTimeByPlugin
+			errOut                     error
+		)
+		return metricsOverTimeByPluginOut, errOut
+	}
+	return mock.AgentMetricsOverTimeByPluginFunc(ctx, agentID, params)
+}
+
+// AgentMetricsOverTimeByPluginCalls gets all the calls that were made to AgentMetricsOverTimeByPlugin.
+// Check the length with:
+//
+//	len(mockedClient.AgentMetricsOverTimeByPluginCalls())
+func (mock *ClientMock) AgentMetricsOverTimeByPluginCalls() []struct {
+	Ctx     context.Context
+	AgentID string
+	Params  cloud.MetricsParams
+} {
+	var calls []struct {
+		Ctx     context.Context
+		AgentID string
+		Params  cloud.MetricsParams
+	}
+	mock.lockAgentMetricsOverTimeByPlugin.RLock()
+	calls = mock.calls.AgentMetricsOverTimeByPlugin
+	mock.lockAgentMetricsOverTimeByPlugin.RUnlock()
+	return calls
+}
+
 // AgentMetricsV1 calls AgentMetricsV1Func.
 func (mock *ClientMock) AgentMetricsV1(ctx context.Context, agentID string, params cloud.MetricsParams) (cloud.AgentMetrics, error) {
 	callInfo := struct {
@@ -1329,6 +2277,50 @@ func (mock *ClientMock) AgentMetricsV1Calls() []struct {
 	mock.lockAgentMetricsV1.RLock()
 	calls = mock.calls.AgentMetricsV1
 	mock.lockAgentMetricsV1.RUnlock()
+	return calls
+}
+
+// AgentOverTimeMetrics calls AgentOverTimeMetricsFunc.
+func (mock *ClientMock) AgentOverTimeMetrics(ctx context.Context, agentID string, params cloud.MetricsParams) (cloud.MetricsOverTime, error) {
+	callInfo := struct {
+		Ctx     context.Context
+		AgentID string
+		Params  cloud.MetricsParams
+	}{
+		Ctx:     ctx,
+		AgentID: agentID,
+		Params:  params,
+	}
+	mock.lockAgentOverTimeMetrics.Lock()
+	mock.calls.AgentOverTimeMetrics = append(mock.calls.AgentOverTimeMetrics, callInfo)
+	mock.lockAgentOverTimeMetrics.Unlock()
+	if mock.AgentOverTimeMetricsFunc == nil {
+		var (
+			metricsOverTimeOut cloud.MetricsOverTime
+			errOut             error
+		)
+		return metricsOverTimeOut, errOut
+	}
+	return mock.AgentOverTimeMetricsFunc(ctx, agentID, params)
+}
+
+// AgentOverTimeMetricsCalls gets all the calls that were made to AgentOverTimeMetrics.
+// Check the length with:
+//
+//	len(mockedClient.AgentOverTimeMetricsCalls())
+func (mock *ClientMock) AgentOverTimeMetricsCalls() []struct {
+	Ctx     context.Context
+	AgentID string
+	Params  cloud.MetricsParams
+} {
+	var calls []struct {
+		Ctx     context.Context
+		AgentID string
+		Params  cloud.MetricsParams
+	}
+	mock.lockAgentOverTimeMetrics.RLock()
+	calls = mock.calls.AgentOverTimeMetrics
+	mock.lockAgentOverTimeMetrics.RUnlock()
 	return calls
 }
 
@@ -1376,87 +2368,87 @@ func (mock *ClientMock) AgentsCalls() []struct {
 	return calls
 }
 
-// Aggregator calls AggregatorFunc.
-func (mock *ClientMock) Aggregator(ctx context.Context, aggregatorID string) (cloud.Aggregator, error) {
+// ClusterObject calls ClusterObjectFunc.
+func (mock *ClientMock) ClusterObject(ctx context.Context, checkID string) (cloud.ClusterObject, error) {
 	callInfo := struct {
-		Ctx          context.Context
-		AggregatorID string
+		Ctx     context.Context
+		CheckID string
 	}{
-		Ctx:          ctx,
-		AggregatorID: aggregatorID,
+		Ctx:     ctx,
+		CheckID: checkID,
 	}
-	mock.lockAggregator.Lock()
-	mock.calls.Aggregator = append(mock.calls.Aggregator, callInfo)
-	mock.lockAggregator.Unlock()
-	if mock.AggregatorFunc == nil {
+	mock.lockClusterObject.Lock()
+	mock.calls.ClusterObject = append(mock.calls.ClusterObject, callInfo)
+	mock.lockClusterObject.Unlock()
+	if mock.ClusterObjectFunc == nil {
 		var (
-			aggregatorOut cloud.Aggregator
-			errOut        error
+			clusterObjectOut cloud.ClusterObject
+			errOut           error
 		)
-		return aggregatorOut, errOut
+		return clusterObjectOut, errOut
 	}
-	return mock.AggregatorFunc(ctx, aggregatorID)
+	return mock.ClusterObjectFunc(ctx, checkID)
 }
 
-// AggregatorCalls gets all the calls that were made to Aggregator.
+// ClusterObjectCalls gets all the calls that were made to ClusterObject.
 // Check the length with:
 //
-//	len(mockedClient.AggregatorCalls())
-func (mock *ClientMock) AggregatorCalls() []struct {
-	Ctx          context.Context
-	AggregatorID string
+//	len(mockedClient.ClusterObjectCalls())
+func (mock *ClientMock) ClusterObjectCalls() []struct {
+	Ctx     context.Context
+	CheckID string
 } {
 	var calls []struct {
-		Ctx          context.Context
-		AggregatorID string
+		Ctx     context.Context
+		CheckID string
 	}
-	mock.lockAggregator.RLock()
-	calls = mock.calls.Aggregator
-	mock.lockAggregator.RUnlock()
+	mock.lockClusterObject.RLock()
+	calls = mock.calls.ClusterObject
+	mock.lockClusterObject.RUnlock()
 	return calls
 }
 
-// Aggregators calls AggregatorsFunc.
-func (mock *ClientMock) Aggregators(ctx context.Context, projectID string, params cloud.AggregatorsParams) (cloud.Aggregators, error) {
+// ClusterObjects calls ClusterObjectsFunc.
+func (mock *ClientMock) ClusterObjects(ctx context.Context, coreInstanceID string, params cloud.ClusterObjectParams) (cloud.ClusterObjects, error) {
 	callInfo := struct {
-		Ctx       context.Context
-		ProjectID string
-		Params    cloud.AggregatorsParams
+		Ctx            context.Context
+		CoreInstanceID string
+		Params         cloud.ClusterObjectParams
 	}{
-		Ctx:       ctx,
-		ProjectID: projectID,
-		Params:    params,
+		Ctx:            ctx,
+		CoreInstanceID: coreInstanceID,
+		Params:         params,
 	}
-	mock.lockAggregators.Lock()
-	mock.calls.Aggregators = append(mock.calls.Aggregators, callInfo)
-	mock.lockAggregators.Unlock()
-	if mock.AggregatorsFunc == nil {
+	mock.lockClusterObjects.Lock()
+	mock.calls.ClusterObjects = append(mock.calls.ClusterObjects, callInfo)
+	mock.lockClusterObjects.Unlock()
+	if mock.ClusterObjectsFunc == nil {
 		var (
-			aggregatorsOut cloud.Aggregators
-			errOut         error
+			clusterObjectsOut cloud.ClusterObjects
+			errOut            error
 		)
-		return aggregatorsOut, errOut
+		return clusterObjectsOut, errOut
 	}
-	return mock.AggregatorsFunc(ctx, projectID, params)
+	return mock.ClusterObjectsFunc(ctx, coreInstanceID, params)
 }
 
-// AggregatorsCalls gets all the calls that were made to Aggregators.
+// ClusterObjectsCalls gets all the calls that were made to ClusterObjects.
 // Check the length with:
 //
-//	len(mockedClient.AggregatorsCalls())
-func (mock *ClientMock) AggregatorsCalls() []struct {
-	Ctx       context.Context
-	ProjectID string
-	Params    cloud.AggregatorsParams
+//	len(mockedClient.ClusterObjectsCalls())
+func (mock *ClientMock) ClusterObjectsCalls() []struct {
+	Ctx            context.Context
+	CoreInstanceID string
+	Params         cloud.ClusterObjectParams
 } {
 	var calls []struct {
-		Ctx       context.Context
-		ProjectID string
-		Params    cloud.AggregatorsParams
+		Ctx            context.Context
+		CoreInstanceID string
+		Params         cloud.ClusterObjectParams
 	}
-	mock.lockAggregators.RLock()
-	calls = mock.calls.Aggregators
-	mock.lockAggregators.RUnlock()
+	mock.lockClusterObjects.RLock()
+	calls = mock.calls.ClusterObjects
+	mock.lockClusterObjects.RUnlock()
 	return calls
 }
 
@@ -1544,43 +2536,475 @@ func (mock *ClientMock) ConfigSectionsCalls() []struct {
 	return calls
 }
 
-// CreateAggregator calls CreateAggregatorFunc.
-func (mock *ClientMock) CreateAggregator(ctx context.Context, payload cloud.CreateAggregator) (cloud.CreatedAggregator, error) {
+// CoreInstance calls CoreInstanceFunc.
+func (mock *ClientMock) CoreInstance(ctx context.Context, instanceID string) (cloud.CoreInstance, error) {
 	callInfo := struct {
-		Ctx     context.Context
-		Payload cloud.CreateAggregator
+		Ctx        context.Context
+		InstanceID string
 	}{
-		Ctx:     ctx,
-		Payload: payload,
+		Ctx:        ctx,
+		InstanceID: instanceID,
 	}
-	mock.lockCreateAggregator.Lock()
-	mock.calls.CreateAggregator = append(mock.calls.CreateAggregator, callInfo)
-	mock.lockCreateAggregator.Unlock()
-	if mock.CreateAggregatorFunc == nil {
+	mock.lockCoreInstance.Lock()
+	mock.calls.CoreInstance = append(mock.calls.CoreInstance, callInfo)
+	mock.lockCoreInstance.Unlock()
+	if mock.CoreInstanceFunc == nil {
 		var (
-			createdAggregatorOut cloud.CreatedAggregator
-			errOut               error
+			coreInstanceOut cloud.CoreInstance
+			errOut          error
 		)
-		return createdAggregatorOut, errOut
+		return coreInstanceOut, errOut
 	}
-	return mock.CreateAggregatorFunc(ctx, payload)
+	return mock.CoreInstanceFunc(ctx, instanceID)
 }
 
-// CreateAggregatorCalls gets all the calls that were made to CreateAggregator.
+// CoreInstanceCalls gets all the calls that were made to CoreInstance.
 // Check the length with:
 //
-//	len(mockedClient.CreateAggregatorCalls())
-func (mock *ClientMock) CreateAggregatorCalls() []struct {
+//	len(mockedClient.CoreInstanceCalls())
+func (mock *ClientMock) CoreInstanceCalls() []struct {
+	Ctx        context.Context
+	InstanceID string
+} {
+	var calls []struct {
+		Ctx        context.Context
+		InstanceID string
+	}
+	mock.lockCoreInstance.RLock()
+	calls = mock.calls.CoreInstance
+	mock.lockCoreInstance.RUnlock()
+	return calls
+}
+
+// CoreInstanceCheck calls CoreInstanceCheckFunc.
+func (mock *ClientMock) CoreInstanceCheck(ctx context.Context, checkID string) (cloud.CoreInstanceCheck, error) {
+	callInfo := struct {
+		Ctx     context.Context
+		CheckID string
+	}{
+		Ctx:     ctx,
+		CheckID: checkID,
+	}
+	mock.lockCoreInstanceCheck.Lock()
+	mock.calls.CoreInstanceCheck = append(mock.calls.CoreInstanceCheck, callInfo)
+	mock.lockCoreInstanceCheck.Unlock()
+	if mock.CoreInstanceCheckFunc == nil {
+		var (
+			coreInstanceCheckOut cloud.CoreInstanceCheck
+			errOut               error
+		)
+		return coreInstanceCheckOut, errOut
+	}
+	return mock.CoreInstanceCheckFunc(ctx, checkID)
+}
+
+// CoreInstanceCheckCalls gets all the calls that were made to CoreInstanceCheck.
+// Check the length with:
+//
+//	len(mockedClient.CoreInstanceCheckCalls())
+func (mock *ClientMock) CoreInstanceCheckCalls() []struct {
 	Ctx     context.Context
-	Payload cloud.CreateAggregator
+	CheckID string
 } {
 	var calls []struct {
 		Ctx     context.Context
-		Payload cloud.CreateAggregator
+		CheckID string
 	}
-	mock.lockCreateAggregator.RLock()
-	calls = mock.calls.CreateAggregator
-	mock.lockCreateAggregator.RUnlock()
+	mock.lockCoreInstanceCheck.RLock()
+	calls = mock.calls.CoreInstanceCheck
+	mock.lockCoreInstanceCheck.RUnlock()
+	return calls
+}
+
+// CoreInstanceChecks calls CoreInstanceChecksFunc.
+func (mock *ClientMock) CoreInstanceChecks(ctx context.Context, coreInstanceID string, params cloud.CoreInstanceChecksParams) (cloud.CoreInstanceChecks, error) {
+	callInfo := struct {
+		Ctx            context.Context
+		CoreInstanceID string
+		Params         cloud.CoreInstanceChecksParams
+	}{
+		Ctx:            ctx,
+		CoreInstanceID: coreInstanceID,
+		Params:         params,
+	}
+	mock.lockCoreInstanceChecks.Lock()
+	mock.calls.CoreInstanceChecks = append(mock.calls.CoreInstanceChecks, callInfo)
+	mock.lockCoreInstanceChecks.Unlock()
+	if mock.CoreInstanceChecksFunc == nil {
+		var (
+			coreInstanceChecksOut cloud.CoreInstanceChecks
+			errOut                error
+		)
+		return coreInstanceChecksOut, errOut
+	}
+	return mock.CoreInstanceChecksFunc(ctx, coreInstanceID, params)
+}
+
+// CoreInstanceChecksCalls gets all the calls that were made to CoreInstanceChecks.
+// Check the length with:
+//
+//	len(mockedClient.CoreInstanceChecksCalls())
+func (mock *ClientMock) CoreInstanceChecksCalls() []struct {
+	Ctx            context.Context
+	CoreInstanceID string
+	Params         cloud.CoreInstanceChecksParams
+} {
+	var calls []struct {
+		Ctx            context.Context
+		CoreInstanceID string
+		Params         cloud.CoreInstanceChecksParams
+	}
+	mock.lockCoreInstanceChecks.RLock()
+	calls = mock.calls.CoreInstanceChecks
+	mock.lockCoreInstanceChecks.RUnlock()
+	return calls
+}
+
+// CoreInstanceMetrics calls CoreInstanceMetricsFunc.
+func (mock *ClientMock) CoreInstanceMetrics(ctx context.Context, coreInstanceID string, params cloud.MetricsParams) (cloud.MetricsSummary, error) {
+	callInfo := struct {
+		Ctx            context.Context
+		CoreInstanceID string
+		Params         cloud.MetricsParams
+	}{
+		Ctx:            ctx,
+		CoreInstanceID: coreInstanceID,
+		Params:         params,
+	}
+	mock.lockCoreInstanceMetrics.Lock()
+	mock.calls.CoreInstanceMetrics = append(mock.calls.CoreInstanceMetrics, callInfo)
+	mock.lockCoreInstanceMetrics.Unlock()
+	if mock.CoreInstanceMetricsFunc == nil {
+		var (
+			metricsSummaryOut cloud.MetricsSummary
+			errOut            error
+		)
+		return metricsSummaryOut, errOut
+	}
+	return mock.CoreInstanceMetricsFunc(ctx, coreInstanceID, params)
+}
+
+// CoreInstanceMetricsCalls gets all the calls that were made to CoreInstanceMetrics.
+// Check the length with:
+//
+//	len(mockedClient.CoreInstanceMetricsCalls())
+func (mock *ClientMock) CoreInstanceMetricsCalls() []struct {
+	Ctx            context.Context
+	CoreInstanceID string
+	Params         cloud.MetricsParams
+} {
+	var calls []struct {
+		Ctx            context.Context
+		CoreInstanceID string
+		Params         cloud.MetricsParams
+	}
+	mock.lockCoreInstanceMetrics.RLock()
+	calls = mock.calls.CoreInstanceMetrics
+	mock.lockCoreInstanceMetrics.RUnlock()
+	return calls
+}
+
+// CoreInstanceMetricsByPlugin calls CoreInstanceMetricsByPluginFunc.
+func (mock *ClientMock) CoreInstanceMetricsByPlugin(ctx context.Context, coreInstanceID string, params cloud.MetricsParams) (cloud.MetricsSummaryPlugin, error) {
+	callInfo := struct {
+		Ctx            context.Context
+		CoreInstanceID string
+		Params         cloud.MetricsParams
+	}{
+		Ctx:            ctx,
+		CoreInstanceID: coreInstanceID,
+		Params:         params,
+	}
+	mock.lockCoreInstanceMetricsByPlugin.Lock()
+	mock.calls.CoreInstanceMetricsByPlugin = append(mock.calls.CoreInstanceMetricsByPlugin, callInfo)
+	mock.lockCoreInstanceMetricsByPlugin.Unlock()
+	if mock.CoreInstanceMetricsByPluginFunc == nil {
+		var (
+			metricsSummaryPluginOut cloud.MetricsSummaryPlugin
+			errOut                  error
+		)
+		return metricsSummaryPluginOut, errOut
+	}
+	return mock.CoreInstanceMetricsByPluginFunc(ctx, coreInstanceID, params)
+}
+
+// CoreInstanceMetricsByPluginCalls gets all the calls that were made to CoreInstanceMetricsByPlugin.
+// Check the length with:
+//
+//	len(mockedClient.CoreInstanceMetricsByPluginCalls())
+func (mock *ClientMock) CoreInstanceMetricsByPluginCalls() []struct {
+	Ctx            context.Context
+	CoreInstanceID string
+	Params         cloud.MetricsParams
+} {
+	var calls []struct {
+		Ctx            context.Context
+		CoreInstanceID string
+		Params         cloud.MetricsParams
+	}
+	mock.lockCoreInstanceMetricsByPlugin.RLock()
+	calls = mock.calls.CoreInstanceMetricsByPlugin
+	mock.lockCoreInstanceMetricsByPlugin.RUnlock()
+	return calls
+}
+
+// CoreInstanceMetricsOverTimeByPlugin calls CoreInstanceMetricsOverTimeByPluginFunc.
+func (mock *ClientMock) CoreInstanceMetricsOverTimeByPlugin(ctx context.Context, coreInstanceID string, params cloud.MetricsParams) (cloud.MetricsOverTimeByPlugin, error) {
+	callInfo := struct {
+		Ctx            context.Context
+		CoreInstanceID string
+		Params         cloud.MetricsParams
+	}{
+		Ctx:            ctx,
+		CoreInstanceID: coreInstanceID,
+		Params:         params,
+	}
+	mock.lockCoreInstanceMetricsOverTimeByPlugin.Lock()
+	mock.calls.CoreInstanceMetricsOverTimeByPlugin = append(mock.calls.CoreInstanceMetricsOverTimeByPlugin, callInfo)
+	mock.lockCoreInstanceMetricsOverTimeByPlugin.Unlock()
+	if mock.CoreInstanceMetricsOverTimeByPluginFunc == nil {
+		var (
+			metricsOverTimeByPluginOut cloud.MetricsOverTimeByPlugin
+			errOut                     error
+		)
+		return metricsOverTimeByPluginOut, errOut
+	}
+	return mock.CoreInstanceMetricsOverTimeByPluginFunc(ctx, coreInstanceID, params)
+}
+
+// CoreInstanceMetricsOverTimeByPluginCalls gets all the calls that were made to CoreInstanceMetricsOverTimeByPlugin.
+// Check the length with:
+//
+//	len(mockedClient.CoreInstanceMetricsOverTimeByPluginCalls())
+func (mock *ClientMock) CoreInstanceMetricsOverTimeByPluginCalls() []struct {
+	Ctx            context.Context
+	CoreInstanceID string
+	Params         cloud.MetricsParams
+} {
+	var calls []struct {
+		Ctx            context.Context
+		CoreInstanceID string
+		Params         cloud.MetricsParams
+	}
+	mock.lockCoreInstanceMetricsOverTimeByPlugin.RLock()
+	calls = mock.calls.CoreInstanceMetricsOverTimeByPlugin
+	mock.lockCoreInstanceMetricsOverTimeByPlugin.RUnlock()
+	return calls
+}
+
+// CoreInstanceMetricsV1 calls CoreInstanceMetricsV1Func.
+func (mock *ClientMock) CoreInstanceMetricsV1(ctx context.Context, instanceID string, params cloud.MetricsParams) (cloud.CoreInstanceMetricsV1, error) {
+	callInfo := struct {
+		Ctx        context.Context
+		InstanceID string
+		Params     cloud.MetricsParams
+	}{
+		Ctx:        ctx,
+		InstanceID: instanceID,
+		Params:     params,
+	}
+	mock.lockCoreInstanceMetricsV1.Lock()
+	mock.calls.CoreInstanceMetricsV1 = append(mock.calls.CoreInstanceMetricsV1, callInfo)
+	mock.lockCoreInstanceMetricsV1.Unlock()
+	if mock.CoreInstanceMetricsV1Func == nil {
+		var (
+			coreInstanceMetricsV1Out cloud.CoreInstanceMetricsV1
+			errOut                   error
+		)
+		return coreInstanceMetricsV1Out, errOut
+	}
+	return mock.CoreInstanceMetricsV1Func(ctx, instanceID, params)
+}
+
+// CoreInstanceMetricsV1Calls gets all the calls that were made to CoreInstanceMetricsV1.
+// Check the length with:
+//
+//	len(mockedClient.CoreInstanceMetricsV1Calls())
+func (mock *ClientMock) CoreInstanceMetricsV1Calls() []struct {
+	Ctx        context.Context
+	InstanceID string
+	Params     cloud.MetricsParams
+} {
+	var calls []struct {
+		Ctx        context.Context
+		InstanceID string
+		Params     cloud.MetricsParams
+	}
+	mock.lockCoreInstanceMetricsV1.RLock()
+	calls = mock.calls.CoreInstanceMetricsV1
+	mock.lockCoreInstanceMetricsV1.RUnlock()
+	return calls
+}
+
+// CoreInstanceOverTimeMetrics calls CoreInstanceOverTimeMetricsFunc.
+func (mock *ClientMock) CoreInstanceOverTimeMetrics(ctx context.Context, coreInstanceID string, params cloud.MetricsParams) (cloud.MetricsOverTime, error) {
+	callInfo := struct {
+		Ctx            context.Context
+		CoreInstanceID string
+		Params         cloud.MetricsParams
+	}{
+		Ctx:            ctx,
+		CoreInstanceID: coreInstanceID,
+		Params:         params,
+	}
+	mock.lockCoreInstanceOverTimeMetrics.Lock()
+	mock.calls.CoreInstanceOverTimeMetrics = append(mock.calls.CoreInstanceOverTimeMetrics, callInfo)
+	mock.lockCoreInstanceOverTimeMetrics.Unlock()
+	if mock.CoreInstanceOverTimeMetricsFunc == nil {
+		var (
+			metricsOverTimeOut cloud.MetricsOverTime
+			errOut             error
+		)
+		return metricsOverTimeOut, errOut
+	}
+	return mock.CoreInstanceOverTimeMetricsFunc(ctx, coreInstanceID, params)
+}
+
+// CoreInstanceOverTimeMetricsCalls gets all the calls that were made to CoreInstanceOverTimeMetrics.
+// Check the length with:
+//
+//	len(mockedClient.CoreInstanceOverTimeMetricsCalls())
+func (mock *ClientMock) CoreInstanceOverTimeMetricsCalls() []struct {
+	Ctx            context.Context
+	CoreInstanceID string
+	Params         cloud.MetricsParams
+} {
+	var calls []struct {
+		Ctx            context.Context
+		CoreInstanceID string
+		Params         cloud.MetricsParams
+	}
+	mock.lockCoreInstanceOverTimeMetrics.RLock()
+	calls = mock.calls.CoreInstanceOverTimeMetrics
+	mock.lockCoreInstanceOverTimeMetrics.RUnlock()
+	return calls
+}
+
+// CoreInstancePing calls CoreInstancePingFunc.
+func (mock *ClientMock) CoreInstancePing(ctx context.Context, instanceID string) (cloud.CoreInstancePingResponse, error) {
+	callInfo := struct {
+		Ctx        context.Context
+		InstanceID string
+	}{
+		Ctx:        ctx,
+		InstanceID: instanceID,
+	}
+	mock.lockCoreInstancePing.Lock()
+	mock.calls.CoreInstancePing = append(mock.calls.CoreInstancePing, callInfo)
+	mock.lockCoreInstancePing.Unlock()
+	if mock.CoreInstancePingFunc == nil {
+		var (
+			coreInstancePingResponseOut cloud.CoreInstancePingResponse
+			errOut                      error
+		)
+		return coreInstancePingResponseOut, errOut
+	}
+	return mock.CoreInstancePingFunc(ctx, instanceID)
+}
+
+// CoreInstancePingCalls gets all the calls that were made to CoreInstancePing.
+// Check the length with:
+//
+//	len(mockedClient.CoreInstancePingCalls())
+func (mock *ClientMock) CoreInstancePingCalls() []struct {
+	Ctx        context.Context
+	InstanceID string
+} {
+	var calls []struct {
+		Ctx        context.Context
+		InstanceID string
+	}
+	mock.lockCoreInstancePing.RLock()
+	calls = mock.calls.CoreInstancePing
+	mock.lockCoreInstancePing.RUnlock()
+	return calls
+}
+
+// CoreInstances calls CoreInstancesFunc.
+func (mock *ClientMock) CoreInstances(ctx context.Context, projectID string, params cloud.CoreInstancesParams) (cloud.CoreInstances, error) {
+	callInfo := struct {
+		Ctx       context.Context
+		ProjectID string
+		Params    cloud.CoreInstancesParams
+	}{
+		Ctx:       ctx,
+		ProjectID: projectID,
+		Params:    params,
+	}
+	mock.lockCoreInstances.Lock()
+	mock.calls.CoreInstances = append(mock.calls.CoreInstances, callInfo)
+	mock.lockCoreInstances.Unlock()
+	if mock.CoreInstancesFunc == nil {
+		var (
+			coreInstancesOut cloud.CoreInstances
+			errOut           error
+		)
+		return coreInstancesOut, errOut
+	}
+	return mock.CoreInstancesFunc(ctx, projectID, params)
+}
+
+// CoreInstancesCalls gets all the calls that were made to CoreInstances.
+// Check the length with:
+//
+//	len(mockedClient.CoreInstancesCalls())
+func (mock *ClientMock) CoreInstancesCalls() []struct {
+	Ctx       context.Context
+	ProjectID string
+	Params    cloud.CoreInstancesParams
+} {
+	var calls []struct {
+		Ctx       context.Context
+		ProjectID string
+		Params    cloud.CoreInstancesParams
+	}
+	mock.lockCoreInstances.RLock()
+	calls = mock.calls.CoreInstances
+	mock.lockCoreInstances.RUnlock()
+	return calls
+}
+
+// CreateClusterObject calls CreateClusterObjectFunc.
+func (mock *ClientMock) CreateClusterObject(ctx context.Context, coreInstanceID string, payload cloud.CreateClusterObject) (cloud.CreatedClusterObject, error) {
+	callInfo := struct {
+		Ctx            context.Context
+		CoreInstanceID string
+		Payload        cloud.CreateClusterObject
+	}{
+		Ctx:            ctx,
+		CoreInstanceID: coreInstanceID,
+		Payload:        payload,
+	}
+	mock.lockCreateClusterObject.Lock()
+	mock.calls.CreateClusterObject = append(mock.calls.CreateClusterObject, callInfo)
+	mock.lockCreateClusterObject.Unlock()
+	if mock.CreateClusterObjectFunc == nil {
+		var (
+			createdClusterObjectOut cloud.CreatedClusterObject
+			errOut                  error
+		)
+		return createdClusterObjectOut, errOut
+	}
+	return mock.CreateClusterObjectFunc(ctx, coreInstanceID, payload)
+}
+
+// CreateClusterObjectCalls gets all the calls that were made to CreateClusterObject.
+// Check the length with:
+//
+//	len(mockedClient.CreateClusterObjectCalls())
+func (mock *ClientMock) CreateClusterObjectCalls() []struct {
+	Ctx            context.Context
+	CoreInstanceID string
+	Payload        cloud.CreateClusterObject
+} {
+	var calls []struct {
+		Ctx            context.Context
+		CoreInstanceID string
+		Payload        cloud.CreateClusterObject
+	}
+	mock.lockCreateClusterObject.RLock()
+	calls = mock.calls.CreateClusterObject
+	mock.lockCreateClusterObject.RUnlock()
 	return calls
 }
 
@@ -1625,6 +3049,90 @@ func (mock *ClientMock) CreateConfigSectionCalls() []struct {
 	mock.lockCreateConfigSection.RLock()
 	calls = mock.calls.CreateConfigSection
 	mock.lockCreateConfigSection.RUnlock()
+	return calls
+}
+
+// CreateCoreInstance calls CreateCoreInstanceFunc.
+func (mock *ClientMock) CreateCoreInstance(ctx context.Context, payload cloud.CreateCoreInstance) (cloud.CreatedCoreInstance, error) {
+	callInfo := struct {
+		Ctx     context.Context
+		Payload cloud.CreateCoreInstance
+	}{
+		Ctx:     ctx,
+		Payload: payload,
+	}
+	mock.lockCreateCoreInstance.Lock()
+	mock.calls.CreateCoreInstance = append(mock.calls.CreateCoreInstance, callInfo)
+	mock.lockCreateCoreInstance.Unlock()
+	if mock.CreateCoreInstanceFunc == nil {
+		var (
+			createdCoreInstanceOut cloud.CreatedCoreInstance
+			errOut                 error
+		)
+		return createdCoreInstanceOut, errOut
+	}
+	return mock.CreateCoreInstanceFunc(ctx, payload)
+}
+
+// CreateCoreInstanceCalls gets all the calls that were made to CreateCoreInstance.
+// Check the length with:
+//
+//	len(mockedClient.CreateCoreInstanceCalls())
+func (mock *ClientMock) CreateCoreInstanceCalls() []struct {
+	Ctx     context.Context
+	Payload cloud.CreateCoreInstance
+} {
+	var calls []struct {
+		Ctx     context.Context
+		Payload cloud.CreateCoreInstance
+	}
+	mock.lockCreateCoreInstance.RLock()
+	calls = mock.calls.CreateCoreInstance
+	mock.lockCreateCoreInstance.RUnlock()
+	return calls
+}
+
+// CreateCoreInstanceCheck calls CreateCoreInstanceCheckFunc.
+func (mock *ClientMock) CreateCoreInstanceCheck(ctx context.Context, coreInstanceID string, payload cloud.CreateCoreInstanceCheck) (cloud.CreatedCoreInstanceCheck, error) {
+	callInfo := struct {
+		Ctx            context.Context
+		CoreInstanceID string
+		Payload        cloud.CreateCoreInstanceCheck
+	}{
+		Ctx:            ctx,
+		CoreInstanceID: coreInstanceID,
+		Payload:        payload,
+	}
+	mock.lockCreateCoreInstanceCheck.Lock()
+	mock.calls.CreateCoreInstanceCheck = append(mock.calls.CreateCoreInstanceCheck, callInfo)
+	mock.lockCreateCoreInstanceCheck.Unlock()
+	if mock.CreateCoreInstanceCheckFunc == nil {
+		var (
+			createdCoreInstanceCheckOut cloud.CreatedCoreInstanceCheck
+			errOut                      error
+		)
+		return createdCoreInstanceCheckOut, errOut
+	}
+	return mock.CreateCoreInstanceCheckFunc(ctx, coreInstanceID, payload)
+}
+
+// CreateCoreInstanceCheckCalls gets all the calls that were made to CreateCoreInstanceCheck.
+// Check the length with:
+//
+//	len(mockedClient.CreateCoreInstanceCheckCalls())
+func (mock *ClientMock) CreateCoreInstanceCheckCalls() []struct {
+	Ctx            context.Context
+	CoreInstanceID string
+	Payload        cloud.CreateCoreInstanceCheck
+} {
+	var calls []struct {
+		Ctx            context.Context
+		CoreInstanceID string
+		Payload        cloud.CreateCoreInstanceCheck
+	}
+	mock.lockCreateCoreInstanceCheck.RLock()
+	calls = mock.calls.CreateCoreInstanceCheck
+	mock.lockCreateCoreInstanceCheck.RUnlock()
 	return calls
 }
 
@@ -1760,15 +3268,15 @@ func (mock *ClientMock) CreateInvitationCalls() []struct {
 }
 
 // CreatePipeline calls CreatePipelineFunc.
-func (mock *ClientMock) CreatePipeline(ctx context.Context, aggregatorID string, payload cloud.CreatePipeline) (cloud.CreatedPipeline, error) {
+func (mock *ClientMock) CreatePipeline(ctx context.Context, instanceID string, payload cloud.CreatePipeline) (cloud.CreatedPipeline, error) {
 	callInfo := struct {
-		Ctx          context.Context
-		AggregatorID string
-		Payload      cloud.CreatePipeline
+		Ctx        context.Context
+		InstanceID string
+		Payload    cloud.CreatePipeline
 	}{
-		Ctx:          ctx,
-		AggregatorID: aggregatorID,
-		Payload:      payload,
+		Ctx:        ctx,
+		InstanceID: instanceID,
+		Payload:    payload,
 	}
 	mock.lockCreatePipeline.Lock()
 	mock.calls.CreatePipeline = append(mock.calls.CreatePipeline, callInfo)
@@ -1780,7 +3288,7 @@ func (mock *ClientMock) CreatePipeline(ctx context.Context, aggregatorID string,
 		)
 		return createdPipelineOut, errOut
 	}
-	return mock.CreatePipelineFunc(ctx, aggregatorID, payload)
+	return mock.CreatePipelineFunc(ctx, instanceID, payload)
 }
 
 // CreatePipelineCalls gets all the calls that were made to CreatePipeline.
@@ -1788,18 +3296,62 @@ func (mock *ClientMock) CreatePipeline(ctx context.Context, aggregatorID string,
 //
 //	len(mockedClient.CreatePipelineCalls())
 func (mock *ClientMock) CreatePipelineCalls() []struct {
-	Ctx          context.Context
-	AggregatorID string
-	Payload      cloud.CreatePipeline
+	Ctx        context.Context
+	InstanceID string
+	Payload    cloud.CreatePipeline
 } {
 	var calls []struct {
-		Ctx          context.Context
-		AggregatorID string
-		Payload      cloud.CreatePipeline
+		Ctx        context.Context
+		InstanceID string
+		Payload    cloud.CreatePipeline
 	}
 	mock.lockCreatePipeline.RLock()
 	calls = mock.calls.CreatePipeline
 	mock.lockCreatePipeline.RUnlock()
+	return calls
+}
+
+// CreatePipelineCheck calls CreatePipelineCheckFunc.
+func (mock *ClientMock) CreatePipelineCheck(ctx context.Context, pipelineID string, payload cloud.CreatePipelineCheck) (cloud.CreatedPipelineCheck, error) {
+	callInfo := struct {
+		Ctx        context.Context
+		PipelineID string
+		Payload    cloud.CreatePipelineCheck
+	}{
+		Ctx:        ctx,
+		PipelineID: pipelineID,
+		Payload:    payload,
+	}
+	mock.lockCreatePipelineCheck.Lock()
+	mock.calls.CreatePipelineCheck = append(mock.calls.CreatePipelineCheck, callInfo)
+	mock.lockCreatePipelineCheck.Unlock()
+	if mock.CreatePipelineCheckFunc == nil {
+		var (
+			createdPipelineCheckOut cloud.CreatedPipelineCheck
+			errOut                  error
+		)
+		return createdPipelineCheckOut, errOut
+	}
+	return mock.CreatePipelineCheckFunc(ctx, pipelineID, payload)
+}
+
+// CreatePipelineCheckCalls gets all the calls that were made to CreatePipelineCheck.
+// Check the length with:
+//
+//	len(mockedClient.CreatePipelineCheckCalls())
+func (mock *ClientMock) CreatePipelineCheckCalls() []struct {
+	Ctx        context.Context
+	PipelineID string
+	Payload    cloud.CreatePipelineCheck
+} {
+	var calls []struct {
+		Ctx        context.Context
+		PipelineID string
+		Payload    cloud.CreatePipelineCheck
+	}
+	mock.lockCreatePipelineCheck.RLock()
+	calls = mock.calls.CreatePipelineCheck
+	mock.lockCreatePipelineCheck.RUnlock()
 	return calls
 }
 
@@ -1935,16 +3487,96 @@ func (mock *ClientMock) CreatePipelineSecretCalls() []struct {
 	return calls
 }
 
-// CreateResourceProfile calls CreateResourceProfileFunc.
-func (mock *ClientMock) CreateResourceProfile(ctx context.Context, aggregatorID string, payload cloud.CreateResourceProfile) (cloud.CreatedResourceProfile, error) {
+// CreateProcessingRule calls CreateProcessingRuleFunc.
+func (mock *ClientMock) CreateProcessingRule(ctx context.Context, in cloud.CreateProcessingRule) (cloud.CreatedProcessingRule, error) {
 	callInfo := struct {
-		Ctx          context.Context
-		AggregatorID string
-		Payload      cloud.CreateResourceProfile
+		Ctx context.Context
+		In  cloud.CreateProcessingRule
 	}{
-		Ctx:          ctx,
-		AggregatorID: aggregatorID,
-		Payload:      payload,
+		Ctx: ctx,
+		In:  in,
+	}
+	mock.lockCreateProcessingRule.Lock()
+	mock.calls.CreateProcessingRule = append(mock.calls.CreateProcessingRule, callInfo)
+	mock.lockCreateProcessingRule.Unlock()
+	if mock.CreateProcessingRuleFunc == nil {
+		var (
+			createdProcessingRuleOut cloud.CreatedProcessingRule
+			errOut                   error
+		)
+		return createdProcessingRuleOut, errOut
+	}
+	return mock.CreateProcessingRuleFunc(ctx, in)
+}
+
+// CreateProcessingRuleCalls gets all the calls that were made to CreateProcessingRule.
+// Check the length with:
+//
+//	len(mockedClient.CreateProcessingRuleCalls())
+func (mock *ClientMock) CreateProcessingRuleCalls() []struct {
+	Ctx context.Context
+	In  cloud.CreateProcessingRule
+} {
+	var calls []struct {
+		Ctx context.Context
+		In  cloud.CreateProcessingRule
+	}
+	mock.lockCreateProcessingRule.RLock()
+	calls = mock.calls.CreateProcessingRule
+	mock.lockCreateProcessingRule.RUnlock()
+	return calls
+}
+
+// CreateProject calls CreateProjectFunc.
+func (mock *ClientMock) CreateProject(ctx context.Context, payload cloud.CreateProject) (cloud.CreatedProject, error) {
+	callInfo := struct {
+		Ctx     context.Context
+		Payload cloud.CreateProject
+	}{
+		Ctx:     ctx,
+		Payload: payload,
+	}
+	mock.lockCreateProject.Lock()
+	mock.calls.CreateProject = append(mock.calls.CreateProject, callInfo)
+	mock.lockCreateProject.Unlock()
+	if mock.CreateProjectFunc == nil {
+		var (
+			createdProjectOut cloud.CreatedProject
+			errOut            error
+		)
+		return createdProjectOut, errOut
+	}
+	return mock.CreateProjectFunc(ctx, payload)
+}
+
+// CreateProjectCalls gets all the calls that were made to CreateProject.
+// Check the length with:
+//
+//	len(mockedClient.CreateProjectCalls())
+func (mock *ClientMock) CreateProjectCalls() []struct {
+	Ctx     context.Context
+	Payload cloud.CreateProject
+} {
+	var calls []struct {
+		Ctx     context.Context
+		Payload cloud.CreateProject
+	}
+	mock.lockCreateProject.RLock()
+	calls = mock.calls.CreateProject
+	mock.lockCreateProject.RUnlock()
+	return calls
+}
+
+// CreateResourceProfile calls CreateResourceProfileFunc.
+func (mock *ClientMock) CreateResourceProfile(ctx context.Context, instanceID string, payload cloud.CreateResourceProfile) (cloud.CreatedResourceProfile, error) {
+	callInfo := struct {
+		Ctx        context.Context
+		InstanceID string
+		Payload    cloud.CreateResourceProfile
+	}{
+		Ctx:        ctx,
+		InstanceID: instanceID,
+		Payload:    payload,
 	}
 	mock.lockCreateResourceProfile.Lock()
 	mock.calls.CreateResourceProfile = append(mock.calls.CreateResourceProfile, callInfo)
@@ -1956,7 +3588,7 @@ func (mock *ClientMock) CreateResourceProfile(ctx context.Context, aggregatorID 
 		)
 		return createdResourceProfileOut, errOut
 	}
-	return mock.CreateResourceProfileFunc(ctx, aggregatorID, payload)
+	return mock.CreateResourceProfileFunc(ctx, instanceID, payload)
 }
 
 // CreateResourceProfileCalls gets all the calls that were made to CreateResourceProfile.
@@ -1964,18 +3596,106 @@ func (mock *ClientMock) CreateResourceProfile(ctx context.Context, aggregatorID 
 //
 //	len(mockedClient.CreateResourceProfileCalls())
 func (mock *ClientMock) CreateResourceProfileCalls() []struct {
-	Ctx          context.Context
-	AggregatorID string
-	Payload      cloud.CreateResourceProfile
+	Ctx        context.Context
+	InstanceID string
+	Payload    cloud.CreateResourceProfile
 } {
 	var calls []struct {
-		Ctx          context.Context
-		AggregatorID string
-		Payload      cloud.CreateResourceProfile
+		Ctx        context.Context
+		InstanceID string
+		Payload    cloud.CreateResourceProfile
 	}
 	mock.lockCreateResourceProfile.RLock()
 	calls = mock.calls.CreateResourceProfile
 	mock.lockCreateResourceProfile.RUnlock()
+	return calls
+}
+
+// CreateToken calls CreateTokenFunc.
+func (mock *ClientMock) CreateToken(ctx context.Context, projectID string, payload cloud.CreateToken) (cloud.Token, error) {
+	callInfo := struct {
+		Ctx       context.Context
+		ProjectID string
+		Payload   cloud.CreateToken
+	}{
+		Ctx:       ctx,
+		ProjectID: projectID,
+		Payload:   payload,
+	}
+	mock.lockCreateToken.Lock()
+	mock.calls.CreateToken = append(mock.calls.CreateToken, callInfo)
+	mock.lockCreateToken.Unlock()
+	if mock.CreateTokenFunc == nil {
+		var (
+			tokenOut cloud.Token
+			errOut   error
+		)
+		return tokenOut, errOut
+	}
+	return mock.CreateTokenFunc(ctx, projectID, payload)
+}
+
+// CreateTokenCalls gets all the calls that were made to CreateToken.
+// Check the length with:
+//
+//	len(mockedClient.CreateTokenCalls())
+func (mock *ClientMock) CreateTokenCalls() []struct {
+	Ctx       context.Context
+	ProjectID string
+	Payload   cloud.CreateToken
+} {
+	var calls []struct {
+		Ctx       context.Context
+		ProjectID string
+		Payload   cloud.CreateToken
+	}
+	mock.lockCreateToken.RLock()
+	calls = mock.calls.CreateToken
+	mock.lockCreateToken.RUnlock()
+	return calls
+}
+
+// CreateTraceRecord calls CreateTraceRecordFunc.
+func (mock *ClientMock) CreateTraceRecord(ctx context.Context, pipelineID string, in cloud.CreateTraceRecord) (cloud.CreatedTraceRecord, error) {
+	callInfo := struct {
+		Ctx        context.Context
+		PipelineID string
+		In         cloud.CreateTraceRecord
+	}{
+		Ctx:        ctx,
+		PipelineID: pipelineID,
+		In:         in,
+	}
+	mock.lockCreateTraceRecord.Lock()
+	mock.calls.CreateTraceRecord = append(mock.calls.CreateTraceRecord, callInfo)
+	mock.lockCreateTraceRecord.Unlock()
+	if mock.CreateTraceRecordFunc == nil {
+		var (
+			createdTraceRecordOut cloud.CreatedTraceRecord
+			errOut                error
+		)
+		return createdTraceRecordOut, errOut
+	}
+	return mock.CreateTraceRecordFunc(ctx, pipelineID, in)
+}
+
+// CreateTraceRecordCalls gets all the calls that were made to CreateTraceRecord.
+// Check the length with:
+//
+//	len(mockedClient.CreateTraceRecordCalls())
+func (mock *ClientMock) CreateTraceRecordCalls() []struct {
+	Ctx        context.Context
+	PipelineID string
+	In         cloud.CreateTraceRecord
+} {
+	var calls []struct {
+		Ctx        context.Context
+		PipelineID string
+		In         cloud.CreateTraceRecord
+	}
+	mock.lockCreateTraceRecord.RLock()
+	calls = mock.calls.CreateTraceRecord
+	mock.lockCreateTraceRecord.RUnlock()
 	return calls
 }
 
@@ -2105,85 +3825,42 @@ func (mock *ClientMock) DeleteAgentsCalls() []struct {
 	return calls
 }
 
-// DeleteAggregator calls DeleteAggregatorFunc.
-func (mock *ClientMock) DeleteAggregator(ctx context.Context, aggregatorID string) error {
+// DeleteClusterObject calls DeleteClusterObjectFunc.
+func (mock *ClientMock) DeleteClusterObject(ctx context.Context, checkID string) error {
 	callInfo := struct {
-		Ctx          context.Context
-		AggregatorID string
+		Ctx     context.Context
+		CheckID string
 	}{
-		Ctx:          ctx,
-		AggregatorID: aggregatorID,
+		Ctx:     ctx,
+		CheckID: checkID,
 	}
-	mock.lockDeleteAggregator.Lock()
-	mock.calls.DeleteAggregator = append(mock.calls.DeleteAggregator, callInfo)
-	mock.lockDeleteAggregator.Unlock()
-	if mock.DeleteAggregatorFunc == nil {
+	mock.lockDeleteClusterObject.Lock()
+	mock.calls.DeleteClusterObject = append(mock.calls.DeleteClusterObject, callInfo)
+	mock.lockDeleteClusterObject.Unlock()
+	if mock.DeleteClusterObjectFunc == nil {
 		var (
 			errOut error
 		)
 		return errOut
 	}
-	return mock.DeleteAggregatorFunc(ctx, aggregatorID)
+	return mock.DeleteClusterObjectFunc(ctx, checkID)
 }
 
-// DeleteAggregatorCalls gets all the calls that were made to DeleteAggregator.
+// DeleteClusterObjectCalls gets all the calls that were made to DeleteClusterObject.
 // Check the length with:
 //
-//	len(mockedClient.DeleteAggregatorCalls())
-func (mock *ClientMock) DeleteAggregatorCalls() []struct {
-	Ctx          context.Context
-	AggregatorID string
+//	len(mockedClient.DeleteClusterObjectCalls())
+func (mock *ClientMock) DeleteClusterObjectCalls() []struct {
+	Ctx     context.Context
+	CheckID string
 } {
 	var calls []struct {
-		Ctx          context.Context
-		AggregatorID string
+		Ctx     context.Context
+		CheckID string
 	}
-	mock.lockDeleteAggregator.RLock()
-	calls = mock.calls.DeleteAggregator
-	mock.lockDeleteAggregator.RUnlock()
-	return calls
-}
-
-// DeleteAggregators calls DeleteAggregatorsFunc.
-func (mock *ClientMock) DeleteAggregators(ctx context.Context, projectID string, aggregatorIDs ...string) error {
-	callInfo := struct {
-		Ctx           context.Context
-		ProjectID     string
-		AggregatorIDs []string
-	}{
-		Ctx:           ctx,
-		ProjectID:     projectID,
-		AggregatorIDs: aggregatorIDs,
-	}
-	mock.lockDeleteAggregators.Lock()
-	mock.calls.DeleteAggregators = append(mock.calls.DeleteAggregators, callInfo)
-	mock.lockDeleteAggregators.Unlock()
-	if mock.DeleteAggregatorsFunc == nil {
-		var (
-			errOut error
-		)
-		return errOut
-	}
-	return mock.DeleteAggregatorsFunc(ctx, projectID, aggregatorIDs...)
-}
-
-// DeleteAggregatorsCalls gets all the calls that were made to DeleteAggregators.
-// Check the length with:
-//
-//	len(mockedClient.DeleteAggregatorsCalls())
-func (mock *ClientMock) DeleteAggregatorsCalls() []struct {
-	Ctx           context.Context
-	ProjectID     string
-	AggregatorIDs []string
-} {
-	var calls []struct {
-		Ctx           context.Context
-		ProjectID     string
-		AggregatorIDs []string
-	}
-	mock.lockDeleteAggregators.RLock()
-	calls = mock.calls.DeleteAggregators
-	mock.lockDeleteAggregators.RUnlock()
+	mock.lockDeleteClusterObject.RLock()
+	calls = mock.calls.DeleteClusterObject
+	mock.lockDeleteClusterObject.RUnlock()
 	return calls
 }
 
@@ -2223,6 +3900,127 @@ func (mock *ClientMock) DeleteConfigSectionCalls() []struct {
 	mock.lockDeleteConfigSection.RLock()
 	calls = mock.calls.DeleteConfigSection
 	mock.lockDeleteConfigSection.RUnlock()
+	return calls
+}
+
+// DeleteCoreInstance calls DeleteCoreInstanceFunc.
+func (mock *ClientMock) DeleteCoreInstance(ctx context.Context, instanceID string) error {
+	callInfo := struct {
+		Ctx        context.Context
+		InstanceID string
+	}{
+		Ctx:        ctx,
+		InstanceID: instanceID,
+	}
+	mock.lockDeleteCoreInstance.Lock()
+	mock.calls.DeleteCoreInstance = append(mock.calls.DeleteCoreInstance, callInfo)
+	mock.lockDeleteCoreInstance.Unlock()
+	if mock.DeleteCoreInstanceFunc == nil {
+		var (
+			errOut error
+		)
+		return errOut
+	}
+	return mock.DeleteCoreInstanceFunc(ctx, instanceID)
+}
+
+// DeleteCoreInstanceCalls gets all the calls that were made to DeleteCoreInstance.
+// Check the length with:
+//
+//	len(mockedClient.DeleteCoreInstanceCalls())
+func (mock *ClientMock) DeleteCoreInstanceCalls() []struct {
+	Ctx        context.Context
+	InstanceID string
+} {
+	var calls []struct {
+		Ctx        context.Context
+		InstanceID string
+	}
+	mock.lockDeleteCoreInstance.RLock()
+	calls = mock.calls.DeleteCoreInstance
+	mock.lockDeleteCoreInstance.RUnlock()
+	return calls
+}
+
+// DeleteCoreInstanceCheck calls DeleteCoreInstanceCheckFunc.
+func (mock *ClientMock) DeleteCoreInstanceCheck(ctx context.Context, checkID string) error {
+	callInfo := struct {
+		Ctx     context.Context
+		CheckID string
+	}{
+		Ctx:     ctx,
+		CheckID: checkID,
+	}
+	mock.lockDeleteCoreInstanceCheck.Lock()
+	mock.calls.DeleteCoreInstanceCheck = append(mock.calls.DeleteCoreInstanceCheck, callInfo)
+	mock.lockDeleteCoreInstanceCheck.Unlock()
+	if mock.DeleteCoreInstanceCheckFunc == nil {
+		var (
+			errOut error
+		)
+		return errOut
+	}
+	return mock.DeleteCoreInstanceCheckFunc(ctx, checkID)
+}
+
+// DeleteCoreInstanceCheckCalls gets all the calls that were made to DeleteCoreInstanceCheck.
+// Check the length with:
+//
+//	len(mockedClient.DeleteCoreInstanceCheckCalls())
+func (mock *ClientMock) DeleteCoreInstanceCheckCalls() []struct {
+	Ctx     context.Context
+	CheckID string
+} {
+	var calls []struct {
+		Ctx     context.Context
+		CheckID string
+	}
+	mock.lockDeleteCoreInstanceCheck.RLock()
+	calls = mock.calls.DeleteCoreInstanceCheck
+	mock.lockDeleteCoreInstanceCheck.RUnlock()
+	return calls
+}
+
+// DeleteCoreInstances calls DeleteCoreInstancesFunc.
+func (mock *ClientMock) DeleteCoreInstances(ctx context.Context, projectID string, instanceIDs ...string) error {
+	callInfo := struct {
+		Ctx         context.Context
+		ProjectID   string
+		InstanceIDs []string
+	}{
+		Ctx:         ctx,
+		ProjectID:   projectID,
+		InstanceIDs: instanceIDs,
+	}
+	mock.lockDeleteCoreInstances.Lock()
+	mock.calls.DeleteCoreInstances = append(mock.calls.DeleteCoreInstances, callInfo)
+	mock.lockDeleteCoreInstances.Unlock()
+	if mock.DeleteCoreInstancesFunc == nil {
+		var (
+			errOut error
+		)
+		return errOut
+	}
+	return mock.DeleteCoreInstancesFunc(ctx, projectID, instanceIDs...)
+}
+
+// DeleteCoreInstancesCalls gets all the calls that were made to DeleteCoreInstances.
+// Check the length with:
+//
+//	len(mockedClient.DeleteCoreInstancesCalls())
+func (mock *ClientMock) DeleteCoreInstancesCalls() []struct {
+	Ctx         context.Context
+	ProjectID   string
+	InstanceIDs []string
+} {
+	var calls []struct {
+		Ctx         context.Context
+		ProjectID   string
+		InstanceIDs []string
+	}
+	mock.lockDeleteCoreInstances.RLock()
+	calls = mock.calls.DeleteCoreInstances
+	mock.lockDeleteCoreInstances.RUnlock()
 	return calls
 }
 
@@ -2340,6 +4138,88 @@ func (mock *ClientMock) DeletePipelineCalls() []struct {
 	mock.lockDeletePipeline.RLock()
 	calls = mock.calls.DeletePipeline
 	mock.lockDeletePipeline.RUnlock()
+	return calls
+}
+
+// DeletePipelineCheck calls DeletePipelineCheckFunc.
+func (mock *ClientMock) DeletePipelineCheck(ctx context.Context, checkID string) error {
+	callInfo := struct {
+		Ctx     context.Context
+		CheckID string
+	}{
+		Ctx:     ctx,
+		CheckID: checkID,
+	}
+	mock.lockDeletePipelineCheck.Lock()
+	mock.calls.DeletePipelineCheck = append(mock.calls.DeletePipelineCheck, callInfo)
+	mock.lockDeletePipelineCheck.Unlock()
+	if mock.DeletePipelineCheckFunc == nil {
+		var (
+			errOut error
+		)
+		return errOut
+	}
+	return mock.DeletePipelineCheckFunc(ctx, checkID)
+}
+
+// DeletePipelineCheckCalls gets all the calls that were made to DeletePipelineCheck.
+// Check the length with:
+//
+//	len(mockedClient.DeletePipelineCheckCalls())
+func (mock *ClientMock) DeletePipelineCheckCalls() []struct {
+	Ctx     context.Context
+	CheckID string
+} {
+	var calls []struct {
+		Ctx     context.Context
+		CheckID string
+	}
+	mock.lockDeletePipelineCheck.RLock()
+	calls = mock.calls.DeletePipelineCheck
+	mock.lockDeletePipelineCheck.RUnlock()
+	return calls
+}
+
+// DeletePipelineClusterObjects calls DeletePipelineClusterObjectsFunc.
+func (mock *ClientMock) DeletePipelineClusterObjects(ctx context.Context, pipelineID string, clusterObjectIDs ...string) error {
+	callInfo := struct {
+		Ctx              context.Context
+		PipelineID       string
+		ClusterObjectIDs []string
+	}{
+		Ctx:              ctx,
+		PipelineID:       pipelineID,
+		ClusterObjectIDs: clusterObjectIDs,
+	}
+	mock.lockDeletePipelineClusterObjects.Lock()
+	mock.calls.DeletePipelineClusterObjects = append(mock.calls.DeletePipelineClusterObjects, callInfo)
+	mock.lockDeletePipelineClusterObjects.Unlock()
+	if mock.DeletePipelineClusterObjectsFunc == nil {
+		var (
+			errOut error
+		)
+		return errOut
+	}
+	return mock.DeletePipelineClusterObjectsFunc(ctx, pipelineID, clusterObjectIDs...)
+}
+
+// DeletePipelineClusterObjectsCalls gets all the calls that were made to DeletePipelineClusterObjects.
+// Check the length with:
+//
+//	len(mockedClient.DeletePipelineClusterObjectsCalls())
+func (mock *ClientMock) DeletePipelineClusterObjectsCalls() []struct {
+	Ctx              context.Context
+	PipelineID       string
+	ClusterObjectIDs []string
+} {
+	var calls []struct {
+		Ctx              context.Context
+		PipelineID       string
+		ClusterObjectIDs []string
+	}
+	mock.lockDeletePipelineClusterObjects.RLock()
+	calls = mock.calls.DeletePipelineClusterObjects
+	mock.lockDeletePipelineClusterObjects.RUnlock()
 	return calls
 }
 
@@ -2461,15 +4341,15 @@ func (mock *ClientMock) DeletePipelineSecretCalls() []struct {
 }
 
 // DeletePipelines calls DeletePipelinesFunc.
-func (mock *ClientMock) DeletePipelines(ctx context.Context, aggregatorID string, pipelineIDs ...string) error {
+func (mock *ClientMock) DeletePipelines(ctx context.Context, instanceID string, pipelineIDs ...string) error {
 	callInfo := struct {
-		Ctx          context.Context
-		AggregatorID string
-		PipelineIDs  []string
+		Ctx         context.Context
+		InstanceID  string
+		PipelineIDs []string
 	}{
-		Ctx:          ctx,
-		AggregatorID: aggregatorID,
-		PipelineIDs:  pipelineIDs,
+		Ctx:         ctx,
+		InstanceID:  instanceID,
+		PipelineIDs: pipelineIDs,
 	}
 	mock.lockDeletePipelines.Lock()
 	mock.calls.DeletePipelines = append(mock.calls.DeletePipelines, callInfo)
@@ -2480,7 +4360,7 @@ func (mock *ClientMock) DeletePipelines(ctx context.Context, aggregatorID string
 		)
 		return errOut
 	}
-	return mock.DeletePipelinesFunc(ctx, aggregatorID, pipelineIDs...)
+	return mock.DeletePipelinesFunc(ctx, instanceID, pipelineIDs...)
 }
 
 // DeletePipelinesCalls gets all the calls that were made to DeletePipelines.
@@ -2488,18 +4368,57 @@ func (mock *ClientMock) DeletePipelines(ctx context.Context, aggregatorID string
 //
 //	len(mockedClient.DeletePipelinesCalls())
 func (mock *ClientMock) DeletePipelinesCalls() []struct {
-	Ctx          context.Context
-	AggregatorID string
-	PipelineIDs  []string
+	Ctx         context.Context
+	InstanceID  string
+	PipelineIDs []string
 } {
 	var calls []struct {
-		Ctx          context.Context
-		AggregatorID string
-		PipelineIDs  []string
+		Ctx         context.Context
+		InstanceID  string
+		PipelineIDs []string
 	}
 	mock.lockDeletePipelines.RLock()
 	calls = mock.calls.DeletePipelines
 	mock.lockDeletePipelines.RUnlock()
+	return calls
+}
+
+// DeleteProcessingRule calls DeleteProcessingRuleFunc.
+func (mock *ClientMock) DeleteProcessingRule(ctx context.Context, processingRuleID string) error {
+	callInfo := struct {
+		Ctx              context.Context
+		ProcessingRuleID string
+	}{
+		Ctx:              ctx,
+		ProcessingRuleID: processingRuleID,
+	}
+	mock.lockDeleteProcessingRule.Lock()
+	mock.calls.DeleteProcessingRule = append(mock.calls.DeleteProcessingRule, callInfo)
+	mock.lockDeleteProcessingRule.Unlock()
+	if mock.DeleteProcessingRuleFunc == nil {
+		var (
+			errOut error
+		)
+		return errOut
+	}
+	return mock.DeleteProcessingRuleFunc(ctx, processingRuleID)
+}
+
+// DeleteProcessingRuleCalls gets all the calls that were made to DeleteProcessingRule.
+// Check the length with:
+//
+//	len(mockedClient.DeleteProcessingRuleCalls())
+func (mock *ClientMock) DeleteProcessingRuleCalls() []struct {
+	Ctx              context.Context
+	ProcessingRuleID string
+} {
+	var calls []struct {
+		Ctx              context.Context
+		ProcessingRuleID string
+	}
+	mock.lockDeleteProcessingRule.RLock()
+	calls = mock.calls.DeleteProcessingRule
+	mock.lockDeleteProcessingRule.RUnlock()
 	return calls
 }
 
@@ -2797,6 +4716,134 @@ func (mock *ClientMock) PipelineCalls() []struct {
 	return calls
 }
 
+// PipelineCheck calls PipelineCheckFunc.
+func (mock *ClientMock) PipelineCheck(ctx context.Context, checkID string) (cloud.PipelineCheck, error) {
+	callInfo := struct {
+		Ctx     context.Context
+		CheckID string
+	}{
+		Ctx:     ctx,
+		CheckID: checkID,
+	}
+	mock.lockPipelineCheck.Lock()
+	mock.calls.PipelineCheck = append(mock.calls.PipelineCheck, callInfo)
+	mock.lockPipelineCheck.Unlock()
+	if mock.PipelineCheckFunc == nil {
+		var (
+			pipelineCheckOut cloud.PipelineCheck
+			errOut           error
+		)
+		return pipelineCheckOut, errOut
+	}
+	return mock.PipelineCheckFunc(ctx, checkID)
+}
+
+// PipelineCheckCalls gets all the calls that were made to PipelineCheck.
+// Check the length with:
+//
+//	len(mockedClient.PipelineCheckCalls())
+func (mock *ClientMock) PipelineCheckCalls() []struct {
+	Ctx     context.Context
+	CheckID string
+} {
+	var calls []struct {
+		Ctx     context.Context
+		CheckID string
+	}
+	mock.lockPipelineCheck.RLock()
+	calls = mock.calls.PipelineCheck
+	mock.lockPipelineCheck.RUnlock()
+	return calls
+}
+
+// PipelineChecks calls PipelineChecksFunc.
+func (mock *ClientMock) PipelineChecks(ctx context.Context, pipelineID string, params cloud.PipelineChecksParams) (cloud.PipelineChecks, error) {
+	callInfo := struct {
+		Ctx        context.Context
+		PipelineID string
+		Params     cloud.PipelineChecksParams
+	}{
+		Ctx:        ctx,
+		PipelineID: pipelineID,
+		Params:     params,
+	}
+	mock.lockPipelineChecks.Lock()
+	mock.calls.PipelineChecks = append(mock.calls.PipelineChecks, callInfo)
+	mock.lockPipelineChecks.Unlock()
+	if mock.PipelineChecksFunc == nil {
+		var (
+			pipelineChecksOut cloud.PipelineChecks
+			errOut            error
+		)
+		return pipelineChecksOut, errOut
+	}
+	return mock.PipelineChecksFunc(ctx, pipelineID, params)
+}
+
+// PipelineChecksCalls gets all the calls that were made to PipelineChecks.
+// Check the length with:
+//
+//	len(mockedClient.PipelineChecksCalls())
+func (mock *ClientMock) PipelineChecksCalls() []struct {
+	Ctx        context.Context
+	PipelineID string
+	Params     cloud.PipelineChecksParams
+} {
+	var calls []struct {
+		Ctx        context.Context
+		PipelineID string
+		Params     cloud.PipelineChecksParams
+	}
+	mock.lockPipelineChecks.RLock()
+	calls = mock.calls.PipelineChecks
+	mock.lockPipelineChecks.RUnlock()
+	return calls
+}
+
+// PipelineClusterObjects calls PipelineClusterObjectsFunc.
+func (mock *ClientMock) PipelineClusterObjects(ctx context.Context, pipelineID string, params cloud.PipelineClusterObjectsParams) (cloud.ClusterObjects, error) {
+	callInfo := struct {
+		Ctx        context.Context
+		PipelineID string
+		Params     cloud.PipelineClusterObjectsParams
+	}{
+		Ctx:        ctx,
+		PipelineID: pipelineID,
+		Params:     params,
+	}
+	mock.lockPipelineClusterObjects.Lock()
+	mock.calls.PipelineClusterObjects = append(mock.calls.PipelineClusterObjects, callInfo)
+	mock.lockPipelineClusterObjects.Unlock()
+	if mock.PipelineClusterObjectsFunc == nil {
+		var (
+			clusterObjectsOut cloud.ClusterObjects
+			errOut            error
+		)
+		return clusterObjectsOut, errOut
+	}
+	return mock.PipelineClusterObjectsFunc(ctx, pipelineID, params)
+}
+
+// PipelineClusterObjectsCalls gets all the calls that were made to PipelineClusterObjects.
+// Check the length with:
+//
+//	len(mockedClient.PipelineClusterObjectsCalls())
+func (mock *ClientMock) PipelineClusterObjectsCalls() []struct {
+	Ctx        context.Context
+	PipelineID string
+	Params     cloud.PipelineClusterObjectsParams
+} {
+	var calls []struct {
+		Ctx        context.Context
+		PipelineID string
+		Params     cloud.PipelineClusterObjectsParams
+	}
+	mock.lockPipelineClusterObjects.RLock()
+	calls = mock.calls.PipelineClusterObjects
+	mock.lockPipelineClusterObjects.RUnlock()
+	return calls
+}
+
 // PipelineConfigHistory calls PipelineConfigHistoryFunc.
 func (mock *ClientMock) PipelineConfigHistory(ctx context.Context, pipelineID string, params cloud.PipelineConfigHistoryParams) (cloud.PipelineConfigHistory, error) {
 	callInfo := struct {
@@ -2925,6 +4972,138 @@ func (mock *ClientMock) PipelineFilesCalls() []struct {
 	return calls
 }
 
+// PipelineMetrics calls PipelineMetricsFunc.
+func (mock *ClientMock) PipelineMetrics(ctx context.Context, pipelineID string, params cloud.MetricsParams) (cloud.MetricsSummary, error) {
+	callInfo := struct {
+		Ctx        context.Context
+		PipelineID string
+		Params     cloud.MetricsParams
+	}{
+		Ctx:        ctx,
+		PipelineID: pipelineID,
+		Params:     params,
+	}
+	mock.lockPipelineMetrics.Lock()
+	mock.calls.PipelineMetrics = append(mock.calls.PipelineMetrics, callInfo)
+	mock.lockPipelineMetrics.Unlock()
+	if mock.PipelineMetricsFunc == nil {
+		var (
+			metricsSummaryOut cloud.MetricsSummary
+			errOut            error
+		)
+		return metricsSummaryOut, errOut
+	}
+	return mock.PipelineMetricsFunc(ctx, pipelineID, params)
+}
+
+// PipelineMetricsCalls gets all the calls that were made to PipelineMetrics.
+// Check the length with:
+//
+//	len(mockedClient.PipelineMetricsCalls())
+func (mock *ClientMock) PipelineMetricsCalls() []struct {
+	Ctx        context.Context
+	PipelineID string
+	Params     cloud.MetricsParams
+} {
+	var calls []struct {
+		Ctx        context.Context
+		PipelineID string
+		Params     cloud.MetricsParams
+	}
+	mock.lockPipelineMetrics.RLock()
+	calls = mock.calls.PipelineMetrics
+	mock.lockPipelineMetrics.RUnlock()
+	return calls
+}
+
+// PipelineMetricsByPlugin calls PipelineMetricsByPluginFunc.
+func (mock *ClientMock) PipelineMetricsByPlugin(ctx context.Context, pipelineID string, params cloud.MetricsParams) (cloud.MetricsSummaryPlugin, error) {
+	callInfo := struct {
+		Ctx        context.Context
+		PipelineID string
+		Params     cloud.MetricsParams
+	}{
+		Ctx:        ctx,
+		PipelineID: pipelineID,
+		Params:     params,
+	}
+	mock.lockPipelineMetricsByPlugin.Lock()
+	mock.calls.PipelineMetricsByPlugin = append(mock.calls.PipelineMetricsByPlugin, callInfo)
+	mock.lockPipelineMetricsByPlugin.Unlock()
+	if mock.PipelineMetricsByPluginFunc == nil {
+		var (
+			metricsSummaryPluginOut cloud.MetricsSummaryPlugin
+			errOut                  error
+		)
+		return metricsSummaryPluginOut, errOut
+	}
+	return mock.PipelineMetricsByPluginFunc(ctx, pipelineID, params)
+}
+
+// PipelineMetricsByPluginCalls gets all the calls that were made to PipelineMetricsByPlugin.
+// Check the length with:
+//
+//	len(mockedClient.PipelineMetricsByPluginCalls())
+func (mock *ClientMock) PipelineMetricsByPluginCalls() []struct {
+	Ctx        context.Context
+	PipelineID string
+	Params     cloud.MetricsParams
+} {
+	var calls []struct {
+		Ctx        context.Context
+		PipelineID string
+		Params     cloud.MetricsParams
+	}
+	mock.lockPipelineMetricsByPlugin.RLock()
+	calls = mock.calls.PipelineMetricsByPlugin
+	mock.lockPipelineMetricsByPlugin.RUnlock()
+	return calls
+}
+
+// PipelineMetricsOverTimeByPlugin calls PipelineMetricsOverTimeByPluginFunc.
+func (mock *ClientMock) PipelineMetricsOverTimeByPlugin(ctx context.Context, pipelineID string, params cloud.MetricsParams) (cloud.MetricsOverTimeByPlugin, error) {
+	callInfo := struct {
+		Ctx        context.Context
+		PipelineID string
+		Params     cloud.MetricsParams
+	}{
+		Ctx:        ctx,
+		PipelineID: pipelineID,
+		Params:     params,
+	}
+	mock.lockPipelineMetricsOverTimeByPlugin.Lock()
+	mock.calls.PipelineMetricsOverTimeByPlugin = append(mock.calls.PipelineMetricsOverTimeByPlugin, callInfo)
+	mock.lockPipelineMetricsOverTimeByPlugin.Unlock()
+	if mock.PipelineMetricsOverTimeByPluginFunc == nil {
+		var (
+			metricsOverTimeByPluginOut cloud.MetricsOverTimeByPlugin
+			errOut                     error
+		)
+		return metricsOverTimeByPluginOut, errOut
+	}
+	return mock.PipelineMetricsOverTimeByPluginFunc(ctx, pipelineID, params)
+}
+
+// PipelineMetricsOverTimeByPluginCalls gets all the calls that were made to PipelineMetricsOverTimeByPlugin.
+// Check the length with:
+//
+//	len(mockedClient.PipelineMetricsOverTimeByPluginCalls())
+func (mock *ClientMock) PipelineMetricsOverTimeByPluginCalls() []struct {
+	Ctx        context.Context
+	PipelineID string
+	Params     cloud.MetricsParams
+} {
+	var calls []struct {
+		Ctx        context.Context
+		PipelineID string
+		Params     cloud.MetricsParams
+	}
+	mock.lockPipelineMetricsOverTimeByPlugin.RLock()
+	calls = mock.calls.PipelineMetricsOverTimeByPlugin
+	mock.lockPipelineMetricsOverTimeByPlugin.RUnlock()
+	return calls
+}
+
 // PipelineMetricsV1 calls PipelineMetricsV1Func.
 func (mock *ClientMock) PipelineMetricsV1(ctx context.Context, pipelineID string, params cloud.MetricsParams) (cloud.AgentMetrics, error) {
 	callInfo := struct {
@@ -2966,6 +5145,50 @@ func (mock *ClientMock) PipelineMetricsV1Calls() []struct {
 	mock.lockPipelineMetricsV1.RLock()
 	calls = mock.calls.PipelineMetricsV1
 	mock.lockPipelineMetricsV1.RUnlock()
+	return calls
+}
+
+// PipelineOverTimeMetrics calls PipelineOverTimeMetricsFunc.
+func (mock *ClientMock) PipelineOverTimeMetrics(ctx context.Context, pipelineID string, params cloud.MetricsParams) (cloud.MetricsOverTime, error) {
+	callInfo := struct {
+		Ctx        context.Context
+		PipelineID string
+		Params     cloud.MetricsParams
+	}{
+		Ctx:        ctx,
+		PipelineID: pipelineID,
+		Params:     params,
+	}
+	mock.lockPipelineOverTimeMetrics.Lock()
+	mock.calls.PipelineOverTimeMetrics = append(mock.calls.PipelineOverTimeMetrics, callInfo)
+	mock.lockPipelineOverTimeMetrics.Unlock()
+	if mock.PipelineOverTimeMetricsFunc == nil {
+		var (
+			metricsOverTimeOut cloud.MetricsOverTime
+			errOut             error
+		)
+		return metricsOverTimeOut, errOut
+	}
+	return mock.PipelineOverTimeMetricsFunc(ctx, pipelineID, params)
+}
+
+// PipelineOverTimeMetricsCalls gets all the calls that were made to PipelineOverTimeMetrics.
+// Check the length with:
+//
+//	len(mockedClient.PipelineOverTimeMetricsCalls())
+func (mock *ClientMock) PipelineOverTimeMetricsCalls() []struct {
+	Ctx        context.Context
+	PipelineID string
+	Params     cloud.MetricsParams
+} {
+	var calls []struct {
+		Ctx        context.Context
+		PipelineID string
+		Params     cloud.MetricsParams
+	}
+	mock.lockPipelineOverTimeMetrics.RLock()
+	calls = mock.calls.PipelineOverTimeMetrics
+	mock.lockPipelineOverTimeMetrics.RUnlock()
 	return calls
 }
 
@@ -3182,15 +5405,15 @@ func (mock *ClientMock) PipelineStatusHistoryCalls() []struct {
 }
 
 // Pipelines calls PipelinesFunc.
-func (mock *ClientMock) Pipelines(ctx context.Context, aggregatorID string, params cloud.PipelinesParams) (cloud.Pipelines, error) {
+func (mock *ClientMock) Pipelines(ctx context.Context, instanceID string, params cloud.PipelinesParams) (cloud.Pipelines, error) {
 	callInfo := struct {
-		Ctx          context.Context
-		AggregatorID string
-		Params       cloud.PipelinesParams
+		Ctx        context.Context
+		InstanceID string
+		Params     cloud.PipelinesParams
 	}{
-		Ctx:          ctx,
-		AggregatorID: aggregatorID,
-		Params:       params,
+		Ctx:        ctx,
+		InstanceID: instanceID,
+		Params:     params,
 	}
 	mock.lockPipelines.Lock()
 	mock.calls.Pipelines = append(mock.calls.Pipelines, callInfo)
@@ -3202,7 +5425,7 @@ func (mock *ClientMock) Pipelines(ctx context.Context, aggregatorID string, para
 		)
 		return pipelinesOut, errOut
 	}
-	return mock.PipelinesFunc(ctx, aggregatorID, params)
+	return mock.PipelinesFunc(ctx, instanceID, params)
 }
 
 // PipelinesCalls gets all the calls that were made to Pipelines.
@@ -3210,18 +5433,182 @@ func (mock *ClientMock) Pipelines(ctx context.Context, aggregatorID string, para
 //
 //	len(mockedClient.PipelinesCalls())
 func (mock *ClientMock) PipelinesCalls() []struct {
-	Ctx          context.Context
-	AggregatorID string
-	Params       cloud.PipelinesParams
+	Ctx        context.Context
+	InstanceID string
+	Params     cloud.PipelinesParams
 } {
 	var calls []struct {
-		Ctx          context.Context
-		AggregatorID string
-		Params       cloud.PipelinesParams
+		Ctx        context.Context
+		InstanceID string
+		Params     cloud.PipelinesParams
 	}
 	mock.lockPipelines.RLock()
 	calls = mock.calls.Pipelines
 	mock.lockPipelines.RUnlock()
+	return calls
+}
+
+// PipelinesMetricsV1 calls PipelinesMetricsV1Func.
+func (mock *ClientMock) PipelinesMetricsV1(ctx context.Context, instanceID string, params cloud.PipelinesMetricsParams) (cloud.PipelinesMetrics, error) {
+	callInfo := struct {
+		Ctx        context.Context
+		InstanceID string
+		Params     cloud.PipelinesMetricsParams
+	}{
+		Ctx:        ctx,
+		InstanceID: instanceID,
+		Params:     params,
+	}
+	mock.lockPipelinesMetricsV1.Lock()
+	mock.calls.PipelinesMetricsV1 = append(mock.calls.PipelinesMetricsV1, callInfo)
+	mock.lockPipelinesMetricsV1.Unlock()
+	if mock.PipelinesMetricsV1Func == nil {
+		var (
+			pipelinesMetricsOut cloud.PipelinesMetrics
+			errOut              error
+		)
+		return pipelinesMetricsOut, errOut
+	}
+	return mock.PipelinesMetricsV1Func(ctx, instanceID, params)
+}
+
+// PipelinesMetricsV1Calls gets all the calls that were made to PipelinesMetricsV1.
+// Check the length with:
+//
+//	len(mockedClient.PipelinesMetricsV1Calls())
+func (mock *ClientMock) PipelinesMetricsV1Calls() []struct {
+	Ctx        context.Context
+	InstanceID string
+	Params     cloud.PipelinesMetricsParams
+} {
+	var calls []struct {
+		Ctx        context.Context
+		InstanceID string
+		Params     cloud.PipelinesMetricsParams
+	}
+	mock.lockPipelinesMetricsV1.RLock()
+	calls = mock.calls.PipelinesMetricsV1
+	mock.lockPipelinesMetricsV1.RUnlock()
+	return calls
+}
+
+// PreviewProcessingRule calls PreviewProcessingRuleFunc.
+func (mock *ClientMock) PreviewProcessingRule(ctx context.Context, in cloud.PreviewProcessingRule) ([]cloud.FluentBitLog, error) {
+	callInfo := struct {
+		Ctx context.Context
+		In  cloud.PreviewProcessingRule
+	}{
+		Ctx: ctx,
+		In:  in,
+	}
+	mock.lockPreviewProcessingRule.Lock()
+	mock.calls.PreviewProcessingRule = append(mock.calls.PreviewProcessingRule, callInfo)
+	mock.lockPreviewProcessingRule.Unlock()
+	if mock.PreviewProcessingRuleFunc == nil {
+		var (
+			fluentBitLogsOut []cloud.FluentBitLog
+			errOut           error
+		)
+		return fluentBitLogsOut, errOut
+	}
+	return mock.PreviewProcessingRuleFunc(ctx, in)
+}
+
+// PreviewProcessingRuleCalls gets all the calls that were made to PreviewProcessingRule.
+// Check the length with:
+//
+//	len(mockedClient.PreviewProcessingRuleCalls())
+func (mock *ClientMock) PreviewProcessingRuleCalls() []struct {
+	Ctx context.Context
+	In  cloud.PreviewProcessingRule
+} {
+	var calls []struct {
+		Ctx context.Context
+		In  cloud.PreviewProcessingRule
+	}
+	mock.lockPreviewProcessingRule.RLock()
+	calls = mock.calls.PreviewProcessingRule
+	mock.lockPreviewProcessingRule.RUnlock()
+	return calls
+}
+
+// ProcessingRule calls ProcessingRuleFunc.
+func (mock *ClientMock) ProcessingRule(ctx context.Context, processingRuleID string) (cloud.ProcessingRule, error) {
+	callInfo := struct {
+		Ctx              context.Context
+		ProcessingRuleID string
+	}{
+		Ctx:              ctx,
+		ProcessingRuleID: processingRuleID,
+	}
+	mock.lockProcessingRule.Lock()
+	mock.calls.ProcessingRule = append(mock.calls.ProcessingRule, callInfo)
+	mock.lockProcessingRule.Unlock()
+	if mock.ProcessingRuleFunc == nil {
+		var (
+			processingRuleOut cloud.ProcessingRule
+			errOut            error
+		)
+		return processingRuleOut, errOut
+	}
+	return mock.ProcessingRuleFunc(ctx, processingRuleID)
+}
+
+// ProcessingRuleCalls gets all the calls that were made to ProcessingRule.
+// Check the length with:
+//
+//	len(mockedClient.ProcessingRuleCalls())
+func (mock *ClientMock) ProcessingRuleCalls() []struct {
+	Ctx              context.Context
+	ProcessingRuleID string
+} {
+	var calls []struct {
+		Ctx              context.Context
+		ProcessingRuleID string
+	}
+	mock.lockProcessingRule.RLock()
+	calls = mock.calls.ProcessingRule
+	mock.lockProcessingRule.RUnlock()
+	return calls
+}
+
+// ProcessingRules calls ProcessingRulesFunc.
+func (mock *ClientMock) ProcessingRules(ctx context.Context, params cloud.ProcessingRulesParams) (cloud.ProcessingRules, error) {
+	callInfo := struct {
+		Ctx    context.Context
+		Params cloud.ProcessingRulesParams
+	}{
+		Ctx:    ctx,
+		Params: params,
+	}
+	mock.lockProcessingRules.Lock()
+	mock.calls.ProcessingRules = append(mock.calls.ProcessingRules, callInfo)
+	mock.lockProcessingRules.Unlock()
+	if mock.ProcessingRulesFunc == nil {
+		var (
+			processingRulesOut cloud.ProcessingRules
+			errOut             error
+		)
+		return processingRulesOut, errOut
+	}
+	return mock.ProcessingRulesFunc(ctx, params)
+}
+
+// ProcessingRulesCalls gets all the calls that were made to ProcessingRules.
+// Check the length with:
+//
+//	len(mockedClient.ProcessingRulesCalls())
+func (mock *ClientMock) ProcessingRulesCalls() []struct {
+	Ctx    context.Context
+	Params cloud.ProcessingRulesParams
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Params cloud.ProcessingRulesParams
+	}
+	mock.lockProcessingRules.RLock()
+	calls = mock.calls.ProcessingRules
+	mock.lockProcessingRules.RUnlock()
 	return calls
 }
 
@@ -3265,8 +5652,8 @@ func (mock *ClientMock) ProjectCalls() []struct {
 	return calls
 }
 
-// ProjectMetrics calls ProjectMetricsFunc.
-func (mock *ClientMock) ProjectMetrics(ctx context.Context, projectID string, params cloud.MetricsParams) (cloud.ProjectMetrics, error) {
+// ProjectMetricsV1 calls ProjectMetricsV1Func.
+func (mock *ClientMock) ProjectMetricsV1(ctx context.Context, projectID string, params cloud.MetricsParams) (cloud.ProjectMetrics, error) {
 	callInfo := struct {
 		Ctx       context.Context
 		ProjectID string
@@ -3276,24 +5663,24 @@ func (mock *ClientMock) ProjectMetrics(ctx context.Context, projectID string, pa
 		ProjectID: projectID,
 		Params:    params,
 	}
-	mock.lockProjectMetrics.Lock()
-	mock.calls.ProjectMetrics = append(mock.calls.ProjectMetrics, callInfo)
-	mock.lockProjectMetrics.Unlock()
-	if mock.ProjectMetricsFunc == nil {
+	mock.lockProjectMetricsV1.Lock()
+	mock.calls.ProjectMetricsV1 = append(mock.calls.ProjectMetricsV1, callInfo)
+	mock.lockProjectMetricsV1.Unlock()
+	if mock.ProjectMetricsV1Func == nil {
 		var (
 			projectMetricsOut cloud.ProjectMetrics
 			errOut            error
 		)
 		return projectMetricsOut, errOut
 	}
-	return mock.ProjectMetricsFunc(ctx, projectID, params)
+	return mock.ProjectMetricsV1Func(ctx, projectID, params)
 }
 
-// ProjectMetricsCalls gets all the calls that were made to ProjectMetrics.
+// ProjectMetricsV1Calls gets all the calls that were made to ProjectMetricsV1.
 // Check the length with:
 //
-//	len(mockedClient.ProjectMetricsCalls())
-func (mock *ClientMock) ProjectMetricsCalls() []struct {
+//	len(mockedClient.ProjectMetricsV1Calls())
+func (mock *ClientMock) ProjectMetricsV1Calls() []struct {
 	Ctx       context.Context
 	ProjectID string
 	Params    cloud.MetricsParams
@@ -3303,9 +5690,9 @@ func (mock *ClientMock) ProjectMetricsCalls() []struct {
 		ProjectID string
 		Params    cloud.MetricsParams
 	}
-	mock.lockProjectMetrics.RLock()
-	calls = mock.calls.ProjectMetrics
-	mock.lockProjectMetrics.RUnlock()
+	mock.lockProjectMetricsV1.RLock()
+	calls = mock.calls.ProjectMetricsV1
+	mock.lockProjectMetricsV1.RUnlock()
 	return calls
 }
 
@@ -3350,6 +5737,46 @@ func (mock *ClientMock) ProjectPipelinesCalls() []struct {
 	mock.lockProjectPipelines.RLock()
 	calls = mock.calls.ProjectPipelines
 	mock.lockProjectPipelines.RUnlock()
+	return calls
+}
+
+// Projects calls ProjectsFunc.
+func (mock *ClientMock) Projects(ctx context.Context, params cloud.ProjectsParams) (cloud.Projects, error) {
+	callInfo := struct {
+		Ctx    context.Context
+		Params cloud.ProjectsParams
+	}{
+		Ctx:    ctx,
+		Params: params,
+	}
+	mock.lockProjects.Lock()
+	mock.calls.Projects = append(mock.calls.Projects, callInfo)
+	mock.lockProjects.Unlock()
+	if mock.ProjectsFunc == nil {
+		var (
+			projectsOut cloud.Projects
+			errOut      error
+		)
+		return projectsOut, errOut
+	}
+	return mock.ProjectsFunc(ctx, params)
+}
+
+// ProjectsCalls gets all the calls that were made to Projects.
+// Check the length with:
+//
+//	len(mockedClient.ProjectsCalls())
+func (mock *ClientMock) ProjectsCalls() []struct {
+	Ctx    context.Context
+	Params cloud.ProjectsParams
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Params cloud.ProjectsParams
+	}
+	mock.lockProjects.RLock()
+	calls = mock.calls.Projects
+	mock.lockProjects.RUnlock()
 	return calls
 }
 
@@ -3434,15 +5861,15 @@ func (mock *ClientMock) ResourceProfileCalls() []struct {
 }
 
 // ResourceProfiles calls ResourceProfilesFunc.
-func (mock *ClientMock) ResourceProfiles(ctx context.Context, aggregatorID string, params cloud.ResourceProfilesParams) (cloud.ResourceProfiles, error) {
+func (mock *ClientMock) ResourceProfiles(ctx context.Context, instanceID string, params cloud.ResourceProfilesParams) (cloud.ResourceProfiles, error) {
 	callInfo := struct {
-		Ctx          context.Context
-		AggregatorID string
-		Params       cloud.ResourceProfilesParams
+		Ctx        context.Context
+		InstanceID string
+		Params     cloud.ResourceProfilesParams
 	}{
-		Ctx:          ctx,
-		AggregatorID: aggregatorID,
-		Params:       params,
+		Ctx:        ctx,
+		InstanceID: instanceID,
+		Params:     params,
 	}
 	mock.lockResourceProfiles.Lock()
 	mock.calls.ResourceProfiles = append(mock.calls.ResourceProfiles, callInfo)
@@ -3454,7 +5881,7 @@ func (mock *ClientMock) ResourceProfiles(ctx context.Context, aggregatorID strin
 		)
 		return resourceProfilesOut, errOut
 	}
-	return mock.ResourceProfilesFunc(ctx, aggregatorID, params)
+	return mock.ResourceProfilesFunc(ctx, instanceID, params)
 }
 
 // ResourceProfilesCalls gets all the calls that were made to ResourceProfiles.
@@ -3462,18 +5889,181 @@ func (mock *ClientMock) ResourceProfiles(ctx context.Context, aggregatorID strin
 //
 //	len(mockedClient.ResourceProfilesCalls())
 func (mock *ClientMock) ResourceProfilesCalls() []struct {
-	Ctx          context.Context
-	AggregatorID string
-	Params       cloud.ResourceProfilesParams
+	Ctx        context.Context
+	InstanceID string
+	Params     cloud.ResourceProfilesParams
 } {
 	var calls []struct {
-		Ctx          context.Context
-		AggregatorID string
-		Params       cloud.ResourceProfilesParams
+		Ctx        context.Context
+		InstanceID string
+		Params     cloud.ResourceProfilesParams
 	}
 	mock.lockResourceProfiles.RLock()
 	calls = mock.calls.ResourceProfiles
 	mock.lockResourceProfiles.RUnlock()
+	return calls
+}
+
+// SendVerificationEmail calls SendVerificationEmailFunc.
+func (mock *ClientMock) SendVerificationEmail(ctx context.Context) error {
+	callInfo := struct {
+		Ctx context.Context
+	}{
+		Ctx: ctx,
+	}
+	mock.lockSendVerificationEmail.Lock()
+	mock.calls.SendVerificationEmail = append(mock.calls.SendVerificationEmail, callInfo)
+	mock.lockSendVerificationEmail.Unlock()
+	if mock.SendVerificationEmailFunc == nil {
+		var (
+			errOut error
+		)
+		return errOut
+	}
+	return mock.SendVerificationEmailFunc(ctx)
+}
+
+// SendVerificationEmailCalls gets all the calls that were made to SendVerificationEmail.
+// Check the length with:
+//
+//	len(mockedClient.SendVerificationEmailCalls())
+func (mock *ClientMock) SendVerificationEmailCalls() []struct {
+	Ctx context.Context
+} {
+	var calls []struct {
+		Ctx context.Context
+	}
+	mock.lockSendVerificationEmail.RLock()
+	calls = mock.calls.SendVerificationEmail
+	mock.lockSendVerificationEmail.RUnlock()
+	return calls
+}
+
+// SetAgentToken calls SetAgentTokenFunc.
+func (mock *ClientMock) SetAgentToken(s string) {
+	callInfo := struct {
+		S string
+	}{
+		S: s,
+	}
+	mock.lockSetAgentToken.Lock()
+	mock.calls.SetAgentToken = append(mock.calls.SetAgentToken, callInfo)
+	mock.lockSetAgentToken.Unlock()
+	if mock.SetAgentTokenFunc == nil {
+		return
+	}
+	mock.SetAgentTokenFunc(s)
+}
+
+// SetAgentTokenCalls gets all the calls that were made to SetAgentToken.
+// Check the length with:
+//
+//	len(mockedClient.SetAgentTokenCalls())
+func (mock *ClientMock) SetAgentTokenCalls() []struct {
+	S string
+} {
+	var calls []struct {
+		S string
+	}
+	mock.lockSetAgentToken.RLock()
+	calls = mock.calls.SetAgentToken
+	mock.lockSetAgentToken.RUnlock()
+	return calls
+}
+
+// SetCoreInstanceToken calls SetCoreInstanceTokenFunc.
+func (mock *ClientMock) SetCoreInstanceToken(s string) {
+	callInfo := struct {
+		S string
+	}{
+		S: s,
+	}
+	mock.lockSetCoreInstanceToken.Lock()
+	mock.calls.SetCoreInstanceToken = append(mock.calls.SetCoreInstanceToken, callInfo)
+	mock.lockSetCoreInstanceToken.Unlock()
+	if mock.SetCoreInstanceTokenFunc == nil {
+		return
+	}
+	mock.SetCoreInstanceTokenFunc(s)
+}
+
+// SetCoreInstanceTokenCalls gets all the calls that were made to SetCoreInstanceToken.
+// Check the length with:
+//
+//	len(mockedClient.SetCoreInstanceTokenCalls())
+func (mock *ClientMock) SetCoreInstanceTokenCalls() []struct {
+	S string
+} {
+	var calls []struct {
+		S string
+	}
+	mock.lockSetCoreInstanceToken.RLock()
+	calls = mock.calls.SetCoreInstanceToken
+	mock.lockSetCoreInstanceToken.RUnlock()
+	return calls
+}
+
+// SetProjectToken calls SetProjectTokenFunc.
+func (mock *ClientMock) SetProjectToken(s string) {
+	callInfo := struct {
+		S string
+	}{
+		S: s,
+	}
+	mock.lockSetProjectToken.Lock()
+	mock.calls.SetProjectToken = append(mock.calls.SetProjectToken, callInfo)
+	mock.lockSetProjectToken.Unlock()
+	if mock.SetProjectTokenFunc == nil {
+		return
+	}
+	mock.SetProjectTokenFunc(s)
+}
+
+// SetProjectTokenCalls gets all the calls that were made to SetProjectToken.
+// Check the length with:
+//
+//	len(mockedClient.SetProjectTokenCalls())
+func (mock *ClientMock) SetProjectTokenCalls() []struct {
+	S string
+} {
+	var calls []struct {
+		S string
+	}
+	mock.lockSetProjectToken.RLock()
+	calls = mock.calls.SetProjectToken
+	mock.lockSetProjectToken.RUnlock()
+	return calls
+}
+
+// SetUserAgent calls SetUserAgentFunc.
+func (mock *ClientMock) SetUserAgent(s string) {
+	callInfo := struct {
+		S string
+	}{
+		S: s,
+	}
+	mock.lockSetUserAgent.Lock()
+	mock.calls.SetUserAgent = append(mock.calls.SetUserAgent, callInfo)
+	mock.lockSetUserAgent.Unlock()
+	if mock.SetUserAgentFunc == nil {
+		return
+	}
+	mock.SetUserAgentFunc(s)
+}
+
+// SetUserAgentCalls gets all the calls that were made to SetUserAgent.
+// Check the length with:
+//
+//	len(mockedClient.SetUserAgentCalls())
+func (mock *ClientMock) SetUserAgentCalls() []struct {
+	S string
+} {
+	var calls []struct {
+		S string
+	}
+	mock.lockSetUserAgent.RLock()
+	calls = mock.calls.SetUserAgent
+	mock.lockSetUserAgent.RUnlock()
 	return calls
 }
 
@@ -3554,6 +6144,50 @@ func (mock *ClientMock) TokenCalls() []struct {
 	mock.lockToken.RLock()
 	calls = mock.calls.Token
 	mock.lockToken.RUnlock()
+	return calls
+}
+
+// Tokens calls TokensFunc.
+func (mock *ClientMock) Tokens(ctx context.Context, projectID string, params cloud.TokensParams) (cloud.Tokens, error) {
+	callInfo := struct {
+		Ctx       context.Context
+		ProjectID string
+		Params    cloud.TokensParams
+	}{
+		Ctx:       ctx,
+		ProjectID: projectID,
+		Params:    params,
+	}
+	mock.lockTokens.Lock()
+	mock.calls.Tokens = append(mock.calls.Tokens, callInfo)
+	mock.lockTokens.Unlock()
+	if mock.TokensFunc == nil {
+		var (
+			tokensOut cloud.Tokens
+			errOut    error
+		)
+		return tokensOut, errOut
+	}
+	return mock.TokensFunc(ctx, projectID, params)
+}
+
+// TokensCalls gets all the calls that were made to Tokens.
+// Check the length with:
+//
+//	len(mockedClient.TokensCalls())
+func (mock *ClientMock) TokensCalls() []struct {
+	Ctx       context.Context
+	ProjectID string
+	Params    cloud.TokensParams
+} {
+	var calls []struct {
+		Ctx       context.Context
+		ProjectID string
+		Params    cloud.TokensParams
+	}
+	mock.lockTokens.RLock()
+	calls = mock.calls.Tokens
+	mock.lockTokens.RUnlock()
 	return calls
 }
 
@@ -3728,46 +6362,46 @@ func (mock *ClientMock) UpdateAgentCalls() []struct {
 	return calls
 }
 
-// UpdateAggregator calls UpdateAggregatorFunc.
-func (mock *ClientMock) UpdateAggregator(ctx context.Context, aggregatorID string, payload cloud.UpdateAggregator) error {
+// UpdateClusterObject calls UpdateClusterObjectFunc.
+func (mock *ClientMock) UpdateClusterObject(ctx context.Context, checkID string, opts cloud.UpdateClusterObject) error {
 	callInfo := struct {
-		Ctx          context.Context
-		AggregatorID string
-		Payload      cloud.UpdateAggregator
+		Ctx     context.Context
+		CheckID string
+		Opts    cloud.UpdateClusterObject
 	}{
-		Ctx:          ctx,
-		AggregatorID: aggregatorID,
-		Payload:      payload,
+		Ctx:     ctx,
+		CheckID: checkID,
+		Opts:    opts,
 	}
-	mock.lockUpdateAggregator.Lock()
-	mock.calls.UpdateAggregator = append(mock.calls.UpdateAggregator, callInfo)
-	mock.lockUpdateAggregator.Unlock()
-	if mock.UpdateAggregatorFunc == nil {
+	mock.lockUpdateClusterObject.Lock()
+	mock.calls.UpdateClusterObject = append(mock.calls.UpdateClusterObject, callInfo)
+	mock.lockUpdateClusterObject.Unlock()
+	if mock.UpdateClusterObjectFunc == nil {
 		var (
 			errOut error
 		)
 		return errOut
 	}
-	return mock.UpdateAggregatorFunc(ctx, aggregatorID, payload)
+	return mock.UpdateClusterObjectFunc(ctx, checkID, opts)
 }
 
-// UpdateAggregatorCalls gets all the calls that were made to UpdateAggregator.
+// UpdateClusterObjectCalls gets all the calls that were made to UpdateClusterObject.
 // Check the length with:
 //
-//	len(mockedClient.UpdateAggregatorCalls())
-func (mock *ClientMock) UpdateAggregatorCalls() []struct {
-	Ctx          context.Context
-	AggregatorID string
-	Payload      cloud.UpdateAggregator
+//	len(mockedClient.UpdateClusterObjectCalls())
+func (mock *ClientMock) UpdateClusterObjectCalls() []struct {
+	Ctx     context.Context
+	CheckID string
+	Opts    cloud.UpdateClusterObject
 } {
 	var calls []struct {
-		Ctx          context.Context
-		AggregatorID string
-		Payload      cloud.UpdateAggregator
+		Ctx     context.Context
+		CheckID string
+		Opts    cloud.UpdateClusterObject
 	}
-	mock.lockUpdateAggregator.RLock()
-	calls = mock.calls.UpdateAggregator
-	mock.lockUpdateAggregator.RUnlock()
+	mock.lockUpdateClusterObject.RLock()
+	calls = mock.calls.UpdateClusterObject
+	mock.lockUpdateClusterObject.RUnlock()
 	return calls
 }
 
@@ -3858,6 +6492,92 @@ func (mock *ClientMock) UpdateConfigSectionSetCalls() []struct {
 	return calls
 }
 
+// UpdateCoreInstance calls UpdateCoreInstanceFunc.
+func (mock *ClientMock) UpdateCoreInstance(ctx context.Context, instanceID string, payload cloud.UpdateCoreInstance) error {
+	callInfo := struct {
+		Ctx        context.Context
+		InstanceID string
+		Payload    cloud.UpdateCoreInstance
+	}{
+		Ctx:        ctx,
+		InstanceID: instanceID,
+		Payload:    payload,
+	}
+	mock.lockUpdateCoreInstance.Lock()
+	mock.calls.UpdateCoreInstance = append(mock.calls.UpdateCoreInstance, callInfo)
+	mock.lockUpdateCoreInstance.Unlock()
+	if mock.UpdateCoreInstanceFunc == nil {
+		var (
+			errOut error
+		)
+		return errOut
+	}
+	return mock.UpdateCoreInstanceFunc(ctx, instanceID, payload)
+}
+
+// UpdateCoreInstanceCalls gets all the calls that were made to UpdateCoreInstance.
+// Check the length with:
+//
+//	len(mockedClient.UpdateCoreInstanceCalls())
+func (mock *ClientMock) UpdateCoreInstanceCalls() []struct {
+	Ctx        context.Context
+	InstanceID string
+	Payload    cloud.UpdateCoreInstance
+} {
+	var calls []struct {
+		Ctx        context.Context
+		InstanceID string
+		Payload    cloud.UpdateCoreInstance
+	}
+	mock.lockUpdateCoreInstance.RLock()
+	calls = mock.calls.UpdateCoreInstance
+	mock.lockUpdateCoreInstance.RUnlock()
+	return calls
+}
+
+// UpdateCoreInstanceCheck calls UpdateCoreInstanceCheckFunc.
+func (mock *ClientMock) UpdateCoreInstanceCheck(ctx context.Context, checkID string, opts cloud.UpdateCoreInstanceCheck) error {
+	callInfo := struct {
+		Ctx     context.Context
+		CheckID string
+		Opts    cloud.UpdateCoreInstanceCheck
+	}{
+		Ctx:     ctx,
+		CheckID: checkID,
+		Opts:    opts,
+	}
+	mock.lockUpdateCoreInstanceCheck.Lock()
+	mock.calls.UpdateCoreInstanceCheck = append(mock.calls.UpdateCoreInstanceCheck, callInfo)
+	mock.lockUpdateCoreInstanceCheck.Unlock()
+	if mock.UpdateCoreInstanceCheckFunc == nil {
+		var (
+			errOut error
+		)
+		return errOut
+	}
+	return mock.UpdateCoreInstanceCheckFunc(ctx, checkID, opts)
+}
+
+// UpdateCoreInstanceCheckCalls gets all the calls that were made to UpdateCoreInstanceCheck.
+// Check the length with:
+//
+//	len(mockedClient.UpdateCoreInstanceCheckCalls())
+func (mock *ClientMock) UpdateCoreInstanceCheckCalls() []struct {
+	Ctx     context.Context
+	CheckID string
+	Opts    cloud.UpdateCoreInstanceCheck
+} {
+	var calls []struct {
+		Ctx     context.Context
+		CheckID string
+		Opts    cloud.UpdateCoreInstanceCheck
+	}
+	mock.lockUpdateCoreInstanceCheck.RLock()
+	calls = mock.calls.UpdateCoreInstanceCheck
+	mock.lockUpdateCoreInstanceCheck.RUnlock()
+	return calls
+}
+
 // UpdateEnvironment calls UpdateEnvironmentFunc.
 func (mock *ClientMock) UpdateEnvironment(ctx context.Context, environmentID string, payload cloud.UpdateEnvironment) error {
 	callInfo := struct {
@@ -3898,6 +6618,49 @@ func (mock *ClientMock) UpdateEnvironmentCalls() []struct {
 	mock.lockUpdateEnvironment.RLock()
 	calls = mock.calls.UpdateEnvironment
 	mock.lockUpdateEnvironment.RUnlock()
+	return calls
+}
+
+// UpdateIngestCheck calls UpdateIngestCheckFunc.
+func (mock *ClientMock) UpdateIngestCheck(ctx context.Context, checkID string, opts cloud.UpdateIngestCheck) error {
+	callInfo := struct {
+		Ctx     context.Context
+		CheckID string
+		Opts    cloud.UpdateIngestCheck
+	}{
+		Ctx:     ctx,
+		CheckID: checkID,
+		Opts:    opts,
+	}
+	mock.lockUpdateIngestCheck.Lock()
+	mock.calls.UpdateIngestCheck = append(mock.calls.UpdateIngestCheck, callInfo)
+	mock.lockUpdateIngestCheck.Unlock()
+	if mock.UpdateIngestCheckFunc == nil {
+		var (
+			errOut error
+		)
+		return errOut
+	}
+	return mock.UpdateIngestCheckFunc(ctx, checkID, opts)
+}
+
+// UpdateIngestCheckCalls gets all the calls that were made to UpdateIngestCheck.
+// Check the length with:
+//
+//	len(mockedClient.UpdateIngestCheckCalls())
+func (mock *ClientMock) UpdateIngestCheckCalls() []struct {
+	Ctx     context.Context
+	CheckID string
+	Opts    cloud.UpdateIngestCheck
+} {
+	var calls []struct {
+		Ctx     context.Context
+		CheckID string
+		Opts    cloud.UpdateIngestCheck
+	}
+	mock.lockUpdateIngestCheck.RLock()
+	calls = mock.calls.UpdateIngestCheck
+	mock.lockUpdateIngestCheck.RUnlock()
 	return calls
 }
 
@@ -3942,6 +6705,92 @@ func (mock *ClientMock) UpdatePipelineCalls() []struct {
 	mock.lockUpdatePipeline.RLock()
 	calls = mock.calls.UpdatePipeline
 	mock.lockUpdatePipeline.RUnlock()
+	return calls
+}
+
+// UpdatePipelineCheck calls UpdatePipelineCheckFunc.
+func (mock *ClientMock) UpdatePipelineCheck(ctx context.Context, checkID string, opts cloud.UpdatePipelineCheck) error {
+	callInfo := struct {
+		Ctx     context.Context
+		CheckID string
+		Opts    cloud.UpdatePipelineCheck
+	}{
+		Ctx:     ctx,
+		CheckID: checkID,
+		Opts:    opts,
+	}
+	mock.lockUpdatePipelineCheck.Lock()
+	mock.calls.UpdatePipelineCheck = append(mock.calls.UpdatePipelineCheck, callInfo)
+	mock.lockUpdatePipelineCheck.Unlock()
+	if mock.UpdatePipelineCheckFunc == nil {
+		var (
+			errOut error
+		)
+		return errOut
+	}
+	return mock.UpdatePipelineCheckFunc(ctx, checkID, opts)
+}
+
+// UpdatePipelineCheckCalls gets all the calls that were made to UpdatePipelineCheck.
+// Check the length with:
+//
+//	len(mockedClient.UpdatePipelineCheckCalls())
+func (mock *ClientMock) UpdatePipelineCheckCalls() []struct {
+	Ctx     context.Context
+	CheckID string
+	Opts    cloud.UpdatePipelineCheck
+} {
+	var calls []struct {
+		Ctx     context.Context
+		CheckID string
+		Opts    cloud.UpdatePipelineCheck
+	}
+	mock.lockUpdatePipelineCheck.RLock()
+	calls = mock.calls.UpdatePipelineCheck
+	mock.lockUpdatePipelineCheck.RUnlock()
+	return calls
+}
+
+// UpdatePipelineClusterObjects calls UpdatePipelineClusterObjectsFunc.
+func (mock *ClientMock) UpdatePipelineClusterObjects(ctx context.Context, pipelineID string, opts cloud.UpdatePipelineClusterObjects) error {
+	callInfo := struct {
+		Ctx        context.Context
+		PipelineID string
+		Opts       cloud.UpdatePipelineClusterObjects
+	}{
+		Ctx:        ctx,
+		PipelineID: pipelineID,
+		Opts:       opts,
+	}
+	mock.lockUpdatePipelineClusterObjects.Lock()
+	mock.calls.UpdatePipelineClusterObjects = append(mock.calls.UpdatePipelineClusterObjects, callInfo)
+	mock.lockUpdatePipelineClusterObjects.Unlock()
+	if mock.UpdatePipelineClusterObjectsFunc == nil {
+		var (
+			errOut error
+		)
+		return errOut
+	}
+	return mock.UpdatePipelineClusterObjectsFunc(ctx, pipelineID, opts)
+}
+
+// UpdatePipelineClusterObjectsCalls gets all the calls that were made to UpdatePipelineClusterObjects.
+// Check the length with:
+//
+//	len(mockedClient.UpdatePipelineClusterObjectsCalls())
+func (mock *ClientMock) UpdatePipelineClusterObjectsCalls() []struct {
+	Ctx        context.Context
+	PipelineID string
+	Opts       cloud.UpdatePipelineClusterObjects
+} {
+	var calls []struct {
+		Ctx        context.Context
+		PipelineID string
+		Opts       cloud.UpdatePipelineClusterObjects
+	}
+	mock.lockUpdatePipelineClusterObjects.RLock()
+	calls = mock.calls.UpdatePipelineClusterObjects
+	mock.lockUpdatePipelineClusterObjects.RUnlock()
 	return calls
 }
 
@@ -4071,6 +6920,46 @@ func (mock *ClientMock) UpdatePipelineSecretCalls() []struct {
 	mock.lockUpdatePipelineSecret.RLock()
 	calls = mock.calls.UpdatePipelineSecret
 	mock.lockUpdatePipelineSecret.RUnlock()
+	return calls
+}
+
+// UpdateProcessingRule calls UpdateProcessingRuleFunc.
+func (mock *ClientMock) UpdateProcessingRule(ctx context.Context, in cloud.UpdateProcessingRule) (cloud.UpdatedProcessingRule, error) {
+	callInfo := struct {
+		Ctx context.Context
+		In  cloud.UpdateProcessingRule
+	}{
+		Ctx: ctx,
+		In:  in,
+	}
+	mock.lockUpdateProcessingRule.Lock()
+	mock.calls.UpdateProcessingRule = append(mock.calls.UpdateProcessingRule, callInfo)
+	mock.lockUpdateProcessingRule.Unlock()
+	if mock.UpdateProcessingRuleFunc == nil {
+		var (
+			updatedProcessingRuleOut cloud.UpdatedProcessingRule
+			errOut                   error
+		)
+		return updatedProcessingRuleOut, errOut
+	}
+	return mock.UpdateProcessingRuleFunc(ctx, in)
+}
+
+// UpdateProcessingRuleCalls gets all the calls that were made to UpdateProcessingRule.
+// Check the length with:
+//
+//	len(mockedClient.UpdateProcessingRuleCalls())
+func (mock *ClientMock) UpdateProcessingRuleCalls() []struct {
+	Ctx context.Context
+	In  cloud.UpdateProcessingRule
+} {
+	var calls []struct {
+		Ctx context.Context
+		In  cloud.UpdateProcessingRule
+	}
+	mock.lockUpdateProcessingRule.RLock()
+	calls = mock.calls.UpdateProcessingRule
+	mock.lockUpdateProcessingRule.RUnlock()
 	return calls
 }
 
@@ -4288,5 +7177,45 @@ func (mock *ClientMock) ValidateConfigCalls() []struct {
 	mock.lockValidateConfig.RLock()
 	calls = mock.calls.ValidateConfig
 	mock.lockValidateConfig.RUnlock()
+	return calls
+}
+
+// ValidateConfigV2 calls ValidateConfigV2Func.
+func (mock *ClientMock) ValidateConfigV2(ctx context.Context, payload cloud.ValidatingConfig) (cloud.ValidatedConfigV2, error) {
+	callInfo := struct {
+		Ctx     context.Context
+		Payload cloud.ValidatingConfig
+	}{
+		Ctx:     ctx,
+		Payload: payload,
+	}
+	mock.lockValidateConfigV2.Lock()
+	mock.calls.ValidateConfigV2 = append(mock.calls.ValidateConfigV2, callInfo)
+	mock.lockValidateConfigV2.Unlock()
+	if mock.ValidateConfigV2Func == nil {
+		var (
+			validatedConfigV2Out cloud.ValidatedConfigV2
+			errOut               error
+		)
+		return validatedConfigV2Out, errOut
+	}
+	return mock.ValidateConfigV2Func(ctx, payload)
+}
+
+// ValidateConfigV2Calls gets all the calls that were made to ValidateConfigV2.
+// Check the length with:
+//
+//	len(mockedClient.ValidateConfigV2Calls())
+func (mock *ClientMock) ValidateConfigV2Calls() []struct {
+	Ctx     context.Context
+	Payload cloud.ValidatingConfig
+} {
+	var calls []struct {
+		Ctx     context.Context
+		Payload cloud.ValidatingConfig
+	}
+	mock.lockValidateConfigV2.RLock()
+	calls = mock.calls.ValidateConfigV2
+	mock.lockValidateConfigV2.RUnlock()
 	return calls
 }

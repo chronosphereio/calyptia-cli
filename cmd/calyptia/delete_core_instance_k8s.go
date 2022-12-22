@@ -62,12 +62,12 @@ func newCmdDeleteCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 				}
 			}
 
-			agg, err := config.cloud.Aggregator(ctx, coreInstanceID)
+			agg, err := config.cloud.CoreInstance(ctx, coreInstanceID)
 			if err != nil {
 				return err
 			}
 
-			err = config.cloud.DeleteAggregator(ctx, agg.ID)
+			err = config.cloud.DeleteCoreInstance(ctx, agg.ID)
 			if err != nil {
 				return err
 			}

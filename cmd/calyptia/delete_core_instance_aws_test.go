@@ -38,9 +38,9 @@ func Test_newCmdDeleteCoreInstanceOnAWS(t *testing.T) {
 				EnvironmentsFunc: func(ctx context.Context, projectID string, params types.EnvironmentsParams) (types.Environments, error) {
 					return types.Environments{Items: []types.Environment{{Name: "default"}}}, nil
 				},
-				AggregatorsFunc: func(ctx context.Context, projectID string, params types.AggregatorsParams) (types.Aggregators, error) {
-					return types.Aggregators{
-						Items: []types.Aggregator{
+				CoreInstancesFunc: func(ctx context.Context, projectID string, params types.CoreInstancesParams) (types.CoreInstances, error) {
+					return types.CoreInstances{
+						Items: []types.CoreInstance{
 							{
 								Name: "core-instance",
 							},
@@ -88,9 +88,9 @@ func Test_newCmdDeleteCoreInstanceOnAWS(t *testing.T) {
 				EnvironmentsFunc: func(ctx context.Context, projectID string, params types.EnvironmentsParams) (types.Environments, error) {
 					return types.Environments{Items: []types.Environment{{Name: "default"}}}, nil
 				},
-				AggregatorsFunc: func(ctx context.Context, projectID string, params types.AggregatorsParams) (types.Aggregators, error) {
-					return types.Aggregators{
-						Items: []types.Aggregator{
+				CoreInstancesFunc: func(ctx context.Context, projectID string, params types.CoreInstancesParams) (types.CoreInstances, error) {
+					return types.CoreInstances{
+						Items: []types.CoreInstance{
 							{
 								Name: "core-instance",
 							},
@@ -137,8 +137,8 @@ func Test_newCmdDeleteCoreInstanceOnAWS(t *testing.T) {
 					EnvironmentsFunc: func(ctx context.Context, projectID string, params types.EnvironmentsParams) (types.Environments, error) {
 						return types.Environments{Items: []types.Environment{{Name: "default"}}}, nil
 					},
-					AggregatorsFunc: func(ctx context.Context, projectID string, params types.AggregatorsParams) (types.Aggregators, error) {
-						return types.Aggregators{}, fmt.Errorf("could not get core-instance")
+					CoreInstancesFunc: func(ctx context.Context, projectID string, params types.CoreInstancesParams) (types.CoreInstances, error) {
+						return types.CoreInstances{}, fmt.Errorf("could not get core-instance")
 					},
 				}),
 			&aws.ClientMock{
