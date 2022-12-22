@@ -105,7 +105,7 @@ func (m ProjectModel) loadData(ctx context.Context, skipError bool) tea.Cmd {
 		})
 		g.Go(func() error {
 			var err error
-			projectMetrics, err = m.cloud.ProjectMetrics(gctx, m.projectID, cloud.MetricsParams{
+			projectMetrics, err = m.cloud.ProjectMetricsV1(gctx, m.projectID, cloud.MetricsParams{
 				Start:    m.metricsStart,
 				Interval: m.metricsInterval,
 			})

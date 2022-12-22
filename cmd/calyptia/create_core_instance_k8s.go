@@ -3,16 +3,14 @@ package main
 import (
 	"context"
 	"fmt"
-
+	cloud "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/k8s"
+	"github.com/calyptia/core-images-index/go-index"
 	"github.com/spf13/cobra"
 	apiv1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp" // register GCP auth provider
 	"k8s.io/client-go/tools/clientcmd"
-
-	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/k8s"
-	"github.com/calyptia/core-images-index/go-index"
 )
 
 const (
@@ -27,6 +25,7 @@ func newCmdCreateCoreInstanceOnK8s(config *config, testClientSet kubernetes.Inte
 	var noTLSVerify bool
 	var enableClusterLogging bool
 	var enableOpenShift bool
+	var skipServiceCreation bool
 	var environment string
 	var tags []string
 
@@ -51,12 +50,13 @@ func newCmdCreateCoreInstanceOnK8s(config *config, testClientSet kubernetes.Inte
 				}
 			}
 
-			created, err := config.cloud.CreateAggregator(ctx, cloud.CreateAggregator{
+			created, err := config.cloud.CreateCoreInstance(ctx, cloud.CreateCoreInstance{
 				Name:                   coreInstanceName,
 				AddHealthCheckPipeline: !noHealthCheckPipeline,
 				ClusterLogging:         enableClusterLogging,
 				EnvironmentID:          environmentID,
 				Tags:                   tags,
+				SkipServiceCreation:    skipServiceCreation,
 			})
 
 			if err != nil {
@@ -142,7 +142,6 @@ func newCmdCreateCoreInstanceOnK8s(config *config, testClientSet kubernetes.Inte
 			}
 
 			fmt.Fprintf(cmd.OutOrStdout(), "deployment=%q\n", deploy.Name)
-
 			return nil
 		},
 	}
@@ -154,6 +153,8 @@ func newCmdCreateCoreInstanceOnK8s(config *config, testClientSet kubernetes.Inte
 	fs.BoolVar(&enableClusterLogging, "enable-cluster-logging", false, "Enable cluster logging pipeline creation.")
 	fs.BoolVar(&enableOpenShift, "enable-openshift", false, "Enable Open-Shift specific permissions and settings.")
 	fs.BoolVar(&noTLSVerify, "no-tls-verify", false, "Disable TLS verification when connecting to Calyptia Cloud API.")
+	fs.BoolVar(&skipServiceCreation, "skip-service-creation", false, "Skip the creation of kubernetes services for any pipeline under this core instance.")
+
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 	fs.StringSliceVar(&tags, "tags", nil, "Tags to apply to the core instance")
 

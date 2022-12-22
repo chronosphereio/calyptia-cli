@@ -47,13 +47,16 @@ func Test_newCmdGetAgents(t *testing.T) {
 
 	t.Run("ok", func(t *testing.T) {
 		now := time.Now().Truncate(time.Second)
+		lastMetricsTime := now.Add(time.Second * -1)
+		lastMetricsTimeSec := now.Add(time.Second * -30)
+
 		want := types.Agents{
 			Items: []types.Agent{{
 				ID:                 "agent_id_1",
 				Name:               "name_1",
 				Type:               types.AgentTypeFluentBit,
 				Version:            "v1.8.6",
-				LastMetricsAddedAt: now.Add(time.Second * -1),
+				LastMetricsAddedAt: &lastMetricsTime,
 				CreatedAt:          now.Add(time.Minute * -5),
 				EnvironmentName:    "default",
 			}, {
@@ -61,7 +64,7 @@ func Test_newCmdGetAgents(t *testing.T) {
 				Name:               "name_2",
 				Type:               types.AgentTypeFluentd,
 				Version:            "v1.0.0",
-				LastMetricsAddedAt: now.Add(time.Second * -30),
+				LastMetricsAddedAt: &lastMetricsTimeSec,
 				CreatedAt:          now.Add(time.Minute * -10),
 				EnvironmentName:    "default",
 			}},
@@ -125,13 +128,15 @@ func Test_newCmdGetAgent(t *testing.T) {
 
 	t.Run("ok", func(t *testing.T) {
 		now := time.Now().Truncate(time.Second)
+		lastMetricsTime := now.Add(time.Second * -1)
+
 		want := types.Agent{
 			ID:                 "agent_id",
 			Name:               "name",
 			Type:               types.AgentTypeFluentBit,
 			Version:            "v1.8.6",
 			RawConfig:          "raw_config",
-			LastMetricsAddedAt: now.Add(time.Second * -1),
+			LastMetricsAddedAt: &lastMetricsTime,
 			CreatedAt:          now.Add(time.Minute * -5),
 		}
 		got := &bytes.Buffer{}

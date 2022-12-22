@@ -19,6 +19,7 @@ func newCmdUpdateCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 		disableClusterLogging bool
 		enableClusterLogging  bool
 		noTLSVerify           bool
+		skipServiceCreation   bool
 	)
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	configOverrides := &clientcmd.ConfigOverrides{}
@@ -49,7 +50,7 @@ func newCmdUpdateCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 				return fmt.Errorf("cannot update core instance with the same name")
 			}
 
-			var opts cloud.UpdateAggregator
+			var opts cloud.UpdateCoreInstance
 
 			if newName != "" {
 				opts.Name = &newName
@@ -66,12 +67,16 @@ func newCmdUpdateCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 				opts.ClusterLogging = &disableClusterLogging
 			}
 
-			err = config.cloud.UpdateAggregator(config.ctx, coreInstanceID, opts)
+			if skipServiceCreation {
+				opts.SkipServiceCreation = &skipServiceCreation
+			}
+
+			err = config.cloud.UpdateCoreInstance(config.ctx, coreInstanceID, opts)
 			if err != nil {
 				return fmt.Errorf("could not update core instance at calyptia cloud: %w", err)
 			}
 
-			agg, err := config.cloud.Aggregator(ctx, coreInstanceID)
+			agg, err := config.cloud.CoreInstance(ctx, coreInstanceID)
 			if err != nil {
 				return err
 			}
@@ -134,6 +139,7 @@ func newCmdUpdateCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 	fs.BoolVar(&enableClusterLogging, "enable-cluster-logging", false, "Enable cluster logging functionality")
 	fs.BoolVar(&disableClusterLogging, "disable-cluster-logging", false, "Disable cluster logging functionality")
 	fs.BoolVar(&noTLSVerify, "no-tls-verify", false, "Disable TLS verification when connecting to Calyptia Cloud API.")
+	fs.BoolVar(&skipServiceCreation, "skip-service-creation", false, "Skip the creation of kubernetes services for any pipeline under this core instance.")
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
 	_ = cmd.RegisterFlagCompletionFunc("version", config.completeCoreContainerVersion)

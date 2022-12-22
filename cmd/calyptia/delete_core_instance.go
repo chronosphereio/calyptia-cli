@@ -34,7 +34,7 @@ func newCmdDeleteCoreInstances(config *config) *cobra.Command {
 		Short: "Delete many core instances from project",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			aa, err := config.cloud.Aggregators(ctx, config.projectID, types.AggregatorsParams{
+			aa, err := config.cloud.CoreInstances(ctx, config.projectID, types.CoreInstancesParams{
 				Last: ptr(uint(0)),
 			})
 			if err != nil {
@@ -59,17 +59,17 @@ func newCmdDeleteCoreInstances(config *config) *cobra.Command {
 				}
 			}
 
-			aggregatorIDs := make([]string, len(aa.Items))
+			coreInstanceIDs := make([]string, len(aa.Items))
 			for i, a := range aa.Items {
-				aggregatorIDs[i] = a.ID
+				coreInstanceIDs[i] = a.ID
 			}
 
-			err = config.cloud.DeleteAggregators(ctx, config.projectID, aggregatorIDs...)
+			err = config.cloud.DeleteCoreInstances(ctx, config.projectID, coreInstanceIDs...)
 			if err != nil {
 				return fmt.Errorf("delete core instances: %w", err)
 			}
 
-			cmd.Printf("Successfully deleted %d core instances\n", len(aggregatorIDs))
+			cmd.Printf("Successfully deleted %d core instances\n", len(coreInstanceIDs))
 
 			return nil
 		},

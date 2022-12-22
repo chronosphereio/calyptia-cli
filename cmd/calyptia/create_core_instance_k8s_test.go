@@ -12,11 +12,11 @@ import (
 	"github.com/calyptia/api/types"
 )
 
-func Test_newCmdCreateAggregatorOnK8s(t *testing.T) {
+func Test_newCmdCreateCoreInstanceOnK8s(t *testing.T) {
 	t.Run("error", func(t *testing.T) {
 		cmd := newCmdCreateCoreInstanceOnK8s(configWithMock(&ClientMock{
-			CreateAggregatorFunc: func(ctx context.Context, payload types.CreateAggregator) (types.CreatedAggregator, error) {
-				return types.CreatedAggregator{}, errors.New("internal server error")
+			CreateCoreInstanceFunc: func(ctx context.Context, payload types.CreateCoreInstance) (types.CreatedCoreInstance, error) {
+				return types.CreatedCoreInstance{}, errors.New("internal server error")
 			},
 		}), nil)
 
@@ -29,10 +29,10 @@ func Test_newCmdCreateAggregatorOnK8s(t *testing.T) {
 	t.Run("ok", func(t *testing.T) {
 		got := &bytes.Buffer{}
 		cmd := newCmdCreateCoreInstanceOnK8s(configWithMock(&ClientMock{
-			CreateAggregatorFunc: func(ctx context.Context, payload types.CreateAggregator) (types.CreatedAggregator, error) {
-				return types.CreatedAggregator{
-					ID:              "want-aggregator-id",
-					Name:            "want-aggregator-name",
+			CreateCoreInstanceFunc: func(ctx context.Context, payload types.CreateCoreInstance) (types.CreatedCoreInstance, error) {
+				return types.CreatedCoreInstance{
+					ID:              "want-CoreInstance-id",
+					Name:            "want-CoreInstance-name",
 					EnvironmentName: "default",
 				}, nil
 			},
@@ -41,10 +41,10 @@ func Test_newCmdCreateAggregatorOnK8s(t *testing.T) {
 
 		err := cmd.Execute()
 		wantEq(t, nil, err)
-		wantEq(t, "secret=\"calyptia-want-aggregator-name-default-secret\"\n"+
-			"cluster_role=\"calyptia-want-aggregator-name-default-cluster-role\"\n"+
-			"service_account=\"calyptia-want-aggregator-name-default-service-account\"\n"+
-			"cluster_role_binding=\"calyptia-want-aggregator-name-default-cluster-role-binding\"\n"+
-			"deployment=\"calyptia-want-aggregator-name-default-deployment\"\n", got.String())
+		wantEq(t, "secret=\"calyptia-want-CoreInstance-name-default-secret\"\n"+
+			"cluster_role=\"calyptia-want-CoreInstance-name-default-cluster-role\"\n"+
+			"service_account=\"calyptia-want-CoreInstance-name-default-service-account\"\n"+
+			"cluster_role_binding=\"calyptia-want-CoreInstance-name-default-cluster-role-binding\"\n"+
+			"deployment=\"calyptia-want-CoreInstance-name-default-deployment\"\n", got.String())
 	})
 }

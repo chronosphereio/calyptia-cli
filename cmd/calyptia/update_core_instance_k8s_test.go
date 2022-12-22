@@ -16,12 +16,12 @@ func Test_newCmdUpdateCoreInstanceK8s(t *testing.T) {
 	coreInstanceName := "testing"
 	t.Run("error", func(t *testing.T) {
 		cmd := newCmdUpdateCoreInstanceK8s(configWithMock(&ClientMock{
-			UpdateAggregatorFunc: func(ctx context.Context, aggregatorID string, payload types.UpdateAggregator) error {
+			UpdateCoreInstanceFunc: func(ctx context.Context, CoreInstanceID string, payload types.UpdateCoreInstance) error {
 				return errors.New("internal server error")
 			},
-			AggregatorsFunc: func(ctx context.Context, projectID string, params types.AggregatorsParams) (types.Aggregators, error) {
-				return types.Aggregators{
-					Items: []types.Aggregator{
+			CoreInstancesFunc: func(ctx context.Context, projectID string, params types.CoreInstancesParams) (types.CoreInstances, error) {
+				return types.CoreInstances{
+					Items: []types.CoreInstance{
 						{
 							Name: coreInstanceName,
 						},
@@ -40,9 +40,9 @@ func Test_newCmdUpdateCoreInstanceK8s(t *testing.T) {
 	t.Run("ok", func(t *testing.T) {
 		got := &bytes.Buffer{}
 		cmd := newCmdUpdateCoreInstanceK8s(configWithMock(&ClientMock{
-			AggregatorsFunc: func(ctx context.Context, projectID string, params types.AggregatorsParams) (types.Aggregators, error) {
-				return types.Aggregators{
-					Items: []types.Aggregator{
+			CoreInstancesFunc: func(ctx context.Context, projectID string, params types.CoreInstancesParams) (types.CoreInstances, error) {
+				return types.CoreInstances{
+					Items: []types.CoreInstance{
 						{
 							Name: coreInstanceName,
 						},
@@ -50,7 +50,7 @@ func Test_newCmdUpdateCoreInstanceK8s(t *testing.T) {
 					EndCursor: nil,
 				}, nil
 			},
-			UpdateAggregatorFunc: func(ctx context.Context, aggregatorID string, payload types.UpdateAggregator) error {
+			UpdateCoreInstanceFunc: func(ctx context.Context, CoreInstanceID string, payload types.UpdateCoreInstance) error {
 				return nil
 			},
 		}), fake.NewSimpleClientset())

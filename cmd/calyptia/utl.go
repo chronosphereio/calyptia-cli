@@ -194,7 +194,7 @@ func measurementNames(measurements map[string]cloud.AgentMeasurement) []string {
 
 func ptr[T any](p T) *T { return &p }
 
-func filterOutEmptyMetadata(metadata cloud.AggregatorMetadata) ([]byte, error) {
+func filterOutEmptyMetadata(metadata cloud.CoreInstanceMetadata) ([]byte, error) {
 	b, err := json.Marshal(metadata)
 	if err != nil {
 		return nil, err

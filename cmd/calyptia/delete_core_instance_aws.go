@@ -102,7 +102,7 @@ func newCmdDeleteCoreInstanceOnAWS(config *config, client awsclient.Client) *cob
 				}
 			}
 
-			err = config.cloud.DeleteAggregator(ctx, coreInstanceID)
+			err = config.cloud.DeleteCoreInstance(ctx, coreInstanceID)
 			if !skipError && err != nil {
 				return err
 			}

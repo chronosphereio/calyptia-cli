@@ -32,14 +32,14 @@ func newCmdGetCoreInstances(config *config) *cobra.Command {
 					return err
 				}
 			}
-			var params cloud.AggregatorsParams
+			var params cloud.CoreInstancesParams
 
 			params.Last = &last
 			if environmentID != "" {
 				params.EnvironmentID = &environmentID
 			}
 
-			aa, err := config.cloud.Aggregators(config.ctx, config.projectID, params)
+			aa, err := config.cloud.CoreInstances(config.ctx, config.projectID, params)
 			if err != nil {
 				return fmt.Errorf("could not fetch your core instances: %w", err)
 			}
@@ -102,7 +102,7 @@ func newCmdGetCoreInstances(config *config) *cobra.Command {
 }
 
 func (config *config) completeCoreInstances(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	aa, err := config.cloud.Aggregators(config.ctx, config.projectID, cloud.AggregatorsParams{})
+	aa, err := config.cloud.CoreInstances(config.ctx, config.projectID, cloud.CoreInstancesParams{})
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveError
 	}
@@ -115,7 +115,7 @@ func (config *config) completeCoreInstances(cmd *cobra.Command, args []string, t
 }
 
 // coreInstanceKeys returns unique aggregator names first and then IDs.
-func coreInstanceKeys(aa []cloud.Aggregator) []string {
+func coreInstanceKeys(aa []cloud.CoreInstance) []string {
 	namesCount := map[string]int{}
 	for _, a := range aa {
 		if _, ok := namesCount[a.Name]; ok {
@@ -148,7 +148,7 @@ func coreInstanceKeys(aa []cloud.Aggregator) []string {
 }
 
 func (config *config) loadCoreInstanceID(key string, environmentID string) (string, error) {
-	params := cloud.AggregatorsParams{
+	params := cloud.CoreInstancesParams{
 		Name: &key,
 		Last: ptr(uint(2)),
 	}
@@ -157,7 +157,7 @@ func (config *config) loadCoreInstanceID(key string, environmentID string) (stri
 		params.EnvironmentID = &environmentID
 	}
 
-	aa, err := config.cloud.Aggregators(config.ctx, config.projectID, params)
+	aa, err := config.cloud.CoreInstances(config.ctx, config.projectID, params)
 	if err != nil {
 		return "", err
 	}
