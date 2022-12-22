@@ -62,8 +62,6 @@ github.com/calyptia/core-images-index/go-index v0.0.0-20221219172220-d7787c15ca0
 github.com/calyptia/core-images-index/go-index v0.0.0-20221219172220-d7787c15ca03/go.mod h1:9+aUlL+o9dpq2wcF4CLEQlPAcjlmuwohVRvOxNN6TWk=
 github.com/calyptia/go-bubble-table v0.2.1 h1:NWcVRyGCLuP7QIA29uUFSY+IjmWcmUWHjy5J/CPb0Rk=
 github.com/calyptia/go-bubble-table v0.2.1/go.mod h1:gJvzUOUzfQeA9JmgLumyJYWJMtuRQ7WxxTwc9tjEiGw=
-github.com/calyptia/go-fluentbit-config v0.7.0 h1:nWzhVXZSAU3ixchSmdMZMlhqE/scLWc+uHhnaERjHvM=
-github.com/calyptia/go-fluentbit-config v0.7.0/go.mod h1:soHx0rX7IO2uCMoYIGnNBb/d5+Hvo0orsc8DjFLqRVk=
 github.com/calyptia/go-fluentbit-config v0.7.1 h1:HPQFfMITuRt39YUaFWJiCs9xW9h+PJbsb/211YgfLdk=
 github.com/calyptia/go-fluentbit-config v0.7.1/go.mod h1:ssow+tvhtapA6cbnlzWrIlFxpCqueogavqBwTDhvhnI=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=

@@ -136,7 +136,7 @@ func newCmdCreateCoreInstanceOnK8s(config *config, testClientSet kubernetes.Inte
 
 			fmt.Fprintf(cmd.OutOrStdout(), "cluster_role_binding=%q\n", binding.Name)
 
-			deploy, err := k8sClient.CreateDeployment(ctx, coreDockerImage, created, serviceAccount, !noTLSVerify)
+			deploy, err := k8sClient.CreateDeployment(ctx, coreDockerImage, created, serviceAccount, !noTLSVerify, skipServiceCreation)
 			if err != nil {
 				return fmt.Errorf("could not create kubernetes deployment: %w", err)
 			}
