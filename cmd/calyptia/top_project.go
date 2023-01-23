@@ -128,8 +128,8 @@ func (m ProjectModel) loadData(ctx context.Context, skipError bool) tea.Cmd {
 				for _, agent := range agents {
 					agent := agent
 					// skip metrics request if agent is offline
-					if agent.FirstMetricsAddedAt.IsZero() || agent.FirstMetricsAddedAt.After(metricsStart) ||
-						agent.LastMetricsAddedAt.IsZero() || agent.LastMetricsAddedAt.Before(metricsStart) {
+					if agent.FirstMetricsAddedAt == nil || agent.FirstMetricsAddedAt.IsZero() || agent.FirstMetricsAddedAt.After(metricsStart) ||
+						agent.LastMetricsAddedAt == nil || agent.LastMetricsAddedAt.IsZero() || agent.LastMetricsAddedAt.Before(metricsStart) {
 						continue
 					}
 

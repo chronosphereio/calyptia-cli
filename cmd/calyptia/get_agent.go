@@ -56,7 +56,7 @@ func newCmdGetAgents(config *config) *cobra.Command {
 				}
 				fmt.Fprintln(tw, "NAME\tTYPE\tENVIRONMENT\tVERSION\tSTATUS\tAGE")
 				for _, a := range aa.Items {
-					status := agentStatus(*a.LastMetricsAddedAt, time.Minute*-5)
+					status := agentStatus(a.LastMetricsAddedAt, time.Minute*-5)
 					if showIDs {
 						fmt.Fprintf(tw, "%s\t", a.ID)
 					}
@@ -135,7 +135,7 @@ func newCmdGetAgent(config *config) *cobra.Command {
 					fmt.Fprint(tw, "ID\t")
 				}
 				fmt.Fprintln(tw, "NAME\tTYPE\tVERSION\tSTATUS\tAGE")
-				status := agentStatus(*agent.LastMetricsAddedAt, time.Minute*-5)
+				status := agentStatus(agent.LastMetricsAddedAt, time.Minute*-5)
 				if showIDs {
 					fmt.Fprintf(tw, "%s\t", agent.ID)
 				}
@@ -241,12 +241,12 @@ func (config *config) loadAgentID(agentKey string, environmentID string) (string
 	return agentKey, nil
 }
 
-func agentStatus(lastMetricsAddedAt time.Time, start time.Duration) string {
+func agentStatus(lastMetricsAddedAt *time.Time, start time.Duration) string {
 	var status string
-	if lastMetricsAddedAt.IsZero() {
+	if lastMetricsAddedAt == nil || lastMetricsAddedAt.IsZero() {
 		status = "inactive"
 	} else if lastMetricsAddedAt.Before(time.Now().Add(start)) {
-		status = fmt.Sprintf("inactive for %s", durafmt.ParseShort(time.Since(lastMetricsAddedAt)).LimitFirstN(1))
+		status = fmt.Sprintf("inactive for %s", durafmt.ParseShort(time.Since(*lastMetricsAddedAt)).LimitFirstN(1))
 	} else {
 		status = "active"
 	}
