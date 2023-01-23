@@ -113,9 +113,6 @@ type ClientMock struct {
 
 // Delete calls DeleteFunc.
 func (mock *ClientMock) Delete(ctx context.Context, coreInstanceName string) error {
-	if mock.DeleteFunc == nil {
-		panic("ClientMock.DeleteFunc: method is nil but Client.Delete was just called")
-	}
 	callInfo := struct {
 		Ctx              context.Context
 		CoreInstanceName string
@@ -126,6 +123,12 @@ func (mock *ClientMock) Delete(ctx context.Context, coreInstanceName string) err
 	mock.lockDelete.Lock()
 	mock.calls.Delete = append(mock.calls.Delete, callInfo)
 	mock.lockDelete.Unlock()
+	if mock.DeleteFunc == nil {
+		var (
+			errOut error
+		)
+		return errOut
+	}
 	return mock.DeleteFunc(ctx, coreInstanceName)
 }
 
@@ -149,9 +152,6 @@ func (mock *ClientMock) DeleteCalls() []struct {
 
 // Deploy calls DeployFunc.
 func (mock *ClientMock) Deploy(contextMoqParam context.Context) error {
-	if mock.DeployFunc == nil {
-		panic("ClientMock.DeployFunc: method is nil but Client.Deploy was just called")
-	}
 	callInfo := struct {
 		ContextMoqParam context.Context
 	}{
@@ -160,6 +160,12 @@ func (mock *ClientMock) Deploy(contextMoqParam context.Context) error {
 	mock.lockDeploy.Lock()
 	mock.calls.Deploy = append(mock.calls.Deploy, callInfo)
 	mock.lockDeploy.Unlock()
+	if mock.DeployFunc == nil {
+		var (
+			errOut error
+		)
+		return errOut
+	}
 	return mock.DeployFunc(contextMoqParam)
 }
 
@@ -181,9 +187,6 @@ func (mock *ClientMock) DeployCalls() []struct {
 
 // FollowOperations calls FollowOperationsFunc.
 func (mock *ClientMock) FollowOperations(contextMoqParam context.Context) (*deploymentmanager.Operation, error) {
-	if mock.FollowOperationsFunc == nil {
-		panic("ClientMock.FollowOperationsFunc: method is nil but Client.FollowOperations was just called")
-	}
 	callInfo := struct {
 		ContextMoqParam context.Context
 	}{
@@ -192,6 +195,13 @@ func (mock *ClientMock) FollowOperations(contextMoqParam context.Context) (*depl
 	mock.lockFollowOperations.Lock()
 	mock.calls.FollowOperations = append(mock.calls.FollowOperations, callInfo)
 	mock.lockFollowOperations.Unlock()
+	if mock.FollowOperationsFunc == nil {
+		var (
+			operationOut *deploymentmanager.Operation
+			errOut       error
+		)
+		return operationOut, errOut
+	}
 	return mock.FollowOperationsFunc(contextMoqParam)
 }
 
@@ -213,9 +223,6 @@ func (mock *ClientMock) FollowOperationsCalls() []struct {
 
 // GetInstance calls GetInstanceFunc.
 func (mock *ClientMock) GetInstance(ctx context.Context, zone string, instance string) (*compute.Instance, error) {
-	if mock.GetInstanceFunc == nil {
-		panic("ClientMock.GetInstanceFunc: method is nil but Client.GetInstance was just called")
-	}
 	callInfo := struct {
 		Ctx      context.Context
 		Zone     string
@@ -228,6 +235,13 @@ func (mock *ClientMock) GetInstance(ctx context.Context, zone string, instance s
 	mock.lockGetInstance.Lock()
 	mock.calls.GetInstance = append(mock.calls.GetInstance, callInfo)
 	mock.lockGetInstance.Unlock()
+	if mock.GetInstanceFunc == nil {
+		var (
+			instanceOut *compute.Instance
+			errOut      error
+		)
+		return instanceOut, errOut
+	}
 	return mock.GetInstanceFunc(ctx, zone, instance)
 }
 
@@ -253,9 +267,6 @@ func (mock *ClientMock) GetInstanceCalls() []struct {
 
 // Rollback calls RollbackFunc.
 func (mock *ClientMock) Rollback(contextMoqParam context.Context) error {
-	if mock.RollbackFunc == nil {
-		panic("ClientMock.RollbackFunc: method is nil but Client.Rollback was just called")
-	}
 	callInfo := struct {
 		ContextMoqParam context.Context
 	}{
@@ -264,6 +275,12 @@ func (mock *ClientMock) Rollback(contextMoqParam context.Context) error {
 	mock.lockRollback.Lock()
 	mock.calls.Rollback = append(mock.calls.Rollback, callInfo)
 	mock.lockRollback.Unlock()
+	if mock.RollbackFunc == nil {
+		var (
+			errOut error
+		)
+		return errOut
+	}
 	return mock.RollbackFunc(contextMoqParam)
 }
 
@@ -285,9 +302,6 @@ func (mock *ClientMock) RollbackCalls() []struct {
 
 // SetConfig calls SetConfigFunc.
 func (mock *ClientMock) SetConfig(newConfig Config) {
-	if mock.SetConfigFunc == nil {
-		panic("ClientMock.SetConfigFunc: method is nil but Client.SetConfig was just called")
-	}
 	callInfo := struct {
 		NewConfig Config
 	}{
@@ -296,6 +310,9 @@ func (mock *ClientMock) SetConfig(newConfig Config) {
 	mock.lockSetConfig.Lock()
 	mock.calls.SetConfig = append(mock.calls.SetConfig, callInfo)
 	mock.lockSetConfig.Unlock()
+	if mock.SetConfigFunc == nil {
+		return
+	}
 	mock.SetConfigFunc(newConfig)
 }
 
