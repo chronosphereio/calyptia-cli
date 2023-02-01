@@ -93,7 +93,7 @@ func newCmdDeleteAgents(config *config) *cobra.Command {
 			if inactive {
 				var onlyInactive []types.Agent
 				for _, a := range aa.Items {
-					inactive := a.LastMetricsAddedAt.IsZero() || a.LastMetricsAddedAt.Before(time.Now().Add(time.Minute*-5))
+					inactive := a.LastMetricsAddedAt == nil || a.LastMetricsAddedAt.IsZero() || a.LastMetricsAddedAt.Before(time.Now().Add(time.Minute*-5))
 					if inactive {
 						onlyInactive = append(onlyInactive, a)
 					}

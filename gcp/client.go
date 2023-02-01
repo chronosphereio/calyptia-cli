@@ -10,7 +10,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-//go:generate moq -out client_mock.go . Client
+//go:generate go run -mod=mod github.com/matryer/moq -rm -stub -out client_mock.go . Client
 type Client interface {
 	Delete(ctx context.Context, coreInstanceName string) error
 	SetConfig(newConfig Config)
