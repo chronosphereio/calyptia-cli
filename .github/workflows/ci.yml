@@ -40,6 +40,22 @@ jobs:
           flags: ${{ runner.os }}
           token: ${{ secrets.CODECOV_TOKEN }}
 
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@v1.8
+        with:
+          args: >
+            -Dsonar.organization=calyptia
+            -Dsonar.projectKey=${{ env.CI_REPOSITORY_NAME_SLUG }}
+            -Dsonar.sources=.
+            -Dsonar.exclusions=**/*_test.go
+            -Dsonar.tests=.
+            -Dsonar.test.inclusions=**/*_test.go
+            -Dsonar.go.coverage.reportPaths=coverage.out
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        continue-on-error: true
+
   cloud-e2e:
     name: Run calyptia/cloud-e2e tests
     needs:
