@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/calyptia/cli/localdata"
 	"net/http"
 	"net/url"
 	"os"
@@ -29,18 +30,20 @@ func newCmd(ctx context.Context) *cobra.Command {
 	client := &cloudclient.Client{
 		Client: http.DefaultClient,
 	}
+	localData := localdata.New(serviceName, backUpFolder)
 	config := &config{
-		ctx:   ctx,
-		cloud: client,
+		ctx:       ctx,
+		cloud:     client,
+		localData: localData,
 	}
 
-	token, err := savedToken()
-	if err != nil && err != errTokenNotFound {
+	token, err := localData.Get(KeyToken)
+	if err != nil && err != localdata.ErrNotFound {
 		cobra.CheckErr(fmt.Errorf("could not retrive your stored token: %w", err))
 	}
 
-	cloudURLStr, err := savedURL()
-	if err != nil && err != errURLNotFound {
+	cloudURLStr, err := localData.Get(KeyBaseURL)
+	if err != nil && err != localdata.ErrNotFound {
 		cobra.CheckErr(fmt.Errorf("could not retrive your stored url: %w", err))
 	}
 
@@ -106,6 +109,7 @@ type config struct {
 	cloud        Client
 	projectToken string
 	projectID    string
+	localData    *localdata.Keyring
 }
 
 func env(key, fallback string) string {
