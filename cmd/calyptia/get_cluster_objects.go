@@ -137,6 +137,15 @@ func (config *config) loadClusterObjectID(key string, environmentID string) (str
 	}
 
 	objs := clusterObjectsUniqueByName(aa)
+
+	if validUUID(key) == true {
+		for _, obj := range objs {
+			if obj.ID == key {
+				return obj.ID, nil
+			}
+		}
+	}
+
 	for _, obj := range objs {
 		if obj.Name == key {
 			return obj.ID, nil
