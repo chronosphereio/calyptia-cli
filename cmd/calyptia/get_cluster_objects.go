@@ -218,5 +218,7 @@ func newCmdGetClusterObjects(config *config) *cobra.Command {
 
 	_ = cmd.MarkFlagRequired("core-instance")
 
+	_ = cmd.RegisterFlagCompletionFunc("core-instance", config.completeCoreInstances)
+
 	return cmd
 }
