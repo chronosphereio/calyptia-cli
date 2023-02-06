@@ -21,7 +21,7 @@ require (
 	github.com/charmbracelet/lipgloss v0.6.0
 	github.com/go-logfmt/logfmt v0.5.1
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
-	github.com/joho/godotenv v1.4.0
+	github.com/joho/godotenv v1.5.1
 	github.com/matryer/moq v0.3.0
 	github.com/pkg/errors v0.9.1
 	github.com/sethvargo/go-retry v0.2.4
