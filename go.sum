@@ -56,8 +56,8 @@ github.com/aymanbagabas/go-osc52 v1.0.3/go.mod h1:zT8H+Rk4VSabYN90pWyugflM3ZhpTZ
 github.com/aymanbagabas/go-osc52 v1.2.1 h1:q2sWUyDcozPLcLabEMd+a+7Ea2DitxZVN9hTxab9L4E=
 github.com/aymanbagabas/go-osc52 v1.2.1/go.mod h1:zT8H+Rk4VSabYN90pWyugflM3ZhpTZNC7cASDfUCdT4=
 github.com/buger/jsonparser v1.1.1/go.mod h1:6RYKKt7H4d4+iWqouImQ9R2FZql3VbhNgx27UK13J/0=
-github.com/calyptia/api v0.21.0 h1:kw3pXHtTnfyFll/DNrIeGz285EYi3qk/c1+3kcdmoLU=
-github.com/calyptia/api v0.21.0/go.mod h1:FFZssUTeqM/6R2xc4srfmhdm0tRW02gUT0CgomNh230=
+github.com/calyptia/api v1.0.0 h1:FRAK56AWxWaG/RF+BzXWCZpQmLSXYc+C8lYWSQzgLdM=
+github.com/calyptia/api v1.0.0/go.mod h1:h1+GpgZeD4URAjx5l+wieGUd30GJo6WR97aQmNRRKZk=
 github.com/calyptia/core-images-index/go-index v0.0.0-20230123154737-93f821da9569 h1:spuct2dNHfutUSsHAPEdcEGdIvDfjVJ6sFKfXmaEcGo=
 github.com/calyptia/core-images-index/go-index v0.0.0-20230123154737-93f821da9569/go.mod h1:9+aUlL+o9dpq2wcF4CLEQlPAcjlmuwohVRvOxNN6TWk=
 github.com/calyptia/go-bubble-table v0.2.1 h1:NWcVRyGCLuP7QIA29uUFSY+IjmWcmUWHjy5J/CPb0Rk=
