@@ -15,6 +15,7 @@ func newCmdDelete(config *config) *cobra.Command {
 		newCmdDeletePipelines(config),
 		newCmdDeleteEndpoint(config),
 		newCmdDeletePipelineFile(config),
+		newCmdDeletePipelineClusterObjects(config),
 		newCmdDeleteCoreInstance(config, nil),
 		newCmdDeleteCoreInstances(config),
 		newCmdDeleteEnvironment(config),
