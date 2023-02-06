@@ -108,19 +108,42 @@ func clusterObjectsKeys(aa []cloud.ClusterObject) []string {
 	return out
 }
 
+// ClusterObjectsUnique returns unique cluster object names.
+func clusterObjectsUniqueByName(aa []cloud.ClusterObject) []cloud.ClusterObject {
+	namesCount := map[string]int{}
+	for _, a := range aa {
+		if _, ok := namesCount[a.Name]; !ok {
+			namesCount[a.Name] = 0
+		}
+		namesCount[a.Name]++
+	}
+
+	var out []cloud.ClusterObject
+	for _, a := range aa {
+		for name, count := range namesCount {
+			if a.Name == name && count == 1 {
+				out = append(out, a)
+				break
+			}
+		}
+	}
+	return out
+}
+
 func (config *config) loadClusterObjectID(key string, environmentID string) (string, error) {
 	aa, err := config.fetchAllClusterObjects()
 	if err != nil {
 		return "", err
 	}
 
-	for _, a := range aa {
-		if a.Name == key {
-			return a.ID, nil
+	objs := clusterObjectsUniqueByName(aa)
+	for _, obj := range objs {
+		if obj.Name == key {
+			return obj.ID, nil
 		}
 	}
 
-	return key, nil
+	return "", fmt.Errorf("unable to find unique key")
 }
 
 func newCmdGetClusterObjects(config *config) *cobra.Command {
