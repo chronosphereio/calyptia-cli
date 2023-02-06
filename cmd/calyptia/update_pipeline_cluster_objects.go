@@ -48,13 +48,13 @@ func newCmdUpdatePipelineClusterObjects(config *config) *cobra.Command {
 
 	fs := cmd.Flags()
 	fs.StringVar(&pipelineKey, "pipeline", "", "Parent pipeline ID or name")
-	fs.StringVar(&clusterObjectKey, "cluster_object", "", "The cluster object ID or Name")
+	fs.StringVar(&clusterObjectKey, "cluster-object", "", "The cluster object ID or Name")
 	fs.BoolVar(&encrypt, "encrypt", false, "Encrypt file contents")
 
 	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.completePipelines)
-	_ = cmd.RegisterFlagCompletionFunc("cluster_object", config.completeClusterObjects)
-	_ = cmd.MarkFlagRequired("cluster_object")
-	_ = cmd.MarkFlagRequired("pipeline") // TODO: use default pipeline key from config cmd.
+	_ = cmd.RegisterFlagCompletionFunc("cluster-object", config.completeClusterObjects)
+	_ = cmd.MarkFlagRequired("cluster-object")
+	_ = cmd.MarkFlagRequired("pipeline")
 
 	return cmd
 }

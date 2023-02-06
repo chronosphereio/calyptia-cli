@@ -187,13 +187,13 @@ func newCmdGetClusterObjects(config *config) *cobra.Command {
 	}
 
 	fs := cmd.Flags()
-	fs.StringVar(&coreInstanceKey, "core_instance", "", "Core Instance to list cluster objects from")
+	fs.StringVar(&coreInstanceKey, "core-instance", "", "Core Instance to list cluster objects from")
 	fs.UintVarP(&last, "last", "l", 0, "Last `N` cluster objects. 0 means no limit")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include status IDs in table output")
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
-	_ = cmd.MarkFlagRequired("core_instance")
+	_ = cmd.MarkFlagRequired("core-instance")
 
 	return cmd
 }
