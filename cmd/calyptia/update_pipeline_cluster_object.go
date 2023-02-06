@@ -2,17 +2,19 @@ package main
 
 import (
 	"github.com/spf13/cobra"
+
+	cloud "github.com/calyptia/api/types"
 )
 
-func newCmdDeletePipelineClusterObjects(config *config) *cobra.Command {
+func newCmdUpdatePipelineClusterObject(config *config) *cobra.Command {
 	var pipelineKey string
 	var clusterObjectKey string
 	var environment string
 	var encrypt bool
 
 	cmd := &cobra.Command{
-		Use:   "pipeline_cluster_objects",
-		Short: "Delete pipeline cluster objects",
+		Use:   "pipeline_cluster_object",
+		Short: "Update a cluster object from a pipeline by its name or ID.",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var environmentID string
 			if environment != "" {
@@ -33,7 +35,9 @@ func newCmdDeletePipelineClusterObjects(config *config) *cobra.Command {
 				return err
 			}
 
-			err = config.cloud.DeletePipelineClusterObjects(config.ctx, pipelineID, clusterObjectID)
+			err = config.cloud.UpdatePipelineClusterObjects(config.ctx, pipelineID, cloud.UpdatePipelineClusterObjects{
+				ClusterObjectsIDs: []string{clusterObjectID},
+			})
 			if err != nil {
 				return err
 			}
