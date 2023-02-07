@@ -225,13 +225,11 @@ func (c *DefaultClient) FindMatchingAMI(ctx context.Context, useTestImages bool,
 		return "", err
 	}
 
-	imageID, err := awsIndex.Match(ctx, index.FilterOpts{
+	return awsIndex.Match(ctx, index.FilterOpts{
 		Region:    region,
 		Version:   version,
 		TestIndex: useTestImages,
 	})
-
-	return imageID, err
 }
 
 func (c *DefaultClient) EnsureAndAssociateElasticIPv4Address(ctx context.Context, instanceID, environment, elasticIPv4AddressPool, elasticIPv4Address string) (string, error) {
@@ -261,6 +259,10 @@ func (c *DefaultClient) EnsureAndAssociateElasticIPv4Address(ctx context.Context
 	_, err = c.ec2Client.AssociateAddress(ctx, associateAddressInput)
 	if err != nil {
 		return "", err
+	}
+
+	if ipv4Allocation.PublicIp == nil {
+		return "", nil
 	}
 
 	return *ipv4Allocation.PublicIp, nil
@@ -296,6 +298,10 @@ func (c *DefaultClient) EnsureSubnet(ctx context.Context, subNetID string) (stri
 
 	if len(subNets.Subnets) == 0 {
 		return "", ErrSubnetNotFound
+	}
+
+	if subNets.Subnets[0].VpcId == nil {
+		return "", nil
 	}
 
 	return *subNets.Subnets[0].VpcId, nil
@@ -341,8 +347,13 @@ func (c *DefaultClient) EnsureSecurityGroup(ctx context.Context, securityGroupNa
 	}
 
 	if securityGroups != nil && len(securityGroups.SecurityGroups) > 0 {
+		if securityGroups.SecurityGroups[0].GroupId == nil {
+			return "", nil
+		}
+
 		return *securityGroups.SecurityGroups[0].GroupId, nil
 	}
+
 	createSecurityGroupInput := &ec2.CreateSecurityGroupInput{
 		Description:       aws.String(securityGroupName),
 		GroupName:         aws.String(securityGroupName),
@@ -353,6 +364,11 @@ func (c *DefaultClient) EnsureSecurityGroup(ctx context.Context, securityGroupNa
 	if err != nil {
 		return "", err
 	}
+
+	if securityGroup.GroupId == nil {
+		return "", nil
+	}
+
 	return *securityGroup.GroupId, nil
 }
 
@@ -572,6 +588,10 @@ func (c *DefaultClient) EnsureKeyPair(ctx context.Context, keyPairName, environm
 	}
 
 	if keyPairs != nil && len(keyPairs.KeyPairs) > 0 {
+		if keyPairs.KeyPairs[0].KeyName == nil {
+			return "", nil
+		}
+
 		return *keyPairs.KeyPairs[0].KeyName, nil
 	}
 
@@ -583,6 +603,10 @@ func (c *DefaultClient) EnsureKeyPair(ctx context.Context, keyPairName, environm
 	createdKeyPair, err := c.ec2Client.CreateKeyPair(ctx, createKeyPairInput)
 	if err != nil {
 		return "", err
+	}
+
+	if createdKeyPair.KeyName == nil {
+		return "", nil
 	}
 
 	return *createdKeyPair.KeyName, nil
