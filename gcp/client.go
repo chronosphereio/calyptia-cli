@@ -38,6 +38,7 @@ func (c *DefaultClient) Deploy(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+
 	targetConfiguration := &deploymentmanager.TargetConfiguration{
 		Config: &deploymentmanager.ConfigFile{Content: string(configBytes)},
 	}
@@ -46,13 +47,12 @@ func (c *DefaultClient) Deploy(ctx context.Context) error {
 		Name:   fmt.Sprintf("%s-%s-deployment", c.config.Resources[0].Name, c.environment),
 		Target: targetConfiguration,
 	}
-	if err != nil {
-		return err
-	}
+
 	operation, err := c.manager.Deployments.Insert(c.projectName, deployment).Context(ctx).Do()
 	if err != nil {
 		return err
 	}
+
 	c.currentOperation = operation.Name
 	return nil
 }
@@ -68,13 +68,16 @@ func New(ctx context.Context, projectName string, environment string, credential
 	if err != nil {
 		return nil, err
 	}
+
 	c, err := compute.NewService(ctx, authOpts...)
 	if err != nil {
 		return nil, err
 	}
+
 	if projectName == "" {
 		return nil, fmt.Errorf("project name is mandatory")
 	}
+
 	return &DefaultClient{projectName: projectName, manager: m, compute: c, environment: environment}, nil
 }
 
@@ -87,16 +90,22 @@ func (c *DefaultClient) FollowOperations(ctx context.Context) (*deploymentmanage
 }
 
 func (c *DefaultClient) Rollback(ctx context.Context) error {
-	if err := c.Delete(ctx, c.config.Resources[0].Name); err != nil {
-		return err
+	if len(c.config.Resources) == 0 {
+		return nil
 	}
-	return nil
+
+	return c.Delete(ctx, c.config.Resources[0].Name)
 }
+
 func (c *DefaultClient) Delete(ctx context.Context, coreInstanceName string) error {
 	deploymentName := fmt.Sprintf("%s-%s-deployment", coreInstanceName, c.environment)
 	operation, err := c.manager.Deployments.Delete(c.projectName, deploymentName).Context(ctx).Do()
+	if err != nil {
+		return err
+	}
+
 	c.currentOperation = operation.Name
-	return err
+	return nil
 }
 
 func (c *DefaultClient) GetInstance(ctx context.Context, zone, instance string) (*compute.Instance, error) {
