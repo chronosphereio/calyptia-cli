@@ -26,6 +26,7 @@ func newCmdUpdatePipeline(config *config) *cobra.Command {
 	var secretsFormat string
 	var files []string
 	var encryptFiles bool
+	var image string
 	var outputFormat, goTemplate string
 	var metadataPairs []string
 	var metadataFile string
@@ -110,6 +111,9 @@ func newCmdUpdatePipeline(config *config) *cobra.Command {
 			if rawConfig != "" {
 				update.RawConfig = &rawConfig
 			}
+			if image != "" {
+				update.Image = &image
+			}
 
 			updated, err := config.cloud.UpdatePipeline(config.ctx, pipelineID, update)
 			if err != nil {
@@ -152,6 +156,7 @@ func newCmdUpdatePipeline(config *config) *cobra.Command {
 	fs.StringVar(&secretsFormat, "secrets-format", "auto", "Secrets file format. Allowed: auto, env, json, yaml. If not set it is derived from secrets file extension")
 	fs.StringArrayVar(&files, "file", nil, "Optional file. You can reference this file contents from your config like so:\n{{ files.myfile }}\nPass as many as you want; bear in mind the file name can only contain alphanumeric characters.")
 	fs.BoolVar(&encryptFiles, "encrypt-files", false, "Encrypt file contents")
+	fs.StringVar(&image, "image", "", "Fluent-bit docker image")
 	fs.StringSliceVar(&metadataPairs, "metadata", nil, "Metadata to attach to the pipeline in the form of key:value. You could instead use a file with the --metadata-file option")
 	fs.StringVar(&metadataFile, "metadata-file", "", "Metadata JSON file to attach to the pipeline intead of passing multiple --metadata flags")
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")

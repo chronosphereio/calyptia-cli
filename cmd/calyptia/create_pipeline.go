@@ -26,6 +26,7 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 	var secretsFormat string
 	var files []string
 	var encryptFiles bool
+	var image string
 	var autoCreatePortsFromConfig bool
 	var skipConfigValidation bool
 	var resourceProfileName string
@@ -100,7 +101,7 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 				return err
 			}
 
-			a, err := config.cloud.CreatePipeline(config.ctx, coreInstanceID, cloud.CreatePipeline{
+			in := cloud.CreatePipeline{
 				Name:                      name,
 				ReplicasCount:             replicasCount,
 				RawConfig:                 string(rawConfig),
@@ -110,7 +111,13 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 				ResourceProfileName:       resourceProfileName,
 				Files:                     addFilesPayload,
 				Metadata:                  metadata,
-			})
+			}
+
+			if image != "" {
+				in.Image = &image
+			}
+
+			a, err := config.cloud.CreatePipeline(config.ctx, coreInstanceID, in)
 			if err != nil {
 				if e, ok := err.(*cloud.Error); ok && e.Detail != nil {
 					return fmt.Errorf("could not create pipeline: %s: %s", err, *e.Detail)
@@ -149,6 +156,7 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 	fs.StringVar(&secretsFormat, "secrets-format", "auto", "Secrets file format. Allowed: auto, env, json, yaml. Auto tries to detect it from file extension")
 	fs.StringArrayVar(&files, "file", nil, "Optional file. You can reference this file contents from your config like so:\n{{ files.myfile }}\nPass as many as you want; bear in mind the file name can only contain alphanumeric characters.")
 	fs.BoolVar(&encryptFiles, "encrypt-files", false, "Encrypt file contents")
+	fs.StringVar(&image, "image", "", "Fluent-bit docker image")
 	fs.BoolVar(&autoCreatePortsFromConfig, "auto-create-ports", true, "Automatically create pipeline ports from config")
 	fs.BoolVar(&skipConfigValidation, "skip-config-validation", false, "Opt-in to skip config validation (Use with caution as this option might be removed soon)")
 	fs.StringVar(&resourceProfileName, "resource-profile", cloud.DefaultResourceProfileName, "Resource profile name")
