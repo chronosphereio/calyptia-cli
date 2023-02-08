@@ -250,40 +250,72 @@ func (client *Client) CreateDeployment(
 
 func (client *Client) DeleteDeploymentByLabel(ctx context.Context, label, ns string) error {
 	foreground := metav1.DeletePropagationForeground
-	return client.AppsV1().Deployments(ns).DeleteCollection(ctx, metav1.DeleteOptions{
+	err := client.AppsV1().Deployments(ns).DeleteCollection(ctx, metav1.DeleteOptions{
 		PropagationPolicy: &foreground,
 	}, metav1.ListOptions{LabelSelector: label})
+	if k8serrors.IsNotFound(err) {
+		return nil
+	}
+	return err
 }
 
 func (client *Client) DeleteDaemonSetByLabel(ctx context.Context, label, ns string) error {
 	foreground := metav1.DeletePropagationForeground
-	return client.AppsV1().DaemonSets(ns).DeleteCollection(ctx, metav1.DeleteOptions{
+	err := client.AppsV1().DaemonSets(ns).DeleteCollection(ctx, metav1.DeleteOptions{
 		PropagationPolicy: &foreground,
 	}, metav1.ListOptions{LabelSelector: label})
+	if k8serrors.IsNotFound(err) {
+		return nil
+	}
+	return err
 }
 
 func (client *Client) DeleteClusterRoleByLabel(ctx context.Context, label string) error {
-	return client.RbacV1().ClusterRoles().DeleteCollection(ctx, metav1.DeleteOptions{}, metav1.ListOptions{LabelSelector: label})
+	err := client.RbacV1().ClusterRoles().DeleteCollection(ctx, metav1.DeleteOptions{}, metav1.ListOptions{LabelSelector: label})
+	if k8serrors.IsNotFound(err) {
+		return nil
+	}
+	return err
 }
 
 func (client *Client) DeleteServiceAccountByLabel(ctx context.Context, label, ns string) error {
-	return client.CoreV1().ServiceAccounts(ns).DeleteCollection(ctx, metav1.DeleteOptions{}, metav1.ListOptions{LabelSelector: label})
+	err := client.CoreV1().ServiceAccounts(ns).DeleteCollection(ctx, metav1.DeleteOptions{}, metav1.ListOptions{LabelSelector: label})
+	if k8serrors.IsNotFound(err) {
+		return nil
+	}
+	return err
 }
 
 func (client *Client) DeleteRoleBindingByLabel(ctx context.Context, label string) error {
-	return client.RbacV1().ClusterRoleBindings().DeleteCollection(ctx, metav1.DeleteOptions{}, metav1.ListOptions{LabelSelector: label})
+	err := client.RbacV1().ClusterRoleBindings().DeleteCollection(ctx, metav1.DeleteOptions{}, metav1.ListOptions{LabelSelector: label})
+	if k8serrors.IsNotFound(err) {
+		return nil
+	}
+	return err
 }
 
 func (client *Client) DeleteServiceByName(ctx context.Context, name, ns string) error {
-	return client.CoreV1().Services(ns).Delete(ctx, name, metav1.DeleteOptions{})
+	err := client.CoreV1().Services(ns).Delete(ctx, name, metav1.DeleteOptions{})
+	if k8serrors.IsNotFound(err) {
+		return nil
+	}
+	return err
 }
 
 func (client *Client) DeleteSecretByLabel(ctx context.Context, label, ns string) error {
-	return client.CoreV1().Secrets(ns).DeleteCollection(ctx, metav1.DeleteOptions{}, metav1.ListOptions{LabelSelector: label})
+	err := client.CoreV1().Secrets(ns).DeleteCollection(ctx, metav1.DeleteOptions{}, metav1.ListOptions{LabelSelector: label})
+	if k8serrors.IsNotFound(err) {
+		return nil
+	}
+	return err
 }
 
 func (client *Client) DeleteConfigMapsByLabel(ctx context.Context, label, ns string) error {
-	return client.CoreV1().ConfigMaps(ns).DeleteCollection(ctx, metav1.DeleteOptions{}, metav1.ListOptions{LabelSelector: label})
+	err := client.CoreV1().ConfigMaps(ns).DeleteCollection(ctx, metav1.DeleteOptions{}, metav1.ListOptions{LabelSelector: label})
+	if k8serrors.IsNotFound(err) {
+		return nil
+	}
+	return err
 }
 
 func (client *Client) FindServicesByLabel(ctx context.Context, label, ns string) (*apiv1.ServiceList, error) {
