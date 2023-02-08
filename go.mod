@@ -8,11 +8,11 @@ require (
 	code.cloudfoundry.org/bytefmt v0.0.0-20211005130812-5bb3c17173e5
 	github.com/Masterminds/sprig/v3 v3.2.3
 	github.com/alecthomas/assert/v2 v2.2.1
-	github.com/aws/aws-sdk-go-v2 v1.17.3
-	github.com/aws/aws-sdk-go-v2/config v1.18.8
+	github.com/aws/aws-sdk-go-v2 v1.17.4
+	github.com/aws/aws-sdk-go-v2/config v1.18.12
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.80.0
-	github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi v1.14.0
-	github.com/calyptia/api v0.21.0
+	github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi v1.14.2
+	github.com/calyptia/api v1.0.0
 	github.com/calyptia/cli/k8s v0.0.0-20221222202201-128dd6ed3e57
 	github.com/calyptia/core-images-index/go-index v0.0.0-20230123154737-93f821da9569
 	github.com/calyptia/go-bubble-table v0.2.1
@@ -21,7 +21,7 @@ require (
 	github.com/charmbracelet/lipgloss v0.6.0
 	github.com/go-logfmt/logfmt v0.5.1
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
-	github.com/joho/godotenv v1.4.0
+	github.com/joho/godotenv v1.5.1
 	github.com/matryer/moq v0.3.0
 	github.com/pkg/errors v0.9.1
 	github.com/sethvargo/go-retry v0.2.4
@@ -31,7 +31,7 @@ require (
 	golang.org/x/sync v0.1.0
 	golang.org/x/term v0.4.0
 	golang.org/x/time v0.3.0
-	google.golang.org/api v0.108.0
+	google.golang.org/api v0.109.0
 	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/api v0.26.1
 	k8s.io/apimachinery v0.26.1
@@ -45,15 +45,15 @@ require (
 	github.com/Masterminds/semver/v3 v3.2.0 // indirect
 	github.com/alecthomas/repr v0.2.0 // indirect
 	github.com/alessio/shellescape v1.4.1 // indirect
-	github.com/aws/aws-sdk-go-v2/credentials v1.13.8 // indirect
-	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.12.21 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/configsources v1.1.27 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.4.21 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/ini v1.3.28 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.9.21 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sso v1.12.0 // indirect
-	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.14.0 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sts v1.18.0 // indirect
+	github.com/aws/aws-sdk-go-v2/credentials v1.13.12 // indirect
+	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.12.22 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/configsources v1.1.28 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.4.22 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/ini v1.3.29 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.9.22 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sso v1.12.1 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.14.1 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sts v1.18.3 // indirect
 	github.com/aws/smithy-go v1.13.5 // indirect
 	github.com/aymanbagabas/go-osc52 v1.2.1 // indirect
 	github.com/charmbracelet/bubbles v0.15.0 // indirect
