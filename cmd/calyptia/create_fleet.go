@@ -8,10 +8,11 @@ import (
 	"text/tabwriter"
 	"time"
 
-	"github.com/calyptia/api/types"
-	fluentbitconfig "github.com/calyptia/go-fluentbit-config"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v2"
+
+	"github.com/calyptia/api/types"
+	fluentbitconfig "github.com/calyptia/go-fluentbit-config"
 )
 
 func newCmdCreateFleet(config *config) *cobra.Command {
