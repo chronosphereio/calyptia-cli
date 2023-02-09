@@ -324,3 +324,11 @@ func renderUpdatedTable(w io.Writer, updatedAt time.Time) error {
 
 	return tw.Flush()
 }
+
+func zeroOfPtr[T comparable](v *T) T {
+	var zero T
+	if v == nil {
+		return zero
+	}
+	return *v
+}

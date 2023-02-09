@@ -18,7 +18,7 @@ func newCmdGetAgents(config *config) *cobra.Command {
 	var last uint
 	var outputFormat, goTemplate string
 	var showIDs bool
-	var environment string
+	var fleetKey, environment string
 
 	cmd := &cobra.Command{
 		Use:   "agents",
@@ -39,6 +39,16 @@ func newCmdGetAgents(config *config) *cobra.Command {
 				params.EnvironmentID = &environmentID
 			}
 
+			fs := cmd.Flags()
+			if fs.Changed("fleet") {
+				fleedID, err := config.loadFleetID(fleetKey)
+				if err != nil {
+					return err
+				}
+
+				params.FleetID = &fleedID
+			}
+
 			aa, err := config.cloud.Agents(config.ctx, config.projectID, params)
 			if err != nil {
 				return fmt.Errorf("could not fetch your agents: %w", err)
@@ -54,13 +64,13 @@ func newCmdGetAgents(config *config) *cobra.Command {
 				if showIDs {
 					fmt.Fprint(tw, "ID\t")
 				}
-				fmt.Fprintln(tw, "NAME\tTYPE\tENVIRONMENT\tVERSION\tSTATUS\tAGE")
+				fmt.Fprintln(tw, "NAME\tTYPE\tENVIRONMENT\tFLEET-ID\tVERSION\tSTATUS\tAGE")
 				for _, a := range aa.Items {
 					status := agentStatus(a.LastMetricsAddedAt, time.Minute*-5)
 					if showIDs {
 						fmt.Fprintf(tw, "%s\t", a.ID)
 					}
-					fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\t%s\n", a.Name, a.Type, a.EnvironmentName, a.Version, status, fmtTime(a.CreatedAt))
+					fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\t%s\t%s\n", a.Name, a.Type, a.EnvironmentName, zeroOfPtr(a.FleetID), a.Version, status, fmtTime(a.CreatedAt))
 				}
 				tw.Flush()
 			case "json":
@@ -78,10 +88,12 @@ func newCmdGetAgents(config *config) *cobra.Command {
 	fs.UintVarP(&last, "last", "l", 0, "Last `N` agents. 0 means no limit")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include agent IDs in table output")
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
+	fs.StringVar(&fleetKey, "fleet", "", "Filter agents from the following fleet only")
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("fleet", config.completeFleets)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", completeOutputFormat)
 
 	return cmd
@@ -134,12 +146,12 @@ func newCmdGetAgent(config *config) *cobra.Command {
 				if showIDs {
 					fmt.Fprint(tw, "ID\t")
 				}
-				fmt.Fprintln(tw, "NAME\tTYPE\tVERSION\tSTATUS\tAGE")
+				fmt.Fprintln(tw, "NAME\tTYPE\tENVIRONMENT\tFLEET-ID\tVERSION\tSTATUS\tAGE")
 				status := agentStatus(agent.LastMetricsAddedAt, time.Minute*-5)
 				if showIDs {
 					fmt.Fprintf(tw, "%s\t", agent.ID)
 				}
-				fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\n", agent.Name, agent.Type, agent.Version, status, fmtTime(agent.CreatedAt))
+				fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\t%s\t%s\n", agent.Name, agent.Type, agent.EnvironmentName, zeroOfPtr(agent.FleetID), agent.Version, status, fmtTime(agent.CreatedAt))
 				tw.Flush()
 			case "json":
 				return json.NewEncoder(cmd.OutOrStdout()).Encode(agent)
