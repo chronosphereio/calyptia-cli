@@ -31,6 +31,7 @@ func newCmdGet(config *config) *cobra.Command {
 		newCmdGetConfigSections(config),
 		newCmdGetIngestChecks(config),
 		newCmdGetIngestCheck(config),
+		newCmdGetFleets(config),
 	)
 
 	return cmd
