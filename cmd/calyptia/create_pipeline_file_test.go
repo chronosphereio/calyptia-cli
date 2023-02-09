@@ -111,10 +111,10 @@ func Test_newCmdCreatePipelineFile(t *testing.T) {
 		wantEq(t, 1, len(calls))
 
 		call := calls[0]
-		wantEq(t, wantPipelineID, call.PipelineID)
-		wantEq(t, wantName, call.Payload.Name)
-		wantEq(t, wantContents, call.Payload.Contents)
-		wantEq(t, true, call.Payload.Encrypted)
+		wantEq(t, wantPipelineID, call.S)
+		wantEq(t, wantName, call.CreatePipelineFile.Name)
+		wantEq(t, wantContents, call.CreatePipelineFile.Contents)
+		wantEq(t, true, call.CreatePipelineFile.Encrypted)
 
 		t.Run("json", func(t *testing.T) {
 			want, err := json.Marshal(want)

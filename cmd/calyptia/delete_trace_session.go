@@ -77,7 +77,7 @@ func newCmdDeleteTraceSession(config *config) *cobra.Command {
 	_ = cmd.MarkFlagRequired("pipeline")
 
 	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.completePipelines)
-	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
+	_ = cmd.RegisterFlagCompletionFunc("output-format", completeOutputFormat)
 
 	return cmd
 }

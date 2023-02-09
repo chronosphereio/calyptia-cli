@@ -49,6 +49,6 @@ func Test_newCmdCreateResourceProfile(t *testing.T) {
 	wantEq(t, 1, len(calls))
 
 	call := calls[0]
-	wantEq(t, "want_core_instance", call.InstanceID)
-	wantEq(t, "want_name", call.Payload.Name)
+	wantEq(t, "want_core_instance", call.S)
+	wantEq(t, "want_name", call.CreateResourceProfile.Name)
 }
