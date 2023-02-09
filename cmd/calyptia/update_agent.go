@@ -64,7 +64,6 @@ func newCmdUpdateAgent(config *config) *cobra.Command {
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
 	_ = cmd.RegisterFlagCompletionFunc("fleet", config.completeFleets)
-	_ = cmd.MarkFlagRequired("new-name")
 
 	return cmd
 }
