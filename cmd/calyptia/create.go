@@ -17,6 +17,7 @@ func newCmdCreate(config *config) *cobra.Command {
 		newCmdCreateTraceSession(config),
 		newCmdCreateConfigSection(config),
 		newCmdCreateIngestCheck(config),
+		newCmdCreateFleet(config),
 	)
 
 	return cmd

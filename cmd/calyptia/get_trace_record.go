@@ -69,7 +69,7 @@ func newCmdGetTraceRecords(config *config) *cobra.Command {
 
 	_ = cmd.MarkFlagRequired("session")
 
-	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
+	_ = cmd.RegisterFlagCompletionFunc("output-format", completeOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("session", config.completeTraceSessions)
 
 	return cmd

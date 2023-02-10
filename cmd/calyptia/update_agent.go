@@ -10,6 +10,7 @@ import (
 
 func newCmdUpdateAgent(config *config) *cobra.Command {
 	var newName string
+	var fleetKey string
 	var environment string
 
 	cmd := &cobra.Command{
@@ -18,32 +19,36 @@ func newCmdUpdateAgent(config *config) *cobra.Command {
 		Args:              cobra.ExactArgs(1),
 		ValidArgsFunction: config.completeAgents,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if newName == "" {
-				return nil
-			}
-
 			agentKey := args[0]
-			// We can only update the agent name. Early return if its the same.
-			if agentKey == newName {
-				return nil
-			}
-			var environmentID string
-			if environment != "" {
-				var err error
-				environmentID, err = config.loadEnvironmentID(environment)
-				if err != nil {
-					return err
-				}
-			}
 
-			agentID, err := config.loadAgentID(agentKey, environmentID)
+			agentID, err := config.loadAgentID(agentKey, "")
 			if err != nil {
 				return err
 			}
 
-			err = config.cloud.UpdateAgent(config.ctx, agentID, cloud.UpdateAgent{
-				Name: &newName,
-			})
+			fs := cmd.Flags()
+
+			var in cloud.UpdateAgent
+			if fs.Changed("new-name") {
+				in.Name = &newName
+			}
+			if fs.Changed("environment") {
+				envID, err := config.loadEnvironmentID(environment)
+				if err != nil {
+					return err
+				}
+				in.EnvironmentID = &envID
+			}
+			if fs.Changed("fleet") {
+				fleetID, err := config.loadFleetID(fleetKey)
+				if err != nil {
+					return err
+				}
+
+				in.FleetID = &fleetID
+			}
+
+			err = config.cloud.UpdateAgent(config.ctx, agentID, in)
 			if err != nil {
 				return fmt.Errorf("could not update agent: %w", err)
 			}
@@ -55,9 +60,10 @@ func newCmdUpdateAgent(config *config) *cobra.Command {
 	fs := cmd.Flags()
 	fs.StringVar(&newName, "new-name", "", "New agent name")
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
+	fs.StringVar(&fleetKey, "fleet", "", "Attach this agent to the given fleet")
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
-	_ = cmd.MarkFlagRequired("new-name")
+	_ = cmd.RegisterFlagCompletionFunc("fleet", config.completeFleets)
 
 	return cmd
 }

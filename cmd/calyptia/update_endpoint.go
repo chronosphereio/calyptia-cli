@@ -68,7 +68,7 @@ func newCmdUpdateEndpoint(config *config) *cobra.Command {
 	fs.StringVar(&protocol, "protocol", "", "Endpoint protocol, tcp or tcps")
 	fs.StringVar(&ports, "ports", "", "define frontend and backend port, either: [port] or [frotend]:[backend]")
 
-	// _ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
+	// _ = cmd.RegisterFlagCompletionFunc("output-format", completeOutputFormat)
 	// _ = cmd.RegisterFlagCompletionFunc("pipeline", config.completePipelines)
 
 	_ = cmd.MarkFlagRequired("pipeline") // TODO: use default pipeline key from config cmd.

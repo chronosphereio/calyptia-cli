@@ -126,7 +126,7 @@ func newCmdCreateResourceProfile(config *config) *cobra.Command {
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
 	_ = cmd.RegisterFlagCompletionFunc("core-instance", config.completeCoreInstances)
-	_ = cmd.RegisterFlagCompletionFunc("output-format", config.completeOutputFormat)
+	_ = cmd.RegisterFlagCompletionFunc("output-format", completeOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("name", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return nil, cobra.ShellCompDirectiveNoFileComp
 	})
