@@ -7,9 +7,10 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/calyptia/api/types"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v2"
+
+	"github.com/calyptia/api/types"
 )
 
 func newCmdGetFleets(config *config) *cobra.Command {
@@ -63,7 +64,6 @@ func newCmdGetFleets(config *config) *cobra.Command {
 			default:
 				return fmt.Errorf("unknown output format %q", outputFormat)
 			}
-			return nil
 		},
 	}
 
