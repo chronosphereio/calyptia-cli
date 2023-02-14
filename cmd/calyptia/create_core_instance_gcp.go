@@ -31,6 +31,7 @@ func newCmdCreateCoreInstanceOnGCP(config *config, client gcp.Client) *cobra.Com
 		tags                  []string
 		noHealthCheckPipeline bool
 		noTLSVerify           bool
+		skipServiceCreation   bool
 		coreInstanceVersion   string
 		externalIP            string
 		sshKeyPath            string
@@ -94,7 +95,8 @@ func newCmdCreateCoreInstanceOnGCP(config *config, client gcp.Client) *cobra.Com
 				SetAggregator(coreInstanceName).
 				SetIP(externalIP).
 				SetSSHKey(sshUser, sshKeyPath).
-				SetNetwork(network)
+				SetNetwork(network).
+				SkipServiceCreation(skipServiceCreation)
 
 			client.SetConfig(newConfig)
 
@@ -172,6 +174,7 @@ func newCmdCreateCoreInstanceOnGCP(config *config, client gcp.Client) *cobra.Com
 	fs.StringVar(&credentials, "credentials", os.Getenv("GOOGLE_APPLICATION_CREDENTIALS"), "Path to GCP credentials file. (default is $GOOGLE_APPLICATION_CREDENTIALS)")
 	fs.DurationVar(&rateLimit, "request-per-minute", 20, "Rate limit for operations")
 	fs.BoolVar(&noTLSVerify, "no-tls-verify", false, "Disable TLS verification when connecting to Calyptia Cloud API.")
+	fs.BoolVar(&skipServiceCreation, "skip-service-creation", false, "Skip the creation of kubernetes services for any pipeline under this core instance.")
 
 	_ = fs.MarkHidden("request-per-minute")
 	_ = fs.MarkHidden("github-token")
