@@ -10,14 +10,14 @@ require (
 	github.com/alecthomas/assert/v2 v2.2.1
 	github.com/aws/aws-sdk-go-v2 v1.17.4
 	github.com/aws/aws-sdk-go-v2/config v1.18.12
-	github.com/aws/aws-sdk-go-v2/service/ec2 v1.84.1
+	github.com/aws/aws-sdk-go-v2/service/ec2 v1.85.0
 	github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi v1.14.2
 	github.com/calyptia/api v1.1.0
 	github.com/calyptia/cli/k8s v0.0.0-20230208113851-df109a89143d
 	github.com/calyptia/core-images-index/go-index v0.0.0-20230208113212-be1e622efaa5
 	github.com/calyptia/go-bubble-table v0.2.1
 	github.com/calyptia/go-fluentbit-config v0.8.0
-	github.com/charmbracelet/bubbletea v0.23.1
+	github.com/charmbracelet/bubbletea v0.23.2
 	github.com/charmbracelet/lipgloss v0.6.0
 	github.com/go-logfmt/logfmt v0.6.0
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
