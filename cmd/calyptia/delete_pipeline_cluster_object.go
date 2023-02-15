@@ -1,10 +1,11 @@
 package main
 
 import (
+	"github.com/calyptia/cli/cmd/calyptia/utils"
 	"github.com/spf13/cobra"
 )
 
-func newCmdDeletePipelineClusterObject(config *config) *cobra.Command {
+func newCmdDeletePipelineClusterObject(config *utils.Config) *cobra.Command {
 	var pipelineKey string
 	var clusterObjectKey string
 	var environment string
@@ -17,23 +18,23 @@ func newCmdDeletePipelineClusterObject(config *config) *cobra.Command {
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = config.loadEnvironmentID(environment)
+				environmentID, err = config.LoadEnvironmentID(environment)
 				if err != nil {
 					return err
 				}
 			}
 
-			pipelineID, err := config.loadPipelineID(pipelineKey)
+			pipelineID, err := config.LoadPipelineID(pipelineKey)
 			if err != nil {
 				return err
 			}
 
-			clusterObjectID, err := config.loadClusterObjectID(clusterObjectKey, environmentID)
+			clusterObjectID, err := config.LoadClusterObjectID(clusterObjectKey, environmentID)
 			if err != nil {
 				return err
 			}
 
-			err = config.cloud.DeletePipelineClusterObjects(config.ctx, pipelineID, clusterObjectID)
+			err = config.Cloud.DeletePipelineClusterObjects(config.Ctx, pipelineID, clusterObjectID)
 			if err != nil {
 				return err
 			}
@@ -47,8 +48,8 @@ func newCmdDeletePipelineClusterObject(config *config) *cobra.Command {
 	fs.StringVar(&clusterObjectKey, "cluster-object", "", "The cluster object ID or Name")
 	fs.BoolVar(&encrypt, "encrypt", false, "Encrypt file contents")
 
-	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.completePipelines)
-	_ = cmd.RegisterFlagCompletionFunc("cluster-object", config.completeClusterObjects)
+	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.CompletePipelines)
+	_ = cmd.RegisterFlagCompletionFunc("cluster-object", config.CompleteClusterObjects)
 	_ = cmd.MarkFlagRequired("cluster-object")
 	_ = cmd.MarkFlagRequired("pipeline")
 

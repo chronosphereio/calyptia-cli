@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"errors"
 	"os"
 	"reflect"
@@ -9,17 +8,17 @@ import (
 	"testing"
 )
 
-func configWithMock(mock *ClientMock) *config {
-	if mock == nil {
-		mock = &ClientMock{}
-	}
-	return &config{
-		ctx:          context.Background(),
-		cloud:        mock,
-		projectID:    "",
-		projectToken: "",
-	}
-}
+// func configWithMock(mock *ClientMock) *utils.Config {
+// 	if mock == nil {
+// 		mock = &ClientMock{}
+// 	}
+// 	return &utils.Config{
+// 		Ctx:          context.Background(),
+// 		Cloud:        mock,
+// 		ProjectID:    "",
+// 		ProjectToken: "",
+// 	}
+// }
 
 func wantEq(t *testing.T, want, got interface{}) {
 	t.Helper()

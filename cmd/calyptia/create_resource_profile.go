@@ -10,6 +10,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/cmd/calyptia/utils"
 )
 
 type ResourceProfileSpec struct {
@@ -42,7 +43,7 @@ var resourceProfileSpecExample = func() string {
 	return string(b)
 }()
 
-func newCmdCreateResourceProfile(config *config) *cobra.Command {
+func newCmdCreateResourceProfile(config *utils.Config) *cobra.Command {
 	var coreInstanceKey string
 	var name string
 	var specFile string
@@ -53,7 +54,7 @@ func newCmdCreateResourceProfile(config *config) *cobra.Command {
 		Use:   "resource_profile",
 		Short: "Create a new resource profile attached to a core-instance",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			rawSpec, err := readFile(specFile)
+			rawSpec, err := utils.ReadFile(specFile)
 			if err != nil {
 				return fmt.Errorf("could not read spec file: %w", err)
 			}
@@ -67,18 +68,18 @@ func newCmdCreateResourceProfile(config *config) *cobra.Command {
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = config.loadEnvironmentID(environment)
+				environmentID, err = config.LoadEnvironmentID(environment)
 				if err != nil {
 					return err
 				}
 			}
 
-			aggregatorID, err := config.loadCoreInstanceID(coreInstanceKey, environmentID)
+			aggregatorID, err := config.LoadCoreInstanceID(coreInstanceKey, environmentID)
 			if err != nil {
 				return err
 			}
 
-			rp, err := config.cloud.CreateResourceProfile(config.ctx, aggregatorID, cloud.CreateResourceProfile{
+			rp, err := config.Cloud.CreateResourceProfile(config.Ctx, aggregatorID, cloud.CreateResourceProfile{
 				Name:                   name,
 				StorageMaxChunksUp:     spec.Resources.Storage.MaxChunksUp,
 				StorageSyncFull:        spec.Resources.Storage.SyncFull,
@@ -124,9 +125,9 @@ func newCmdCreateResourceProfile(config *config) *cobra.Command {
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
-	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
-	_ = cmd.RegisterFlagCompletionFunc("core-instance", config.completeCoreInstances)
-	_ = cmd.RegisterFlagCompletionFunc("output-format", completeOutputFormat)
+	_ = cmd.RegisterFlagCompletionFunc("environment", config.CompleteEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("core-instance", config.CompleteCoreInstances)
+	_ = cmd.RegisterFlagCompletionFunc("output-format", utils.CompleteOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("name", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return nil, cobra.ShellCompDirectiveNoFileComp
 	})

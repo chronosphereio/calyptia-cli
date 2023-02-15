@@ -11,10 +11,10 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
-	fluentbitconfig "github.com/calyptia/go-fluentbit-config"
+	"github.com/calyptia/cli/cmd/calyptia/utils"
 )
 
-func newCmdCreateTraceSession(config *config) *cobra.Command {
+func newCmdCreateTraceSession(config *utils.Config) *cobra.Command {
 	var pipelineKey string
 	var plugins []string
 	var lifespan time.Duration
@@ -28,12 +28,12 @@ func newCmdCreateTraceSession(config *config) *cobra.Command {
 			"Either terminate the current active one and create a new one,\n" +
 			"or update it and extend its lifespan.",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			pipelineID, err := config.loadPipelineID(pipelineKey)
+			pipelineID, err := config.LoadPipelineID(pipelineKey)
 			if err != nil {
 				return err
 			}
 
-			created, err := config.cloud.CreateTraceSession(config.ctx, pipelineID, types.CreateTraceSession{
+			created, err := config.Cloud.CreateTraceSession(config.Ctx, pipelineID, types.CreateTraceSession{
 				Plugins:  plugins,
 				Lifespan: types.Duration(lifespan),
 			})
@@ -70,51 +70,11 @@ func newCmdCreateTraceSession(config *config) *cobra.Command {
 
 	_ = cmd.MarkFlagRequired("pipeline")
 
-	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.completePipelines)
-	_ = cmd.RegisterFlagCompletionFunc("output-format", completeOutputFormat)
+	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.CompletePipelines)
+	_ = cmd.RegisterFlagCompletionFunc("output-format", utils.CompleteOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("plugins", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return config.completePipelinePlugins(pipelineKey, cmd, args, toComplete)
+		return config.CompletePipelinePlugins(pipelineKey, cmd, args, toComplete)
 	})
 
 	return cmd
-}
-
-func (config *config) completePipelinePlugins(pipelineKey string, cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	pipelineID, err := config.loadPipelineID(pipelineKey)
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
-
-	pipeline, err := config.cloud.Pipeline(config.ctx, pipelineID, types.PipelineParams{})
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
-
-	conf, err := fluentbitconfig.ParseAs(pipeline.Config.RawConfig, fluentbitconfig.Format(pipeline.Config.ConfigFormat))
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
-
-	// TODO: use instance id instead of name.
-
-	var out []string
-	for _, byName := range conf.Pipeline.Inputs {
-		for name := range byName {
-			out = append(out, name)
-		}
-	}
-
-	for _, byName := range conf.Pipeline.Filters {
-		for name := range byName {
-			out = append(out, name)
-		}
-	}
-
-	for _, byName := range conf.Pipeline.Outputs {
-		for name := range byName {
-			out = append(out, name)
-		}
-	}
-
-	return out, cobra.ShellCompDirectiveNoFileComp
 }

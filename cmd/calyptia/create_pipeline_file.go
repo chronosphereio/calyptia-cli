@@ -11,9 +11,10 @@ import (
 	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/cmd/calyptia/utils"
 )
 
-func newCmdCreatePipelineFile(config *config) *cobra.Command {
+func newCmdCreatePipelineFile(config *utils.Config) *cobra.Command {
 	var pipelineKey string
 	var file string
 	var encrypt bool
@@ -25,17 +26,17 @@ func newCmdCreatePipelineFile(config *config) *cobra.Command {
 			name := filepath.Base(file)
 			name = strings.TrimSuffix(name, filepath.Ext(name))
 
-			contents, err := readFile(file)
+			contents, err := utils.ReadFile(file)
 			if err != nil {
 				return err
 			}
 
-			pipelineID, err := config.loadPipelineID(pipelineKey)
+			pipelineID, err := config.LoadPipelineID(pipelineKey)
 			if err != nil {
 				return err
 			}
 
-			out, err := config.cloud.CreatePipelineFile(config.ctx, pipelineID, cloud.CreatePipelineFile{
+			out, err := config.Cloud.CreatePipelineFile(config.Ctx, pipelineID, cloud.CreatePipelineFile{
 				Name:      name,
 				Contents:  contents,
 				Encrypted: encrypt,
@@ -76,8 +77,8 @@ func newCmdCreatePipelineFile(config *config) *cobra.Command {
 	_ = cmd.MarkFlagRequired("pipeline")
 	_ = cmd.MarkFlagRequired("file")
 
-	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.completePipelines)
-	_ = cmd.RegisterFlagCompletionFunc("output-format", completeOutputFormat)
+	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.CompletePipelines)
+	_ = cmd.RegisterFlagCompletionFunc("output-format", utils.CompleteOutputFormat)
 
 	return cmd
 }

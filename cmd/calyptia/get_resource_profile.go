@@ -10,9 +10,10 @@ import (
 	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/cmd/calyptia/utils"
 )
 
-func newCmdGetResourceProfiles(config *config) *cobra.Command {
+func newCmdGetResourceProfiles(config *utils.Config) *cobra.Command {
 	var coreInstanceKey string
 	var last uint
 	var outputFormat, goTemplate string
@@ -26,18 +27,18 @@ func newCmdGetResourceProfiles(config *config) *cobra.Command {
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = config.loadEnvironmentID(environment)
+				environmentID, err = config.LoadEnvironmentID(environment)
 				if err != nil {
 					return err
 				}
 			}
 
-			coreInstanceID, err := config.loadCoreInstanceID(coreInstanceKey, environmentID)
+			coreInstanceID, err := config.LoadCoreInstanceID(coreInstanceKey, environmentID)
 			if err != nil {
 				return err
 			}
 
-			pp, err := config.cloud.ResourceProfiles(config.ctx, coreInstanceID, cloud.ResourceProfilesParams{
+			pp, err := config.Cloud.ResourceProfiles(config.Ctx, coreInstanceID, cloud.ResourceProfilesParams{
 				Last: &last,
 			})
 			if err != nil {
@@ -81,20 +82,11 @@ func newCmdGetResourceProfiles(config *config) *cobra.Command {
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
-	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
-	_ = cmd.RegisterFlagCompletionFunc("output-format", completeOutputFormat)
-	_ = cmd.RegisterFlagCompletionFunc("core-instance", config.completeCoreInstances)
+	_ = cmd.RegisterFlagCompletionFunc("environment", config.CompleteEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("output-format", utils.CompleteOutputFormat)
+	_ = cmd.RegisterFlagCompletionFunc("core-instance", config.CompleteCoreInstances)
 
 	_ = cmd.MarkFlagRequired("core-instance") // TODO: use default aggregator ID from config cmd.
 
 	return cmd
-}
-
-func (config *config) completeResourceProfiles(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	// TODO: complete resource profiles.
-	return []string{
-		cloud.ResourceProfileHighPerformanceGuaranteedDelivery,
-		cloud.ResourceProfileHighPerformanceOptimalThroughput,
-		cloud.ResourceProfileBestEffortLowResource,
-	}, cobra.ShellCompDirectiveNoFileComp
 }

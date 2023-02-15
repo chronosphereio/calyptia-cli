@@ -7,7 +7,6 @@ import (
 	"io"
 	"math"
 	"os"
-	"regexp"
 	"sort"
 	"strings"
 	"text/tabwriter"
@@ -22,12 +21,6 @@ import (
 )
 
 const zeroUUID4 = "00000000-0000-4000-a000-000000000000"
-
-var reUUID4 = regexp.MustCompile("^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$")
-
-func validUUID(s string) bool {
-	return reUUID4.MatchString(s)
-}
 
 func fmtTime(t time.Time) string {
 	d := time.Since(t)
@@ -192,8 +185,6 @@ func measurementNames(measurements map[string]cloud.AgentMeasurement) []string {
 	return names
 }
 
-func ptr[T any](p T) *T { return &p }
-
 func filterOutEmptyMetadata(metadata cloud.CoreInstanceMetadata) ([]byte, error) {
 	b, err := json.Marshal(metadata)
 	if err != nil {
@@ -289,18 +280,6 @@ func trimQuotes(s string) string {
 		}
 	}
 	return s
-}
-
-func uniqueSlice[S ~[]E, E comparable](s S) S {
-	m := map[E]struct{}{}
-
-	var out S
-	for _, item := range s {
-		if _, ok := m[item]; !ok {
-			out = append(out, item)
-		}
-	}
-	return out
 }
 
 func renderCreatedTable(w io.Writer, createdID string, createdAt time.Time) error {

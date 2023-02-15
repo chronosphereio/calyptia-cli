@@ -7,10 +7,12 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"
 
+	cloudclient "github.com/calyptia/api/client"
 	cloud "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/cmd/calyptia/utils"
 )
 
-func newCmdTop(config *config) *cobra.Command {
+func newCmdTop(config *utils.Config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "top",
 		Short: "Display metrics",
@@ -25,7 +27,7 @@ func newCmdTop(config *config) *cobra.Command {
 	return cmd
 }
 
-func initialProjectModel(ctx context.Context, cloud Client, projectID string, metricsStart, metricsInterval time.Duration, last uint) Model {
+func initialProjectModel(ctx context.Context, cloud cloudclient.Client, projectID string, metricsStart, metricsInterval time.Duration, last uint) Model {
 	return Model{
 		currentView: "project",
 		project:     NewProjectModel(ctx, cloud, projectID, metricsStart, metricsInterval, last),
@@ -33,14 +35,14 @@ func initialProjectModel(ctx context.Context, cloud Client, projectID string, me
 	}
 }
 
-func initialAgentModel(ctx context.Context, cloud Client, projectID, agentKey string, metricsStart, metricsInterval time.Duration) Model {
+func initialAgentModel(ctx context.Context, cloud cloudclient.Client, projectID, agentKey string, metricsStart, metricsInterval time.Duration) Model {
 	return Model{
 		currentView: "agent",
 		agent:       NewAgentModel(ctx, cloud, projectID, agentKey, metricsStart, metricsInterval),
 	}
 }
 
-func initialPipelineModel(ctx context.Context, cloud Client, projectID, pipelineKey string, metricsStart, metricsInterval time.Duration) Model {
+func initialPipelineModel(ctx context.Context, cloud cloudclient.Client, projectID, pipelineKey string, metricsStart, metricsInterval time.Duration) Model {
 	return Model{
 		currentView: "pipeline",
 		pipeline:    NewPipelineModel(ctx, cloud, projectID, pipelineKey, metricsStart, metricsInterval),

@@ -11,9 +11,10 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
+	"github.com/calyptia/cli/cmd/calyptia/utils"
 )
 
-func newCmdGetIngestCheck(c *config) *cobra.Command {
+func newCmdGetIngestCheck(c *utils.Config) *cobra.Command {
 	var (
 		outputFormat string
 		showIDs      bool
@@ -26,7 +27,7 @@ func newCmdGetIngestCheck(c *config) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.Background()
 			id := args[0]
-			check, err := c.cloud.IngestCheck(ctx, id)
+			check, err := c.Cloud.IngestCheck(ctx, id)
 			if err != nil {
 				return err
 			}
@@ -67,11 +68,11 @@ func newCmdGetIngestCheck(c *config) *cobra.Command {
 	fs.BoolVar(&showIDs, "show-ids", false, "Include member IDs in table output")
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
-	_ = cmd.RegisterFlagCompletionFunc("output-format", completeOutputFormat)
+	_ = cmd.RegisterFlagCompletionFunc("output-format", utils.CompleteOutputFormat)
 	return cmd
 }
 
-func newCmdGetIngestChecks(c *config) *cobra.Command {
+func newCmdGetIngestChecks(c *utils.Config) *cobra.Command {
 	var (
 		outputFormat string
 		showIDs      bool
@@ -89,16 +90,16 @@ func newCmdGetIngestChecks(c *config) *cobra.Command {
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = c.loadEnvironmentID(environment)
+				environmentID, err = c.LoadEnvironmentID(environment)
 				if err != nil {
 					return err
 				}
 			}
-			aggregatorID, err := c.loadCoreInstanceID(id, environmentID)
+			aggregatorID, err := c.LoadCoreInstanceID(id, environmentID)
 			if err != nil {
 				return err
 			}
-			check, err := c.cloud.IngestChecks(ctx, aggregatorID, types.IngestChecksParams{Last: &last})
+			check, err := c.Cloud.IngestChecks(ctx, aggregatorID, types.IngestChecksParams{Last: &last})
 			if err != nil {
 				return err
 			}
@@ -144,6 +145,6 @@ func newCmdGetIngestChecks(c *config) *cobra.Command {
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 	fs.StringVar(&environment, "environment", "default", "Environment name")
-	_ = cmd.RegisterFlagCompletionFunc("output-format", completeOutputFormat)
+	_ = cmd.RegisterFlagCompletionFunc("output-format", utils.CompleteOutputFormat)
 	return cmd
 }

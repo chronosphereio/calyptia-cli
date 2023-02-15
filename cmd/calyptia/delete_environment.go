@@ -9,9 +9,10 @@ import (
 	"golang.org/x/term"
 
 	"github.com/calyptia/api/types"
+	"github.com/calyptia/cli/cmd/calyptia/utils"
 )
 
-func newCmdDeleteEnvironment(c *config) *cobra.Command {
+func newCmdDeleteEnvironment(c *utils.Config) *cobra.Command {
 	var confirmDelete bool
 	cmd := &cobra.Command{
 		Use:   "environment ENVIRONMENT_NAME",
@@ -20,7 +21,7 @@ func newCmdDeleteEnvironment(c *config) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			name := args[0]
 			ctx := context.Background()
-			environments, err := c.cloud.Environments(ctx, c.projectID, types.EnvironmentsParams{Name: &name})
+			environments, err := c.Cloud.Environments(ctx, c.ProjectID, types.EnvironmentsParams{Name: &name})
 			if err != nil {
 				return err
 			}
@@ -41,7 +42,7 @@ func newCmdDeleteEnvironment(c *config) *cobra.Command {
 				}
 			}
 
-			err = c.cloud.DeleteEnvironment(ctx, environment.ID)
+			err = c.Cloud.DeleteEnvironment(ctx, environment.ID)
 			if err != nil {
 				return err
 			}

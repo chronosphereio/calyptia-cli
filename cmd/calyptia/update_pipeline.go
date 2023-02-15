@@ -14,9 +14,10 @@ import (
 	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/cmd/calyptia/utils"
 )
 
-func newCmdUpdatePipeline(config *config) *cobra.Command {
+func newCmdUpdatePipeline(config *utils.Config) *cobra.Command {
 	var newName string
 	var newConfigFile string
 	var newReplicasCount uint
@@ -35,11 +36,11 @@ func newCmdUpdatePipeline(config *config) *cobra.Command {
 		Use:               "pipeline PIPELINE",
 		Short:             "Update a single pipeline by ID or name",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.completePipelines,
+		ValidArgsFunction: config.CompletePipelines,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var rawConfig string
 			if newConfigFile != "" {
-				b, err := readFile(newConfigFile)
+				b, err := utils.ReadFile(newConfigFile)
 				if err != nil {
 					return fmt.Errorf("could not read config file: %w", err)
 				}
@@ -61,7 +62,7 @@ func newCmdUpdatePipeline(config *config) *cobra.Command {
 				name := filepath.Base(f)
 				name = strings.TrimSuffix(name, filepath.Ext(name))
 				// TODO: better sanitize file name.
-				contents, err := readFile(f)
+				contents, err := utils.ReadFile(f)
 				if err != nil {
 					return fmt.Errorf("coult not read file %q: %w", f, err)
 				}
@@ -75,7 +76,7 @@ func newCmdUpdatePipeline(config *config) *cobra.Command {
 
 			var metadata *json.RawMessage
 			if metadataFile != "" {
-				b, err := readFile(metadataFile)
+				b, err := utils.ReadFile(metadataFile)
 				if err != nil {
 					return fmt.Errorf("could not read metadata file: %w", err)
 				}
@@ -90,7 +91,7 @@ func newCmdUpdatePipeline(config *config) *cobra.Command {
 			}
 
 			pipelineKey := args[0]
-			pipelineID, err := config.loadPipelineID(pipelineKey)
+			pipelineID, err := config.LoadPipelineID(pipelineKey)
 			if err != nil {
 				return err
 			}
@@ -115,7 +116,7 @@ func newCmdUpdatePipeline(config *config) *cobra.Command {
 				update.Image = &image
 			}
 
-			updated, err := config.cloud.UpdatePipeline(config.ctx, pipelineID, update)
+			updated, err := config.Cloud.UpdatePipeline(config.Ctx, pipelineID, update)
 			if err != nil {
 				return fmt.Errorf("could not update pipeline: %w", err)
 			}
@@ -162,7 +163,7 @@ func newCmdUpdatePipeline(config *config) *cobra.Command {
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
-	_ = cmd.RegisterFlagCompletionFunc("output-format", completeOutputFormat)
+	_ = cmd.RegisterFlagCompletionFunc("output-format", utils.CompleteOutputFormat)
 
 	return cmd
 }
@@ -172,7 +173,7 @@ func parseUpdatePipelineSecrets(file, format string) ([]cloud.UpdatePipelineSecr
 		return nil, nil
 	}
 
-	b, err := readFile(file)
+	b, err := utils.ReadFile(file)
 	if err != nil {
 		return nil, fmt.Errorf("could not read secrets file: %w", err)
 	}

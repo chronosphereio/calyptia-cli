@@ -14,13 +14,14 @@ import (
 	"os"
 	"strings"
 
+	"github.com/calyptia/cli/cmd/calyptia/utils"
 	"github.com/calyptia/cli/gcp"
 	"github.com/calyptia/core-images-index/go-index"
 )
 
 const OperationConcluded = "DONE"
 
-func newCmdCreateCoreInstanceOnGCP(config *config, client gcp.Client) *cobra.Command {
+func newCmdCreateCoreInstanceOnGCP(config *utils.Config, client gcp.Client) *cobra.Command {
 
 	var (
 		coreInstanceName      string
@@ -90,7 +91,7 @@ func newCmdCreateCoreInstanceOnGCP(config *config, client gcp.Client) *cobra.Com
 				SetMetadata("CALYPTIA_CORE_TLS_VERIFY", strconv.FormatBool(!noTLSVerify)).
 				SetImage(coreInstanceVersion).
 				SetEnvironment(environment).
-				SetProjectToken(config.projectToken).
+				SetProjectToken(config.ProjectToken).
 				SetAggregator(coreInstanceName).
 				SetIP(externalIP).
 				SetSSHKey(sshUser, sshKeyPath).

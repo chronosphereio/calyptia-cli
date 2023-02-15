@@ -14,21 +14,23 @@ import (
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/term"
 
+	cloudclient "github.com/calyptia/api/client"
 	cloud "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/cmd/calyptia/utils"
 	table "github.com/calyptia/go-bubble-table"
 )
 
-func newCmdTopAgent(config *config) *cobra.Command {
+func newCmdTopAgent(config *utils.Config) *cobra.Command {
 	var start, interval time.Duration
 
 	cmd := &cobra.Command{
 		Use:               "agent AGENT",
 		Short:             "Display metrics from an agent",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.completeAgents,
+		ValidArgsFunction: config.CompleteAgents,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			agentKey := args[0]
-			_, err := tea.NewProgram(initialAgentModel(config.ctx, config.cloud, config.projectID, agentKey, start, interval), tea.WithAltScreen()).Run()
+			_, err := tea.NewProgram(initialAgentModel(config.Ctx, config.Cloud, config.ProjectID, agentKey, start, interval), tea.WithAltScreen()).Run()
 			return err
 		},
 	}
@@ -40,7 +42,7 @@ func newCmdTopAgent(config *config) *cobra.Command {
 	return cmd
 }
 
-func NewAgentModel(ctx context.Context, cloud Client, projectID, agentKey string, metricsStart, metricsInterval time.Duration) AgentModel {
+func NewAgentModel(ctx context.Context, cloud cloudclient.Client, projectID, agentKey string, metricsStart, metricsInterval time.Duration) AgentModel {
 	tbl := table.New([]string{"PLUGIN", "INPUT-BYTES", "INPUT-RECORDS", "OUTPUT-BYTES", "OUTPUT-RECORDS"}, 0, 0)
 	return AgentModel{
 		projectID:       projectID,
@@ -59,7 +61,7 @@ type AgentModel struct {
 	agentKey        string
 	metricsStart    time.Duration
 	metricsInterval time.Duration
-	cloud           Client
+	cloud           cloudclient.Client
 	ctx             context.Context
 
 	cancelFunc  context.CancelFunc
@@ -111,7 +113,7 @@ func (m AgentModel) loadAgentID() tea.Msg {
 		return GotAgentError{err}
 	}
 
-	if len(aa.Items) != 1 && !validUUID(m.agentKey) {
+	if len(aa.Items) != 1 && !utils.ValidUUID(m.agentKey) {
 		if len(aa.Items) != 0 {
 			return GotAgentError{fmt.Errorf("ambiguous agent name %q, use ID instead", m.agentKey)}
 		}

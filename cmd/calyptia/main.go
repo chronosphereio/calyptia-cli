@@ -11,6 +11,8 @@ import (
 	"github.com/spf13/cobra"
 
 	cloudclient "github.com/calyptia/api/client"
+	"github.com/calyptia/cli/cmd/calyptia/config"
+	"github.com/calyptia/cli/cmd/calyptia/utils"
 )
 
 var (
@@ -29,18 +31,18 @@ func newCmd(ctx context.Context) *cobra.Command {
 	client := &cloudclient.Client{
 		Client: http.DefaultClient,
 	}
-	config := &config{
-		ctx:   ctx,
-		cloud: client,
+	cfg := &utils.Config{
+		Ctx:   ctx,
+		Cloud: *client,
 	}
 
-	token, err := savedToken()
-	if err != nil && err != errTokenNotFound {
+	token, err := utils.SavedToken()
+	if err != nil && err != utils.ErrTokenNotFound {
 		cobra.CheckErr(fmt.Errorf("could not retrive your stored token: %w", err))
 	}
 
-	cloudURLStr, err := savedURL()
-	if err != nil && err != errURLNotFound {
+	cloudURLStr, err := config.SavedURL()
+	if err != nil && err != utils.ErrURLNotFound {
 		cobra.CheckErr(fmt.Errorf("could not retrive your stored url: %w", err))
 	}
 
@@ -59,20 +61,20 @@ func newCmd(ctx context.Context) *cobra.Command {
 		}
 
 		client.BaseURL = cloudURL.String()
-		config.baseURL = client.BaseURL
+		cfg.BaseURL = client.BaseURL
 
 		if token == "" {
 			return
 		}
 
-		projectID, err := decodeToken([]byte(token))
+		projectID, err := utils.DecodeToken([]byte(token))
 		if err != nil {
 			return
 		}
 
 		client.SetProjectToken(token)
-		config.projectToken = token
-		config.projectID = projectID
+		cfg.ProjectToken = token
+		cfg.ProjectID = projectID
 	})
 	cmd := &cobra.Command{
 		Use:           "calyptia",
@@ -84,38 +86,18 @@ func newCmd(ctx context.Context) *cobra.Command {
 	cmd.SetOut(os.Stdout)
 
 	fs := cmd.PersistentFlags()
-	fs.StringVar(&cloudURLStr, "cloud-url", env("CALYPTIA_CLOUD_URL", cloudURLStr), "Calyptia Cloud URL")
-	fs.StringVar(&token, "token", env("CALYPTIA_CLOUD_TOKEN", token), "Calyptia Cloud Project token")
+	fs.StringVar(&cloudURLStr, "cloud-url", utils.Env("CALYPTIA_CLOUD_URL", cloudURLStr), "Calyptia Cloud URL")
+	fs.StringVar(&token, "token", utils.Env("CALYPTIA_CLOUD_TOKEN", token), "Calyptia Cloud Project token")
 
 	cmd.AddCommand(
-		newCmdConfig(config),
-		newCmdCreate(config),
-		newCmdGet(config),
-		newCmdUpdate(config),
-		newCmdRollout(config),
-		newCmdDelete(config),
-		newCmdTop(config),
+		config.NewCmdConfig(cfg),
+		newCmdCreate(cfg),
+		newCmdGet(cfg),
+		newCmdUpdate(cfg),
+		newCmdRollout(cfg),
+		newCmdDelete(cfg),
+		newCmdTop(cfg),
 	)
 
 	return cmd
-}
-
-type config struct {
-	ctx          context.Context
-	baseURL      string
-	cloud        Client
-	projectToken string
-	projectID    string
-}
-
-func env(key, fallback string) string {
-	v := os.Getenv(key)
-	if v == "" {
-		return fallback
-	}
-	return v
-}
-
-func completeOutputFormat(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
-	return []string{"table", "json", "yaml", "go-template"}, cobra.ShellCompDirectiveNoFileComp
 }

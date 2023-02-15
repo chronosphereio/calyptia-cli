@@ -10,9 +10,10 @@ import (
 	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/cmd/calyptia/utils"
 )
 
-func newCmdRolloutPipeline(config *config) *cobra.Command {
+func newCmdRolloutPipeline(config *utils.Config) *cobra.Command {
 	var stepsBack uint
 	var toConfigID string
 	var autoCreatePortsFromConfig, skipConfigValidation bool
@@ -21,18 +22,18 @@ func newCmdRolloutPipeline(config *config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:               "pipeline PIPELINE",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.completePipelines,
+		ValidArgsFunction: config.CompletePipelines,
 		Short:             "Rollout a pipeline to a previous config",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			pipelineKey := args[0]
-			pipelineID, err := config.loadPipelineID(pipelineKey)
+			pipelineID, err := config.LoadPipelineID(pipelineKey)
 			if err != nil {
 				return err
 			}
 
 			var rawConfig string
 			if toConfigID != "" {
-				hh, err := config.cloud.PipelineConfigHistory(config.ctx, pipelineID, cloud.PipelineConfigHistoryParams{})
+				hh, err := config.Cloud.PipelineConfigHistory(config.Ctx, pipelineID, cloud.PipelineConfigHistoryParams{})
 				if err != nil {
 					return err
 				}
@@ -48,7 +49,7 @@ func newCmdRolloutPipeline(config *config) *cobra.Command {
 					return fmt.Errorf("could not find config %q", toConfigID)
 				}
 			} else if stepsBack > 0 {
-				hh, err := config.cloud.PipelineConfigHistory(config.ctx, pipelineID, cloud.PipelineConfigHistoryParams{
+				hh, err := config.Cloud.PipelineConfigHistory(config.Ctx, pipelineID, cloud.PipelineConfigHistoryParams{
 					Last: &stepsBack,
 				})
 				if err != nil {
@@ -64,7 +65,7 @@ func newCmdRolloutPipeline(config *config) *cobra.Command {
 				return fmt.Errorf("no config specified")
 			}
 
-			updated, err := config.cloud.UpdatePipeline(config.ctx, pipelineID, cloud.UpdatePipeline{
+			updated, err := config.Cloud.UpdatePipeline(config.Ctx, pipelineID, cloud.UpdatePipeline{
 				RawConfig:                 &rawConfig,
 				AutoCreatePortsFromConfig: &autoCreatePortsFromConfig,
 				SkipConfigValidation:      skipConfigValidation,
@@ -107,7 +108,7 @@ func newCmdRolloutPipeline(config *config) *cobra.Command {
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 	fs.BoolVar(&skipConfigValidation, "skip-config-validation", false, "Opt-in to skip config validation (Use with caution as this option might be removed soon)")
 
-	_ = cmd.RegisterFlagCompletionFunc("output-format", completeOutputFormat)
+	_ = cmd.RegisterFlagCompletionFunc("output-format", utils.CompleteOutputFormat)
 
 	return cmd
 }

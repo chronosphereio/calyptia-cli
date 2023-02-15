@@ -10,9 +10,10 @@ import (
 	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/cmd/calyptia/utils"
 )
 
-func newCmdGetCoreInstances(config *config) *cobra.Command {
+func newCmdGetCoreInstances(config *utils.Config) *cobra.Command {
 	var last uint
 	var showIDs bool
 	var showMetadata bool
@@ -27,7 +28,7 @@ func newCmdGetCoreInstances(config *config) *cobra.Command {
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = config.loadEnvironmentID(environment)
+				environmentID, err = config.LoadEnvironmentID(environment)
 				if err != nil {
 					return err
 				}
@@ -39,7 +40,7 @@ func newCmdGetCoreInstances(config *config) *cobra.Command {
 				params.EnvironmentID = &environmentID
 			}
 
-			aa, err := config.cloud.CoreInstances(config.ctx, config.projectID, params)
+			aa, err := config.Cloud.CoreInstances(config.Ctx, config.ProjectID, params)
 			if err != nil {
 				return fmt.Errorf("could not fetch your core instances: %w", err)
 			}
@@ -95,84 +96,8 @@ func newCmdGetCoreInstances(config *config) *cobra.Command {
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
-	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
-	_ = cmd.RegisterFlagCompletionFunc("output-format", completeOutputFormat)
+	_ = cmd.RegisterFlagCompletionFunc("environment", config.CompleteEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("output-format", utils.CompleteOutputFormat)
 
 	return cmd
-}
-
-func (config *config) completeCoreInstances(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	aa, err := config.cloud.CoreInstances(config.ctx, config.projectID, cloud.CoreInstancesParams{})
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
-
-	if len(aa.Items) == 0 {
-		return nil, cobra.ShellCompDirectiveNoFileComp
-	}
-
-	return coreInstanceKeys(aa.Items), cobra.ShellCompDirectiveNoFileComp
-}
-
-// coreInstanceKeys returns unique aggregator names first and then IDs.
-func coreInstanceKeys(aa []cloud.CoreInstance) []string {
-	namesCount := map[string]int{}
-	for _, a := range aa {
-		if _, ok := namesCount[a.Name]; ok {
-			namesCount[a.Name] += 1
-			continue
-		}
-
-		namesCount[a.Name] = 1
-	}
-
-	var out []string
-
-	for _, a := range aa {
-		var nameIsUnique bool
-		for name, count := range namesCount {
-			if a.Name == name && count == 1 {
-				nameIsUnique = true
-				break
-			}
-		}
-		if nameIsUnique {
-			out = append(out, a.Name)
-			continue
-		}
-
-		out = append(out, a.ID)
-	}
-
-	return out
-}
-
-func (config *config) loadCoreInstanceID(key string, environmentID string) (string, error) {
-	params := cloud.CoreInstancesParams{
-		Name: &key,
-		Last: ptr(uint(2)),
-	}
-
-	if environmentID != "" {
-		params.EnvironmentID = &environmentID
-	}
-
-	aa, err := config.cloud.CoreInstances(config.ctx, config.projectID, params)
-	if err != nil {
-		return "", err
-	}
-
-	if len(aa.Items) != 1 && !validUUID(key) {
-		if len(aa.Items) != 0 {
-			return "", fmt.Errorf("ambiguous core instance name %q, use ID instead", key)
-		}
-
-		return "", fmt.Errorf("could not find core instance %q", key)
-	}
-
-	if len(aa.Items) == 1 {
-		return aa.Items[0].ID, nil
-	}
-
-	return key, nil
 }

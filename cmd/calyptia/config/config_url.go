@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	"errors"
@@ -8,13 +8,14 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/calyptia/cli/cmd/calyptia/utils"
 	"github.com/spf13/cobra"
 	"github.com/zalando/go-keyring"
 )
 
-var errURLNotFound = errors.New("url not found")
+const defaultCloudURLStr = "https://cloud-api.calyptia.com"
 
-func newCmdConfigSetURL(config *config) *cobra.Command {
+func newCmdConfigSetURL(config *utils.Config) *cobra.Command {
 	return &cobra.Command{
 		Use:   "set_url URL",
 		Short: "Set the default cloud URL so you don't have to specify it on all commands",
@@ -34,25 +35,25 @@ func newCmdConfigSetURL(config *config) *cobra.Command {
 				return err
 			}
 
-			config.baseURL = cloudURL.String()
+			config.BaseURL = cloudURL.String()
 
 			return nil
 		},
 	}
 }
 
-func newCmdConfigCurrentURL(config *config) *cobra.Command {
+func newCmdConfigCurrentURL(config *utils.Config) *cobra.Command {
 	return &cobra.Command{
 		Use:   "current_url",
 		Short: "Get the current configured default cloud URL",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cmd.Println(config.baseURL)
+			cmd.Println(config.BaseURL)
 			return nil
 		},
 	}
 }
 
-func newCmdConfigUnsetURL(config *config) *cobra.Command {
+func newCmdConfigUnsetURL(config *utils.Config) *cobra.Command {
 	return &cobra.Command{
 		Use:   "unset_url",
 		Short: "Unset the current configured default cloud URL",
@@ -61,14 +62,14 @@ func newCmdConfigUnsetURL(config *config) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			config.baseURL = defaultCloudURLStr
+			config.BaseURL = defaultCloudURLStr
 			return nil
 		},
 	}
 }
 
 func saveURL(url string) error {
-	err := keyring.Set(serviceName, "base_url", url)
+	err := keyring.Set(utils.ServiceName, "base_url", url)
 	if err == nil {
 		return nil
 	}
@@ -96,7 +97,7 @@ func saveURL(url string) error {
 }
 
 func deleteSavedURL() error {
-	err := keyring.Delete(serviceName, "base_url")
+	err := keyring.Delete(utils.ServiceName, "base_url")
 	if err == nil {
 		return nil
 	}
@@ -119,10 +120,10 @@ func deleteSavedURL() error {
 	return nil
 }
 
-func savedURL() (string, error) {
-	url, err := keyring.Get(serviceName, "base_url")
+func SavedURL() (string, error) {
+	url, err := keyring.Get(utils.ServiceName, "base_url")
 	if err == keyring.ErrNotFound {
-		return "", errURLNotFound
+		return "", utils.ErrURLNotFound
 	}
 
 	if err == nil {
@@ -134,9 +135,9 @@ func savedURL() (string, error) {
 		return "", fmt.Errorf("could not get user home dir: %w", err)
 	}
 
-	b, err := readFile(filepath.Join(home, ".calyptia", "base_url"))
+	b, err := utils.ReadFile(filepath.Join(home, ".calyptia", "base_url"))
 	if errors.Is(err, fs.ErrNotExist) {
-		return "", errURLNotFound
+		return "", utils.ErrURLNotFound
 	}
 
 	if err != nil {

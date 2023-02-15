@@ -7,9 +7,10 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/calyptia/api/types"
+	"github.com/calyptia/cli/cmd/calyptia/utils"
 )
 
-func newCmdCreateIngestCheck(config *config) *cobra.Command {
+func newCmdCreateIngestCheck(config *utils.Config) *cobra.Command {
 	var (
 		retries         uint
 		configSectionID string
@@ -41,17 +42,17 @@ func newCmdCreateIngestCheck(config *config) *cobra.Command {
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = config.loadEnvironmentID(environment)
+				environmentID, err = config.LoadEnvironmentID(environment)
 				if err != nil {
 					return err
 				}
 			}
-			coreInstanceID, err := config.loadCoreInstanceID(coreInstance, environmentID)
+			coreInstanceID, err := config.LoadCoreInstanceID(coreInstance, environmentID)
 			if err != nil {
 				return err
 			}
 
-			check, err := config.cloud.CreateIngestCheck(ctx, coreInstanceID, params)
+			check, err := config.Cloud.CreateIngestCheck(ctx, coreInstanceID, params)
 			if err != nil {
 				return err
 			}

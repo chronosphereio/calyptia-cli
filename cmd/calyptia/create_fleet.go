@@ -12,10 +12,11 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
+	"github.com/calyptia/cli/cmd/calyptia/utils"
 	fluentbitconfig "github.com/calyptia/go-fluentbit-config"
 )
 
-func newCmdCreateFleet(config *config) *cobra.Command {
+func newCmdCreateFleet(config *utils.Config) *cobra.Command {
 	var in types.CreateFleet
 	var configFile, configFormat string
 	var outputFormat, goTemplate string
@@ -33,9 +34,9 @@ func newCmdCreateFleet(config *config) *cobra.Command {
 				return err
 			}
 
-			in.ProjectID = config.projectID
+			in.ProjectID = config.ProjectID
 
-			created, err := config.cloud.CreateFleet(ctx, in)
+			created, err := config.Cloud.CreateFleet(ctx, in)
 			if err != nil {
 				return err
 			}
@@ -74,7 +75,7 @@ func newCmdCreateFleet(config *config) *cobra.Command {
 	_ = cmd.MarkFlagRequired("name")
 
 	_ = cmd.RegisterFlagCompletionFunc("config-format", completeConfigFormat)
-	_ = cmd.RegisterFlagCompletionFunc("output-format", completeOutputFormat)
+	_ = cmd.RegisterFlagCompletionFunc("output-format", utils.CompleteOutputFormat)
 
 	return cmd
 }
@@ -86,7 +87,7 @@ func readConfig(filename, format string) (fluentbitconfig.Config, error) {
 		format = strings.TrimPrefix(filepath.Ext(filename), ".")
 	}
 
-	b, err := readFile(filename)
+	b, err := utils.ReadFile(filename)
 	if err != nil {
 		return out, err
 	}

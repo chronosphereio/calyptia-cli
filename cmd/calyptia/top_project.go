@@ -16,18 +16,20 @@ import (
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/term"
 
+	cloudclient "github.com/calyptia/api/client"
 	cloud "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/cmd/calyptia/utils"
 	table "github.com/calyptia/go-bubble-table"
 )
 
-func newCmdTopProject(config *config) *cobra.Command {
+func newCmdTopProject(config *utils.Config) *cobra.Command {
 	var start, interval time.Duration
 	var last uint
 	cmd := &cobra.Command{
 		Use:   "project",
 		Short: "Display metrics from the current project",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			_, err := tea.NewProgram(initialProjectModel(config.ctx, config.cloud, config.projectID, start, interval, last), tea.WithAltScreen()).Run()
+			_, err := tea.NewProgram(initialProjectModel(config.Ctx, config.Cloud, config.ProjectID, start, interval, last), tea.WithAltScreen()).Run()
 			return err
 		},
 	}
@@ -40,7 +42,7 @@ func newCmdTopProject(config *config) *cobra.Command {
 	return cmd
 }
 
-func NewProjectModel(ctx context.Context, cloud Client, projectID string, metricsStart, metricsInterval time.Duration, last uint) ProjectModel {
+func NewProjectModel(ctx context.Context, cloud cloudclient.Client, projectID string, metricsStart, metricsInterval time.Duration, last uint) ProjectModel {
 	// TODO: disable project table nivigation.
 	projectTable := table.New([]string{"PLUGIN", "INPUT-BYTES", "INPUT-RECORDS", "OUTPUT-BYTES", "OUTPUT-RECORDS"}, 0, 0)
 	agentsTable := table.New([]string{"AGENT", "TYPE", "VERSION", "INPUT-BYTES", "INPUT-RECORDS", "OUTPUT-BYTES", "OUTPUT-RECORDS"}, 0, 0)
@@ -61,7 +63,7 @@ type ProjectModel struct {
 	metricsStart    time.Duration
 	metricsInterval time.Duration
 	last            uint
-	cloud           Client
+	cloud           cloudclient.Client
 	ctx             context.Context
 
 	cancelFunc       context.CancelFunc

@@ -12,21 +12,23 @@ import (
 	"golang.org/x/sync/errgroup"
 	"golang.org/x/term"
 
+	cloudclient "github.com/calyptia/api/client"
 	cloud "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/cmd/calyptia/utils"
 	table "github.com/calyptia/go-bubble-table"
 )
 
-func newCmdTopPipeline(config *config) *cobra.Command {
+func newCmdTopPipeline(config *utils.Config) *cobra.Command {
 	var start, interval time.Duration
 
 	cmd := &cobra.Command{
 		Use:               "pipeline PIPELINE",
 		Short:             "Display metrics from a pipeline",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.completePipelines,
+		ValidArgsFunction: config.CompletePipelines,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			pipelineKey := args[0]
-			_, err := tea.NewProgram(initialPipelineModel(config.ctx, config.cloud, config.projectID, pipelineKey, start, interval), tea.WithAltScreen()).Run()
+			_, err := tea.NewProgram(initialPipelineModel(config.Ctx, config.Cloud, config.ProjectID, pipelineKey, start, interval), tea.WithAltScreen()).Run()
 			return err
 		},
 	}
@@ -38,7 +40,7 @@ func newCmdTopPipeline(config *config) *cobra.Command {
 	return cmd
 }
 
-func NewPipelineModel(ctx context.Context, cloud Client, projectID, pipelineKey string, metricsStart, metricsInterval time.Duration) PipelineModel {
+func NewPipelineModel(ctx context.Context, cloud cloudclient.Client, projectID, pipelineKey string, metricsStart, metricsInterval time.Duration) PipelineModel {
 	tbl := table.New([]string{"PLUGIN", "INPUT-BYTES", "INPUT-RECORDS", "OUTPUT-BYTES", "OUTPUT-RECORDS"}, 0, 0)
 	return PipelineModel{
 		projectID:       projectID,
@@ -57,7 +59,7 @@ type PipelineModel struct {
 	pipelineKey     string
 	metricsStart    time.Duration
 	metricsInterval time.Duration
-	cloud           Client
+	cloud           cloudclient.Client
 	ctx             context.Context
 
 	cancelFunc  context.CancelFunc
@@ -109,7 +111,7 @@ func (m PipelineModel) loadPipelineID() tea.Msg {
 		return GotPipelineError{err}
 	}
 
-	if len(aa.Items) != 1 && !validUUID(m.pipelineKey) {
+	if len(aa.Items) != 1 && !utils.ValidUUID(m.pipelineKey) {
 		if len(aa.Items) != 0 {
 			return GotPipelineError{fmt.Errorf("ambiguous pipeline name %q, use ID instead", m.pipelineKey)}
 		}

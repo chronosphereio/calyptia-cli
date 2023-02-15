@@ -9,9 +9,10 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
+	"github.com/calyptia/cli/cmd/calyptia/utils"
 )
 
-func newCmdUpdateConfigSection(config *config) *cobra.Command {
+func newCmdUpdateConfigSection(config *utils.Config) *cobra.Command {
 	var propsSlice []string
 	var outputFormat, goTemplate string
 
@@ -20,26 +21,26 @@ func newCmdUpdateConfigSection(config *config) *cobra.Command {
 		Short:             "Update a config section",
 		Long:              "Update a config section either by the plugin kind:name or by its ID",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.completeConfigSections,
+		ValidArgsFunction: config.CompleteConfigSections,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			configSectionKey := args[0]
-			configSectionID, err := config.loadConfigSectionID(ctx, configSectionKey)
+			configSectionID, err := config.LoadConfigSectionID(ctx, configSectionKey)
 			if err != nil {
 				return fmt.Errorf("load config section ID from key: %w", err)
 			}
 
-			cs, err := config.cloud.ConfigSection(ctx, configSectionID)
+			cs, err := config.Cloud.ConfigSection(ctx, configSectionID)
 			if err != nil {
 				return fmt.Errorf("cloud: %w", err)
 			}
 
 			props := propsFromSlice(propsSlice)
 			props = append(types.Pairs{
-				{Key: "name", Value: pairsName(cs.Properties)},
+				{Key: "name", Value: utils.PairsName(cs.Properties)},
 			}, props...)
 
-			updated, err := config.cloud.UpdateConfigSection(ctx, configSectionID, types.UpdateConfigSection{
+			updated, err := config.Cloud.UpdateConfigSection(ctx, configSectionID, types.UpdateConfigSection{
 				Properties: &props,
 			})
 			if err != nil {
@@ -66,7 +67,7 @@ func newCmdUpdateConfigSection(config *config) *cobra.Command {
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
-	_ = cmd.RegisterFlagCompletionFunc("prop", config.completePluginProps)
+	_ = cmd.RegisterFlagCompletionFunc("prop", config.CompletePluginProps)
 
 	return cmd
 }

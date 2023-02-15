@@ -1,4 +1,4 @@
-package main
+package utils
 
 import (
 	"bytes"
@@ -13,15 +13,16 @@ import (
 	"github.com/zalando/go-keyring"
 )
 
-const serviceName = "cloud.calyptia.com"
+const ServiceName = "cloud.calyptia.com"
 
 var (
-	errTokenNotFound = errors.New("token not found")
-	errInvalidToken  = errors.New("invalid token")
+	ErrTokenNotFound = errors.New("token not found")
+	ErrInvalidToken  = errors.New("invalid token")
+	ErrURLNotFound   = errors.New("url not found")
 )
 
-func saveToken(token string) error {
-	err := keyring.Set(serviceName, "project_token", token)
+func SaveToken(token string) error {
+	err := keyring.Set(ServiceName, "project_token", token)
 	if err == nil {
 		return nil
 	}
@@ -48,10 +49,10 @@ func saveToken(token string) error {
 	return nil
 }
 
-func savedToken() (string, error) {
-	token, err := keyring.Get(serviceName, "project_token")
+func SavedToken() (string, error) {
+	token, err := keyring.Get(ServiceName, "project_token")
 	if err == keyring.ErrNotFound {
-		return "", errTokenNotFound
+		return "", ErrTokenNotFound
 	}
 
 	if err == nil {
@@ -63,9 +64,9 @@ func savedToken() (string, error) {
 		return "", fmt.Errorf("could not get user home dir: %w", err)
 	}
 
-	b, err := readFile(filepath.Join(home, ".calyptia", "project_token"))
+	b, err := ReadFile(filepath.Join(home, ".calyptia", "project_token"))
 	if errors.Is(err, fs.ErrNotExist) {
-		return "", errTokenNotFound
+		return "", ErrTokenNotFound
 	}
 
 	if err != nil {
@@ -77,8 +78,8 @@ func savedToken() (string, error) {
 	return token, nil
 }
 
-func deleteSavedToken() error {
-	err := keyring.Delete(serviceName, "project_token")
+func DeleteSavedToken() error {
+	err := keyring.Delete(ServiceName, "project_token")
 	if err == nil {
 		return nil
 	}
@@ -105,12 +106,12 @@ type projectTokenPayload struct {
 	ProjectID string // no json tag
 }
 
-// decodeToken decodes a project token without verifying its signature
+// DecodeToken decodes a project token without verifying its signature
 // and getting its inner project ID.
-func decodeToken(token []byte) (string, error) {
+func DecodeToken(token []byte) (string, error) {
 	parts := bytes.Split(token, []byte("."))
 	if len(parts) != 2 {
-		return "", errInvalidToken
+		return "", ErrInvalidToken
 	}
 
 	encodedPayload := parts[0]
@@ -118,7 +119,7 @@ func decodeToken(token []byte) (string, error) {
 	payload := make([]byte, base64.RawURLEncoding.DecodedLen(len(encodedPayload)))
 	n, err := base64.RawURLEncoding.Decode(payload, encodedPayload)
 	if err != nil {
-		return "", errInvalidToken
+		return "", ErrInvalidToken
 	}
 
 	payload = payload[:n]

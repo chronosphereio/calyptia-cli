@@ -8,9 +8,10 @@ import (
 	"github.com/spf13/cobra"
 
 	cloud "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/cmd/calyptia/utils"
 )
 
-func newCmdUpdatePipelineFile(config *config) *cobra.Command {
+func newCmdUpdatePipelineFile(config *utils.Config) *cobra.Command {
 	var pipelineKey string
 	var file string
 	var encrypt bool
@@ -19,7 +20,7 @@ func newCmdUpdatePipelineFile(config *config) *cobra.Command {
 		Use:   "pipeline_file",
 		Short: "Update a file from a pipeline by its name",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			contents, err := readFile(file)
+			contents, err := utils.ReadFile(file)
 			if err != nil {
 				return err
 			}
@@ -27,19 +28,19 @@ func newCmdUpdatePipelineFile(config *config) *cobra.Command {
 			name := filepath.Base(file)
 			name = strings.TrimSuffix(name, filepath.Ext(name))
 
-			pipelineID, err := config.loadPipelineID(pipelineKey)
+			pipelineID, err := config.LoadPipelineID(pipelineKey)
 			if err != nil {
 				return err
 			}
 
-			ff, err := config.cloud.PipelineFiles(config.ctx, pipelineID, cloud.PipelineFilesParams{})
+			ff, err := config.Cloud.PipelineFiles(config.Ctx, pipelineID, cloud.PipelineFilesParams{})
 			if err != nil {
 				return err
 			}
 
 			for _, f := range ff.Items {
 				if f.Name == name {
-					return config.cloud.UpdatePipelineFile(config.ctx, f.ID, cloud.UpdatePipelineFile{
+					return config.Cloud.UpdatePipelineFile(config.Ctx, f.ID, cloud.UpdatePipelineFile{
 						Contents:  &contents,
 						Encrypted: &encrypt,
 					})
@@ -55,7 +56,7 @@ func newCmdUpdatePipelineFile(config *config) *cobra.Command {
 	fs.StringVar(&file, "file", "", "File path. The file you want to update. It must exists already.")
 	fs.BoolVar(&encrypt, "encrypt", false, "Encrypt file contents")
 
-	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.completePipelines)
+	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.CompletePipelines)
 	_ = cmd.MarkFlagRequired("file")
 
 	_ = cmd.MarkFlagRequired("pipeline") // TODO: use default pipeline key from config cmd.
