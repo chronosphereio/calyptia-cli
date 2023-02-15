@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/alecthomas/assert/v2"
 	cloud "github.com/calyptia/api/types"
 	appsv1 "k8s.io/api/apps/v1"
 	apiv1 "k8s.io/api/core/v1"
@@ -36,11 +37,7 @@ func setupSuite(t *testing.T) {
 
 func TestEnsureOwnNamespace(t *testing.T) {
 	setupSuite(t)
-	err := client.EnsureOwnNamespace(context.Background())
-	if err != nil {
-		t.Log(err)
-		t.Fail()
-	}
+	assert.NoError(t, client.EnsureOwnNamespace(context.Background()))
 }
 
 func TestCreateSecret(t *testing.T) {
@@ -49,150 +46,97 @@ func TestCreateSecret(t *testing.T) {
 		PrivateRSAKey: []byte("test"),
 	}
 	k, err := client.CreateSecret(context.Background(), created)
-	if err != nil {
-		t.Log(err)
-		t.Fail()
-	}
-	if k == nil {
-		t.Fail()
-	}
+	assert.NoError(t, err)
+	assert.NotZero(t, k)
 }
 
 func TestCreateClusterRole(t *testing.T) {
 	setupSuite(t)
 	k, err := client.CreateClusterRole(context.Background(), cloud.CreatedCoreInstance{}, ClusterRoleOpt{})
-	if err != nil {
-		t.Log(err)
-		t.Fail()
-	}
-	if k == nil {
-		t.Fail()
-	}
+	assert.NoError(t, err)
+	assert.NotZero(t, k)
 }
 
 func TestCreateServiceAccount(t *testing.T) {
 	setupSuite(t)
 	k, err := client.CreateServiceAccount(context.Background(), cloud.CreatedCoreInstance{})
-	if err != nil {
-		t.Log(err)
-		t.Fail()
-	}
-	if k == nil {
-		t.Fail()
-	}
+	assert.NoError(t, err)
+	assert.NotZero(t, k)
 }
 
 func TestCreateClusterRoleBinding(t *testing.T) {
 	setupSuite(t)
 	k, err := client.CreateClusterRoleBinding(context.Background(), cloud.CreatedCoreInstance{}, &rbacv1.ClusterRole{}, &apiv1.ServiceAccount{})
-	if err != nil {
-		t.Log(err)
-		t.Fail()
-	}
-	if k == nil {
-		t.Fail()
-	}
+	assert.NoError(t, err)
+	assert.NotZero(t, k)
 }
 
 func TestCreateDeployment(t *testing.T) {
 	setupSuite(t)
-	k, err := client.CreateDeployment(context.Background(), "test_image", cloud.CreatedCoreInstance{}, &apiv1.ServiceAccount{}, true, true)
+	_, err := client.CreateDeployment(context.Background(), "test_image", cloud.CreatedCoreInstance{}, &apiv1.ServiceAccount{}, true, true)
 
 	if status := apierrors.APIStatus(nil); errors.As(err, &status) {
 		if status.Status().Code != 409 { // already exists
-			t.Log(err)
-			t.Fail()
+			assert.NoError(t, err)
 		}
 	} else {
-		t.Log(err)
-		t.Fail()
+		assert.NoError(t, err)
 	}
-
-	deployment = k
 }
 
 func TestDeleteDeploymentByLabel(t *testing.T) {
 	setupSuite(t)
 	err := client.DeleteDeploymentByLabel(context.Background(), "test", "namespace")
-	if err != nil {
-		t.Log(err)
-		t.Fail()
-	}
+	assert.NoError(t, err)
 }
 
 func TestDeleteDaemonSetByLabel(t *testing.T) {
 	setupSuite(t)
 	err := client.DeleteDaemonSetByLabel(context.Background(), "test", "namespace")
-	if err != nil {
-		t.Log(err)
-		t.Fail()
-	}
+	assert.NoError(t, err)
 }
 
 func TestDeleteClusterRoleByLabel(t *testing.T) {
 	setupSuite(t)
 	err := client.DeleteClusterRoleByLabel(context.Background(), "test")
-	if err != nil {
-		t.Log(err)
-		t.Fail()
-	}
+	assert.NoError(t, err)
 }
 
 func TestDeleteServiceAccountByLabel(t *testing.T) {
 	setupSuite(t)
 	err := client.DeleteServiceAccountByLabel(context.Background(), "test", "namespace")
-	if err != nil {
-		t.Log(err)
-		t.Fail()
-	}
+	assert.NoError(t, err)
 }
 
 func TestDeleteRoleBindingByLabel(t *testing.T) {
 	setupSuite(t)
 	err := client.DeleteRoleBindingByLabel(context.Background(), "test")
-	if err != nil {
-		t.Log(err)
-		t.Fail()
-	}
+	assert.NoError(t, err)
 }
 
 func TestDeleteServiceByName(t *testing.T) {
 	setupSuite(t)
 	err := client.DeleteServiceByName(context.Background(), "test", "namespace")
-	if err != nil {
-		t.Log(err)
-		t.Fail()
-	}
+	assert.NoError(t, err)
 }
 
 func TestDeleteSecretByLabel(t *testing.T) {
 	setupSuite(t)
 	err := client.DeleteSecretByLabel(context.Background(), "test", "namespace")
-	if err != nil {
-		t.Log(err)
-		t.Fail()
-	}
+	assert.NoError(t, err)
 }
 
 func TestDeleteConfigMapsByLabel(t *testing.T) {
 	setupSuite(t)
 	err := client.DeleteConfigMapsByLabel(context.Background(), "test", "namespace")
-	if err != nil {
-		t.Log(err)
-		t.Fail()
-	}
+	assert.NoError(t, err)
 }
 
 func TestFindServicesByLabel(t *testing.T) {
 	setupSuite(t)
 	k, err := client.FindServicesByLabel(context.Background(), "test", "namespace")
-	if err != nil {
-		t.Log(err)
-		t.Fail()
-	}
-	if k == nil {
-		t.Fail()
-	}
+	assert.NoError(t, err)
+	assert.NotZero(t, k)
 }
 
 func TestUpdateDeploymentByLabel(t *testing.T) {
@@ -205,8 +149,7 @@ func TestUpdateDeploymentByLabel(t *testing.T) {
 	}
 	err := client.UpdateDeploymentByLabel(context.Background(), label, "newImage", "true")
 	if err != nil {
-		t.Log(err)
-		t.Fail()
+		assert.NoError(t, err)
 	}
 }
 
@@ -214,23 +157,13 @@ func TestFindDeploymentByName(t *testing.T) {
 	setupSuite(t)
 
 	k, err := client.FindDeploymentByName(context.Background(), deployment.Name)
-	if err != nil {
-		t.Log(err)
-		t.Fail()
-	}
-	if k == nil {
-		t.Fail()
-	}
+	assert.NoError(t, err)
+	assert.NotZero(t, k)
 }
 
 func TestFindDeploymentByLabel(t *testing.T) {
 	setupSuite(t)
 	k, err := client.FindDeploymentByLabel(context.Background(), "test")
-	if err != nil {
-		t.Log(err)
-		t.Fail()
-	}
-	if k == nil {
-		t.Fail()
-	}
+	assert.NoError(t, err)
+	assert.NotZero(t, k)
 }
