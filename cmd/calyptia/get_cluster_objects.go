@@ -4,158 +4,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
-	"sync"
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
-	"golang.org/x/sync/errgroup"
 	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
+	cnfg "github.com/calyptia/cli/pkg/config"
 )
 
-func (config *config) fetchAllClusterObjects() ([]cloud.ClusterObject, error) {
-	aa, err := config.cloud.CoreInstances(config.ctx, config.projectID, cloud.CoreInstancesParams{})
-	if err != nil {
-		return nil, fmt.Errorf("could not prefetch core-instances: %w", err)
-	}
-
-	if len(aa.Items) == 0 {
-		return nil, nil
-	}
-
-	var clusterobjects []cloud.ClusterObject
-	var mu sync.Mutex
-
-	g, gctx := errgroup.WithContext(config.ctx)
-	for _, a := range aa.Items {
-		a := a
-		g.Go(func() error {
-			objects, err := config.cloud.ClusterObjects(gctx, a.ID,
-				cloud.ClusterObjectParams{})
-			if err != nil {
-				return err
-			}
-
-			mu.Lock()
-			clusterobjects = append(clusterobjects, objects.Items...)
-			mu.Unlock()
-
-			return nil
-		})
-	}
-
-	if err := g.Wait(); err != nil {
-		return nil, err
-	}
-
-	var uniqueClusterObjects []cloud.ClusterObject
-	clusterObjectIDs := map[string]struct{}{}
-	for _, coid := range clusterobjects {
-		if _, ok := clusterObjectIDs[coid.ID]; !ok {
-			uniqueClusterObjects = append(uniqueClusterObjects, coid)
-			clusterObjectIDs[coid.ID] = struct{}{}
-		}
-	}
-
-	return uniqueClusterObjects, nil
-}
-
-func (config *config) completeClusterObjects(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	pp, err := config.fetchAllClusterObjects()
-	if err != nil {
-		cobra.CompError(err.Error())
-		return nil, cobra.ShellCompDirectiveError
-	}
-
-	if pp == nil {
-		return nil, cobra.ShellCompDirectiveNoFileComp
-	}
-
-	return clusterObjectsKeys(pp), cobra.ShellCompDirectiveNoFileComp
-}
-
-// ClusterObjectsKeys returns unique cluster object names first and then IDs.
-func clusterObjectsKeys(aa []cloud.ClusterObject) []string {
-	namesCount := map[string]int{}
-	for _, a := range aa {
-		if _, ok := namesCount[a.Name]; ok {
-			namesCount[a.Name] += 1
-			continue
-		}
-
-		namesCount[a.Name] = 1
-	}
-
-	var out []string
-
-	for _, a := range aa {
-		var nameIsUnique bool
-		for name, count := range namesCount {
-			if a.Name == name && count == 1 {
-				nameIsUnique = true
-				break
-			}
-		}
-		if nameIsUnique {
-			out = append(out, a.Name)
-			continue
-		}
-
-		out = append(out, a.ID)
-	}
-
-	return out
-}
-
-// ClusterObjectsUnique returns unique cluster object names.
-func clusterObjectsUniqueByName(aa []cloud.ClusterObject) []cloud.ClusterObject {
-	namesCount := map[string]int{}
-	for _, a := range aa {
-		if _, ok := namesCount[a.Name]; !ok {
-			namesCount[a.Name] = 0
-		}
-		namesCount[a.Name]++
-	}
-
-	var out []cloud.ClusterObject
-	for _, a := range aa {
-		for name, count := range namesCount {
-			if a.Name == name && count == 1 {
-				out = append(out, a)
-				break
-			}
-		}
-	}
-	return out
-}
-
-func (config *config) loadClusterObjectID(key string, environmentID string) (string, error) {
-	aa, err := config.fetchAllClusterObjects()
-	if err != nil {
-		return "", err
-	}
-
-	objs := clusterObjectsUniqueByName(aa)
-
-	if validUUID(key) {
-		for _, obj := range objs {
-			if obj.ID == key {
-				return obj.ID, nil
-			}
-		}
-	}
-
-	for _, obj := range objs {
-		if obj.Name == key {
-			return obj.ID, nil
-		}
-	}
-
-	return "", fmt.Errorf("unable to find unique key")
-}
-
-func newCmdGetClusterObjects(config *config) *cobra.Command {
+func newCmdGetClusterObjects(config *cnfg.Config) *cobra.Command {
 	var coreInstanceKey string
 	var last uint
 	var outputFormat, goTemplate string
@@ -169,18 +27,18 @@ func newCmdGetClusterObjects(config *config) *cobra.Command {
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = config.loadEnvironmentID(environment)
+				environmentID, err = config.LoadEnvironmentID(environment)
 				if err != nil {
 					return err
 				}
 			}
 
-			coreInstanceID, err := config.loadCoreInstanceID(coreInstanceKey, environmentID)
+			coreInstanceID, err := config.LoadCoreInstanceID(coreInstanceKey, environmentID)
 			if err != nil {
 				return err
 			}
 
-			co, err := config.cloud.ClusterObjects(config.ctx, coreInstanceID, cloud.ClusterObjectParams{
+			co, err := config.Cloud.ClusterObjects(config.Ctx, coreInstanceID, cloud.ClusterObjectParams{
 				Last: &last,
 			})
 			if err != nil {
@@ -227,7 +85,7 @@ func newCmdGetClusterObjects(config *config) *cobra.Command {
 
 	_ = cmd.MarkFlagRequired("core-instance")
 
-	_ = cmd.RegisterFlagCompletionFunc("core-instance", config.completeCoreInstances)
+	_ = cmd.RegisterFlagCompletionFunc("core-instance", config.CompleteCoreInstances)
 
 	return cmd
 }

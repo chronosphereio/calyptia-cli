@@ -6,9 +6,10 @@ import (
 	"github.com/spf13/cobra"
 
 	cloud "github.com/calyptia/api/types"
+	cfg "github.com/calyptia/cli/pkg/config"
 )
 
-func newCmdUpdateAgent(config *config) *cobra.Command {
+func newCmdUpdateAgent(config *cfg.Config) *cobra.Command {
 	var newName string
 	var fleetKey string
 	var environment string
@@ -17,11 +18,11 @@ func newCmdUpdateAgent(config *config) *cobra.Command {
 		Use:               "agent AGENT",
 		Short:             "Update a single agent by ID or name",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.completeAgents,
+		ValidArgsFunction: config.CompleteAgents,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			agentKey := args[0]
 
-			agentID, err := config.loadAgentID(agentKey, "")
+			agentID, err := config.LoadAgentID(agentKey, "")
 			if err != nil {
 				return err
 			}
@@ -33,14 +34,14 @@ func newCmdUpdateAgent(config *config) *cobra.Command {
 				in.Name = &newName
 			}
 			if fs.Changed("environment") {
-				envID, err := config.loadEnvironmentID(environment)
+				envID, err := config.LoadEnvironmentID(environment)
 				if err != nil {
 					return err
 				}
 				in.EnvironmentID = &envID
 			}
 			if fs.Changed("fleet") {
-				fleetID, err := config.loadFleetID(fleetKey)
+				fleetID, err := config.LoadFleetID(fleetKey)
 				if err != nil {
 					return err
 				}
@@ -48,7 +49,7 @@ func newCmdUpdateAgent(config *config) *cobra.Command {
 				in.FleetID = &fleetID
 			}
 
-			err = config.cloud.UpdateAgent(config.ctx, agentID, in)
+			err = config.Cloud.UpdateAgent(config.Ctx, agentID, in)
 			if err != nil {
 				return fmt.Errorf("could not update agent: %w", err)
 			}
@@ -62,8 +63,8 @@ func newCmdUpdateAgent(config *config) *cobra.Command {
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 	fs.StringVar(&fleetKey, "fleet", "", "Attach this agent to the given fleet")
 
-	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
-	_ = cmd.RegisterFlagCompletionFunc("fleet", config.completeFleets)
+	_ = cmd.RegisterFlagCompletionFunc("environment", config.CompleteEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("fleet", config.CompleteFleets)
 
 	return cmd
 }

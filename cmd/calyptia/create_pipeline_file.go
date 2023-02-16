@@ -11,10 +11,11 @@ import (
 	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
+	cfg "github.com/calyptia/cli/pkg/config"
 	"github.com/calyptia/cli/pkg/formatters"
 )
 
-func newCmdCreatePipelineFile(config *config) *cobra.Command {
+func newCmdCreatePipelineFile(config *cfg.Config) *cobra.Command {
 	var pipelineKey string
 	var file string
 	var encrypt bool
@@ -31,12 +32,12 @@ func newCmdCreatePipelineFile(config *config) *cobra.Command {
 				return err
 			}
 
-			pipelineID, err := config.loadPipelineID(pipelineKey)
+			pipelineID, err := config.LoadPipelineID(pipelineKey)
 			if err != nil {
 				return err
 			}
 
-			out, err := config.cloud.CreatePipelineFile(config.ctx, pipelineID, cloud.CreatePipelineFile{
+			out, err := config.Cloud.CreatePipelineFile(config.Ctx, pipelineID, cloud.CreatePipelineFile{
 				Name:      name,
 				Contents:  contents,
 				Encrypted: encrypt,
@@ -77,7 +78,7 @@ func newCmdCreatePipelineFile(config *config) *cobra.Command {
 	_ = cmd.MarkFlagRequired("pipeline")
 	_ = cmd.MarkFlagRequired("file")
 
-	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.completePipelines)
+	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.CompletePipelines)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
 	return cmd

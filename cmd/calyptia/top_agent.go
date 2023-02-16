@@ -15,20 +15,21 @@ import (
 	"golang.org/x/term"
 
 	cloud "github.com/calyptia/api/types"
+	cfg "github.com/calyptia/cli/pkg/config"
 	table "github.com/calyptia/go-bubble-table"
 )
 
-func newCmdTopAgent(config *config) *cobra.Command {
+func newCmdTopAgent(config *cfg.Config) *cobra.Command {
 	var start, interval time.Duration
 
 	cmd := &cobra.Command{
 		Use:               "agent AGENT",
 		Short:             "Display metrics from an agent",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.completeAgents,
+		ValidArgsFunction: config.CompleteAgents,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			agentKey := args[0]
-			_, err := tea.NewProgram(initialAgentModel(config.ctx, config.cloud, config.projectID, agentKey, start, interval), tea.WithAltScreen()).Run()
+			_, err := tea.NewProgram(initialAgentModel(config.Ctx, config.Cloud, config.ProjectID, agentKey, start, interval), tea.WithAltScreen()).Run()
 			return err
 		},
 	}

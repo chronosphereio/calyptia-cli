@@ -12,11 +12,12 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
+	cfg "github.com/calyptia/cli/pkg/config"
 	"github.com/calyptia/cli/pkg/formatters"
 	fluentbitconfig "github.com/calyptia/go-fluentbit-config"
 )
 
-func newCmdCreateFleet(config *config) *cobra.Command {
+func newCmdCreateFleet(config *cfg.Config) *cobra.Command {
 	var in types.CreateFleet
 	var configFile, configFormat string
 	var outputFormat, goTemplate string
@@ -34,9 +35,9 @@ func newCmdCreateFleet(config *config) *cobra.Command {
 				return err
 			}
 
-			in.ProjectID = config.projectID
+			in.ProjectID = config.ProjectID
 
-			created, err := config.cloud.CreateFleet(ctx, in)
+			created, err := config.Cloud.CreateFleet(ctx, in)
 			if err != nil {
 				return err
 			}

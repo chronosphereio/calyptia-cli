@@ -8,13 +8,14 @@ import (
 	"os"
 	"path/filepath"
 
+	cfg "github.com/calyptia/cli/pkg/config"
 	"github.com/spf13/cobra"
 	"github.com/zalando/go-keyring"
 )
 
 var errURLNotFound = errors.New("url not found")
 
-func newCmdConfigSetURL(config *config) *cobra.Command {
+func newCmdConfigSetURL(config *cfg.Config) *cobra.Command {
 	return &cobra.Command{
 		Use:   "set_url URL",
 		Short: "Set the default cloud URL so you don't have to specify it on all commands",
@@ -34,25 +35,25 @@ func newCmdConfigSetURL(config *config) *cobra.Command {
 				return err
 			}
 
-			config.baseURL = cloudURL.String()
+			config.BaseURL = cloudURL.String()
 
 			return nil
 		},
 	}
 }
 
-func newCmdConfigCurrentURL(config *config) *cobra.Command {
+func newCmdConfigCurrentURL(config *cfg.Config) *cobra.Command {
 	return &cobra.Command{
 		Use:   "current_url",
 		Short: "Get the current configured default cloud URL",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cmd.Println(config.baseURL)
+			cmd.Println(config.BaseURL)
 			return nil
 		},
 	}
 }
 
-func newCmdConfigUnsetURL(config *config) *cobra.Command {
+func newCmdConfigUnsetURL(config *cfg.Config) *cobra.Command {
 	return &cobra.Command{
 		Use:   "unset_url",
 		Short: "Unset the current configured default cloud URL",
@@ -61,7 +62,7 @@ func newCmdConfigUnsetURL(config *config) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			config.baseURL = defaultCloudURLStr
+			config.BaseURL = defaultCloudURLStr
 			return nil
 		},
 	}

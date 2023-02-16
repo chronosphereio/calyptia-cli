@@ -12,10 +12,11 @@ import (
 	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
+	cfg "github.com/calyptia/cli/pkg/config"
 	"github.com/calyptia/cli/pkg/formatters"
 )
 
-func newCmdGetAgents(config *config) *cobra.Command {
+func newCmdGetAgents(config *cfg.Config) *cobra.Command {
 	var last uint
 	var outputFormat, goTemplate string
 	var showIDs bool
@@ -28,7 +29,7 @@ func newCmdGetAgents(config *config) *cobra.Command {
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = config.loadEnvironmentID(environment)
+				environmentID, err = config.LoadEnvironmentID(environment)
 				if err != nil {
 					return err
 				}
@@ -42,7 +43,7 @@ func newCmdGetAgents(config *config) *cobra.Command {
 
 			fs := cmd.Flags()
 			if fs.Changed("fleet") {
-				fleedID, err := config.loadFleetID(fleetKey)
+				fleedID, err := config.LoadFleetID(fleetKey)
 				if err != nil {
 					return err
 				}
@@ -50,7 +51,7 @@ func newCmdGetAgents(config *config) *cobra.Command {
 				params.FleetID = &fleedID
 			}
 
-			aa, err := config.cloud.Agents(config.ctx, config.projectID, params)
+			aa, err := config.Cloud.Agents(config.Ctx, config.ProjectID, params)
 			if err != nil {
 				return fmt.Errorf("could not fetch your agents: %w", err)
 			}
@@ -93,14 +94,14 @@ func newCmdGetAgents(config *config) *cobra.Command {
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
-	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
-	_ = cmd.RegisterFlagCompletionFunc("fleet", config.completeFleets)
+	_ = cmd.RegisterFlagCompletionFunc("environment", config.CompleteEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("fleet", config.CompleteFleets)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
 	return cmd
 }
 
-func newCmdGetAgent(config *config) *cobra.Command {
+func newCmdGetAgent(config *cfg.Config) *cobra.Command {
 	var outputFormat, goTemplate string
 	var showIDs bool
 	var onlyConfig bool
@@ -110,24 +111,24 @@ func newCmdGetAgent(config *config) *cobra.Command {
 		Use:               "agent AGENT",
 		Short:             "Display a specific agent",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.completeAgents,
+		ValidArgsFunction: config.CompleteAgents,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = config.loadEnvironmentID(environment)
+				environmentID, err = config.LoadEnvironmentID(environment)
 				if err != nil {
 					return err
 				}
 			}
 
 			agentKey := args[0]
-			agentID, err := config.loadAgentID(agentKey, environmentID)
+			agentID, err := config.LoadAgentID(agentKey, environmentID)
 			if err != nil {
 				return err
 			}
 
-			agent, err := config.cloud.Agent(config.ctx, agentID)
+			agent, err := config.Cloud.Agent(config.Ctx, agentID)
 			if err != nil {
 				return fmt.Errorf("could not fetch your agent: %w", err)
 			}
@@ -173,23 +174,10 @@ func newCmdGetAgent(config *config) *cobra.Command {
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
-	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("environment", config.CompleteEnvironments)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
 	return cmd
-}
-
-func (config *config) completeAgents(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	aa, err := config.cloud.Agents(config.ctx, config.projectID, cloud.AgentsParams{})
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
-
-	if len(aa.Items) == 0 {
-		return nil, cobra.ShellCompDirectiveNoFileComp
-	}
-
-	return agentsKeys(aa.Items), cobra.ShellCompDirectiveNoFileComp
 }
 
 // agentsKeys returns unique agent names first and then IDs.
@@ -221,37 +209,6 @@ func agentsKeys(aa []cloud.Agent) []string {
 	}
 
 	return out
-}
-
-func (config *config) loadAgentID(agentKey string, environmentID string) (string, error) {
-	var err error
-
-	var params cloud.AgentsParams
-
-	params.Last = ptr(uint(2))
-	params.Name = &agentKey
-
-	if environmentID != "" {
-		params.EnvironmentID = &environmentID
-	}
-
-	aa, err := config.cloud.Agents(config.ctx, config.projectID, params)
-	if err != nil {
-		return "", err
-	}
-
-	if len(aa.Items) != 1 && !validUUID(agentKey) {
-		if len(aa.Items) != 0 {
-			return "", fmt.Errorf("ambiguous agent name %q, use ID instead", agentKey)
-		}
-		return "", fmt.Errorf("could not find agent %q", agentKey)
-	}
-
-	if len(aa.Items) == 1 {
-		return aa.Items[0].ID, nil
-	}
-
-	return agentKey, nil
 }
 
 func agentStatus(lastMetricsAddedAt *time.Time, start time.Duration) string {

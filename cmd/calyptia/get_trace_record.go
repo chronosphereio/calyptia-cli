@@ -11,10 +11,11 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
+	cfg "github.com/calyptia/cli/pkg/config"
 	"github.com/calyptia/cli/pkg/formatters"
 )
 
-func newCmdGetTraceRecords(config *config) *cobra.Command {
+func newCmdGetTraceRecords(config *cfg.Config) *cobra.Command {
 	var sessionID string
 	var last uint
 	var before string
@@ -37,7 +38,7 @@ func newCmdGetTraceRecords(config *config) *cobra.Command {
 				beforeOpt = &before
 			}
 
-			ss, err := config.cloud.TraceRecords(config.ctx, sessionID, types.TraceRecordsParams{
+			ss, err := config.Cloud.TraceRecords(config.Ctx, sessionID, types.TraceRecordsParams{
 				Last:   lastOpt,
 				Before: beforeOpt,
 			})
@@ -71,7 +72,7 @@ func newCmdGetTraceRecords(config *config) *cobra.Command {
 	_ = cmd.MarkFlagRequired("session")
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
-	_ = cmd.RegisterFlagCompletionFunc("session", config.completeTraceSessions)
+	_ = cmd.RegisterFlagCompletionFunc("session", config.CompleteTraceSessions)
 
 	return cmd
 }

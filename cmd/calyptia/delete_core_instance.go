@@ -10,9 +10,10 @@ import (
 	"k8s.io/client-go/kubernetes"
 
 	"github.com/calyptia/api/types"
+	cfg "github.com/calyptia/cli/pkg/config"
 )
 
-func newCmdDeleteCoreInstance(config *config, testClientSet kubernetes.Interface) *cobra.Command {
+func newCmdDeleteCoreInstance(config *cfg.Config, testClientSet kubernetes.Interface) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "core_instance",
 		Aliases: []string{"instance", "core_instance"},
@@ -26,7 +27,7 @@ func newCmdDeleteCoreInstance(config *config, testClientSet kubernetes.Interface
 	return cmd
 }
 
-func newCmdDeleteCoreInstances(config *config) *cobra.Command {
+func newCmdDeleteCoreInstances(config *cfg.Config) *cobra.Command {
 	var confirmed bool
 
 	cmd := &cobra.Command{
@@ -34,7 +35,7 @@ func newCmdDeleteCoreInstances(config *config) *cobra.Command {
 		Short: "Delete many core instances from project",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			aa, err := config.cloud.CoreInstances(ctx, config.projectID, types.CoreInstancesParams{
+			aa, err := config.Cloud.CoreInstances(ctx, config.ProjectID, types.CoreInstancesParams{
 				Last: ptr(uint(0)),
 			})
 			if err != nil {
@@ -64,7 +65,7 @@ func newCmdDeleteCoreInstances(config *config) *cobra.Command {
 				coreInstanceIDs[i] = a.ID
 			}
 
-			err = config.cloud.DeleteCoreInstances(ctx, config.projectID, coreInstanceIDs...)
+			err = config.Cloud.DeleteCoreInstances(ctx, config.ProjectID, coreInstanceIDs...)
 			if err != nil {
 				return fmt.Errorf("delete core instances: %w", err)
 			}

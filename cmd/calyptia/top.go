@@ -8,9 +8,10 @@ import (
 	"github.com/spf13/cobra"
 
 	cloud "github.com/calyptia/api/types"
+	cfg "github.com/calyptia/cli/pkg/config"
 )
 
-func newCmdTop(config *config) *cobra.Command {
+func newCmdTop(config *cfg.Config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "top",
 		Short: "Display metrics",

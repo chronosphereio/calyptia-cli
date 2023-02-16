@@ -6,9 +6,10 @@ import (
 	"github.com/spf13/cobra"
 
 	cloud "github.com/calyptia/api/types"
+	cfg "github.com/calyptia/cli/pkg/config"
 )
 
-func newCmdUpdateProject(config *config) *cobra.Command {
+func newCmdUpdateProject(config *cfg.Config) *cobra.Command {
 	var newName string
 
 	cmd := &cobra.Command{
@@ -19,7 +20,7 @@ func newCmdUpdateProject(config *config) *cobra.Command {
 				return nil
 			}
 
-			err := config.cloud.UpdateProject(config.ctx, config.projectID, cloud.UpdateProject{
+			err := config.Cloud.UpdateProject(config.Ctx, config.ProjectID, cloud.UpdateProject{
 				Name: &newName,
 			})
 			if err != nil {

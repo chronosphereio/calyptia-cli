@@ -1,8 +1,11 @@
 package main
 
-import "github.com/spf13/cobra"
+import (
+	cfg "github.com/calyptia/cli/pkg/config"
+	"github.com/spf13/cobra"
+)
 
-func newCmdGet(config *config) *cobra.Command {
+func newCmdGet(config *cfg.Config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "get",
 		Short: "Display one or many resources",

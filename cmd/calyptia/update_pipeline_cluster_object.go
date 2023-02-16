@@ -4,9 +4,10 @@ import (
 	"github.com/spf13/cobra"
 
 	cloud "github.com/calyptia/api/types"
+	cfg "github.com/calyptia/cli/pkg/config"
 )
 
-func newCmdUpdatePipelineClusterObject(config *config) *cobra.Command {
+func newCmdUpdatePipelineClusterObject(config *cfg.Config) *cobra.Command {
 	var pipelineKey string
 	var clusterObjectKey string
 	var environment string
@@ -19,23 +20,23 @@ func newCmdUpdatePipelineClusterObject(config *config) *cobra.Command {
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = config.loadEnvironmentID(environment)
+				environmentID, err = config.LoadEnvironmentID(environment)
 				if err != nil {
 					return err
 				}
 			}
 
-			pipelineID, err := config.loadPipelineID(pipelineKey)
+			pipelineID, err := config.LoadPipelineID(pipelineKey)
 			if err != nil {
 				return err
 			}
 
-			clusterObjectID, err := config.loadClusterObjectID(clusterObjectKey, environmentID)
+			clusterObjectID, err := config.LoadClusterObjectID(clusterObjectKey, environmentID)
 			if err != nil {
 				return err
 			}
 
-			err = config.cloud.UpdatePipelineClusterObjects(config.ctx, pipelineID, cloud.UpdatePipelineClusterObjects{
+			err = config.Cloud.UpdatePipelineClusterObjects(config.Ctx, pipelineID, cloud.UpdatePipelineClusterObjects{
 				ClusterObjectsIDs: []string{clusterObjectID},
 			})
 			if err != nil {
@@ -51,8 +52,8 @@ func newCmdUpdatePipelineClusterObject(config *config) *cobra.Command {
 	fs.StringVar(&clusterObjectKey, "cluster-object", "", "The cluster object ID or Name")
 	fs.BoolVar(&encrypt, "encrypt", false, "Encrypt file contents")
 
-	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.completePipelines)
-	_ = cmd.RegisterFlagCompletionFunc("cluster-object", config.completeClusterObjects)
+	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.CompletePipelines)
+	_ = cmd.RegisterFlagCompletionFunc("cluster-object", config.CompleteClusterObjects)
 	_ = cmd.MarkFlagRequired("cluster-object")
 	_ = cmd.MarkFlagRequired("pipeline")
 

@@ -7,13 +7,14 @@ import (
 	"strings"
 	"text/tabwriter"
 
+	cfg "github.com/calyptia/cli/pkg/config"
 	"github.com/calyptia/cli/pkg/formatters"
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
 	"gopkg.in/yaml.v2"
 )
 
-func newCmdDeleteTraceSession(config *config) *cobra.Command {
+func newCmdDeleteTraceSession(config *cfg.Config) *cobra.Command {
 	var confirmed bool
 	var pipelineKey string
 	var outputFormat, goTemplate string
@@ -37,12 +38,12 @@ func newCmdDeleteTraceSession(config *config) *cobra.Command {
 				}
 			}
 
-			pipelineID, err := config.loadPipelineID(pipelineKey)
+			pipelineID, err := config.LoadPipelineID(pipelineKey)
 			if err != nil {
 				return err
 			}
 
-			terminated, err := config.cloud.TerminateActiveTraceSession(config.ctx, pipelineID)
+			terminated, err := config.Cloud.TerminateActiveTraceSession(config.Ctx, pipelineID)
 			if err != nil {
 				return err
 			}
@@ -77,7 +78,7 @@ func newCmdDeleteTraceSession(config *config) *cobra.Command {
 
 	_ = cmd.MarkFlagRequired("pipeline")
 
-	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.completePipelines)
+	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.CompletePipelines)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
 	return cmd

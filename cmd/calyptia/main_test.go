@@ -1,74 +1,74 @@
 package main
 
-import (
-	"context"
-	"errors"
-	"os"
-	"reflect"
-	"strings"
-	"testing"
-)
+// import (
+// 	"context"
+// 	"errors"
+// 	"os"
+// 	"reflect"
+// 	"strings"
+// 	"testing"
+// )
 
-func configWithMock(mock *ClientMock) *config {
-	if mock == nil {
-		mock = &ClientMock{}
-	}
-	return &config{
-		ctx:          context.Background(),
-		cloud:        mock,
-		projectID:    "",
-		projectToken: "",
-	}
-}
+// func configWithMock(mock *ClientMock) *config {
+// 	if mock == nil {
+// 		mock = &ClientMock{}
+// 	}
+// 	return &config{
+// 		ctx:          context.Background(),
+// 		cloud:        mock,
+// 		projectID:    "",
+// 		projectToken: "",
+// 	}
+// }
 
-func wantEq(t *testing.T, want, got interface{}) {
-	t.Helper()
+// func wantEq(t *testing.T, want, got interface{}) {
+// 	t.Helper()
 
-	if target, ok := want.(error); ok {
-		if err, ok := got.(error); ok {
-			if !errors.Is(err, target) {
-				t.Fatalf("want %v, got %v", target, err)
-			}
-			return
-		}
-	}
+// 	if target, ok := want.(error); ok {
+// 		if err, ok := got.(error); ok {
+// 			if !errors.Is(err, target) {
+// 				t.Fatalf("want %v, got %v", target, err)
+// 			}
+// 			return
+// 		}
+// 	}
 
-	if !reflect.DeepEqual(want, got) {
-		t.Fatalf("want %+v, got %+v", want, got)
-	}
-}
+// 	if !reflect.DeepEqual(want, got) {
+// 		t.Fatalf("want %+v, got %+v", want, got)
+// 	}
+// }
 
-func wantNoEq(t *testing.T, want, got interface{}) {
-	t.Helper()
+// func wantNoEq(t *testing.T, want, got interface{}) {
+// 	t.Helper()
 
-	if reflect.DeepEqual(want, got) {
-		t.Fatalf("want %+v not equal to %+v", want, got)
-	}
-}
+// 	if reflect.DeepEqual(want, got) {
+// 		t.Fatalf("want %+v not equal to %+v", want, got)
+// 	}
+// }
 
-func wantErrMsg(t *testing.T, want string, got error) {
-	t.Helper()
+// func wantErrMsg(t *testing.T, want string, got error) {
+// 	t.Helper()
 
-	if got == nil || !strings.Contains(got.Error(), want) {
-		t.Fatalf("want error message %q, got %v", want, got)
-	}
-}
+// 	if got == nil || !strings.Contains(got.Error(), want) {
+// 		t.Fatalf("want error message %q, got %v", want, got)
+// 	}
+// }
 
-func setupFile(t *testing.T, name string, contents []byte) *os.File {
-	t.Helper()
+// func setupFile(t *testing.T, name string, contents []byte) *os.File {
+// 	t.Helper()
 
-	dir := t.TempDir()
-	f, err := os.CreateTemp(dir, name)
-	wantEq(t, nil, err)
+// 	dir := t.TempDir()
+// 	f, err := os.CreateTemp(dir, name)
+// 	wantEq(t, nil, err)
 
-	t.Cleanup(func() {
-		f.Close()
-	})
+// 	t.Cleanup(func() {
+// 		f.Close()
+// 	})
 
-	if contents != nil {
-		_, err = f.Write(contents)
-		wantEq(t, nil, err)
-	}
+// 	if contents != nil {
+// 		_, err = f.Write(contents)
+// 		wantEq(t, nil, err)
+// 	}
 
-	return f
-}
+// 	return f
+// }

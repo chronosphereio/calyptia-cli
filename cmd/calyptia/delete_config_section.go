@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"os"
 
+	cfg "github.com/calyptia/cli/pkg/config"
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
 )
 
-func newCmdDeleteConfigSection(config *config) *cobra.Command {
+func newCmdDeleteConfigSection(config *cfg.Config) *cobra.Command {
 	var confirmed bool
 
 	cmd := &cobra.Command{
@@ -16,7 +17,7 @@ func newCmdDeleteConfigSection(config *config) *cobra.Command {
 		Short:             "Delete config section",
 		Long:              "Delete a config section by either the plugin kind:name or ID",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.completeConfigSections,
+		ValidArgsFunction: config.CompleteConfigSections,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			configSectionKey := args[0]
 
@@ -34,12 +35,12 @@ func newCmdDeleteConfigSection(config *config) *cobra.Command {
 			}
 
 			ctx := cmd.Context()
-			configSectionID, err := config.loadConfigSectionID(ctx, configSectionKey)
+			configSectionID, err := config.LoadConfigSectionID(ctx, configSectionKey)
 			if err != nil {
 				return fmt.Errorf("load config section ID from key: %w", err)
 			}
 
-			err = config.cloud.DeleteConfigSection(config.ctx, configSectionID)
+			err = config.Cloud.DeleteConfigSection(config.Ctx, configSectionID)
 			if err != nil {
 				return fmt.Errorf("cloud: %w", err)
 			}

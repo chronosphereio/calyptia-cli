@@ -11,6 +11,7 @@ import (
 	"github.com/spf13/cobra"
 
 	cloudclient "github.com/calyptia/api/client"
+	cfg "github.com/calyptia/cli/pkg/config"
 )
 
 var (
@@ -29,9 +30,9 @@ func newCmd(ctx context.Context) *cobra.Command {
 	client := &cloudclient.Client{
 		Client: http.DefaultClient,
 	}
-	config := &config{
-		ctx:   ctx,
-		cloud: client,
+	config := &cfg.Config{
+		Ctx:   ctx,
+		Cloud: client,
 	}
 
 	token, err := savedToken()
@@ -59,7 +60,7 @@ func newCmd(ctx context.Context) *cobra.Command {
 		}
 
 		client.BaseURL = cloudURL.String()
-		config.baseURL = client.BaseURL
+		config.BaseURL = client.BaseURL
 
 		if token == "" {
 			return
@@ -71,8 +72,8 @@ func newCmd(ctx context.Context) *cobra.Command {
 		}
 
 		client.SetProjectToken(token)
-		config.projectToken = token
-		config.projectID = projectID
+		config.ProjectToken = token
+		config.ProjectID = projectID
 	})
 	cmd := &cobra.Command{
 		Use:           "calyptia",
@@ -100,14 +101,6 @@ func newCmd(ctx context.Context) *cobra.Command {
 	return cmd
 }
 
-type config struct {
-	ctx          context.Context
-	baseURL      string
-	cloud        Client
-	projectToken string
-	projectID    string
-}
-
 func env(key, fallback string) string {
 	v := os.Getenv(key)
 	if v == "" {
@@ -115,4 +108,3 @@ func env(key, fallback string) string {
 	}
 	return v
 }
-

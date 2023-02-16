@@ -10,9 +10,10 @@ import (
 	"golang.org/x/term"
 
 	awsclient "github.com/calyptia/cli/aws"
+	cfg "github.com/calyptia/cli/pkg/config"
 )
 
-func newCmdDeleteCoreInstanceOnAWS(config *config, client awsclient.Client) *cobra.Command {
+func newCmdDeleteCoreInstanceOnAWS(config *cfg.Config, client awsclient.Client) *cobra.Command {
 	var (
 		debug       bool
 		credentials string
@@ -29,7 +30,7 @@ func newCmdDeleteCoreInstanceOnAWS(config *config, client awsclient.Client) *cob
 		Aliases:           []string{"ec2", "amazon"},
 		Short:             "Delete a core instance from Amazon EC2",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.completeCoreInstances,
+		ValidArgsFunction: config.CompleteCoreInstances,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var err error
 
@@ -38,13 +39,13 @@ func newCmdDeleteCoreInstanceOnAWS(config *config, client awsclient.Client) *cob
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = config.loadEnvironmentID(environment)
+				environmentID, err = config.LoadEnvironmentID(environment)
 				if err != nil {
 					return err
 				}
 			}
 
-			coreInstanceID, err := config.loadCoreInstanceID(coreInstanceName, environmentID)
+			coreInstanceID, err := config.LoadCoreInstanceID(coreInstanceName, environmentID)
 			if !skipError && err != nil {
 				return fmt.Errorf("could not load core instance ID: %w", err)
 			}
@@ -102,7 +103,7 @@ func newCmdDeleteCoreInstanceOnAWS(config *config, client awsclient.Client) *cob
 				}
 			}
 
-			err = config.cloud.DeleteCoreInstance(ctx, coreInstanceID)
+			err = config.Cloud.DeleteCoreInstance(ctx, coreInstanceID)
 			if !skipError && err != nil {
 				return err
 			}
@@ -129,7 +130,7 @@ func newCmdDeleteCoreInstanceOnAWS(config *config, client awsclient.Client) *cob
 	fs.BoolVarP(&confirmDelete, "yes", "y", isNonInteractive, "Confirm deletion")
 	fs.BoolVar(&debug, "debug", false, "Enable debug logging")
 
-	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("environment", config.CompleteEnvironments)
 
 	return cmd
 }

@@ -12,7 +12,7 @@ import (
 
 	cloud "github.com/calyptia/api/types"
 	"github.com/calyptia/cli/k8s"
-	"github.com/calyptia/core-images-index/go-index"
+	cfg "github.com/calyptia/cli/pkg/config"
 )
 
 const (
@@ -20,7 +20,7 @@ const (
 	defaultCoreDockerImage = "ghcr.io/calyptia/core"
 )
 
-func newCmdCreateCoreInstanceOnK8s(config *config, testClientSet kubernetes.Interface) *cobra.Command {
+func newCmdCreateCoreInstanceOnK8s(config *cfg.Config, testClientSet kubernetes.Interface) *cobra.Command {
 	var coreInstanceName string
 	var coreInstanceVersion string
 	var noHealthCheckPipeline bool
@@ -46,13 +46,13 @@ func newCmdCreateCoreInstanceOnK8s(config *config, testClientSet kubernetes.Inte
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = config.loadEnvironmentID(environment)
+				environmentID, err = config.LoadEnvironmentID(environment)
 				if err != nil {
 					return err
 				}
 			}
 
-			created, err := config.cloud.CreateCoreInstance(ctx, cloud.CreateCoreInstance{
+			created, err := config.Cloud.CreateCoreInstance(ctx, cloud.CreateCoreInstance{
 				Name:                   coreInstanceName,
 				AddHealthCheckPipeline: !noHealthCheckPipeline,
 				ClusterLogging:         enableClusterLogging,
@@ -89,15 +89,15 @@ func newCmdCreateCoreInstanceOnK8s(config *config, testClientSet kubernetes.Inte
 			k8sClient := &k8s.Client{
 				Interface:    clientSet,
 				Namespace:    configOverrides.Context.Namespace,
-				ProjectToken: config.projectToken,
-				CloudBaseURL: config.baseURL,
+				ProjectToken: config.ProjectToken,
+				CloudBaseURL: config.BaseURL,
 				LabelsFunc: func() map[string]string {
 					return map[string]string{
 						k8s.LabelVersion:      version,
 						k8s.LabelPartOf:       "calyptia",
 						k8s.LabelManagedBy:    "calyptia-cli",
 						k8s.LabelCreatedBy:    "calyptia-cli",
-						k8s.LabelProjectID:    config.projectID,
+						k8s.LabelProjectID:    config.ProjectID,
 						k8s.LabelAggregatorID: created.ID,
 					}
 				},
@@ -162,22 +162,8 @@ func newCmdCreateCoreInstanceOnK8s(config *config, testClientSet kubernetes.Inte
 
 	clientcmd.BindOverrideFlags(configOverrides, fs, clientcmd.RecommendedConfigOverrideFlags("kube-"))
 
-	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
-	_ = cmd.RegisterFlagCompletionFunc("version", config.completeCoreContainerVersion)
+	_ = cmd.RegisterFlagCompletionFunc("environment", config.CompleteEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("version", config.CompleteCoreContainerVersion)
 
 	return cmd
-}
-
-func (config *config) completeCoreContainerVersion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	containerIndex, err := index.NewContainer()
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
-
-	vv, err := containerIndex.All(config.ctx)
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
-
-	return vv, cobra.ShellCompDirectiveNoFileComp
 }

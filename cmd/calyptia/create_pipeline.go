@@ -15,10 +15,11 @@ import (
 	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
+	cfg "github.com/calyptia/cli/pkg/config"
 	"github.com/calyptia/cli/pkg/formatters"
 )
 
-func newCmdCreatePipeline(config *config) *cobra.Command {
+func newCmdCreatePipeline(config *cfg.Config) *cobra.Command {
 	var coreInstanceKey string
 	var name string
 	var replicasCount uint
@@ -91,13 +92,13 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = config.loadEnvironmentID(environment)
+				environmentID, err = config.LoadEnvironmentID(environment)
 				if err != nil {
 					return err
 				}
 			}
 
-			coreInstanceID, err := config.loadCoreInstanceID(coreInstanceKey, environmentID)
+			coreInstanceID, err := config.LoadCoreInstanceID(coreInstanceKey, environmentID)
 			if err != nil {
 				return err
 			}
@@ -118,7 +119,7 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 				in.Image = &image
 			}
 
-			a, err := config.cloud.CreatePipeline(config.ctx, coreInstanceID, in)
+			a, err := config.Cloud.CreatePipeline(config.Ctx, coreInstanceID, in)
 			if err != nil {
 				if e, ok := err.(*cloud.Error); ok && e.Detail != nil {
 					return fmt.Errorf("could not create pipeline: %s: %s", err, *e.Detail)
@@ -167,13 +168,13 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
-	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
-	_ = cmd.RegisterFlagCompletionFunc("core-instance", config.completeCoreInstances)
+	_ = cmd.RegisterFlagCompletionFunc("environment", config.CompleteEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("core-instance", config.CompleteCoreInstances)
 	_ = cmd.RegisterFlagCompletionFunc("secrets-format", func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
 		return []string{"auto", "env", "json", "yaml"}, cobra.ShellCompDirectiveNoFileComp
 	})
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
-	_ = cmd.RegisterFlagCompletionFunc("resource-profile", config.completeResourceProfiles)
+	_ = cmd.RegisterFlagCompletionFunc("resource-profile", config.CompleteResourceProfiles)
 
 	_ = cmd.MarkFlagRequired("core-instance") // TODO: use default core-instance key from config cmd.
 

@@ -1,14 +1,17 @@
 package completer
 
 import (
+	"fmt"
 	"strings"
 
+	"github.com/calyptia/cli/pkg/config"
 	"github.com/calyptia/cli/pkg/helpers"
 	fluentbitconfig "github.com/calyptia/go-fluentbit-config"
 	"github.com/spf13/cobra"
 )
 
 type Completer struct {
+	Config *config.Config
 }
 
 func (c *Completer) CompletePluginKinds(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -25,6 +28,42 @@ func (c *Completer) CompletePluginNames(cmd *cobra.Command, args []string, toCom
 		kind = ""
 	}
 	return pluginNames(kind), cobra.ShellCompDirectiveNoFileComp
+}
+
+func (c *Completer) CompletePluginProps(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	var kind, name string
+
+	if len(args) == 1 {
+		ctx := cmd.Context()
+		key := args[0]
+		id, err := c.Config.LoadConfigSectionID(ctx, key)
+		if err != nil {
+			cobra.CompError(err.Error())
+			return nil, cobra.ShellCompDirectiveError
+		}
+
+		cs, err := c.Config.Cloud.ConfigSection(ctx, id)
+		if err != nil {
+			cobra.CompError(fmt.Sprintf("cloud: %v", err))
+			return nil, cobra.ShellCompDirectiveError
+		}
+
+		kind = string(cs.Kind)
+		name = helpers.PairsName(cs.Properties)
+	} else {
+		var err error
+		kind, err = cmd.Flags().GetString("kind")
+		if err != nil {
+			kind = ""
+		}
+
+		name, err = cmd.Flags().GetString("name")
+		if err != nil {
+			name = ""
+		}
+	}
+
+	return helpers.PluginProps(kind, name), cobra.ShellCompDirectiveNoFileComp
 }
 
 func pluginNames(kind string) []string {
