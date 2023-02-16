@@ -85,8 +85,8 @@ func newCmd(ctx context.Context) *cobra.Command {
 	cmd.SetOut(os.Stdout)
 
 	fs := cmd.PersistentFlags()
-	fs.StringVar(&cloudURLStr, "cloud-url", env("CALYPTIA_CLOUD_URL", cloudURLStr), "Calyptia Cloud URL")
-	fs.StringVar(&token, "token", env("CALYPTIA_CLOUD_TOKEN", token), "Calyptia Cloud Project token")
+	fs.StringVar(&cloudURLStr, "cloud-url", cfg.Env("CALYPTIA_CLOUD_URL", cloudURLStr), "Calyptia Cloud URL")
+	fs.StringVar(&token, "token", cfg.Env("CALYPTIA_CLOUD_TOKEN", token), "Calyptia Cloud Project token")
 
 	cmd.AddCommand(
 		newCmdConfig(config),
@@ -99,12 +99,4 @@ func newCmd(ctx context.Context) *cobra.Command {
 	)
 
 	return cmd
-}
-
-func env(key, fallback string) string {
-	v := os.Getenv(key)
-	if v == "" {
-		return fallback
-	}
-	return v
 }
