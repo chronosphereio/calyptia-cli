@@ -11,6 +11,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
+	"github.com/calyptia/cli/pkg/formatters"
 )
 
 func newCmdGetFleets(config *config) *cobra.Command {
@@ -76,7 +77,7 @@ func newCmdGetFleets(config *config) *cobra.Command {
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
-	_ = cmd.RegisterFlagCompletionFunc("output-format", completeOutputFormat)
+	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
 	return cmd
 }

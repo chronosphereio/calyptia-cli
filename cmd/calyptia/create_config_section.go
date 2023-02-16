@@ -12,6 +12,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
+	"github.com/calyptia/cli/pkg/completer"
 	fluentbitconfig "github.com/calyptia/go-fluentbit-config"
 )
 
@@ -20,6 +21,7 @@ func newCmdCreateConfigSection(config *config) *cobra.Command {
 	var name string
 	var propsSlice []string
 	var outputFormat, goTemplate string
+	completer := completer.Completer{}
 
 	cmd := &cobra.Command{
 		Use:   "config_section", // child of `create`
@@ -64,19 +66,11 @@ func newCmdCreateConfigSection(config *config) *cobra.Command {
 	_ = cmd.MarkFlagRequired("kind")
 	_ = cmd.MarkFlagRequired("name")
 
-	_ = cmd.RegisterFlagCompletionFunc("kind", completePluginKinds)
-	_ = cmd.RegisterFlagCompletionFunc("name", completePluginNames)
+	_ = cmd.RegisterFlagCompletionFunc("kind", completer.CompletePluginKinds)
+	_ = cmd.RegisterFlagCompletionFunc("name", completer.CompletePluginNames)
 	_ = cmd.RegisterFlagCompletionFunc("prop", config.completePluginProps)
 
 	return cmd
-}
-
-func completePluginKinds(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	return []string{
-		"input",
-		"filter",
-		"output",
-	}, cobra.ShellCompDirectiveNoFileComp
 }
 
 func (config *config) completePluginProps(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -113,39 +107,6 @@ func (config *config) completePluginProps(cmd *cobra.Command, args []string, toC
 	}
 
 	return pluginProps(kind, name), cobra.ShellCompDirectiveNoFileComp
-}
-
-func completePluginNames(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	kind, err := cmd.Flags().GetString("kind")
-	if err != nil {
-		kind = ""
-	}
-	return pluginNames(kind), cobra.ShellCompDirectiveNoFileComp
-}
-
-func pluginNames(kind string) []string {
-	var out []string
-	add := func(s string) {
-		s = strings.ToLower(s)
-		out = append(out, s)
-	}
-	if kind == "" || kind == "input" {
-		for _, in := range fluentbitconfig.DefaultSchema.Inputs {
-			add(in.Name)
-		}
-	}
-	if kind == "" || kind == "filter" {
-		for _, f := range fluentbitconfig.DefaultSchema.Filters {
-			add(f.Name)
-		}
-	}
-	if kind == "" || kind == "output" {
-		for _, o := range fluentbitconfig.DefaultSchema.Outputs {
-			add(o.Name)
-		}
-	}
-
-	return uniqueSlice(out)
 }
 
 // pluginProps -

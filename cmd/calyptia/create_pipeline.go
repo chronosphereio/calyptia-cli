@@ -15,6 +15,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/pkg/formatters"
 )
 
 func newCmdCreatePipeline(config *config) *cobra.Command {
@@ -171,7 +172,7 @@ func newCmdCreatePipeline(config *config) *cobra.Command {
 	_ = cmd.RegisterFlagCompletionFunc("secrets-format", func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
 		return []string{"auto", "env", "json", "yaml"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	_ = cmd.RegisterFlagCompletionFunc("output-format", completeOutputFormat)
+	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("resource-profile", config.completeResourceProfiles)
 
 	_ = cmd.MarkFlagRequired("core-instance") // TODO: use default core-instance key from config cmd.

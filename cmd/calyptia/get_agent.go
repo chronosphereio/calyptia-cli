@@ -12,6 +12,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/pkg/formatters"
 )
 
 func newCmdGetAgents(config *config) *cobra.Command {
@@ -94,7 +95,7 @@ func newCmdGetAgents(config *config) *cobra.Command {
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
 	_ = cmd.RegisterFlagCompletionFunc("fleet", config.completeFleets)
-	_ = cmd.RegisterFlagCompletionFunc("output-format", completeOutputFormat)
+	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
 	return cmd
 }
@@ -173,7 +174,7 @@ func newCmdGetAgent(config *config) *cobra.Command {
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
-	_ = cmd.RegisterFlagCompletionFunc("output-format", completeOutputFormat)
+	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
 	return cmd
 }

@@ -10,6 +10,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/pkg/formatters"
 )
 
 func newCmdGetResourceProfiles(config *config) *cobra.Command {
@@ -82,7 +83,7 @@ func newCmdGetResourceProfiles(config *config) *cobra.Command {
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
-	_ = cmd.RegisterFlagCompletionFunc("output-format", completeOutputFormat)
+	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("core-instance", config.completeCoreInstances)
 
 	_ = cmd.MarkFlagRequired("core-instance") // TODO: use default aggregator ID from config cmd.

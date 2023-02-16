@@ -12,6 +12,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
+	"github.com/calyptia/cli/pkg/formatters"
 	fluentbitconfig "github.com/calyptia/go-fluentbit-config"
 )
 
@@ -74,7 +75,7 @@ func newCmdCreateFleet(config *config) *cobra.Command {
 	_ = cmd.MarkFlagRequired("name")
 
 	_ = cmd.RegisterFlagCompletionFunc("config-format", completeConfigFormat)
-	_ = cmd.RegisterFlagCompletionFunc("output-format", completeOutputFormat)
+	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
 	return cmd
 }

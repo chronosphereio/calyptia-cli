@@ -11,6 +11,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
+	"github.com/calyptia/cli/pkg/formatters"
 )
 
 func newCmdGetTraceRecords(config *config) *cobra.Command {
@@ -69,7 +70,7 @@ func newCmdGetTraceRecords(config *config) *cobra.Command {
 
 	_ = cmd.MarkFlagRequired("session")
 
-	_ = cmd.RegisterFlagCompletionFunc("output-format", completeOutputFormat)
+	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("session", config.completeTraceSessions)
 
 	return cmd

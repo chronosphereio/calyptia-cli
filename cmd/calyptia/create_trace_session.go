@@ -11,6 +11,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
+	"github.com/calyptia/cli/pkg/formatters"
 	fluentbitconfig "github.com/calyptia/go-fluentbit-config"
 )
 
@@ -71,7 +72,7 @@ func newCmdCreateTraceSession(config *config) *cobra.Command {
 	_ = cmd.MarkFlagRequired("pipeline")
 
 	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.completePipelines)
-	_ = cmd.RegisterFlagCompletionFunc("output-format", completeOutputFormat)
+	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("plugins", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return config.completePipelinePlugins(pipelineKey, cmd, args, toComplete)
 	})

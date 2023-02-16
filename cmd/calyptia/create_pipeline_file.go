@@ -11,6 +11,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/pkg/formatters"
 )
 
 func newCmdCreatePipelineFile(config *config) *cobra.Command {
@@ -77,7 +78,7 @@ func newCmdCreatePipelineFile(config *config) *cobra.Command {
 	_ = cmd.MarkFlagRequired("file")
 
 	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.completePipelines)
-	_ = cmd.RegisterFlagCompletionFunc("output-format", completeOutputFormat)
+	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
 	return cmd
 }

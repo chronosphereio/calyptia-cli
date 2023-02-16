@@ -7,6 +7,7 @@ import (
 	"strings"
 	"text/tabwriter"
 
+	"github.com/calyptia/cli/pkg/formatters"
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
 	"gopkg.in/yaml.v2"
@@ -77,7 +78,7 @@ func newCmdDeleteTraceSession(config *config) *cobra.Command {
 	_ = cmd.MarkFlagRequired("pipeline")
 
 	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.completePipelines)
-	_ = cmd.RegisterFlagCompletionFunc("output-format", completeOutputFormat)
+	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
 	return cmd
 }

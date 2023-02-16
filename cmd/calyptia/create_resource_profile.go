@@ -10,6 +10,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/pkg/formatters"
 )
 
 type ResourceProfileSpec struct {
@@ -126,7 +127,7 @@ func newCmdCreateResourceProfile(config *config) *cobra.Command {
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
 	_ = cmd.RegisterFlagCompletionFunc("core-instance", config.completeCoreInstances)
-	_ = cmd.RegisterFlagCompletionFunc("output-format", completeOutputFormat)
+	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("name", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return nil, cobra.ShellCompDirectiveNoFileComp
 	})

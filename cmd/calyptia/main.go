@@ -116,6 +116,3 @@ func env(key, fallback string) string {
 	return v
 }
 
-func completeOutputFormat(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
-	return []string{"table", "json", "yaml", "go-template"}, cobra.ShellCompDirectiveNoFileComp
-}
