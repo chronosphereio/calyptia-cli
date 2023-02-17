@@ -32,7 +32,7 @@ func newCmdGetTraceSessions(config *cnfg.Config) *cobra.Command {
 		Long: "List all trace sessions from the given pipeline,\n" +
 			"sorted by creation time in descending order.",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			pipelineID, err := config.LoadPipelineID(pipelineKey)
+			pipelineID, err := completer.LoadPipelineID(pipelineKey)
 			if err != nil {
 				return err
 			}
@@ -112,7 +112,7 @@ func newCmdGetTraceSession(config *cnfg.Config) *cobra.Command {
 					return errors.New("flag needs an argument: --pipeline")
 				}
 
-				pipelineID, err := config.LoadPipelineID(pipelineKey)
+				pipelineID, err := completer.LoadPipelineID(pipelineKey)
 				if err != nil {
 					return err
 				}

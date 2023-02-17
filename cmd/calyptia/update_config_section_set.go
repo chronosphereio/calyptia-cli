@@ -21,14 +21,14 @@ func newCmdUpdateConfigSectionSet(config *cfg.Config) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			pipelineKey := args[0]
-			pipelineID, err := config.LoadPipelineID(pipelineKey)
+			pipelineID, err := completer.LoadPipelineID(pipelineKey)
 			if err != nil {
 				return fmt.Errorf("load pipeline ID from key: %w", err)
 			}
 
 			var configSectionIDs []string
 			for _, key := range configSectionKeys {
-				id, err := config.LoadConfigSectionID(ctx, key)
+				id, err := completer.LoadConfigSectionID(ctx, key)
 				if err != nil {
 					return fmt.Errorf("load config section ID from key: %w", err)
 				}

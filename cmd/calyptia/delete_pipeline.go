@@ -42,7 +42,7 @@ func newCmdDeletePipeline(config *cfg.Config) *cobra.Command {
 				}
 			}
 
-			pipelineID, err := config.LoadPipelineID(pipelineKey)
+			pipelineID, err := completer.LoadPipelineID(pipelineKey)
 			if err != nil {
 				return err
 			}
@@ -76,13 +76,13 @@ func newCmdDeletePipelines(config *cfg.Config) *cobra.Command {
 			var environmentID string
 			if environmentKey != "" {
 				var err error
-				environmentID, err = config.LoadEnvironmentID(environmentKey)
+				environmentID, err = completer.LoadEnvironmentID(environmentKey)
 				if err != nil {
 					return err
 				}
 			}
 
-			coreInstanceID, err := config.LoadCoreInstanceID(coreInstanceKey, environmentID)
+			coreInstanceID, err := completer.LoadCoreInstanceID(coreInstanceKey, environmentID)
 			if err != nil {
 				return err
 			}

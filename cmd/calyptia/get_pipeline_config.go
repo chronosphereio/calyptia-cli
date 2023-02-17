@@ -26,7 +26,7 @@ func newCmdGetPipelineConfigHistory(config *cfg.Config) *cobra.Command {
 		Use:   "pipeline_config_history",
 		Short: "Display latest config history from a pipeline",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			pipelineID, err := config.LoadPipelineID(pipelineKey)
+			pipelineID, err := completer.LoadPipelineID(pipelineKey)
 			if err != nil {
 				return err
 			}

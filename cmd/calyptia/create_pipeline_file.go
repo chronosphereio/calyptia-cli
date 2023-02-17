@@ -35,7 +35,7 @@ func newCmdCreatePipelineFile(config *cfg.Config) *cobra.Command {
 				return err
 			}
 
-			pipelineID, err := config.LoadPipelineID(pipelineKey)
+			pipelineID, err := completer.LoadPipelineID(pipelineKey)
 			if err != nil {
 				return err
 			}

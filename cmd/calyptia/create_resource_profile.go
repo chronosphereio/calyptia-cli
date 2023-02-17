@@ -71,13 +71,13 @@ func newCmdCreateResourceProfile(config *cfg.Config) *cobra.Command {
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = config.LoadEnvironmentID(environment)
+				environmentID, err = completer.LoadEnvironmentID(environment)
 				if err != nil {
 					return err
 				}
 			}
 
-			aggregatorID, err := config.LoadCoreInstanceID(coreInstanceKey, environmentID)
+			aggregatorID, err := completer.LoadCoreInstanceID(coreInstanceKey, environmentID)
 			if err != nil {
 				return err
 			}

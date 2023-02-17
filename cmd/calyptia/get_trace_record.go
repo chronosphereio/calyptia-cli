@@ -11,6 +11,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
+	"github.com/calyptia/cli/pkg/completer"
 	cfg "github.com/calyptia/cli/pkg/config"
 	"github.com/calyptia/cli/pkg/formatters"
 )
@@ -21,7 +22,7 @@ func newCmdGetTraceRecords(config *cfg.Config) *cobra.Command {
 	var before string
 	var showIDs bool
 	var outputFormat, goTemplate string
-
+	completer := completer.Completer{Config: config}
 	cmd := &cobra.Command{
 		Use:   "trace_records", // child of `create`
 		Short: "List trace records",
@@ -72,7 +73,7 @@ func newCmdGetTraceRecords(config *cfg.Config) *cobra.Command {
 	_ = cmd.MarkFlagRequired("session")
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
-	_ = cmd.RegisterFlagCompletionFunc("session", config.CompleteTraceSessions)
+	_ = cmd.RegisterFlagCompletionFunc("session", completer.CompleteTraceSessions)
 
 	return cmd
 }

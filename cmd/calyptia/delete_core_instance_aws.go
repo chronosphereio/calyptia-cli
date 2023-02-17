@@ -41,13 +41,13 @@ func newCmdDeleteCoreInstanceOnAWS(config *cfg.Config, client awsclient.Client) 
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = config.LoadEnvironmentID(environment)
+				environmentID, err = completer.LoadEnvironmentID(environment)
 				if err != nil {
 					return err
 				}
 			}
 
-			coreInstanceID, err := config.LoadCoreInstanceID(coreInstanceName, environmentID)
+			coreInstanceID, err := completer.LoadCoreInstanceID(coreInstanceName, environmentID)
 			if !skipError && err != nil {
 				return fmt.Errorf("could not load core instance ID: %w", err)
 			}

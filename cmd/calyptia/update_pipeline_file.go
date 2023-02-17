@@ -30,7 +30,7 @@ func newCmdUpdatePipelineFile(config *cfg.Config) *cobra.Command {
 			name := filepath.Base(file)
 			name = strings.TrimSuffix(name, filepath.Ext(name))
 
-			pipelineID, err := config.LoadPipelineID(pipelineKey)
+			pipelineID, err := completer.LoadPipelineID(pipelineKey)
 			if err != nil {
 				return err
 			}

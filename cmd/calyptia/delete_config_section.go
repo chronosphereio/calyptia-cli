@@ -37,7 +37,7 @@ func newCmdDeleteConfigSection(config *cfg.Config) *cobra.Command {
 			}
 
 			ctx := cmd.Context()
-			configSectionID, err := config.LoadConfigSectionID(ctx, configSectionKey)
+			configSectionID, err := completer.LoadConfigSectionID(ctx, configSectionKey)
 			if err != nil {
 				return fmt.Errorf("load config section ID from key: %w", err)
 			}

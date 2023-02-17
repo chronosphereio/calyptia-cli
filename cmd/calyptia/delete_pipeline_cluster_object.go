@@ -20,18 +20,18 @@ func newCmdDeletePipelineClusterObject(config *cfg.Config) *cobra.Command {
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = config.LoadEnvironmentID(environment)
+				environmentID, err = completer.LoadEnvironmentID(environment)
 				if err != nil {
 					return err
 				}
 			}
 
-			pipelineID, err := config.LoadPipelineID(pipelineKey)
+			pipelineID, err := completer.LoadPipelineID(pipelineKey)
 			if err != nil {
 				return err
 			}
 
-			clusterObjectID, err := config.LoadClusterObjectID(clusterObjectKey, environmentID)
+			clusterObjectID, err := completer.LoadClusterObjectID(clusterObjectKey, environmentID)
 			if err != nil {
 				return err
 			}
@@ -51,7 +51,7 @@ func newCmdDeletePipelineClusterObject(config *cfg.Config) *cobra.Command {
 	fs.BoolVar(&encrypt, "encrypt", false, "Encrypt file contents")
 
 	_ = cmd.RegisterFlagCompletionFunc("pipeline", completer.CompletePipelines)
-	_ = cmd.RegisterFlagCompletionFunc("cluster-object", config.CompleteClusterObjects)
+	_ = cmd.RegisterFlagCompletionFunc("cluster-object", completer.CompleteClusterObjects)
 	_ = cmd.MarkFlagRequired("cluster-object")
 	_ = cmd.MarkFlagRequired("pipeline")
 

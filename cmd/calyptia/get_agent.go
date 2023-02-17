@@ -31,7 +31,7 @@ func newCmdGetAgents(config *cfg.Config) *cobra.Command {
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = config.LoadEnvironmentID(environment)
+				environmentID, err = completer.LoadEnvironmentID(environment)
 				if err != nil {
 					return err
 				}
@@ -45,7 +45,7 @@ func newCmdGetAgents(config *cfg.Config) *cobra.Command {
 
 			fs := cmd.Flags()
 			if fs.Changed("fleet") {
-				fleedID, err := config.LoadFleetID(fleetKey)
+				fleedID, err := completer.LoadFleetID(fleetKey)
 				if err != nil {
 					return err
 				}
@@ -114,19 +114,19 @@ func newCmdGetAgent(config *cfg.Config) *cobra.Command {
 		Use:               "agent AGENT",
 		Short:             "Display a specific agent",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.CompleteAgents,
+		ValidArgsFunction: completer.CompleteAgents,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = config.LoadEnvironmentID(environment)
+				environmentID, err = completer.LoadEnvironmentID(environment)
 				if err != nil {
 					return err
 				}
 			}
 
 			agentKey := args[0]
-			agentID, err := config.LoadAgentID(agentKey, environmentID)
+			agentID, err := completer.LoadAgentID(agentKey, environmentID)
 			if err != nil {
 				return err
 			}

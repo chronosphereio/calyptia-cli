@@ -27,7 +27,7 @@ func newCmdUpdateConfigSection(config *cfg.Config) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			configSectionKey := args[0]
-			configSectionID, err := config.LoadConfigSectionID(ctx, configSectionKey)
+			configSectionID, err := completer.LoadConfigSectionID(ctx, configSectionKey)
 			if err != nil {
 				return fmt.Errorf("load config section ID from key: %w", err)
 			}

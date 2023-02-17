@@ -40,14 +40,14 @@ func newCmdDeleteCoreInstanceK8s(config *cfg.Config, testClientSet kubernetes.In
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = config.LoadEnvironmentID(environment)
+				environmentID, err = completer.LoadEnvironmentID(environment)
 				if err != nil {
 					return err
 				}
 			}
 
 			coreInstanceKey := args[0]
-			coreInstanceID, err := config.LoadCoreInstanceID(coreInstanceKey, environmentID)
+			coreInstanceID, err := completer.LoadCoreInstanceID(coreInstanceKey, environmentID)
 			if err != nil {
 				return err
 			}

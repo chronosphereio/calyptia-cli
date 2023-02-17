@@ -32,12 +32,12 @@ func newCmdGetPipelines(config *cfg.Config) *cobra.Command {
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = config.LoadEnvironmentID(environment)
+				environmentID, err = completer.LoadEnvironmentID(environment)
 				if err != nil {
 					return err
 				}
 			}
-			coreInstanceID, err := config.LoadCoreInstanceID(coreInstanceKey, environmentID)
+			coreInstanceID, err := completer.LoadCoreInstanceID(coreInstanceKey, environmentID)
 			if err != nil {
 				return err
 			}
@@ -113,7 +113,7 @@ func newCmdGetPipeline(config *cfg.Config) *cobra.Command {
 		Short:             "Display a pipelines by ID or name",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			pipelineKey := args[0]
-			pipelineID, err := config.LoadPipelineID(pipelineKey)
+			pipelineID, err := completer.LoadPipelineID(pipelineKey)
 			if err != nil {
 				return err
 			}

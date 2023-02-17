@@ -11,6 +11,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
+	"github.com/calyptia/cli/pkg/completer"
 	cfg "github.com/calyptia/cli/pkg/config"
 	"github.com/calyptia/cli/pkg/formatters"
 )
@@ -81,6 +82,8 @@ func newCmdGetIngestChecks(c *cfg.Config) *cobra.Command {
 		goTemplate   string
 		environment  string
 	)
+	completer := completer.Completer{Config: c}
+
 	cmd := &cobra.Command{
 		Use:   "ingest_checks CORE_INSTANCE",
 		Short: "Get a list of ingest checks",
@@ -91,12 +94,12 @@ func newCmdGetIngestChecks(c *cfg.Config) *cobra.Command {
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = c.LoadEnvironmentID(environment)
+				environmentID, err = completer.LoadEnvironmentID(environment)
 				if err != nil {
 					return err
 				}
 			}
-			aggregatorID, err := c.LoadCoreInstanceID(id, environmentID)
+			aggregatorID, err := completer.LoadCoreInstanceID(id, environmentID)
 			if err != nil {
 				return err
 			}

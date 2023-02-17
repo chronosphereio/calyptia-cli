@@ -25,7 +25,7 @@ func newCmdGetPipelineClusterObjects(config *cfg.Config) *cobra.Command {
 		Use:   "pipeline_cluster_objects",
 		Short: "Get pipeline cluster objects",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			pipelineID, err := config.LoadPipelineID(pipelineKey)
+			pipelineID, err := completer.LoadPipelineID(pipelineKey)
 			if err != nil {
 				return err
 			}

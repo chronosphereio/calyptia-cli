@@ -29,7 +29,7 @@ func newCmdRolloutPipeline(config *cfg.Config) *cobra.Command {
 		Short:             "Rollout a pipeline to a previous config",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			pipelineKey := args[0]
-			pipelineID, err := config.LoadPipelineID(pipelineKey)
+			pipelineID, err := completer.LoadPipelineID(pipelineKey)
 			if err != nil {
 				return err
 			}

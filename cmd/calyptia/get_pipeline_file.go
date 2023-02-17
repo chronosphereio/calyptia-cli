@@ -27,7 +27,7 @@ func newCmdGetPipelineFiles(config *cfg.Config) *cobra.Command {
 		Use:   "pipeline_files",
 		Short: "Get pipeline files",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			pipelineID, err := config.LoadPipelineID(pipelineKey)
+			pipelineID, err := completer.LoadPipelineID(pipelineKey)
 			if err != nil {
 				return err
 			}
@@ -83,7 +83,7 @@ func newCmdGetPipelineFile(config *cfg.Config) *cobra.Command {
 		Use:   "pipeline_file",
 		Short: "Get a single file from a pipeline by its name",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			pipelineID, err := config.LoadPipelineID(pipelineKey)
+			pipelineID, err := completer.LoadPipelineID(pipelineKey)
 			if err != nil {
 				return err
 			}

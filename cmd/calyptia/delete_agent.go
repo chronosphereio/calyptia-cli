@@ -23,7 +23,7 @@ func newCmdDeleteAgent(config *cfg.Config) *cobra.Command {
 		Use:               "agent AGENT",
 		Short:             "Delete a single agent by ID or name",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.CompleteAgents,
+		ValidArgsFunction: completer.CompleteAgents,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 
@@ -31,13 +31,13 @@ func newCmdDeleteAgent(config *cfg.Config) *cobra.Command {
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = config.LoadEnvironmentID(environment)
+				environmentID, err = completer.LoadEnvironmentID(environment)
 				if err != nil {
 					return err
 				}
 			}
 
-			agentID, err := config.LoadAgentID(agentKey, environmentID)
+			agentID, err := completer.LoadAgentID(agentKey, environmentID)
 			if err != nil {
 				return err
 			}

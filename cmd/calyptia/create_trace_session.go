@@ -31,7 +31,7 @@ func newCmdCreateTraceSession(config *cfg.Config) *cobra.Command {
 			"Either terminate the current active one and create a new one,\n" +
 			"or update it and extend its lifespan.",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			pipelineID, err := config.LoadPipelineID(pipelineKey)
+			pipelineID, err := completer.LoadPipelineID(pipelineKey)
 			if err != nil {
 				return err
 			}
@@ -76,7 +76,7 @@ func newCmdCreateTraceSession(config *cfg.Config) *cobra.Command {
 	_ = cmd.RegisterFlagCompletionFunc("pipeline", completer.CompletePipelines)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("plugins", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return config.CompletePipelinePlugins(pipelineKey, cmd, args, toComplete)
+		return completer.CompletePipelinePlugins(pipelineKey, cmd, args, toComplete)
 	})
 
 	return cmd

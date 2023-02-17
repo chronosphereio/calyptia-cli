@@ -20,11 +20,11 @@ func newCmdUpdateAgent(config *cfg.Config) *cobra.Command {
 		Use:               "agent AGENT",
 		Short:             "Update a single agent by ID or name",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.CompleteAgents,
+		ValidArgsFunction: completer.CompleteAgents,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			agentKey := args[0]
 
-			agentID, err := config.LoadAgentID(agentKey, "")
+			agentID, err := completer.LoadAgentID(agentKey, "")
 			if err != nil {
 				return err
 			}
@@ -36,14 +36,14 @@ func newCmdUpdateAgent(config *cfg.Config) *cobra.Command {
 				in.Name = &newName
 			}
 			if fs.Changed("environment") {
-				envID, err := config.LoadEnvironmentID(environment)
+				envID, err := completer.LoadEnvironmentID(environment)
 				if err != nil {
 					return err
 				}
 				in.EnvironmentID = &envID
 			}
 			if fs.Changed("fleet") {
-				fleetID, err := config.LoadFleetID(fleetKey)
+				fleetID, err := completer.LoadFleetID(fleetKey)
 				if err != nil {
 					return err
 				}
