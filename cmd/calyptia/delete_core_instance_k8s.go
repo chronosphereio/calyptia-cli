@@ -13,6 +13,7 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 
 	"github.com/calyptia/cli/k8s"
+	"github.com/calyptia/cli/pkg/completer"
 	cfg "github.com/calyptia/cli/pkg/config"
 )
 
@@ -24,6 +25,7 @@ const (
 func newCmdDeleteCoreInstanceK8s(config *cfg.Config, testClientSet kubernetes.Interface) *cobra.Command {
 	var skipError, confirmed bool
 	var environment string
+	completer := completer.Completer{Config: config}
 
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	configOverrides := &clientcmd.ConfigOverrides{}
@@ -32,7 +34,7 @@ func newCmdDeleteCoreInstanceK8s(config *cfg.Config, testClientSet kubernetes.In
 		Aliases:           []string{"kube", "k8s"},
 		Short:             "Delete a core instance and all of its kubernetes resources",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.CompleteCoreInstances,
+		ValidArgsFunction: completer.CompleteCoreInstances,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.Background()
 			var environmentID string
@@ -223,7 +225,7 @@ func newCmdDeleteCoreInstanceK8s(config *cfg.Config, testClientSet kubernetes.In
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 
 	clientcmd.BindOverrideFlags(configOverrides, fs, clientcmd.RecommendedConfigOverrideFlags("kube-"))
-	_ = cmd.RegisterFlagCompletionFunc("environment", config.CompleteEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("environment", completer.CompleteEnvironments)
 
 	return cmd
 }

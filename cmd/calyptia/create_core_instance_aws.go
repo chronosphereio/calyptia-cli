@@ -16,6 +16,7 @@ import (
 
 	"github.com/calyptia/api/types"
 	awsclient "github.com/calyptia/cli/aws"
+	"github.com/calyptia/cli/pkg/completer"
 	cfg "github.com/calyptia/cli/pkg/config"
 )
 
@@ -114,6 +115,7 @@ func newCmdCreateCoreInstanceOnAWS(config *cfg.Config, client awsclient.Client, 
 		githubToken            string
 		useTestImages          bool
 	)
+	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:     "aws",
@@ -245,7 +247,7 @@ func newCmdCreateCoreInstanceOnAWS(config *cfg.Config, client awsclient.Client, 
 	_ = fs.MarkHidden("github-token")
 	_ = fs.MarkHidden("use-test-images")
 
-	_ = cmd.RegisterFlagCompletionFunc("environment", config.CompleteEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("environment", completer.CompleteEnvironments)
 
 	return cmd
 }

@@ -3,12 +3,14 @@ package main
 import (
 	"fmt"
 
+	"github.com/calyptia/cli/pkg/completer"
 	cfg "github.com/calyptia/cli/pkg/config"
 	"github.com/spf13/cobra"
 )
 
 func newCmdUpdateConfigSectionSet(config *cfg.Config) *cobra.Command {
 	var configSectionKeys []string
+	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:               "config_section_set PIPELINE", // child of `update`
@@ -47,7 +49,7 @@ func newCmdUpdateConfigSectionSet(config *cfg.Config) *cobra.Command {
 	fs := cmd.Flags()
 	fs.StringSliceVarP(&configSectionKeys, "config-section", "c", nil, "List of config sections.\nFormat is either: -c one -c two, or -c one,two.\nEither the plugin kind:name or the ID")
 
-	_ = cmd.RegisterFlagCompletionFunc("config-section", config.CompleteConfigSections)
+	_ = cmd.RegisterFlagCompletionFunc("config-section", completer.CompleteConfigSections)
 
 	return cmd
 }

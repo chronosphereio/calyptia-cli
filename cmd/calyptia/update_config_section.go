@@ -23,7 +23,7 @@ func newCmdUpdateConfigSection(config *cfg.Config) *cobra.Command {
 		Short:             "Update a config section",
 		Long:              "Update a config section either by the plugin kind:name or by its ID",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.CompleteConfigSections,
+		ValidArgsFunction: completer.CompleteConfigSections,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			configSectionKey := args[0]

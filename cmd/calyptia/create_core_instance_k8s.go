@@ -12,6 +12,7 @@ import (
 
 	cloud "github.com/calyptia/api/types"
 	"github.com/calyptia/cli/k8s"
+	"github.com/calyptia/cli/pkg/completer"
 	cfg "github.com/calyptia/cli/pkg/config"
 )
 
@@ -33,6 +34,7 @@ func newCmdCreateCoreInstanceOnK8s(config *cfg.Config, testClientSet kubernetes.
 
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	configOverrides := &clientcmd.ConfigOverrides{}
+	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:     "kubernetes",
@@ -162,8 +164,8 @@ func newCmdCreateCoreInstanceOnK8s(config *cfg.Config, testClientSet kubernetes.
 
 	clientcmd.BindOverrideFlags(configOverrides, fs, clientcmd.RecommendedConfigOverrideFlags("kube-"))
 
-	_ = cmd.RegisterFlagCompletionFunc("environment", config.CompleteEnvironments)
-	_ = cmd.RegisterFlagCompletionFunc("version", config.CompleteCoreContainerVersion)
+	_ = cmd.RegisterFlagCompletionFunc("environment", completer.CompleteEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("version", completer.CompleteCoreContainerVersion)
 
 	return cmd
 }

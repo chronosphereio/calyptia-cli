@@ -11,6 +11,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/pkg/completer"
 	cfg "github.com/calyptia/cli/pkg/config"
 	"github.com/calyptia/cli/pkg/formatters"
 )
@@ -22,6 +23,7 @@ func newCmdGetPipelines(config *cfg.Config) *cobra.Command {
 	var showIDs bool
 	var environment string
 	var renderWithConfigSections bool
+	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:   "pipelines",
@@ -86,9 +88,9 @@ func newCmdGetPipelines(config *cfg.Config) *cobra.Command {
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
-	_ = cmd.RegisterFlagCompletionFunc("environment", config.CompleteEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("environment", completer.CompleteEnvironments)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
-	_ = cmd.RegisterFlagCompletionFunc("core-instance", config.CompleteCoreInstances)
+	_ = cmd.RegisterFlagCompletionFunc("core-instance", completer.CompleteCoreInstances)
 
 	_ = cmd.MarkFlagRequired("core-instance") // TODO: use default core instance ID from config cmd.
 

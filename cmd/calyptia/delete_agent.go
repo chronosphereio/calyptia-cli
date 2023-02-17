@@ -10,12 +10,14 @@ import (
 	"golang.org/x/term"
 
 	"github.com/calyptia/api/types"
+	"github.com/calyptia/cli/pkg/completer"
 	cfg "github.com/calyptia/cli/pkg/config"
 )
 
 func newCmdDeleteAgent(config *cfg.Config) *cobra.Command {
 	var confirmed bool
 	var environment string
+	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:               "agent AGENT",
@@ -70,7 +72,7 @@ func newCmdDeleteAgent(config *cfg.Config) *cobra.Command {
 	fs.BoolVarP(&confirmed, "yes", "y", isNonInteractive, "Confirm deletion")
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 
-	_ = cmd.RegisterFlagCompletionFunc("environment", config.CompleteEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("environment", completer.CompleteEnvironments)
 
 	return cmd
 }

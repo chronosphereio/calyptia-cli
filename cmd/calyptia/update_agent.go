@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/cobra"
 
 	cloud "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/pkg/completer"
 	cfg "github.com/calyptia/cli/pkg/config"
 )
 
@@ -13,6 +14,7 @@ func newCmdUpdateAgent(config *cfg.Config) *cobra.Command {
 	var newName string
 	var fleetKey string
 	var environment string
+	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:               "agent AGENT",
@@ -63,8 +65,8 @@ func newCmdUpdateAgent(config *cfg.Config) *cobra.Command {
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 	fs.StringVar(&fleetKey, "fleet", "", "Attach this agent to the given fleet")
 
-	_ = cmd.RegisterFlagCompletionFunc("environment", config.CompleteEnvironments)
-	_ = cmd.RegisterFlagCompletionFunc("fleet", config.CompleteFleets)
+	_ = cmd.RegisterFlagCompletionFunc("environment", completer.CompleteEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("fleet", completer.CompleteFleets)
 
 	return cmd
 }

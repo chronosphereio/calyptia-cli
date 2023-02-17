@@ -80,6 +80,3 @@ func PairsName(pp types.Pairs) string {
 	return ""
 }
 
-func ConfigSectionKindName(cs types.ConfigSection) string {
-	return fmt.Sprintf("%s:%s", cs.Kind, PairsName(cs.Properties))
-}

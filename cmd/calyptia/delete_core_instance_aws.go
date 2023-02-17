@@ -10,6 +10,7 @@ import (
 	"golang.org/x/term"
 
 	awsclient "github.com/calyptia/cli/aws"
+	"github.com/calyptia/cli/pkg/completer"
 	cfg "github.com/calyptia/cli/pkg/config"
 )
 
@@ -24,13 +25,14 @@ func newCmdDeleteCoreInstanceOnAWS(config *cfg.Config, client awsclient.Client) 
 	)
 
 	var skipError, confirmDelete bool
+	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:               "aws CORE_INSTANCE",
 		Aliases:           []string{"ec2", "amazon"},
 		Short:             "Delete a core instance from Amazon EC2",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.CompleteCoreInstances,
+		ValidArgsFunction: completer.CompleteCoreInstances,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var err error
 
@@ -130,7 +132,7 @@ func newCmdDeleteCoreInstanceOnAWS(config *cfg.Config, client awsclient.Client) 
 	fs.BoolVarP(&confirmDelete, "yes", "y", isNonInteractive, "Confirm deletion")
 	fs.BoolVar(&debug, "debug", false, "Enable debug logging")
 
-	_ = cmd.RegisterFlagCompletionFunc("environment", config.CompleteEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("environment", completer.CompleteEnvironments)
 
 	return cmd
 }

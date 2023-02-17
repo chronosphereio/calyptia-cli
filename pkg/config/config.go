@@ -7,17 +7,15 @@ import (
 	"io"
 	"os"
 	"regexp"
-	"strings"
 	"sync"
 	"time"
 
 	"github.com/calyptia/api/client"
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/core-images-index/go-index"
+	"github.com/calyptia/cli/pkg/formatters"
 	fluentbitconfig "github.com/calyptia/go-fluentbit-config"
 	"github.com/hako/durafmt"
 	"github.com/spf13/cobra"
-	"golang.org/x/exp/slices"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -27,42 +25,6 @@ type Config struct {
 	Cloud        *client.Client
 	ProjectToken string
 	ProjectID    string
-}
-
-func (config *Config) CompletePluginProps(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	var kind, name string
-
-	if len(args) == 1 {
-		ctx := cmd.Context()
-		key := args[0]
-		id, err := config.LoadConfigSectionID(ctx, key)
-		if err != nil {
-			cobra.CompError(err.Error())
-			return nil, cobra.ShellCompDirectiveError
-		}
-
-		cs, err := config.Cloud.ConfigSection(ctx, id)
-		if err != nil {
-			cobra.CompError(fmt.Sprintf("cloud: %v", err))
-			return nil, cobra.ShellCompDirectiveError
-		}
-
-		kind = string(cs.Kind)
-		name = PairsName(cs.Properties)
-	} else {
-		var err error
-		kind, err = cmd.Flags().GetString("kind")
-		if err != nil {
-			kind = ""
-		}
-
-		name, err = cmd.Flags().GetString("name")
-		if err != nil {
-			name = ""
-		}
-	}
-
-	return pluginProps(kind, name), cobra.ShellCompDirectiveNoFileComp
 }
 
 func (config *Config) LoadConfigSectionID(ctx context.Context, key string) (string, error) {
@@ -85,7 +47,7 @@ func (config *Config) LoadConfigSectionID(ctx context.Context, key string) (stri
 	var foundCount uint
 
 	for _, cs := range cc.Items {
-		kindName := configSectionKindName(cs)
+		kindName := formatters.ConfigSectionKindName(cs)
 		if kindName == key {
 			foundID = cs.ID
 			foundCount++
@@ -101,34 +63,6 @@ func (config *Config) LoadConfigSectionID(ctx context.Context, key string) (stri
 	}
 
 	return foundID, nil
-}
-
-func (config *Config) CompleteConfigSections(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	ctx := cmd.Context()
-	cc, err := config.Cloud.ConfigSections(ctx, config.ProjectID, cloud.ConfigSectionsParams{})
-	if err != nil {
-		cobra.CompErrorln(fmt.Sprintf("cloud: %v", err))
-		return nil, cobra.ShellCompDirectiveError
-	}
-
-	if len(cc.Items) == 0 {
-		return nil, cobra.ShellCompDirectiveNoFileComp
-	}
-
-	return configSectionKeys(cc.Items), cobra.ShellCompDirectiveNoFileComp
-}
-
-func (config *Config) CompleteEnvironments(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	aa, err := config.Cloud.Environments(config.Ctx, config.ProjectID, cloud.EnvironmentsParams{})
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
-
-	if len(aa.Items) == 0 {
-		return nil, cobra.ShellCompDirectiveNoFileComp
-	}
-
-	return environmentNames(aa.Items), cobra.ShellCompDirectiveNoFileComp
 }
 
 func (config *Config) CompleteSecretIDs(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -172,15 +106,6 @@ func (config *Config) CompleteSecretIDs(cmd *cobra.Command, args []string, toCom
 	return uniqueSecretsIDs, cobra.ShellCompDirectiveNoFileComp
 }
 
-// environmentNames returns unique environment names that belongs to a project.
-func environmentNames(aa []cloud.Environment) []string {
-	var out []string
-	for _, a := range aa {
-		out = append(out, a.Name)
-	}
-	return out
-}
-
 func (config *Config) LoadEnvironmentID(environmentName string) (string, error) {
 	aa, err := config.Cloud.Environments(config.Ctx, config.ProjectID, cloud.EnvironmentsParams{
 		Name: &environmentName,
@@ -196,20 +121,6 @@ func (config *Config) LoadEnvironmentID(environmentName string) (string, error) 
 	}
 
 	return aa.Items[0].ID, nil
-}
-
-func (config *Config) CompleteCoreContainerVersion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	containerIndex, err := index.NewContainer()
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
-
-	vv, err := containerIndex.All(config.Ctx)
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
-
-	return vv, cobra.ShellCompDirectiveNoFileComp
 }
 
 func (config *Config) LoadCoreInstanceID(key string, environmentID string) (string, error) {
@@ -324,28 +235,6 @@ func (config *Config) FetchAllPipelines() ([]cloud.Pipeline, error) {
 	}
 
 	return uniquePipelines, nil
-}
-
-func (config *Config) CompleteCoreInstances(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	aa, err := config.Cloud.CoreInstances(config.Ctx, config.ProjectID, cloud.CoreInstancesParams{})
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
-
-	if len(aa.Items) == 0 {
-		return nil, cobra.ShellCompDirectiveNoFileComp
-	}
-
-	return CoreInstanceKeys(aa.Items), cobra.ShellCompDirectiveNoFileComp
-}
-
-func (config *Config) CompleteResourceProfiles(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	// TODO: complete resource profiles.
-	return []string{
-		cloud.ResourceProfileHighPerformanceGuaranteedDelivery,
-		cloud.ResourceProfileHighPerformanceOptimalThroughput,
-		cloud.ResourceProfileBestEffortLowResource,
-	}, cobra.ShellCompDirectiveNoFileComp
 }
 
 func (config *Config) CompletePipelinePlugins(pipelineKey string, cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -570,21 +459,6 @@ func (config *Config) CompleteClusterObjects(cmd *cobra.Command, args []string, 
 	return clusterObjectsKeys(pp), cobra.ShellCompDirectiveNoFileComp
 }
 
-func (config *Config) CompleteFleets(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	ff, err := config.Cloud.Fleets(config.Ctx, cloud.FleetsParams{
-		ProjectID: config.ProjectID,
-	})
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
-
-	if len(ff.Items) == 0 {
-		return nil, cobra.ShellCompDirectiveNoFileComp
-	}
-
-	return fleetKeys(ff.Items), cobra.ShellCompDirectiveNoFileComp
-}
-
 func (config *Config) CompleteTraceSessions(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	ss, err := config.fetchAllTraceSessions()
 	if err != nil {
@@ -638,14 +512,6 @@ func (config *Config) fetchAllTraceSessions() ([]cloud.TraceSession, error) {
 	}
 
 	return ss, nil
-}
-
-func fleetKeys(ff []cloud.Fleet) []string {
-	var out []string
-	for _, f := range ff {
-		out = append(out, f.Name)
-	}
-	return out
 }
 
 // ClusterObjectsKeys returns unique cluster object names first and then IDs.
@@ -715,39 +581,6 @@ func AgentStatus(lastMetricsAddedAt *time.Time, start time.Duration) string {
 	return status
 }
 
-// coreInstanceKeys returns unique aggregator names first and then IDs.
-func CoreInstanceKeys(aa []cloud.CoreInstance) []string {
-	namesCount := map[string]int{}
-	for _, a := range aa {
-		if _, ok := namesCount[a.Name]; ok {
-			namesCount[a.Name] += 1
-			continue
-		}
-
-		namesCount[a.Name] = 1
-	}
-
-	var out []string
-
-	for _, a := range aa {
-		var nameIsUnique bool
-		for name, count := range namesCount {
-			if a.Name == name && count == 1 {
-				nameIsUnique = true
-				break
-			}
-		}
-		if nameIsUnique {
-			out = append(out, a.Name)
-			continue
-		}
-
-		out = append(out, a.ID)
-	}
-
-	return out
-}
-
 // pipelinesKeys returns unique pipeline names first and then IDs.
 func PipelinesKeys(aa []cloud.Pipeline) []string {
 	namesCount := map[string]int{}
@@ -781,92 +614,11 @@ func PipelinesKeys(aa []cloud.Pipeline) []string {
 	return out
 }
 
-func configSectionKeys(cc []cloud.ConfigSection) []string {
-	kindNameCounts := map[string]uint{}
-	for _, cs := range cc {
-		kindName := configSectionKindName(cs)
-		if _, ok := kindNameCounts[kindName]; ok {
-			kindNameCounts[kindName]++
-			continue
-		}
-
-		kindNameCounts[kindName] = 1
-	}
-
-	var out []string
-	for _, cs := range cc {
-		kindName := configSectionKindName(cs)
-		if count, ok := kindNameCounts[kindName]; ok && count == 1 {
-			out = append(out, kindName)
-		} else {
-			out = append(out, cs.ID)
-		}
-	}
-
-	return out
-}
-
-func configSectionKindName(cs cloud.ConfigSection) string {
-	return fmt.Sprintf("%s:%s", cs.Kind, PairsName(cs.Properties))
-}
-
 func PairsName(pp cloud.Pairs) string {
 	if v, ok := pp.Get("Name"); ok {
 		return fmt.Sprintf("%v", v)
 	}
 	return ""
-}
-
-// pluginProps -
-// TODO: exclude already defined property.
-func pluginProps(kind, name string) []string {
-	if kind == "" || name == "" {
-		return nil
-	}
-
-	var out []string
-	add := func(sec fluentbitconfig.SchemaSection) {
-		if !strings.EqualFold(sec.Name, name) {
-			return
-		}
-
-		for _, p := range sec.Properties.Options {
-			out = append(out, p.Name)
-		}
-		for _, p := range sec.Properties.Networking {
-			out = append(out, p.Name)
-		}
-		for _, p := range sec.Properties.NetworkTLS {
-			out = append(out, p.Name)
-		}
-	}
-	switch kind {
-	case "input":
-		for _, in := range fluentbitconfig.DefaultSchema.Inputs {
-			add(in)
-		}
-	case "filter":
-		for _, f := range fluentbitconfig.DefaultSchema.Filters {
-			add(f)
-		}
-	case "output":
-		for _, o := range fluentbitconfig.DefaultSchema.Outputs {
-			add(o)
-		}
-	}
-
-	// common properties that are not in the schema.
-	out = append(out, "Alias")
-	if kind == "input" {
-		out = append(out, "Tag")
-	} else if kind == "filter" || kind == "output" {
-		out = append(out, "Match", "Match_Regex")
-	}
-
-	slices.Sort(out)
-	slices.Compact(out)
-
-	return UniqueSlice(out)
 }
 
 func UniqueSlice[S ~[]E, E comparable](s S) S {

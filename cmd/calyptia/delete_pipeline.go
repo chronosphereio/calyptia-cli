@@ -9,6 +9,7 @@ import (
 	"golang.org/x/term"
 
 	"github.com/calyptia/api/types"
+	"github.com/calyptia/cli/pkg/completer"
 	cfg "github.com/calyptia/cli/pkg/config"
 )
 
@@ -63,6 +64,7 @@ func newCmdDeletePipelines(config *cfg.Config) *cobra.Command {
 	var confirmed bool
 	var coreInstanceKey string
 	var environmentKey string
+	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:   "pipelines",
@@ -131,8 +133,8 @@ func newCmdDeletePipelines(config *cfg.Config) *cobra.Command {
 	fs.StringVar(&coreInstanceKey, "core-instance", "", "Parent core-instance ID or name")
 	fs.StringVar(&environmentKey, "environment", "", "Calyptia environment ID or name")
 
-	_ = cmd.RegisterFlagCompletionFunc("core-instance", config.CompleteCoreInstances)
-	_ = cmd.RegisterFlagCompletionFunc("environment", config.CompleteEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("core-instance", completer.CompleteCoreInstances)
+	_ = cmd.RegisterFlagCompletionFunc("environment", completer.CompleteEnvironments)
 
 	_ = cmd.MarkFlagRequired("core-instance")
 

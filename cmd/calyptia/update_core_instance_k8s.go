@@ -12,6 +12,7 @@ import (
 
 	cloud "github.com/calyptia/api/types"
 	"github.com/calyptia/cli/k8s"
+	"github.com/calyptia/cli/pkg/completer"
 	cfg "github.com/calyptia/cli/pkg/config"
 )
 
@@ -25,12 +26,14 @@ func newCmdUpdateCoreInstanceK8s(config *cfg.Config, testClientSet kubernetes.In
 	)
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	configOverrides := &clientcmd.ConfigOverrides{}
+	completer := completer.Completer{Config: config}
+
 	cmd := &cobra.Command{
 		Use:               "kubernetes CORE_INSTANCE",
 		Aliases:           []string{"kube", "k8s"},
 		Short:             "update a core instance from kubernetes",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.CompleteCoreInstances,
+		ValidArgsFunction: completer.CompleteCoreInstances,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.Background()
 			coreInstanceKey := args[0]
@@ -143,8 +146,8 @@ func newCmdUpdateCoreInstanceK8s(config *cfg.Config, testClientSet kubernetes.In
 	fs.BoolVar(&noTLSVerify, "no-tls-verify", false, "Disable TLS verification when connecting to Calyptia Cloud API.")
 	fs.BoolVar(&skipServiceCreation, "skip-service-creation", false, "Skip the creation of kubernetes services for any pipeline under this core instance.")
 
-	_ = cmd.RegisterFlagCompletionFunc("environment", config.CompleteEnvironments)
-	_ = cmd.RegisterFlagCompletionFunc("version", config.CompleteCoreContainerVersion)
+	_ = cmd.RegisterFlagCompletionFunc("environment", completer.CompleteEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("version", completer.CompleteCoreContainerVersion)
 	clientcmd.BindOverrideFlags(configOverrides, fs, clientcmd.RecommendedConfigOverrideFlags("kube-"))
 	return cmd
 }

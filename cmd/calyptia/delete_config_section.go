@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/calyptia/cli/pkg/completer"
 	cfg "github.com/calyptia/cli/pkg/config"
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
@@ -11,13 +12,14 @@ import (
 
 func newCmdDeleteConfigSection(config *cfg.Config) *cobra.Command {
 	var confirmed bool
+	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:               "config_section CONFIG_SECTION", // child of `delete`
 		Short:             "Delete config section",
 		Long:              "Delete a config section by either the plugin kind:name or ID",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.CompleteConfigSections,
+		ValidArgsFunction: completer.CompleteConfigSections,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			configSectionKey := args[0]
 

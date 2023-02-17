@@ -10,6 +10,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/pkg/completer"
 	cnfg "github.com/calyptia/cli/pkg/config"
 )
 
@@ -19,6 +20,7 @@ func newCmdGetClusterObjects(config *cnfg.Config) *cobra.Command {
 	var outputFormat, goTemplate string
 	var environment string
 	var showIDs bool
+	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:   "cluster_objects",
@@ -85,7 +87,7 @@ func newCmdGetClusterObjects(config *cnfg.Config) *cobra.Command {
 
 	_ = cmd.MarkFlagRequired("core-instance")
 
-	_ = cmd.RegisterFlagCompletionFunc("core-instance", config.CompleteCoreInstances)
+	_ = cmd.RegisterFlagCompletionFunc("core-instance", completer.CompleteCoreInstances)
 
 	return cmd
 }

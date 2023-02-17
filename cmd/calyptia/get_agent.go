@@ -12,6 +12,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/pkg/completer"
 	cfg "github.com/calyptia/cli/pkg/config"
 	"github.com/calyptia/cli/pkg/formatters"
 )
@@ -21,6 +22,7 @@ func newCmdGetAgents(config *cfg.Config) *cobra.Command {
 	var outputFormat, goTemplate string
 	var showIDs bool
 	var fleetKey, environment string
+	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:   "agents",
@@ -94,8 +96,8 @@ func newCmdGetAgents(config *cfg.Config) *cobra.Command {
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
-	_ = cmd.RegisterFlagCompletionFunc("environment", config.CompleteEnvironments)
-	_ = cmd.RegisterFlagCompletionFunc("fleet", config.CompleteFleets)
+	_ = cmd.RegisterFlagCompletionFunc("environment", completer.CompleteEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("fleet", completer.CompleteFleets)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
 	return cmd
@@ -106,6 +108,7 @@ func newCmdGetAgent(config *cfg.Config) *cobra.Command {
 	var showIDs bool
 	var onlyConfig bool
 	var environment string
+	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:               "agent AGENT",
@@ -174,7 +177,7 @@ func newCmdGetAgent(config *cfg.Config) *cobra.Command {
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
-	_ = cmd.RegisterFlagCompletionFunc("environment", config.CompleteEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("environment", completer.CompleteEnvironments)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
 	return cmd
