@@ -148,6 +148,53 @@ func (c *Completer) CompleteCoreContainerVersion(cmd *cobra.Command, args []stri
 	return vv, cobra.ShellCompDirectiveNoFileComp
 }
 
+func (c *Completer) CompletePipelines(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	pp, err := c.Config.FetchAllPipelines()
+	if err != nil {
+		cobra.CompError(err.Error())
+		return nil, cobra.ShellCompDirectiveError
+	}
+
+	if pp == nil {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+
+	return PipelinesKeys(pp), cobra.ShellCompDirectiveNoFileComp
+}
+
+// pipelinesKeys returns unique pipeline names first and then IDs.
+func PipelinesKeys(aa []types.Pipeline) []string {
+	namesCount := map[string]int{}
+	for _, a := range aa {
+		if _, ok := namesCount[a.Name]; ok {
+			namesCount[a.Name] += 1
+			continue
+		}
+
+		namesCount[a.Name] = 1
+	}
+
+	var out []string
+
+	for _, a := range aa {
+		var nameIsUnique bool
+		for name, count := range namesCount {
+			if a.Name == name && count == 1 {
+				nameIsUnique = true
+				break
+			}
+		}
+		if nameIsUnique {
+			out = append(out, a.Name)
+			continue
+		}
+
+		out = append(out, a.ID)
+	}
+
+	return out
+}
+
 func fleetKeys(ff []types.Fleet) []string {
 	var out []string
 	for _, f := range ff {

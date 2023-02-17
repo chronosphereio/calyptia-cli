@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/cobra"
 
 	cloud "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/pkg/completer"
 	cfg "github.com/calyptia/cli/pkg/config"
 )
 
@@ -14,6 +15,7 @@ func newCmdDeletePipelineFile(config *cfg.Config) *cobra.Command {
 	var confirmed bool
 	var pipelineKey string
 	var name string
+	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:   "pipeline_file",
@@ -62,7 +64,7 @@ func newCmdDeletePipelineFile(config *cfg.Config) *cobra.Command {
 	fs.StringVar(&pipelineKey, "pipeline", "", "Parent pipeline ID or name")
 	fs.StringVar(&name, "name", "", "File name you want to delete")
 
-	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.CompletePipelines)
+	_ = cmd.RegisterFlagCompletionFunc("pipeline", completer.CompletePipelines)
 	_ = cmd.MarkFlagRequired("name")
 
 	_ = cmd.MarkFlagRequired("pipeline") // TODO: use default pipeline key from config cmd.

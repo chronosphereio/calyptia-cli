@@ -14,6 +14,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/pkg/completer"
 	cfg "github.com/calyptia/cli/pkg/config"
 	"github.com/calyptia/cli/pkg/formatters"
 )
@@ -32,12 +33,13 @@ func newCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 	var outputFormat, goTemplate string
 	var metadataPairs []string
 	var metadataFile string
+	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:               "pipeline PIPELINE",
 		Short:             "Update a single pipeline by ID or name",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.CompletePipelines,
+		ValidArgsFunction: completer.CompletePipelines,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var rawConfig string
 			if newConfigFile != "" {

@@ -13,6 +13,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
+	"github.com/calyptia/cli/pkg/completer"
 	cnfg "github.com/calyptia/cli/pkg/config"
 	"github.com/calyptia/cli/pkg/formatters"
 )
@@ -23,6 +24,7 @@ func newCmdGetTraceSessions(config *cnfg.Config) *cobra.Command {
 	var before string
 	var showIDs bool
 	var outputFormat, goTemplate string
+	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:   "trace_sessions", // child of `get`
@@ -79,7 +81,7 @@ func newCmdGetTraceSessions(config *cnfg.Config) *cobra.Command {
 	_ = cmd.MarkFlagRequired("pipeline")
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
-	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.CompletePipelines)
+	_ = cmd.RegisterFlagCompletionFunc("pipeline", completer.CompletePipelines)
 
 	return cmd
 }
@@ -88,6 +90,7 @@ func newCmdGetTraceSession(config *cnfg.Config) *cobra.Command {
 	var pipelineKey string
 	var showID bool
 	var outputFormat, goTemplate string
+	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:   "trace_session TRACE_SESSION", // child of `get`
@@ -143,7 +146,7 @@ func newCmdGetTraceSession(config *cnfg.Config) *cobra.Command {
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
-	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.CompletePipelines)
+	_ = cmd.RegisterFlagCompletionFunc("pipeline", completer.CompletePipelines)
 
 	return cmd
 }

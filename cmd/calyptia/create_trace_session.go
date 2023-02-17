@@ -11,6 +11,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
+	"github.com/calyptia/cli/pkg/completer"
 	cfg "github.com/calyptia/cli/pkg/config"
 	"github.com/calyptia/cli/pkg/formatters"
 )
@@ -20,6 +21,7 @@ func newCmdCreateTraceSession(config *cfg.Config) *cobra.Command {
 	var plugins []string
 	var lifespan time.Duration
 	var outputFormat, goTemplate string
+	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:   "trace_session", // child of `create`
@@ -71,7 +73,7 @@ func newCmdCreateTraceSession(config *cfg.Config) *cobra.Command {
 
 	_ = cmd.MarkFlagRequired("pipeline")
 
-	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.CompletePipelines)
+	_ = cmd.RegisterFlagCompletionFunc("pipeline", completer.CompletePipelines)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("plugins", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return config.CompletePipelinePlugins(pipelineKey, cmd, args, toComplete)

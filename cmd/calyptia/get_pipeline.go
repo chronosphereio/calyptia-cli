@@ -104,11 +104,12 @@ func newCmdGetPipeline(config *cfg.Config) *cobra.Command {
 	var showIDs bool
 	var renderWithConfigSections bool
 	var outputFormat, goTemplate string
+	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:               "pipeline PIPELINE",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.CompletePipelines,
+		ValidArgsFunction: completer.CompletePipelines,
 		Short:             "Display a pipelines by ID or name",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			pipelineKey := args[0]

@@ -17,7 +17,7 @@ func newCmdUpdateConfigSectionSet(config *cfg.Config) *cobra.Command {
 		Short:             "Update a config section set",
 		Long:              "Attaches a list of config sections to a pipeline",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.CompletePipelines,
+		ValidArgsFunction: completer.CompletePipelines,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			pipelineKey := args[0]

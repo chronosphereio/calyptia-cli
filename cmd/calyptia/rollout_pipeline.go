@@ -10,6 +10,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/pkg/completer"
 	cfg "github.com/calyptia/cli/pkg/config"
 	"github.com/calyptia/cli/pkg/formatters"
 )
@@ -19,11 +20,12 @@ func newCmdRolloutPipeline(config *cfg.Config) *cobra.Command {
 	var toConfigID string
 	var autoCreatePortsFromConfig, skipConfigValidation bool
 	var outputFormat, goTemplate string
+	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:               "pipeline PIPELINE",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.CompletePipelines,
+		ValidArgsFunction: completer.CompletePipelines,
 		Short:             "Rollout a pipeline to a previous config",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			pipelineKey := args[0]

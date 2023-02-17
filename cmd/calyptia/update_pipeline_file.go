@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/cobra"
 
 	cloud "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/pkg/completer"
 	cfg "github.com/calyptia/cli/pkg/config"
 )
 
@@ -15,6 +16,7 @@ func newCmdUpdatePipelineFile(config *cfg.Config) *cobra.Command {
 	var pipelineKey string
 	var file string
 	var encrypt bool
+	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:   "pipeline_file",
@@ -56,7 +58,7 @@ func newCmdUpdatePipelineFile(config *cfg.Config) *cobra.Command {
 	fs.StringVar(&file, "file", "", "File path. The file you want to update. It must exists already.")
 	fs.BoolVar(&encrypt, "encrypt", false, "Encrypt file contents")
 
-	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.CompletePipelines)
+	_ = cmd.RegisterFlagCompletionFunc("pipeline", completer.CompletePipelines)
 	_ = cmd.MarkFlagRequired("file")
 
 	_ = cmd.MarkFlagRequired("pipeline") // TODO: use default pipeline key from config cmd.

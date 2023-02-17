@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/calyptia/cli/pkg/completer"
 	cfg "github.com/calyptia/cli/pkg/config"
 	"github.com/spf13/cobra"
 )
@@ -10,6 +11,7 @@ func newCmdDeletePipelineClusterObject(config *cfg.Config) *cobra.Command {
 	var clusterObjectKey string
 	var environment string
 	var encrypt bool
+	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:   "pipeline_cluster_object",
@@ -48,7 +50,7 @@ func newCmdDeletePipelineClusterObject(config *cfg.Config) *cobra.Command {
 	fs.StringVar(&clusterObjectKey, "cluster-object", "", "The cluster object ID or Name")
 	fs.BoolVar(&encrypt, "encrypt", false, "Encrypt file contents")
 
-	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.CompletePipelines)
+	_ = cmd.RegisterFlagCompletionFunc("pipeline", completer.CompletePipelines)
 	_ = cmd.RegisterFlagCompletionFunc("cluster-object", config.CompleteClusterObjects)
 	_ = cmd.MarkFlagRequired("cluster-object")
 	_ = cmd.MarkFlagRequired("pipeline")

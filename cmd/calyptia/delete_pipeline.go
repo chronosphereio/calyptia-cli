@@ -15,11 +15,13 @@ import (
 
 func newCmdDeletePipeline(config *cfg.Config) *cobra.Command {
 	var confirmed bool
+	completer := completer.Completer{Config: config}
+
 	cmd := &cobra.Command{
 		Use:               "pipeline PIPELINE",
 		Short:             "Delete a single pipeline by ID or name",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.CompletePipelines,
+		ValidArgsFunction: completer.CompletePipelines,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			pipelineKey := args[0]
 			if !confirmed {

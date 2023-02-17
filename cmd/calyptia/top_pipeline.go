@@ -13,18 +13,20 @@ import (
 	"golang.org/x/term"
 
 	cloud "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/pkg/completer"
 	cfg "github.com/calyptia/cli/pkg/config"
 	table "github.com/calyptia/go-bubble-table"
 )
 
 func newCmdTopPipeline(config *cfg.Config) *cobra.Command {
 	var start, interval time.Duration
+	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:               "pipeline PIPELINE",
 		Short:             "Display metrics from a pipeline",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.CompletePipelines,
+		ValidArgsFunction: completer.CompletePipelines,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			pipelineKey := args[0]
 			_, err := tea.NewProgram(initialPipelineModel(config.Ctx, config.Cloud, config.ProjectID, pipelineKey, start, interval), tea.WithAltScreen()).Run()
