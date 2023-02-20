@@ -12,9 +12,9 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 
+	"github.com/calyptia/cli/completer"
+	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/k8s"
-	"github.com/calyptia/cli/pkg/completer"
-	cfg "github.com/calyptia/cli/pkg/config"
 )
 
 const (

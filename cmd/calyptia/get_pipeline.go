@@ -11,9 +11,9 @@ import (
 	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/pkg/completer"
-	cfg "github.com/calyptia/cli/pkg/config"
-	"github.com/calyptia/cli/pkg/formatters"
+	"github.com/calyptia/cli/completer"
+	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/formatters"
 )
 
 func newCmdGetPipelines(config *cfg.Config) *cobra.Command {

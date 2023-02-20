@@ -13,8 +13,8 @@ import (
 	"golang.org/x/term"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/pkg/completer"
-	cfg "github.com/calyptia/cli/pkg/config"
+	"github.com/calyptia/cli/completer"
+	cfg "github.com/calyptia/cli/config"
 	table "github.com/calyptia/go-bubble-table"
 )
 

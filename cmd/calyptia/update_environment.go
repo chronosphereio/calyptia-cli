@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	cfg "github.com/calyptia/cli/pkg/config"
+	cfg "github.com/calyptia/cli/config"
 	"github.com/spf13/cobra"
 
 	"github.com/calyptia/api/types"

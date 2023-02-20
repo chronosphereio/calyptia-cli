@@ -11,8 +11,8 @@ import (
 	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
-	cfg "github.com/calyptia/cli/pkg/config"
-	"github.com/calyptia/cli/pkg/formatters"
+	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/formatters"
 )
 
 func newCmdGetEnvironment(c *cfg.Config) *cobra.Command {

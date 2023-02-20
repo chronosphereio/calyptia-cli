@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/cobra"
 
 	cloud "github.com/calyptia/api/types"
-	cfg "github.com/calyptia/cli/pkg/config"
+	cfg "github.com/calyptia/cli/config"
 )
 
 func newCmdTop(config *cfg.Config) *cobra.Command {

@@ -12,8 +12,8 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
-	cfg "github.com/calyptia/cli/pkg/config"
-	"github.com/calyptia/cli/pkg/formatters"
+	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/formatters"
 	fluentbitconfig "github.com/calyptia/go-fluentbit-config"
 )
 

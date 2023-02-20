@@ -17,7 +17,7 @@ import (
 	"golang.org/x/term"
 
 	cloud "github.com/calyptia/api/types"
-	cfg "github.com/calyptia/cli/pkg/config"
+	cfg "github.com/calyptia/cli/config"
 	table "github.com/calyptia/go-bubble-table"
 )
 

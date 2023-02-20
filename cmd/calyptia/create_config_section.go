@@ -11,8 +11,8 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/pkg/completer"
-	cfg "github.com/calyptia/cli/pkg/config"
+	"github.com/calyptia/cli/completer"
+	cfg "github.com/calyptia/cli/config"
 )
 
 func newCmdCreateConfigSection(config *cfg.Config) *cobra.Command {

@@ -9,8 +9,8 @@ import (
 	"golang.org/x/term"
 
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/pkg/completer"
-	cfg "github.com/calyptia/cli/pkg/config"
+	"github.com/calyptia/cli/completer"
+	cfg "github.com/calyptia/cli/config"
 )
 
 func newCmdDeletePipeline(config *cfg.Config) *cobra.Command {

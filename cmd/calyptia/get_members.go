@@ -10,8 +10,8 @@ import (
 	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/pkg/formatters"
-	cfg "github.com/calyptia/cli/pkg/config"
+	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/formatters"
 )
 
 func newCmdGetMembers(config *cfg.Config) *cobra.Command {

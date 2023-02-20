@@ -13,9 +13,9 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/pkg/completer"
-	cnfg "github.com/calyptia/cli/pkg/config"
-	"github.com/calyptia/cli/pkg/formatters"
+	"github.com/calyptia/cli/completer"
+	cnfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/formatters"
 )
 
 func newCmdGetTraceSessions(config *cnfg.Config) *cobra.Command {

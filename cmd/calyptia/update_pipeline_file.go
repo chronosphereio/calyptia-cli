@@ -8,8 +8,8 @@ import (
 	"github.com/spf13/cobra"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/pkg/completer"
-	cfg "github.com/calyptia/cli/pkg/config"
+	"github.com/calyptia/cli/completer"
+	cfg "github.com/calyptia/cli/config"
 )
 
 func newCmdUpdatePipelineFile(config *cfg.Config) *cobra.Command {

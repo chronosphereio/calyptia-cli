@@ -11,9 +11,9 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 
 	cloud "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/completer"
+	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/k8s"
-	"github.com/calyptia/cli/pkg/completer"
-	cfg "github.com/calyptia/cli/pkg/config"
 )
 
 func newCmdUpdateCoreInstanceK8s(config *cfg.Config, testClientSet kubernetes.Interface) *cobra.Command {

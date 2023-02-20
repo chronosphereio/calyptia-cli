@@ -1,8 +1,8 @@
 package main
 
 import (
+	cfg "github.com/calyptia/cli/config"
 	"github.com/spf13/cobra"
-	cfg "github.com/calyptia/cli/pkg/config"
 )
 
 func newCmdUpdateCoreInstance(config *cfg.Config) *cobra.Command {

@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/cobra"
 
 	cloudclient "github.com/calyptia/api/client"
-	cfg "github.com/calyptia/cli/pkg/config"
+	cfg "github.com/calyptia/cli/config"
 )
 
 var (

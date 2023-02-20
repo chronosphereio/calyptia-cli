@@ -3,8 +3,8 @@ package main
 import (
 	"errors"
 
-	"github.com/calyptia/cli/pkg/completer"
-	cfg "github.com/calyptia/cli/pkg/config"
+	"github.com/calyptia/cli/completer"
+	cfg "github.com/calyptia/cli/config"
 
 	"github.com/spf13/cobra"
 )

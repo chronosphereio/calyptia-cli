@@ -10,8 +10,8 @@ import (
 	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/pkg/completer"
-	cnfg "github.com/calyptia/cli/pkg/config"
+	"github.com/calyptia/cli/completer"
+	cnfg "github.com/calyptia/cli/config"
 )
 
 func newCmdGetClusterObjects(config *cnfg.Config) *cobra.Command {

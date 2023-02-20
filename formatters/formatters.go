@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/pkg/helpers"
+	"github.com/calyptia/cli/helpers"
 	"github.com/spf13/cobra"
 )
 
@@ -15,4 +15,3 @@ func CompleteOutputFormat(*cobra.Command, []string, string) ([]string, cobra.She
 func ConfigSectionKindName(cs types.ConfigSection) string {
 	return fmt.Sprintf("%s:%s", cs.Kind, helpers.PairsName(cs.Properties))
 }
-

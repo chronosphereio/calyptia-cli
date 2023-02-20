@@ -14,8 +14,8 @@ import (
 	"os"
 	"strings"
 
+	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/gcp"
-	cfg "github.com/calyptia/cli/pkg/config"
 	"github.com/calyptia/core-images-index/go-index"
 )
 

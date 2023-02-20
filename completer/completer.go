@@ -8,9 +8,9 @@ import (
 	"sync"
 
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/pkg/config"
-	"github.com/calyptia/cli/pkg/formatters"
-	"github.com/calyptia/cli/pkg/helpers"
+	"github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/formatters"
+	"github.com/calyptia/cli/helpers"
 	"github.com/calyptia/core-images-index/go-index"
 	fluentbitconfig "github.com/calyptia/go-fluentbit-config"
 	"github.com/spf13/cobra"

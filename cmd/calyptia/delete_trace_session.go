@@ -7,9 +7,9 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/calyptia/cli/pkg/completer"
-	cfg "github.com/calyptia/cli/pkg/config"
-	"github.com/calyptia/cli/pkg/formatters"
+	"github.com/calyptia/cli/completer"
+	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/formatters"
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
 	"gopkg.in/yaml.v2"

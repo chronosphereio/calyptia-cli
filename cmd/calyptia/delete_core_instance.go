@@ -10,7 +10,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 
 	"github.com/calyptia/api/types"
-	cfg "github.com/calyptia/cli/pkg/config"
+	cfg "github.com/calyptia/cli/config"
 )
 
 func newCmdDeleteCoreInstance(config *cfg.Config, testClientSet kubernetes.Interface) *cobra.Command {

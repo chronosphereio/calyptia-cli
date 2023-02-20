@@ -1,7 +1,7 @@
 package main
 
 import (
-	cfg "github.com/calyptia/cli/pkg/config"
+	cfg "github.com/calyptia/cli/config"
 	"github.com/spf13/cobra"
 )
 
