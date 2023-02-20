@@ -6,9 +6,10 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/calyptia/api/types"
+	cfg "github.com/calyptia/cli/config"
 )
 
-func newCmdCreateEnvironment(c *config) *cobra.Command {
+func newCmdCreateEnvironment(c *cfg.Config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "environment ENVIRONMENT_NAME",
 		Args:  cobra.ExactArgs(1),
@@ -17,7 +18,7 @@ func newCmdCreateEnvironment(c *config) *cobra.Command {
 			name := args[0]
 			ctx := context.Background()
 			environment := types.CreateEnvironment{Name: name}
-			createEnvironment, err := c.cloud.CreateEnvironment(ctx, c.projectID, environment)
+			createEnvironment, err := c.Cloud.CreateEnvironment(ctx, c.ProjectID, environment)
 			if err != nil {
 				return err
 			}

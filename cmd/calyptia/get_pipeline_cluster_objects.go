@@ -10,24 +10,27 @@ import (
 	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/completer"
+	cfg "github.com/calyptia/cli/config"
 )
 
-func newCmdGetPipelineClusterObjects(config *config) *cobra.Command {
+func newCmdGetPipelineClusterObjects(config *cfg.Config) *cobra.Command {
 	var pipelineKey string
 	var last uint
 	var outputFormat, goTemplate string
 	var showIDs bool
+	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:   "pipeline_cluster_objects",
 		Short: "Get pipeline cluster objects",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			pipelineID, err := config.loadPipelineID(pipelineKey)
+			pipelineID, err := completer.LoadPipelineID(pipelineKey)
 			if err != nil {
 				return err
 			}
 
-			co, err := config.cloud.PipelineClusterObjects(config.ctx, pipelineID, cloud.PipelineClusterObjectsParams{
+			co, err := config.Cloud.PipelineClusterObjects(config.Ctx, pipelineID, cloud.PipelineClusterObjectsParams{
 				Last: &last,
 			})
 			if err != nil {
@@ -72,7 +75,7 @@ func newCmdGetPipelineClusterObjects(config *config) *cobra.Command {
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
-	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.completePipelines)
+	_ = cmd.RegisterFlagCompletionFunc("pipeline", completer.CompletePipelines)
 
 	_ = cmd.MarkFlagRequired("pipeline")
 

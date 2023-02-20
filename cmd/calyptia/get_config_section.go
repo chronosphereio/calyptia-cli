@@ -2,9 +2,7 @@ package main
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"strings"
@@ -15,10 +13,11 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/pkg/formatters"
+	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/formatters"
 )
 
-func newCmdGetConfigSections(config *config) *cobra.Command {
+func newCmdGetConfigSections(config *cfg.Config) *cobra.Command {
 	var last uint
 	var before string
 	var outputFormat, goTemplate string
@@ -38,7 +37,7 @@ func newCmdGetConfigSections(config *config) *cobra.Command {
 			if before != "" {
 				params.Before = &before
 			}
-			cc, err := config.cloud.ConfigSections(ctx, config.projectID, params)
+			cc, err := config.Cloud.ConfigSections(ctx, config.ProjectID, params)
 			if err != nil {
 				return fmt.Errorf("cloud: %w", err)
 			}
@@ -128,88 +127,6 @@ func pairsToLogfmt(pp types.Pairs, skipName bool) (string, error) {
 	enc.Reset()
 
 	return buff.String(), nil
-}
-
-func (config *config) loadConfigSectionID(ctx context.Context, key string) (string, error) {
-	cc, err := config.cloud.ConfigSections(ctx, config.projectID, types.ConfigSectionsParams{})
-	if err != nil {
-		return "", fmt.Errorf("cloud: %w", err)
-	}
-
-	if len(cc.Items) == 0 {
-		return "", errors.New("cloud: no config sections yet")
-	}
-
-	for _, cs := range cc.Items {
-		if key == cs.ID {
-			return cs.ID, nil
-		}
-	}
-
-	var foundID string
-	var foundCount uint
-
-	for _, cs := range cc.Items {
-		kindName := configSectionKindName(cs)
-		if kindName == key {
-			foundID = cs.ID
-			foundCount++
-		}
-	}
-
-	if foundCount > 1 {
-		return "", fmt.Errorf("ambiguous config section %q, try using the ID", key)
-	}
-
-	if foundCount == 0 {
-		return "", fmt.Errorf("could not find config section with key %q", key)
-	}
-
-	return foundID, nil
-}
-
-func (config *config) completeConfigSections(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	ctx := cmd.Context()
-	cc, err := config.cloud.ConfigSections(ctx, config.projectID, types.ConfigSectionsParams{})
-	if err != nil {
-		cobra.CompErrorln(fmt.Sprintf("cloud: %v", err))
-		return nil, cobra.ShellCompDirectiveError
-	}
-
-	if len(cc.Items) == 0 {
-		return nil, cobra.ShellCompDirectiveNoFileComp
-	}
-
-	return configSectionKeys(cc.Items), cobra.ShellCompDirectiveNoFileComp
-}
-
-func configSectionKeys(cc []types.ConfigSection) []string {
-	kindNameCounts := map[string]uint{}
-	for _, cs := range cc {
-		kindName := configSectionKindName(cs)
-		if _, ok := kindNameCounts[kindName]; ok {
-			kindNameCounts[kindName]++
-			continue
-		}
-
-		kindNameCounts[kindName] = 1
-	}
-
-	var out []string
-	for _, cs := range cc {
-		kindName := configSectionKindName(cs)
-		if count, ok := kindNameCounts[kindName]; ok && count == 1 {
-			out = append(out, kindName)
-		} else {
-			out = append(out, cs.ID)
-		}
-	}
-
-	return out
-}
-
-func configSectionKindName(cs types.ConfigSection) string {
-	return fmt.Sprintf("%s:%s", cs.Kind, pairsName(cs.Properties))
 }
 
 func pairsName(pp types.Pairs) string {

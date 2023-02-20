@@ -10,17 +10,20 @@ import (
 	"golang.org/x/term"
 
 	"github.com/calyptia/api/types"
+	"github.com/calyptia/cli/completer"
+	cfg "github.com/calyptia/cli/config"
 )
 
-func newCmdDeleteAgent(config *config) *cobra.Command {
+func newCmdDeleteAgent(config *cfg.Config) *cobra.Command {
 	var confirmed bool
 	var environment string
+	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:               "agent AGENT",
 		Short:             "Delete a single agent by ID or name",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.completeAgents,
+		ValidArgsFunction: completer.CompleteAgents,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 
@@ -28,13 +31,13 @@ func newCmdDeleteAgent(config *config) *cobra.Command {
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = config.loadEnvironmentID(environment)
+				environmentID, err = completer.LoadEnvironmentID(environment)
 				if err != nil {
 					return err
 				}
 			}
 
-			agentID, err := config.loadAgentID(agentKey, environmentID)
+			agentID, err := completer.LoadAgentID(agentKey, environmentID)
 			if err != nil {
 				return err
 			}
@@ -52,7 +55,7 @@ func newCmdDeleteAgent(config *config) *cobra.Command {
 				}
 			}
 
-			err = config.cloud.DeleteAgent(ctx, agentID)
+			err = config.Cloud.DeleteAgent(ctx, agentID)
 			if err != nil {
 				return fmt.Errorf("could not delete agent: %w", err)
 			}
@@ -69,12 +72,12 @@ func newCmdDeleteAgent(config *config) *cobra.Command {
 	fs.BoolVarP(&confirmed, "yes", "y", isNonInteractive, "Confirm deletion")
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 
-	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("environment", completer.CompleteEnvironments)
 
 	return cmd
 }
 
-func newCmdDeleteAgents(config *config) *cobra.Command {
+func newCmdDeleteAgents(config *cfg.Config) *cobra.Command {
 	var inactive bool
 	var confirmed bool
 
@@ -83,7 +86,7 @@ func newCmdDeleteAgents(config *config) *cobra.Command {
 		Short: "Delete many agents from a project",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			aa, err := config.cloud.Agents(ctx, config.projectID, types.AgentsParams{
+			aa, err := config.Cloud.Agents(ctx, config.ProjectID, types.AgentsParams{
 				Last: ptr(uint(0)),
 			})
 			if err != nil {
@@ -124,7 +127,7 @@ func newCmdDeleteAgents(config *config) *cobra.Command {
 				agentIDs[i] = a.ID
 			}
 
-			err = config.cloud.DeleteAgents(ctx, config.projectID, agentIDs...)
+			err = config.Cloud.DeleteAgents(ctx, config.ProjectID, agentIDs...)
 			if err != nil {
 				return fmt.Errorf("delete agents: %w", err)
 			}

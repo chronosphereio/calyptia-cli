@@ -11,25 +11,28 @@ import (
 	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/pkg/formatters"
+	"github.com/calyptia/cli/completer"
+	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/formatters"
 )
 
-func newCmdGetEndpoints(config *config) *cobra.Command {
+func newCmdGetEndpoints(config *cfg.Config) *cobra.Command {
 	var pipelineKey string
 	var last uint
 	var outputFormat, goTemplate string
 	var showIDs bool
+	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:   "endpoints",
 		Short: "Display latest endpoints from a pipeline",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			pipelineID, err := config.loadPipelineID(pipelineKey)
+			pipelineID, err := completer.LoadPipelineID(pipelineKey)
 			if err != nil {
 				return err
 			}
 
-			pp, err := config.cloud.PipelinePorts(config.ctx, pipelineID, cloud.PipelinePortsParams{
+			pp, err := config.Cloud.PipelinePorts(config.Ctx, pipelineID, cloud.PipelinePortsParams{
 				Last: &last,
 			})
 			if err != nil {
@@ -62,7 +65,7 @@ func newCmdGetEndpoints(config *config) *cobra.Command {
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
-	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.completePipelines)
+	_ = cmd.RegisterFlagCompletionFunc("pipeline", completer.CompletePipelines)
 
 	_ = cmd.MarkFlagRequired("pipeline") // TODO: use default pipeline key from config cmd.
 

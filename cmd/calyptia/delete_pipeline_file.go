@@ -7,12 +7,15 @@ import (
 	"github.com/spf13/cobra"
 
 	cloud "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/completer"
+	cfg "github.com/calyptia/cli/config"
 )
 
-func newCmdDeletePipelineFile(config *config) *cobra.Command {
+func newCmdDeletePipelineFile(config *cfg.Config) *cobra.Command {
 	var confirmed bool
 	var pipelineKey string
 	var name string
+	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:   "pipeline_file",
@@ -36,19 +39,19 @@ func newCmdDeletePipelineFile(config *config) *cobra.Command {
 				}
 			}
 
-			pipelineID, err := config.loadPipelineID(pipelineKey)
+			pipelineID, err := completer.LoadPipelineID(pipelineKey)
 			if err != nil {
 				return err
 			}
 
-			ff, err := config.cloud.PipelineFiles(config.ctx, pipelineID, cloud.PipelineFilesParams{})
+			ff, err := config.Cloud.PipelineFiles(config.Ctx, pipelineID, cloud.PipelineFilesParams{})
 			if err != nil {
 				return err
 			}
 
 			for _, f := range ff.Items {
 				if f.Name == name {
-					return config.cloud.DeletePipelineFile(config.ctx, f.ID)
+					return config.Cloud.DeletePipelineFile(config.Ctx, f.ID)
 				}
 			}
 
@@ -61,7 +64,7 @@ func newCmdDeletePipelineFile(config *config) *cobra.Command {
 	fs.StringVar(&pipelineKey, "pipeline", "", "Parent pipeline ID or name")
 	fs.StringVar(&name, "name", "", "File name you want to delete")
 
-	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.completePipelines)
+	_ = cmd.RegisterFlagCompletionFunc("pipeline", completer.CompletePipelines)
 	_ = cmd.MarkFlagRequired("name")
 
 	_ = cmd.MarkFlagRequired("pipeline") // TODO: use default pipeline key from config cmd.

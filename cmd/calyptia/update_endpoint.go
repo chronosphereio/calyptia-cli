@@ -8,9 +8,10 @@ import (
 	"github.com/spf13/cobra"
 
 	cloud "github.com/calyptia/api/types"
+	cfg "github.com/calyptia/cli/config"
 )
 
-func newCmdUpdateEndpoint(config *config) *cobra.Command {
+func newCmdUpdateEndpoint(config *cfg.Config) *cobra.Command {
 	var protocol string
 	var ports string
 
@@ -56,7 +57,7 @@ func newCmdUpdateEndpoint(config *config) *cobra.Command {
 				FrontendPort: fpport,
 				Protocol:     &protocol,
 			}
-			err := config.cloud.UpdatePipelinePort(config.ctx, portID, opts)
+			err := config.Cloud.UpdatePipelinePort(config.Ctx, portID, opts)
 			if err != nil {
 				return fmt.Errorf("could not update your pipeline endpoint: %w", err)
 			}

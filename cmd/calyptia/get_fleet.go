@@ -11,10 +11,11 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/pkg/formatters"
+	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/formatters"
 )
 
-func newCmdGetFleets(config *config) *cobra.Command {
+func newCmdGetFleets(config *cfg.Config) *cobra.Command {
 	var name, before string
 	var tags []string
 	var last uint
@@ -44,9 +45,9 @@ func newCmdGetFleets(config *config) *cobra.Command {
 				in.Before = &before
 			}
 
-			in.ProjectID = config.projectID
+			in.ProjectID = config.ProjectID
 
-			fleets, err := config.cloud.Fleets(ctx, in)
+			fleets, err := config.Cloud.Fleets(ctx, in)
 			if err != nil {
 				return err
 			}
@@ -114,48 +115,4 @@ func renderFleetsTable(w io.Writer, fleets types.Fleets, showIDs bool) error {
 	}
 
 	return nil
-}
-
-func (config *config) completeFleets(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	ff, err := config.cloud.Fleets(config.ctx, types.FleetsParams{
-		ProjectID: config.projectID,
-	})
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
-
-	if len(ff.Items) == 0 {
-		return nil, cobra.ShellCompDirectiveNoFileComp
-	}
-
-	return fleetKeys(ff.Items), cobra.ShellCompDirectiveNoFileComp
-}
-
-func fleetKeys(ff []types.Fleet) []string {
-	var out []string
-	for _, f := range ff {
-		out = append(out, f.Name)
-	}
-	return out
-}
-
-func (config *config) loadFleetID(key string) (string, error) {
-	ff, err := config.cloud.Fleets(config.ctx, types.FleetsParams{
-		ProjectID: config.projectID,
-		Name:      &key,
-		Last:      ptr(uint(1)),
-	})
-	if err != nil {
-		return "", err
-	}
-
-	if len(ff.Items) == 1 {
-		return ff.Items[0].ID, nil
-	}
-
-	if !validUUID(key) {
-		return "", fmt.Errorf("could not find fleet %q", key)
-	}
-
-	return key, nil
 }

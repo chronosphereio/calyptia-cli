@@ -7,16 +7,19 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/calyptia/cli/pkg/formatters"
+	"github.com/calyptia/cli/completer"
+	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/formatters"
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
 	"gopkg.in/yaml.v2"
 )
 
-func newCmdDeleteTraceSession(config *config) *cobra.Command {
+func newCmdDeleteTraceSession(config *cfg.Config) *cobra.Command {
 	var confirmed bool
 	var pipelineKey string
 	var outputFormat, goTemplate string
+	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:   "trace_session", // child of `delete`
@@ -37,12 +40,12 @@ func newCmdDeleteTraceSession(config *config) *cobra.Command {
 				}
 			}
 
-			pipelineID, err := config.loadPipelineID(pipelineKey)
+			pipelineID, err := completer.LoadPipelineID(pipelineKey)
 			if err != nil {
 				return err
 			}
 
-			terminated, err := config.cloud.TerminateActiveTraceSession(config.ctx, pipelineID)
+			terminated, err := config.Cloud.TerminateActiveTraceSession(config.Ctx, pipelineID)
 			if err != nil {
 				return err
 			}
@@ -77,7 +80,7 @@ func newCmdDeleteTraceSession(config *config) *cobra.Command {
 
 	_ = cmd.MarkFlagRequired("pipeline")
 
-	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.completePipelines)
+	_ = cmd.RegisterFlagCompletionFunc("pipeline", completer.CompletePipelines)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
 	return cmd

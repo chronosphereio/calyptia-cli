@@ -14,10 +14,12 @@ import (
 	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/pkg/formatters"
+	"github.com/calyptia/cli/completer"
+	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/formatters"
 )
 
-func newCmdUpdatePipeline(config *config) *cobra.Command {
+func newCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 	var newName string
 	var newConfigFile string
 	var newReplicasCount uint
@@ -31,12 +33,13 @@ func newCmdUpdatePipeline(config *config) *cobra.Command {
 	var outputFormat, goTemplate string
 	var metadataPairs []string
 	var metadataFile string
+	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:               "pipeline PIPELINE",
 		Short:             "Update a single pipeline by ID or name",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.completePipelines,
+		ValidArgsFunction: completer.CompletePipelines,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var rawConfig string
 			if newConfigFile != "" {
@@ -91,7 +94,7 @@ func newCmdUpdatePipeline(config *config) *cobra.Command {
 			}
 
 			pipelineKey := args[0]
-			pipelineID, err := config.loadPipelineID(pipelineKey)
+			pipelineID, err := completer.LoadPipelineID(pipelineKey)
 			if err != nil {
 				return err
 			}
@@ -116,7 +119,7 @@ func newCmdUpdatePipeline(config *config) *cobra.Command {
 				update.Image = &image
 			}
 
-			updated, err := config.cloud.UpdatePipeline(config.ctx, pipelineID, update)
+			updated, err := config.Cloud.UpdatePipeline(config.Ctx, pipelineID, update)
 			if err != nil {
 				return fmt.Errorf("could not update pipeline: %w", err)
 			}

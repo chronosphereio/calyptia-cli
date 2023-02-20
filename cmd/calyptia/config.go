@@ -1,8 +1,11 @@
 package main
 
-import "github.com/spf13/cobra"
+import (
+	cfg "github.com/calyptia/cli/config"
+	"github.com/spf13/cobra"
+)
 
-func newCmdConfig(config *config) *cobra.Command {
+func newCmdConfig(config *cfg.Config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "config",
 		Short: "Configure Calyptia CLI",

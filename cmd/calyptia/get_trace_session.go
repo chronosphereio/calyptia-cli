@@ -6,24 +6,25 @@ import (
 	"fmt"
 	"io"
 	"strings"
-	"sync"
 	"text/tabwriter"
 	"time"
 
 	"github.com/spf13/cobra"
-	"golang.org/x/sync/errgroup"
 	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/pkg/formatters"
+	"github.com/calyptia/cli/completer"
+	cnfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/formatters"
 )
 
-func newCmdGetTraceSessions(config *config) *cobra.Command {
+func newCmdGetTraceSessions(config *cnfg.Config) *cobra.Command {
 	var pipelineKey string
 	var last uint
 	var before string
 	var showIDs bool
 	var outputFormat, goTemplate string
+	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:   "trace_sessions", // child of `get`
@@ -31,7 +32,7 @@ func newCmdGetTraceSessions(config *config) *cobra.Command {
 		Long: "List all trace sessions from the given pipeline,\n" +
 			"sorted by creation time in descending order.",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			pipelineID, err := config.loadPipelineID(pipelineKey)
+			pipelineID, err := completer.LoadPipelineID(pipelineKey)
 			if err != nil {
 				return err
 			}
@@ -46,7 +47,7 @@ func newCmdGetTraceSessions(config *config) *cobra.Command {
 				beforeOpt = &before
 			}
 
-			ss, err := config.cloud.TraceSessions(config.ctx, pipelineID, types.TraceSessionsParams{
+			ss, err := config.Cloud.TraceSessions(config.Ctx, pipelineID, types.TraceSessionsParams{
 				Last:   lastOpt,
 				Before: beforeOpt,
 			})
@@ -80,15 +81,16 @@ func newCmdGetTraceSessions(config *config) *cobra.Command {
 	_ = cmd.MarkFlagRequired("pipeline")
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
-	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.completePipelines)
+	_ = cmd.RegisterFlagCompletionFunc("pipeline", completer.CompletePipelines)
 
 	return cmd
 }
 
-func newCmdGetTraceSession(config *config) *cobra.Command {
+func newCmdGetTraceSession(config *cnfg.Config) *cobra.Command {
 	var pipelineKey string
 	var showID bool
 	var outputFormat, goTemplate string
+	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:   "trace_session TRACE_SESSION", // child of `get`
@@ -101,7 +103,7 @@ func newCmdGetTraceSession(config *config) *cobra.Command {
 			if len(args) == 1 {
 				sessionID := args[0]
 				var err error
-				session, err = config.cloud.TraceSession(config.ctx, sessionID)
+				session, err = config.Cloud.TraceSession(config.Ctx, sessionID)
 				if err != nil {
 					return err
 				}
@@ -110,12 +112,12 @@ func newCmdGetTraceSession(config *config) *cobra.Command {
 					return errors.New("flag needs an argument: --pipeline")
 				}
 
-				pipelineID, err := config.loadPipelineID(pipelineKey)
+				pipelineID, err := completer.LoadPipelineID(pipelineKey)
 				if err != nil {
 					return err
 				}
 
-				session, err = config.cloud.ActiveTraceSession(config.ctx, pipelineID)
+				session, err = config.Cloud.ActiveTraceSession(config.Ctx, pipelineID)
 				if err != nil {
 					return err
 				}
@@ -144,7 +146,7 @@ func newCmdGetTraceSession(config *config) *cobra.Command {
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
-	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.completePipelines)
+	_ = cmd.RegisterFlagCompletionFunc("pipeline", completer.CompletePipelines)
 
 	return cmd
 }
@@ -203,59 +205,4 @@ func renderTraceSessionTable(w io.Writer, sess types.TraceSession, showIDs bool)
 	}
 
 	return tw.Flush()
-}
-
-func (config *config) completeTraceSessions(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	ss, err := config.fetchAllTraceSessions()
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
-
-	if ss == nil {
-		return nil, cobra.ShellCompDirectiveNoFileComp
-	}
-
-	out := make([]string, len(ss))
-	for i, p := range ss {
-		out[i] = p.ID
-	}
-
-	return out, cobra.ShellCompDirectiveNoFileComp
-}
-
-func (config *config) fetchAllTraceSessions() ([]types.TraceSession, error) {
-	pp, err := config.fetchAllPipelines()
-	if err != nil {
-		return nil, err
-	}
-
-	if len(pp) == 0 {
-		return nil, nil
-	}
-
-	var ss []types.TraceSession
-	var mu sync.Mutex
-
-	g, gctx := errgroup.WithContext(config.ctx)
-	for _, pip := range pp {
-		a := pip
-		g.Go(func() error {
-			got, err := config.cloud.TraceSessions(gctx, a.ID, types.TraceSessionsParams{})
-			if err != nil {
-				return err
-			}
-
-			mu.Lock()
-			ss = append(ss, got.Items...)
-			mu.Unlock()
-
-			return nil
-		})
-	}
-
-	if err := g.Wait(); err != nil {
-		return nil, err
-	}
-
-	return ss, nil
 }

@@ -1,8 +1,11 @@
 package main
 
-import "github.com/spf13/cobra"
+import (
+	cfg "github.com/calyptia/cli/config"
+	"github.com/spf13/cobra"
+)
 
-func newCmdDelete(config *config) *cobra.Command {
+func newCmdDelete(config *cfg.Config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "delete",
 		Short: "Delete core instances, pipelines, etc.",

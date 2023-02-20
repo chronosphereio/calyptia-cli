@@ -1,8 +1,10 @@
 package helpers
 
 import (
+	"fmt"
 	"strings"
 
+	"github.com/calyptia/api/types"
 	fluentbitconfig "github.com/calyptia/go-fluentbit-config"
 	"golang.org/x/exp/slices"
 )
@@ -70,3 +72,11 @@ func UniqueSlice[S ~[]E, E comparable](s S) S {
 	}
 	return out
 }
+
+func PairsName(pp types.Pairs) string {
+	if v, ok := pp.Get("Name"); ok {
+		return fmt.Sprintf("%v", v)
+	}
+	return ""
+}
+

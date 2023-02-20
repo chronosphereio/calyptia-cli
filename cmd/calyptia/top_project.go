@@ -17,17 +17,18 @@ import (
 	"golang.org/x/term"
 
 	cloud "github.com/calyptia/api/types"
+	cfg "github.com/calyptia/cli/config"
 	table "github.com/calyptia/go-bubble-table"
 )
 
-func newCmdTopProject(config *config) *cobra.Command {
+func newCmdTopProject(config *cfg.Config) *cobra.Command {
 	var start, interval time.Duration
 	var last uint
 	cmd := &cobra.Command{
 		Use:   "project",
 		Short: "Display metrics from the current project",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			_, err := tea.NewProgram(initialProjectModel(config.ctx, config.cloud, config.projectID, start, interval, last), tea.WithAltScreen()).Run()
+			_, err := tea.NewProgram(initialProjectModel(config.Ctx, config.Cloud, config.ProjectID, start, interval, last), tea.WithAltScreen()).Run()
 			return err
 		},
 	}

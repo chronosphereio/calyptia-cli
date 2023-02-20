@@ -1,8 +1,11 @@
 package main
 
-import "github.com/spf13/cobra"
+import (
+	cfg "github.com/calyptia/cli/config"
+	"github.com/spf13/cobra"
+)
 
-func newCmdUpdate(config *config) *cobra.Command {
+func newCmdUpdate(config *cfg.Config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update",
 		Short: "Update core instances, pipelines, etc.",

@@ -16,6 +16,8 @@ import (
 
 	"github.com/calyptia/api/types"
 	awsclient "github.com/calyptia/cli/aws"
+	"github.com/calyptia/cli/completer"
+	cfg "github.com/calyptia/cli/config"
 )
 
 const (
@@ -39,7 +41,7 @@ type (
 
 	DefaultCoreInstancePoller struct {
 		CoreInstancePoller
-		config *config
+		config *cfg.Config
 	}
 )
 
@@ -51,7 +53,7 @@ func (c *DefaultCoreInstancePoller) Ready(ctx context.Context, environment, name
 	}
 
 	if environment != "" {
-		envs, err := c.config.cloud.Environments(ctx, c.config.projectID, types.EnvironmentsParams{
+		envs, err := c.config.Cloud.Environments(ctx, c.config.ProjectID, types.EnvironmentsParams{
 			Name: &environment,
 		})
 		if err != nil {
@@ -66,7 +68,7 @@ func (c *DefaultCoreInstancePoller) Ready(ctx context.Context, environment, name
 	}
 
 	err := retry.Do(ctx, coreInstanceUpCheckMaxDuration(), func(ctx context.Context) error {
-		instances, err := c.config.cloud.CoreInstances(ctx, c.config.projectID, params)
+		instances, err := c.config.Cloud.CoreInstances(ctx, c.config.ProjectID, params)
 
 		if err != nil {
 			return retry.RetryableError(err)
@@ -90,7 +92,7 @@ func (c *DefaultCoreInstancePoller) Ready(ctx context.Context, environment, name
 	return instance.ID, nil
 }
 
-func newCmdCreateCoreInstanceOnAWS(config *config, client awsclient.Client, poller CoreInstancePoller) *cobra.Command {
+func newCmdCreateCoreInstanceOnAWS(config *cfg.Config, client awsclient.Client, poller CoreInstancePoller) *cobra.Command {
 	var (
 		tags                   []string
 		noHealthCheckPipeline  bool
@@ -113,6 +115,7 @@ func newCmdCreateCoreInstanceOnAWS(config *config, client awsclient.Client, poll
 		githubToken            string
 		useTestImages          bool
 	)
+	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:     "aws",
@@ -158,7 +161,7 @@ func newCmdCreateCoreInstanceOnAWS(config *config, client awsclient.Client, poll
 				SubnetID:          subnetID,
 				Environment:       environment,
 				UserData: &awsclient.CreateUserDataParams{
-					ProjectToken: config.projectToken,
+					ProjectToken: config.ProjectToken,
 				},
 				UseTestImages: useTestImages,
 			}
@@ -202,7 +205,7 @@ func newCmdCreateCoreInstanceOnAWS(config *config, client awsclient.Client, poll
 			metadata := types.CoreInstanceMetadata{
 				MetadataAWS: awsInstance.MetadataAWS,
 			}
-			err = config.cloud.UpdateCoreInstance(ctx, coreInstanceID, types.UpdateCoreInstance{
+			err = config.Cloud.UpdateCoreInstance(ctx, coreInstanceID, types.UpdateCoreInstance{
 				Metadata: &metadata,
 			})
 
@@ -244,12 +247,12 @@ func newCmdCreateCoreInstanceOnAWS(config *config, client awsclient.Client, poll
 	_ = fs.MarkHidden("github-token")
 	_ = fs.MarkHidden("use-test-images")
 
-	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("environment", completer.CompleteEnvironments)
 
 	return cmd
 }
 
-func coreInstanceNameExists(ctx context.Context, config *config, environment, name string) (bool, error) {
+func coreInstanceNameExists(ctx context.Context, config *cfg.Config, environment, name string) (bool, error) {
 	_, err := getCoreInstanceByName(ctx, config, environment, name)
 	if err != nil {
 		if errors.Is(err, errCoreInstanceNotFound) {
@@ -260,14 +263,14 @@ func coreInstanceNameExists(ctx context.Context, config *config, environment, na
 	return true, nil
 }
 
-func getCoreInstanceByName(ctx context.Context, config *config, environment, name string) (*types.CoreInstance, error) {
+func getCoreInstanceByName(ctx context.Context, config *cfg.Config, environment, name string) (*types.CoreInstance, error) {
 	var out *types.CoreInstance
 	params := types.CoreInstancesParams{
 		Name: &name,
 	}
 
 	if environment != "" {
-		envs, err := config.cloud.Environments(ctx, config.projectID, types.EnvironmentsParams{
+		envs, err := config.Cloud.Environments(ctx, config.ProjectID, types.EnvironmentsParams{
 			Name: &environment,
 		})
 		if err != nil {
@@ -281,7 +284,7 @@ func getCoreInstanceByName(ctx context.Context, config *config, environment, nam
 		params.EnvironmentID = &envs.Items[0].ID
 	}
 
-	coreInstances, err := config.cloud.CoreInstances(ctx, config.projectID, params)
+	coreInstances, err := config.Cloud.CoreInstances(ctx, config.ProjectID, params)
 
 	if err != nil {
 		return out, err

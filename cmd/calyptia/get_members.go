@@ -10,10 +10,11 @@ import (
 	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/pkg/formatters"
+	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/formatters"
 )
 
-func newCmdGetMembers(config *config) *cobra.Command {
+func newCmdGetMembers(config *cfg.Config) *cobra.Command {
 	var last uint
 	var outputFormat, goTemplate string
 	var showIDs bool
@@ -22,7 +23,7 @@ func newCmdGetMembers(config *config) *cobra.Command {
 		Use:   "members",
 		Short: "Display latest members from a project",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			mm, err := config.cloud.Members(config.ctx, config.projectID, cloud.MembersParams{
+			mm, err := config.Cloud.Members(config.Ctx, config.ProjectID, cloud.MembersParams{
 				Last: &last,
 			})
 			if err != nil {

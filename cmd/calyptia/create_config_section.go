@@ -8,20 +8,19 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	"golang.org/x/exp/slices"
 	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/pkg/completer"
-	fluentbitconfig "github.com/calyptia/go-fluentbit-config"
+	"github.com/calyptia/cli/completer"
+	cfg "github.com/calyptia/cli/config"
 )
 
-func newCmdCreateConfigSection(config *config) *cobra.Command {
+func newCmdCreateConfigSection(config *cfg.Config) *cobra.Command {
 	var kind string
 	var name string
 	var propsSlice []string
 	var outputFormat, goTemplate string
-	completer := completer.Completer{}
+	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:   "config_section", // child of `create`
@@ -34,7 +33,7 @@ func newCmdCreateConfigSection(config *config) *cobra.Command {
 			}, props...)
 
 			ctx := cmd.Context()
-			created, err := config.cloud.CreateConfigSection(ctx, config.projectID, types.CreateConfigSection{
+			created, err := config.Cloud.CreateConfigSection(ctx, config.ProjectID, types.CreateConfigSection{
 				Kind:       types.ConfigSectionKind(kind),
 				Properties: props,
 			})
@@ -68,97 +67,9 @@ func newCmdCreateConfigSection(config *config) *cobra.Command {
 
 	_ = cmd.RegisterFlagCompletionFunc("kind", completer.CompletePluginKinds)
 	_ = cmd.RegisterFlagCompletionFunc("name", completer.CompletePluginNames)
-	_ = cmd.RegisterFlagCompletionFunc("prop", config.completePluginProps)
+	_ = cmd.RegisterFlagCompletionFunc("prop", completer.CompletePluginProps)
 
 	return cmd
-}
-
-func (config *config) completePluginProps(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	var kind, name string
-
-	if len(args) == 1 {
-		ctx := cmd.Context()
-		key := args[0]
-		id, err := config.loadConfigSectionID(ctx, key)
-		if err != nil {
-			cobra.CompError(err.Error())
-			return nil, cobra.ShellCompDirectiveError
-		}
-
-		cs, err := config.cloud.ConfigSection(ctx, id)
-		if err != nil {
-			cobra.CompError(fmt.Sprintf("cloud: %v", err))
-			return nil, cobra.ShellCompDirectiveError
-		}
-
-		kind = string(cs.Kind)
-		name = pairsName(cs.Properties)
-	} else {
-		var err error
-		kind, err = cmd.Flags().GetString("kind")
-		if err != nil {
-			kind = ""
-		}
-
-		name, err = cmd.Flags().GetString("name")
-		if err != nil {
-			name = ""
-		}
-	}
-
-	return pluginProps(kind, name), cobra.ShellCompDirectiveNoFileComp
-}
-
-// pluginProps -
-// TODO: exclude already defined property.
-func pluginProps(kind, name string) []string {
-	if kind == "" || name == "" {
-		return nil
-	}
-
-	var out []string
-	add := func(sec fluentbitconfig.SchemaSection) {
-		if !strings.EqualFold(sec.Name, name) {
-			return
-		}
-
-		for _, p := range sec.Properties.Options {
-			out = append(out, p.Name)
-		}
-		for _, p := range sec.Properties.Networking {
-			out = append(out, p.Name)
-		}
-		for _, p := range sec.Properties.NetworkTLS {
-			out = append(out, p.Name)
-		}
-	}
-	switch kind {
-	case "input":
-		for _, in := range fluentbitconfig.DefaultSchema.Inputs {
-			add(in)
-		}
-	case "filter":
-		for _, f := range fluentbitconfig.DefaultSchema.Filters {
-			add(f)
-		}
-	case "output":
-		for _, o := range fluentbitconfig.DefaultSchema.Outputs {
-			add(o)
-		}
-	}
-
-	// common properties that are not in the schema.
-	out = append(out, "Alias")
-	if kind == "input" {
-		out = append(out, "Tag")
-	} else if kind == "filter" || kind == "output" {
-		out = append(out, "Match", "Match_Regex")
-	}
-
-	slices.Sort(out)
-	slices.Compact(out)
-
-	return uniqueSlice(out)
 }
 
 // reSpacesOrEqualSignMoreThanOnce is used to split config section props.

@@ -12,6 +12,8 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 
+	"github.com/calyptia/cli/completer"
+	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/k8s"
 )
 
@@ -20,9 +22,10 @@ const (
 	clusterLevelNamespace = "cluster"
 )
 
-func newCmdDeleteCoreInstanceK8s(config *config, testClientSet kubernetes.Interface) *cobra.Command {
+func newCmdDeleteCoreInstanceK8s(config *cfg.Config, testClientSet kubernetes.Interface) *cobra.Command {
 	var skipError, confirmed bool
 	var environment string
+	completer := completer.Completer{Config: config}
 
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	configOverrides := &clientcmd.ConfigOverrides{}
@@ -31,20 +34,20 @@ func newCmdDeleteCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 		Aliases:           []string{"kube", "k8s"},
 		Short:             "Delete a core instance and all of its kubernetes resources",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.completeCoreInstances,
+		ValidArgsFunction: completer.CompleteCoreInstances,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.Background()
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = config.loadEnvironmentID(environment)
+				environmentID, err = completer.LoadEnvironmentID(environment)
 				if err != nil {
 					return err
 				}
 			}
 
 			coreInstanceKey := args[0]
-			coreInstanceID, err := config.loadCoreInstanceID(coreInstanceKey, environmentID)
+			coreInstanceID, err := completer.LoadCoreInstanceID(coreInstanceKey, environmentID)
 			if err != nil {
 				return err
 			}
@@ -62,12 +65,12 @@ func newCmdDeleteCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 				}
 			}
 
-			agg, err := config.cloud.CoreInstance(ctx, coreInstanceID)
+			agg, err := config.Cloud.CoreInstance(ctx, coreInstanceID)
 			if err != nil {
 				return err
 			}
 
-			err = config.cloud.DeleteCoreInstance(ctx, agg.ID)
+			err = config.Cloud.DeleteCoreInstance(ctx, agg.ID)
 			if err != nil {
 				return err
 			}
@@ -97,8 +100,8 @@ func newCmdDeleteCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 			k8sClient := &k8s.Client{
 				Interface:    clientset,
 				Namespace:    configOverrides.Context.Namespace,
-				ProjectToken: config.projectToken,
-				CloudBaseURL: config.baseURL,
+				ProjectToken: config.ProjectToken,
+				CloudBaseURL: config.BaseURL,
 			}
 
 			label := fmt.Sprintf("%s=%s", k8s.LabelAggregatorID, agg.ID)
@@ -222,7 +225,7 @@ func newCmdDeleteCoreInstanceK8s(config *config, testClientSet kubernetes.Interf
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 
 	clientcmd.BindOverrideFlags(configOverrides, fs, clientcmd.RecommendedConfigOverrideFlags("kube-"))
-	_ = cmd.RegisterFlagCompletionFunc("environment", config.completeEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("environment", completer.CompleteEnvironments)
 
 	return cmd
 }

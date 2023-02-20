@@ -10,30 +10,33 @@ import (
 	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/pkg/formatters"
+	"github.com/calyptia/cli/completer"
+	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/formatters"
 )
 
-func newCmdRolloutPipeline(config *config) *cobra.Command {
+func newCmdRolloutPipeline(config *cfg.Config) *cobra.Command {
 	var stepsBack uint
 	var toConfigID string
 	var autoCreatePortsFromConfig, skipConfigValidation bool
 	var outputFormat, goTemplate string
+	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:               "pipeline PIPELINE",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.completePipelines,
+		ValidArgsFunction: completer.CompletePipelines,
 		Short:             "Rollout a pipeline to a previous config",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			pipelineKey := args[0]
-			pipelineID, err := config.loadPipelineID(pipelineKey)
+			pipelineID, err := completer.LoadPipelineID(pipelineKey)
 			if err != nil {
 				return err
 			}
 
 			var rawConfig string
 			if toConfigID != "" {
-				hh, err := config.cloud.PipelineConfigHistory(config.ctx, pipelineID, cloud.PipelineConfigHistoryParams{})
+				hh, err := config.Cloud.PipelineConfigHistory(config.Ctx, pipelineID, cloud.PipelineConfigHistoryParams{})
 				if err != nil {
 					return err
 				}
@@ -49,7 +52,7 @@ func newCmdRolloutPipeline(config *config) *cobra.Command {
 					return fmt.Errorf("could not find config %q", toConfigID)
 				}
 			} else if stepsBack > 0 {
-				hh, err := config.cloud.PipelineConfigHistory(config.ctx, pipelineID, cloud.PipelineConfigHistoryParams{
+				hh, err := config.Cloud.PipelineConfigHistory(config.Ctx, pipelineID, cloud.PipelineConfigHistoryParams{
 					Last: &stepsBack,
 				})
 				if err != nil {
@@ -65,7 +68,7 @@ func newCmdRolloutPipeline(config *config) *cobra.Command {
 				return fmt.Errorf("no config specified")
 			}
 
-			updated, err := config.cloud.UpdatePipeline(config.ctx, pipelineID, cloud.UpdatePipeline{
+			updated, err := config.Cloud.UpdatePipeline(config.Ctx, pipelineID, cloud.UpdatePipeline{
 				RawConfig:                 &rawConfig,
 				AutoCreatePortsFromConfig: &autoCreatePortsFromConfig,
 				SkipConfigValidation:      skipConfigValidation,

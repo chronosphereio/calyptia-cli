@@ -11,6 +11,7 @@ import (
 	"github.com/spf13/cobra"
 
 	cloudclient "github.com/calyptia/api/client"
+	cfg "github.com/calyptia/cli/config"
 )
 
 var (
@@ -29,9 +30,9 @@ func newCmd(ctx context.Context) *cobra.Command {
 	client := &cloudclient.Client{
 		Client: http.DefaultClient,
 	}
-	config := &config{
-		ctx:   ctx,
-		cloud: client,
+	config := &cfg.Config{
+		Ctx:   ctx,
+		Cloud: client,
 	}
 
 	token, err := savedToken()
@@ -59,7 +60,7 @@ func newCmd(ctx context.Context) *cobra.Command {
 		}
 
 		client.BaseURL = cloudURL.String()
-		config.baseURL = client.BaseURL
+		config.BaseURL = client.BaseURL
 
 		if token == "" {
 			return
@@ -71,8 +72,8 @@ func newCmd(ctx context.Context) *cobra.Command {
 		}
 
 		client.SetProjectToken(token)
-		config.projectToken = token
-		config.projectID = projectID
+		config.ProjectToken = token
+		config.ProjectID = projectID
 	})
 	cmd := &cobra.Command{
 		Use:           "calyptia",
@@ -84,8 +85,8 @@ func newCmd(ctx context.Context) *cobra.Command {
 	cmd.SetOut(os.Stdout)
 
 	fs := cmd.PersistentFlags()
-	fs.StringVar(&cloudURLStr, "cloud-url", env("CALYPTIA_CLOUD_URL", cloudURLStr), "Calyptia Cloud URL")
-	fs.StringVar(&token, "token", env("CALYPTIA_CLOUD_TOKEN", token), "Calyptia Cloud Project token")
+	fs.StringVar(&cloudURLStr, "cloud-url", cfg.Env("CALYPTIA_CLOUD_URL", cloudURLStr), "Calyptia Cloud URL")
+	fs.StringVar(&token, "token", cfg.Env("CALYPTIA_CLOUD_TOKEN", token), "Calyptia Cloud Project token")
 
 	cmd.AddCommand(
 		newCmdConfig(config),
@@ -99,20 +100,3 @@ func newCmd(ctx context.Context) *cobra.Command {
 
 	return cmd
 }
-
-type config struct {
-	ctx          context.Context
-	baseURL      string
-	cloud        Client
-	projectToken string
-	projectID    string
-}
-
-func env(key, fallback string) string {
-	v := os.Getenv(key)
-	if v == "" {
-		return fallback
-	}
-	return v
-}
-

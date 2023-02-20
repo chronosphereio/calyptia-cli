@@ -1,10 +1,11 @@
 package main
 
 import (
+	cfg "github.com/calyptia/cli/config"
 	"github.com/spf13/cobra"
 )
 
-func newCmdCreateCoreInstance(config *config) *cobra.Command {
+func newCmdCreateCoreInstance(config *cfg.Config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "core_instance",
 		Short: "Setup a new core instance on either Kubernetes, Amazon EC2, or Google Compute Engine",

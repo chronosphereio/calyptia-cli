@@ -1,14 +1,17 @@
 package main
 
 import (
+	"github.com/calyptia/cli/completer"
+	cfg "github.com/calyptia/cli/config"
 	"github.com/spf13/cobra"
 )
 
-func newCmdDeletePipelineClusterObject(config *config) *cobra.Command {
+func newCmdDeletePipelineClusterObject(config *cfg.Config) *cobra.Command {
 	var pipelineKey string
 	var clusterObjectKey string
 	var environment string
 	var encrypt bool
+	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:   "pipeline_cluster_object",
@@ -17,23 +20,23 @@ func newCmdDeletePipelineClusterObject(config *config) *cobra.Command {
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = config.loadEnvironmentID(environment)
+				environmentID, err = completer.LoadEnvironmentID(environment)
 				if err != nil {
 					return err
 				}
 			}
 
-			pipelineID, err := config.loadPipelineID(pipelineKey)
+			pipelineID, err := completer.LoadPipelineID(pipelineKey)
 			if err != nil {
 				return err
 			}
 
-			clusterObjectID, err := config.loadClusterObjectID(clusterObjectKey, environmentID)
+			clusterObjectID, err := completer.LoadClusterObjectID(clusterObjectKey, environmentID)
 			if err != nil {
 				return err
 			}
 
-			err = config.cloud.DeletePipelineClusterObjects(config.ctx, pipelineID, clusterObjectID)
+			err = config.Cloud.DeletePipelineClusterObjects(config.Ctx, pipelineID, clusterObjectID)
 			if err != nil {
 				return err
 			}
@@ -47,8 +50,8 @@ func newCmdDeletePipelineClusterObject(config *config) *cobra.Command {
 	fs.StringVar(&clusterObjectKey, "cluster-object", "", "The cluster object ID or Name")
 	fs.BoolVar(&encrypt, "encrypt", false, "Encrypt file contents")
 
-	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.completePipelines)
-	_ = cmd.RegisterFlagCompletionFunc("cluster-object", config.completeClusterObjects)
+	_ = cmd.RegisterFlagCompletionFunc("pipeline", completer.CompletePipelines)
+	_ = cmd.RegisterFlagCompletionFunc("cluster-object", completer.CompleteClusterObjects)
 	_ = cmd.MarkFlagRequired("cluster-object")
 	_ = cmd.MarkFlagRequired("pipeline")
 

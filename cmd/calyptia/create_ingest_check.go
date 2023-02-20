@@ -7,15 +7,19 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/calyptia/api/types"
+	"github.com/calyptia/cli/completer"
+	cfg "github.com/calyptia/cli/config"
 )
 
-func newCmdCreateIngestCheck(config *config) *cobra.Command {
+func newCmdCreateIngestCheck(config *cfg.Config) *cobra.Command {
 	var (
 		retries         uint
 		configSectionID string
 		status          string
 		environment     string
 	)
+	completer := completer.Completer{Config: config}
+
 	cmd := &cobra.Command{
 		Use:   "ingest_check CORE_INSTANCE",
 		Short: "Create an ingest check",
@@ -41,17 +45,17 @@ func newCmdCreateIngestCheck(config *config) *cobra.Command {
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = config.loadEnvironmentID(environment)
+				environmentID, err = completer.LoadEnvironmentID(environment)
 				if err != nil {
 					return err
 				}
 			}
-			coreInstanceID, err := config.loadCoreInstanceID(coreInstance, environmentID)
+			coreInstanceID, err := completer.LoadCoreInstanceID(coreInstance, environmentID)
 			if err != nil {
 				return err
 			}
 
-			check, err := config.cloud.CreateIngestCheck(ctx, coreInstanceID, params)
+			check, err := config.Cloud.CreateIngestCheck(ctx, coreInstanceID, params)
 			if err != nil {
 				return err
 			}
