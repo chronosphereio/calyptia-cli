@@ -97,6 +97,7 @@ func newCmdCreateCoreInstanceOnAWS(config *config, client awsclient.Client, poll
 		noElasticIPv4Address   bool
 		noTLSVerify            bool
 		debug                  bool
+		skipServiceCreation    bool
 		coreInstanceVersion    string
 		coreInstanceName       string
 		environment            string
@@ -179,6 +180,7 @@ func newCmdCreateCoreInstanceOnAWS(config *config, client awsclient.Client, poll
 
 			// if no tls verify is set, use it as part of the user data.
 			params.UserData.CoreInstanceTLSVerify = strconv.FormatBool(!noTLSVerify)
+			params.UserData.SkipServiceCreation = strconv.FormatBool(skipServiceCreation)
 
 			if !noElasticIPv4Address {
 				params.PublicIPAddress = &awsclient.ElasticIPAddressParams{
@@ -224,6 +226,7 @@ func newCmdCreateCoreInstanceOnAWS(config *config, client awsclient.Client, poll
 	fs.StringVar(&credentials, "credentials", "", "Path to the AWS credentials file. If not specified the default credential loader will be used.")
 	fs.StringVar(&profileFile, "profile-file", "", "Path to the AWS profile file. If not specified the default credential loader will be used.")
 	fs.StringVar(&profileName, "profile", "", "Name of the AWS profile to use, if not specified, the default profileFile will be used.")
+	fs.BoolVar(&skipServiceCreation, "skip-service-creation", false, "Skip the creation of kubernetes services for any pipeline under this core instance.")
 
 	// Set of parameters that map into https://docs.aws.amazon.com/sdk-for-go/api/service/ec2/#RunInstancesInput
 	fs.StringVar(&keyPairName, "key-pair", "", "AWS Key pair to use for SSH into the core instance.")
