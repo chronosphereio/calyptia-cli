@@ -19,7 +19,7 @@ func NewCmdConfigSetToken(config *cfg.Config) *cobra.Command {
 				return err
 			}
 
-			return saveToken(token)
+			return SaveToken(token)
 		},
 	}
 }

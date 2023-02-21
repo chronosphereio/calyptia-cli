@@ -21,7 +21,7 @@ var (
 	ErrInvalidToken  = errors.New("invalid token")
 )
 
-func saveToken(token string) error {
+func SaveToken(token string) error {
 	err := keyring.Set(serviceName, "project_token", token)
 	if err == nil {
 		return nil
