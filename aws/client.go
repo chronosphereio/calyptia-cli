@@ -43,6 +43,9 @@ GITHUB_TOKEN={{.CoreInstanceGitHubToken}}
 {{if .CoreInstanceTLSVerify }}
 CALYPTIA_CORE_TLS_VERIFY={{.CoreInstanceTLSVerify}}
 {{end}}
+{{if .SkipServiceCreation }}
+CORE_INSTANCE_SKIP_SERVICE_CREATION={{.SkipServiceCreation}}
+{{end}}
 `
 	instanceUpCheckTimeout = 10 * time.Minute
 	instanceUpCheckBackOff = 5 * time.Second
@@ -98,6 +101,7 @@ type (
 		CoreInstanceEnvironment string
 		CoreInstanceGitHubToken string
 		CoreInstanceTLSVerify   string
+		SkipServiceCreation     string
 	}
 
 	ElasticIPAddressParams struct {

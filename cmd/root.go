@@ -14,23 +14,26 @@ import (
 	"github.com/calyptia/cli/cmd/top"
 	"github.com/calyptia/cli/cmd/version"
 	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/localdata"
 )
 
 func NewRootCmd(ctx context.Context) *cobra.Command {
 	client := &cloudclient.Client{
 		Client: http.DefaultClient,
 	}
+
+	localData := localdata.New(cnfg.ServiceName, cnfg.BackUpFolder)
 	config := &cfg.Config{
 		Ctx:   ctx,
 		Cloud: client,
 	}
 
-	token, err := cnfg.SavedToken()
-	if err != nil && err != cnfg.ErrTokenNotFound {
+	token, err := localData.Get(cnfg.KeyToken)
+	if err != nil && err != localdata.ErrNotFound {
 		cobra.CheckErr(fmt.Errorf("could not retrive your stored token: %w", err))
 	}
 
-	cloudURLStr, err := cnfg.SavedURL()
+	cloudURLStr, err := localData.Get(cnfg.KeyBaseURL)
 	if err != nil && err != cnfg.ErrURLNotFound {
 		cobra.CheckErr(fmt.Errorf("could not retrive your stored url: %w", err))
 	}

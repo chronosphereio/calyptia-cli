@@ -7,6 +7,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const KeyToken = "project_token"
+
 func NewCmdConfigSetToken(config *cfg.Config) *cobra.Command {
 	return &cobra.Command{
 		Use:   "set_token TOKEN",
@@ -19,7 +21,7 @@ func NewCmdConfigSetToken(config *cfg.Config) *cobra.Command {
 				return err
 			}
 
-			return SaveToken(token)
+			return config.LocalData.Save(KeyToken, token)
 		},
 	}
 }
@@ -40,7 +42,7 @@ func NewCmdConfigUnsetToken(config *cfg.Config) *cobra.Command {
 		Use:   "unset_token",
 		Short: "Unset the current configured default project token",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return deleteSavedToken()
+			return config.LocalData.Delete(KeyToken)
 		},
 	}
 }

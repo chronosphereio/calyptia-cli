@@ -10,6 +10,7 @@ import (
 
 	"github.com/calyptia/api/client"
 	cloud "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/localdata"
 	"github.com/hako/durafmt"
 	"github.com/spf13/cobra"
 )
@@ -20,6 +21,7 @@ type Config struct {
 	Cloud        *client.Client
 	ProjectToken string
 	ProjectID    string
+	LocalData    *localdata.Keyring
 }
 
 func AgentStatus(lastMetricsAddedAt *time.Time, start time.Duration) string {

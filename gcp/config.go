@@ -3,6 +3,7 @@ package gcp
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -270,4 +271,16 @@ func (c *Config) SetGitHubToken(token string) *Config {
 		Value: token,
 	})
 	return c
+}
+
+func (c *Config) SkipServiceCreation(skipServiceCreation bool) *Config {
+	if !skipServiceCreation {
+		return c
+	}
+	c.Resources[0].Properties.Metadata.Items = append(c.Resources[0].Properties.Metadata.Items, item{
+		Key:   "CORE_INSTANCE_SKIP_SERVICE_CREATION",
+		Value: strconv.FormatBool(skipServiceCreation),
+	})
+	return c
+
 }
