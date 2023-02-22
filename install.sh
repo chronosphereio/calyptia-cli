@@ -43,16 +43,16 @@ _detect_os() {
 }
 
 _download_url() {
-  local arch="$(_detect_arch)"
-  local os="$(_detect_os)"
-  local version=$cli_VERSION
+  _download_arch="$(_detect_arch)"
+  _download_os="$(_detect_os)"
+  _download_version=$cli_VERSION
 
   if [ -z "$cli_VERSION" ]; then
     version=$(curl -s https://api.github.com/repos/calyptia/cli/releases/latest 2> /dev/null | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
   fi
 
-  local trailedVersion=$(echo $version | tr -d v)
-  echo "https://github.com/calyptia/cli/releases/download/${version}/cli_${trailedVersion}_${os}_${arch}.tar.gz"
+  _download_trailedVersion=$(echo $version | tr -d v)
+  echo "https://github.com/calyptia/cli/releases/download/${version}/cli_${_download_trailedVersion}_${_download_os}_${_download_arch}.tar.gz"
 }
 
 echo "Downloading Calyptia CLI from URL: $(_download_url)"
