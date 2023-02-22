@@ -24,8 +24,9 @@ func NewRootCmd(ctx context.Context) *cobra.Command {
 
 	localData := localdata.New(cnfg.ServiceName, cnfg.BackUpFolder)
 	config := &cfg.Config{
-		Ctx:   ctx,
-		Cloud: client,
+		Ctx:       ctx,
+		Cloud:     client,
+		LocalData: localData,
 	}
 
 	token, err := localData.Get(cnfg.KeyToken)
