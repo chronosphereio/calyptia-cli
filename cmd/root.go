@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -30,13 +31,14 @@ func NewRootCmd(ctx context.Context) *cobra.Command {
 	}
 
 	token, err := localData.Get(cnfg.KeyToken)
-	if err != nil && err != localdata.ErrNotFound {
+	if err != nil && errors.Is(err, localdata.ErrNotFound) {
 		cobra.CheckErr(fmt.Errorf("could not retrive your stored token: %w", err))
 	}
 
 	cloudURLStr, err := localData.Get(cnfg.KeyBaseURL)
-	if err != nil && err != cnfg.ErrURLNotFound {
-		cobra.CheckErr(fmt.Errorf("could not retrive your stored url: %w", err))
+	if err != nil && errors.Is(err, localdata.ErrNotFound) {
+		cobra.CompErrorln(fmt.Sprintf("could not retrive your stored url: %v", err))
+		fmt.Printf("The default url %s will be used instead\n", version.DefaultCloudURLStr)
 	}
 
 	if cloudURLStr == "" {
