@@ -51,7 +51,7 @@ _download_url() {
     version=$(curl -s https://api.github.com/repos/calyptia/cli/releases/latest 2> /dev/null | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
   fi
 
-  _download_trailedVersion=$(echo $version | tr -d v)
+  _download_trailedVersion="$(echo "$version" | tr -d v)"
   echo "https://github.com/calyptia/cli/releases/download/${version}/cli_${_download_trailedVersion}_${_download_os}_${_download_arch}.tar.gz"
 }
 
