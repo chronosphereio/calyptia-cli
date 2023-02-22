@@ -54,7 +54,7 @@ func NewCmdGetFleets(config *cfg.Config) *cobra.Command {
 			}
 
 			if strings.HasPrefix(outputFormat, "go-template") {
-				return utils.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, fleets)
+				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, fleets)
 			}
 
 			switch outputFormat {

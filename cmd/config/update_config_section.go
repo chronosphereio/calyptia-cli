@@ -9,9 +9,9 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/cmd/utils"
 	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/formatters"
 	"github.com/calyptia/cli/helpers"
 )
 
@@ -52,7 +52,7 @@ func NewCmdUpdateConfigSection(config *cfg.Config) *cobra.Command {
 			}
 
 			if strings.HasPrefix(outputFormat, "go-template") {
-				return utils.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, updated)
+				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, updated)
 			}
 
 			switch outputFormat {
@@ -61,7 +61,7 @@ func NewCmdUpdateConfigSection(config *cfg.Config) *cobra.Command {
 			case "yml", "yaml":
 				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(updated)
 			default:
-				return utils.RenderUpdatedTable(cmd.OutOrStdout(), updated.UpdatedAt)
+				return formatters.RenderUpdatedTable(cmd.OutOrStdout(), updated.UpdatedAt)
 			}
 		},
 	}

@@ -46,7 +46,7 @@ func NewCmdCreateTraceSession(config *cfg.Config) *cobra.Command {
 			}
 
 			if strings.HasPrefix(outputFormat, "go-template") {
-				return utils.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, created)
+				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, created)
 			}
 
 			switch outputFormat {

@@ -12,7 +12,6 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/cmd/utils"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 	fluentbitconfig "github.com/calyptia/go-fluentbit-config"
@@ -44,7 +43,7 @@ func NewCmdCreateFleet(config *cfg.Config) *cobra.Command {
 			}
 
 			if strings.HasPrefix(outputFormat, "go-template") {
-				return utils.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, created)
+				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, created)
 			}
 
 			switch outputFormat {

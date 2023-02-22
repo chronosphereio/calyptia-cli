@@ -60,7 +60,7 @@ func NewCmdGetAgents(config *cfg.Config) *cobra.Command {
 			}
 
 			if strings.HasPrefix(outputFormat, "go-template") {
-				return utils.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, aa.Items)
+				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, aa.Items)
 			}
 
 			switch outputFormat {
@@ -143,7 +143,7 @@ func NewCmdGetAgent(config *cfg.Config) *cobra.Command {
 			}
 
 			if strings.HasPrefix(outputFormat, "go-template") {
-				return utils.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, agent)
+				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, agent)
 			}
 
 			switch outputFormat {
