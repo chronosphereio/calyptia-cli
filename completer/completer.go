@@ -11,6 +11,7 @@ import (
 	"github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 	"github.com/calyptia/cli/helpers"
+	"github.com/calyptia/cli/slice"
 	"github.com/calyptia/core-images-index/go-index"
 	fluentbitconfig "github.com/calyptia/go-fluentbit-config"
 	"github.com/spf13/cobra"
@@ -791,7 +792,7 @@ func pluginNames(kind string) []string {
 		}
 	}
 
-	return helpers.UniqueSlice(out)
+	return slice.UniqueSlice(out)
 }
 
 // coreInstanceKeys returns unique aggregator names first and then IDs.
