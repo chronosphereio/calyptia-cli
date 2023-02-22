@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/calyptia/api/types"
+	"github.com/calyptia/cli/slice"
 	fluentbitconfig "github.com/calyptia/go-fluentbit-config"
 	"golang.org/x/exp/slices"
 )
@@ -58,19 +59,7 @@ func PluginProps(kind, name string) []string {
 	slices.Sort(out)
 	slices.Compact(out)
 
-	return UniqueSlice(out)
-}
-
-func UniqueSlice[S ~[]E, E comparable](s S) S {
-	m := map[E]struct{}{}
-
-	var out S
-	for _, item := range s {
-		if _, ok := m[item]; !ok {
-			out = append(out, item)
-		}
-	}
-	return out
+	return slice.Unique(out)
 }
 
 func PairsName(pp types.Pairs) string {
@@ -79,4 +68,3 @@ func PairsName(pp types.Pairs) string {
 	}
 	return ""
 }
-
