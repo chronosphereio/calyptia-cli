@@ -1,6 +1,6 @@
 package slice
 
-func UniqueSlice[S ~[]E, E comparable](s S) S {
+func Unique[S ~[]E, E comparable](s S) S {
 	m := map[E]struct{}{}
 
 	var out S

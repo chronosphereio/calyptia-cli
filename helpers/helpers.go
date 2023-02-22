@@ -59,7 +59,7 @@ func PluginProps(kind, name string) []string {
 	slices.Sort(out)
 	slices.Compact(out)
 
-	return slice.UniqueSlice(out)
+	return slice.Unique(out)
 }
 
 func PairsName(pp types.Pairs) string {

@@ -792,7 +792,7 @@ func pluginNames(kind string) []string {
 		}
 	}
 
-	return slice.UniqueSlice(out)
+	return slice.Unique(out)
 }
 
 // coreInstanceKeys returns unique aggregator names first and then IDs.
