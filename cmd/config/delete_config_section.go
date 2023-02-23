@@ -26,7 +26,7 @@ func NewCmdDeleteConfigSection(config *cfg.Config) *cobra.Command {
 
 			if !confirmed {
 				cmd.Printf("Are you sure you want to delete config section %q? (y/N) ", configSectionKey)
-				ok, err := confirm.ReadConfirm(cmd.InOrStdin())
+				ok, err := confirm.Read(cmd.InOrStdin())
 				if err != nil {
 					return err
 				}

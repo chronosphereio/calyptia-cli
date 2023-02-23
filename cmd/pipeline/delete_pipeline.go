@@ -102,7 +102,7 @@ func NewCmdDeletePipelines(config *cfg.Config) *cobra.Command {
 
 			if !confirmed {
 				cmd.Printf("You are about to delete:\n\n%s\n\nAre you sure you want to delete all of them? (y/N) ", strings.Join(cmpltr.PipelinesKeys(pp.Items), "\n"))
-				confirmed, err := confirm.ReadConfirm(cmd.InOrStdin())
+				confirmed, err := confirm.Read(cmd.InOrStdin())
 				if err != nil {
 					return err
 				}

@@ -55,7 +55,7 @@ func NewCmdDeleteCoreInstanceK8s(config *cfg.Config, testClientSet kubernetes.In
 
 			if !confirmed {
 				cmd.Printf("Are you sure you want to delete core instance with id %q and all of its associated kubernetes resources? (y/N) ", coreInstanceID)
-				confirmed, err := confirm.ReadConfirm(cmd.InOrStdin())
+				confirmed, err := confirm.Read(cmd.InOrStdin())
 				if err != nil {
 					return err
 				}

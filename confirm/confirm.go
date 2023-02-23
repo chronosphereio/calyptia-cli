@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func ReadConfirm(r io.Reader) (bool, error) {
+func Read(r io.Reader) (bool, error) {
 	var answer string
 	_, err := fmt.Fscanln(r, &answer)
 	if err != nil && err.Error() == "unexpected newline" {

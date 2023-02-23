@@ -95,7 +95,7 @@ func NewCmdDeleteCoreInstanceOnAWS(config *cfg.Config, client awsclient.Client) 
 
 			if !confirmDelete {
 				cmd.Print("You confirm the deletion of those resources? [y/N] ")
-				confirmDelete, err = confirm.ReadConfirm(cmd.InOrStdin())
+				confirmDelete, err = confirm.Read(cmd.InOrStdin())
 				if err != nil {
 					return err
 				}

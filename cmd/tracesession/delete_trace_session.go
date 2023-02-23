@@ -30,7 +30,7 @@ func NewCmdDeleteTraceSession(config *cfg.Config) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if !confirmed {
 				cmd.Printf("Are you sure you want to terminate the current active trace session for pipeline %q? (y/N) ", pipelineKey)
-				ok, err := confirm.ReadConfirm(cmd.InOrStdin())
+				ok, err := confirm.Read(cmd.InOrStdin())
 				if err != nil {
 					return err
 				}
