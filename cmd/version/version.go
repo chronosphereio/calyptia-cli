@@ -11,10 +11,9 @@ var (
 
 func NewVersionCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:           "version",
-		Short:         "Returns currenty Calyptia CLI version.",
-		SilenceErrors: true,
-		SilenceUsage:  true,
+		Use:          "version",
+		Short:        "Returns currenty Calyptia CLI version.",
+		SilenceUsage: true,
 		Run: func(cmd *cobra.Command, args []string) {
 			cmd.Println(Version)
 		},
