@@ -9,8 +9,8 @@ import (
 	"golang.org/x/term"
 
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/cmd/utils"
 	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/confirm"
 )
 
 func NewCmdDeleteEnvironment(c *cfg.Config) *cobra.Command {
@@ -32,7 +32,7 @@ func NewCmdDeleteEnvironment(c *cfg.Config) *cobra.Command {
 			environment := environments.Items[0]
 			if !confirmDelete {
 				cmd.Print("This will remove ALL your agents, core_instances. Do you confirm? [y/N] ")
-				confirmDelete, err = utils.ReadConfirm(cmd.InOrStdin())
+				confirmDelete, err = confirm.ReadConfirm(cmd.InOrStdin())
 				if err != nil {
 					return err
 				}

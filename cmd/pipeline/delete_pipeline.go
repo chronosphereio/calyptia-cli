@@ -9,9 +9,9 @@ import (
 	"golang.org/x/term"
 
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/cmd/utils"
 	cmpltr "github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/confirm"
 )
 
 func NewCmdDeletePipeline(config *cfg.Config) *cobra.Command {
@@ -102,7 +102,7 @@ func NewCmdDeletePipelines(config *cfg.Config) *cobra.Command {
 
 			if !confirmed {
 				cmd.Printf("You are about to delete:\n\n%s\n\nAre you sure you want to delete all of them? (y/N) ", strings.Join(cmpltr.PipelinesKeys(pp.Items), "\n"))
-				confirmed, err := utils.ReadConfirm(cmd.InOrStdin())
+				confirmed, err := confirm.ReadConfirm(cmd.InOrStdin())
 				if err != nil {
 					return err
 				}

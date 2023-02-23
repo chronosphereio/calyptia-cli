@@ -10,9 +10,9 @@ import (
 	"golang.org/x/term"
 
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/cmd/utils"
 	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/confirm"
 )
 
 func NewCmdDeleteAgent(config *cfg.Config) *cobra.Command {
@@ -45,7 +45,7 @@ func NewCmdDeleteAgent(config *cfg.Config) *cobra.Command {
 
 			if !confirmed {
 				cmd.Printf("Are you sure you want to delete agent with id %q? (y/N) ", agentID)
-				confirmed, err := utils.ReadConfirm(cmd.InOrStdin())
+				confirmed, err := confirm.ReadConfirm(cmd.InOrStdin())
 				if err != nil {
 					return err
 				}
@@ -112,7 +112,7 @@ func NewCmdDeleteAgents(config *cfg.Config) *cobra.Command {
 
 			if !confirmed {
 				cmd.Printf("You are about to delete:\n\n%s\n\nAre you sure you want to delete all of them? (y/N) ", strings.Join(completer.AgentsKeys(aa.Items), "\n"))
-				confirmed, err := utils.ReadConfirm(cmd.InOrStdin())
+				confirmed, err := confirm.ReadConfirm(cmd.InOrStdin())
 				if err != nil {
 					return err
 				}

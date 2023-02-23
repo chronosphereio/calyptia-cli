@@ -1,9 +1,7 @@
 package utils
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
 	"math"
 	"sort"
 	"strings"
@@ -181,56 +179,6 @@ func MeasurementNames(measurements map[string]cloud.AgentMeasurement) []string {
 	}
 	sort.Stable(sort.StringSlice(names))
 	return names
-}
-
-func FilterOutEmptyMetadata(metadata cloud.CoreInstanceMetadata) ([]byte, error) {
-	b, err := json.Marshal(metadata)
-	if err != nil {
-		return nil, err
-	}
-
-	var o map[string]any
-	err = json.Unmarshal(b, &o)
-	if err != nil {
-		return nil, err
-	}
-	for k, v := range o {
-		switch v.(type) {
-		case float64, int:
-			v, ok := v.(float64)
-			if !ok {
-				continue
-			}
-			if v <= 0 {
-				delete(o, k)
-			}
-		default:
-			v, ok := v.(string)
-			if !ok {
-				continue
-			}
-			if v == "" {
-				delete(o, k)
-			}
-		}
-	}
-
-	return json.Marshal(o)
-}
-
-func ReadConfirm(r io.Reader) (bool, error) {
-	var answer string
-	_, err := fmt.Fscanln(r, &answer)
-	if err != nil && err.Error() == "unexpected newline" {
-		err = nil
-	}
-
-	if err != nil {
-		return false, fmt.Errorf("could not to read answer: %v", err)
-	}
-
-	answer = strings.TrimSpace(strings.ToLower(answer))
-	return answer == "y" || answer == "yes", nil
 }
 
 func ZeroOfPtr[T comparable](v *T) T {

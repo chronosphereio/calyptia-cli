@@ -2,6 +2,7 @@ package formatters
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
@@ -112,4 +113,39 @@ func RenderCreatedTable(w io.Writer, createdID string, createdAt time.Time) erro
 	}
 
 	return tw.Flush()
+}
+
+func FilterOutEmptyMetadata(metadata types.CoreInstanceMetadata) ([]byte, error) {
+	b, err := json.Marshal(metadata)
+	if err != nil {
+		return nil, err
+	}
+
+	var o map[string]any
+	err = json.Unmarshal(b, &o)
+	if err != nil {
+		return nil, err
+	}
+	for k, v := range o {
+		switch v.(type) {
+		case float64, int:
+			v, ok := v.(float64)
+			if !ok {
+				continue
+			}
+			if v <= 0 {
+				delete(o, k)
+			}
+		default:
+			v, ok := v.(string)
+			if !ok {
+				continue
+			}
+			if v == "" {
+				delete(o, k)
+			}
+		}
+	}
+
+	return json.Marshal(o)
 }

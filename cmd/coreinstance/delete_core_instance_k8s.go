@@ -12,9 +12,9 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 
-	"github.com/calyptia/cli/cmd/utils"
 	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/confirm"
 	"github.com/calyptia/cli/k8s"
 )
 
@@ -55,7 +55,7 @@ func NewCmdDeleteCoreInstanceK8s(config *cfg.Config, testClientSet kubernetes.In
 
 			if !confirmed {
 				cmd.Printf("Are you sure you want to delete core instance with id %q and all of its associated kubernetes resources? (y/N) ", coreInstanceID)
-				confirmed, err := utils.ReadConfirm(cmd.InOrStdin())
+				confirmed, err := confirm.ReadConfirm(cmd.InOrStdin())
 				if err != nil {
 					return err
 				}

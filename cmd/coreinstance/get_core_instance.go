@@ -71,7 +71,7 @@ func NewCmdGetCoreInstances(config *cfg.Config) *cobra.Command {
 					}
 					fmt.Fprintf(tw, "%s\t%s\t%s\t%d\t%s\t%s\t%s", a.Name, a.Version, a.EnvironmentName, a.PipelinesCount, strings.Join(a.Tags, ","), a.Status, utils.FmtTime(a.CreatedAt))
 					if showMetadata {
-						metadata, err := utils.FilterOutEmptyMetadata(a.Metadata)
+						metadata, err := formatters.FilterOutEmptyMetadata(a.Metadata)
 						if err != nil {
 							continue
 						}

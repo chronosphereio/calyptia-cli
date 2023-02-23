@@ -10,9 +10,9 @@ import (
 	"k8s.io/client-go/kubernetes"
 
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/cmd/utils"
 	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/confirm"
 )
 
 func NewCmdDeleteCoreInstance(config *cfg.Config, testClientSet kubernetes.Interface) *cobra.Command {
@@ -51,7 +51,7 @@ func NewCmdDeleteCoreInstances(config *cfg.Config) *cobra.Command {
 
 			if !confirmed {
 				cmd.Printf("You are about to delete:\n\n%s\n\nAre you sure you want to delete all of them? (y/N) ", strings.Join(completer.CoreInstanceKeys(aa.Items), "\n"))
-				confirmed, err := utils.ReadConfirm(cmd.InOrStdin())
+				confirmed, err := confirm.ReadConfirm(cmd.InOrStdin())
 				if err != nil {
 					return err
 				}
