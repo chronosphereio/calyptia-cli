@@ -32,7 +32,7 @@ func NewCmdGetEnvironment(c *cfg.Config) *cobra.Command {
 			}
 
 			if strings.HasPrefix(outputFormat, "go-template") {
-				return utils.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, ee.Items)
+				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, ee.Items)
 			}
 
 			switch outputFormat {

@@ -1,20 +1,15 @@
 package utils
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
 	"math"
-	"os"
 	"sort"
 	"strings"
-	"text/tabwriter"
-	text_template "text/template"
 	"time"
 
 	"code.cloudfoundry.org/bytefmt"
-	"github.com/Masterminds/sprig/v3"
 	"github.com/hako/durafmt"
 
 	cloud "github.com/calyptia/api/types"
@@ -236,75 +231,6 @@ func ReadConfirm(r io.Reader) (bool, error) {
 
 	answer = strings.TrimSpace(strings.ToLower(answer))
 	return answer == "y" || answer == "yes", nil
-}
-
-func ApplyGoTemplate(w io.Writer, outputFormat, goTemplate string, data any) error {
-	if goTemplate == "" {
-		parts := strings.SplitN(outputFormat, "=", 2)
-		if len(parts) != 2 {
-			return nil
-		}
-
-		goTemplate = TrimQuotes(parts[1])
-
-		if goTemplate == "" {
-			return nil
-		}
-	}
-
-	goTemplate = strings.TrimSpace(goTemplate)
-
-	if strings.HasPrefix(outputFormat, "go-template-file") {
-		b, err := os.ReadFile(goTemplate)
-		if err != nil {
-			return fmt.Errorf("reading go-template-file: %w", err)
-		}
-
-		goTemplate = string(bytes.TrimSpace(b))
-	}
-
-	tmpl, err := text_template.New("").Funcs(sprig.FuncMap()).Parse(goTemplate + "\n")
-	if err != nil {
-		return fmt.Errorf("parsing go-template: %w", err)
-	}
-
-	err = tmpl.Execute(w, data)
-	if err != nil {
-		return fmt.Errorf("rendering go-template: %w", err)
-	}
-
-	return nil
-}
-
-func TrimQuotes(s string) string {
-	if len(s) >= 2 {
-		if c := s[len(s)-1]; s[0] == c && (c == '"' || c == '\'' || c == '`') {
-			return s[1 : len(s)-1]
-		}
-	}
-	return s
-}
-
-func RenderCreatedTable(w io.Writer, createdID string, createdAt time.Time) error {
-	tw := tabwriter.NewWriter(w, 0, 4, 1, ' ', 0)
-	fmt.Fprintln(tw, "ID\tCREATED-AT")
-	_, err := fmt.Fprintf(tw, "%s\t%s\n", createdID, createdAt.Local().Format(time.RFC822))
-	if err != nil {
-		return err
-	}
-
-	return tw.Flush()
-}
-
-func RenderUpdatedTable(w io.Writer, updatedAt time.Time) error {
-	tw := tabwriter.NewWriter(w, 0, 4, 1, ' ', 0)
-	fmt.Fprintln(tw, "UPDATED-AT")
-	_, err := fmt.Fprintln(tw, updatedAt.Local().Format(time.RFC822))
-	if err != nil {
-		return err
-	}
-
-	return tw.Flush()
 }
 
 func ZeroOfPtr[T comparable](v *T) T {

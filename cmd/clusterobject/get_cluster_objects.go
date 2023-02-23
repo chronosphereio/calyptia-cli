@@ -13,6 +13,7 @@ import (
 	"github.com/calyptia/cli/cmd/utils"
 	"github.com/calyptia/cli/completer"
 	cnfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/formatters"
 )
 
 func NewCmdGetClusterObjects(config *cnfg.Config) *cobra.Command {
@@ -49,7 +50,7 @@ func NewCmdGetClusterObjects(config *cnfg.Config) *cobra.Command {
 			}
 
 			if strings.HasPrefix(outputFormat, "go-template") {
-				return utils.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, co.Items)
+				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, co.Items)
 			}
 
 			switch outputFormat {

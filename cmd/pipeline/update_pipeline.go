@@ -127,7 +127,7 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 
 			if autoCreatePortsFromConfig && len(updated.AddedPorts) != 0 {
 				if strings.HasPrefix(outputFormat, "go-template") {
-					return utils.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, updated)
+					return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, updated)
 				}
 
 				switch outputFormat {

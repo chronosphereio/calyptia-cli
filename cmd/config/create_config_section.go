@@ -11,9 +11,9 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/cmd/utils"
 	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/formatters"
 )
 
 func NewCmdCreateConfigSection(config *cfg.Config) *cobra.Command {
@@ -43,7 +43,7 @@ func NewCmdCreateConfigSection(config *cfg.Config) *cobra.Command {
 			}
 
 			if strings.HasPrefix(outputFormat, "go-template") {
-				return utils.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, created)
+				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, created)
 			}
 
 			switch outputFormat {
@@ -52,7 +52,7 @@ func NewCmdCreateConfigSection(config *cfg.Config) *cobra.Command {
 			case "yml", "yaml":
 				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(created)
 			default:
-				return utils.RenderCreatedTable(cmd.OutOrStdout(), created.ID, created.CreatedAt)
+				return formatters.RenderCreatedTable(cmd.OutOrStdout(), created.ID, created.CreatedAt)
 			}
 		},
 	}

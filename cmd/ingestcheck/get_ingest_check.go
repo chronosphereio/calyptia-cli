@@ -35,7 +35,7 @@ func NewCmdGetIngestCheck(c *cfg.Config) *cobra.Command {
 				return err
 			}
 			if strings.HasPrefix(outputFormat, "go-template") {
-				return utils.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, check)
+				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, check)
 			}
 			switch outputFormat {
 			case "table":
@@ -110,7 +110,7 @@ func NewCmdGetIngestChecks(c *cfg.Config) *cobra.Command {
 			}
 
 			if strings.HasPrefix(outputFormat, "go-template") {
-				return utils.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, check.Items)
+				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, check.Items)
 			}
 			switch outputFormat {
 			case "table":
