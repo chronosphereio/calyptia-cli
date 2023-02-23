@@ -12,7 +12,7 @@ var (
 func NewVersionCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:           "version",
-		Short:         "v",
+		Short:         "Returns currenty Calyptia CLI version.",
 		SilenceErrors: true,
 		SilenceUsage:  true,
 		Run: func(cmd *cobra.Command, args []string) {
