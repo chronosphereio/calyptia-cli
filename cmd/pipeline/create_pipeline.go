@@ -15,7 +15,6 @@ import (
 	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/cmd/utils"
 	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
@@ -139,7 +138,7 @@ func NewCmdCreatePipeline(config *cfg.Config) *cobra.Command {
 			case "table":
 				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
 				fmt.Fprintln(tw, "ID\tNAME\tAGE")
-				fmt.Fprintf(tw, "%s\t%s\t%s\n", a.ID, a.Name, utils.FmtTime(a.CreatedAt))
+				fmt.Fprintf(tw, "%s\t%s\t%s\n", a.ID, a.Name, formatters.FmtTime(a.CreatedAt))
 				tw.Flush()
 			case "json":
 				return json.NewEncoder(cmd.OutOrStdout()).Encode(a)

@@ -13,7 +13,6 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/cmd/utils"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
@@ -92,7 +91,7 @@ func renderConfigSectionsTable(w io.Writer, cc types.ConfigSections, showIDs boo
 
 		name := pairsName(cs.Properties)
 
-		_, err = fmt.Fprintf(tw, "%s\t%s\t%s\t%s\n", cs.Kind, name, props, utils.FmtTime(cs.CreatedAt))
+		_, err = fmt.Fprintf(tw, "%s\t%s\t%s\t%s\n", cs.Kind, name, props, formatters.FmtTime(cs.CreatedAt))
 		if err != nil {
 			return err
 		}

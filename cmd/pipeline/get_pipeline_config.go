@@ -11,7 +11,6 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/cmd/utils"
 	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
@@ -75,7 +74,7 @@ func renderPipelineConfigHistory(w io.Writer, cc []types.PipelineConfig) {
 	tw := tabwriter.NewWriter(w, 0, 4, 1, ' ', 0)
 	fmt.Fprintln(tw, "ID\tAGE")
 	for _, c := range cc {
-		fmt.Fprintf(tw, "%s\t%s\n", c.ID, utils.FmtTime(c.CreatedAt))
+		fmt.Fprintf(tw, "%s\t%s\n", c.ID, formatters.FmtTime(c.CreatedAt))
 	}
 	tw.Flush()
 }

@@ -11,7 +11,6 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/cmd/utils"
 	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
@@ -51,7 +50,7 @@ func NewCmdGetIngestCheck(c *cfg.Config) *cobra.Command {
 
 				fmt.Fprintf(tw, "%s\t", check.Status)
 				fmt.Fprintf(tw, "%d\t", check.Retries)
-				fmt.Fprintln(tw, utils.FmtTime(check.CreatedAt))
+				fmt.Fprintln(tw, formatters.FmtTime(check.CreatedAt))
 				err := tw.Flush()
 				if err != nil {
 					return err
@@ -127,7 +126,7 @@ func NewCmdGetIngestChecks(c *cfg.Config) *cobra.Command {
 
 					fmt.Fprintf(tw, "%s\t", m.Status)
 					fmt.Fprintf(tw, "%d\t", m.Retries)
-					fmt.Fprintln(tw, utils.FmtTime(m.CreatedAt))
+					fmt.Fprintln(tw, formatters.FmtTime(m.CreatedAt))
 				}
 				err := tw.Flush()
 				if err != nil {

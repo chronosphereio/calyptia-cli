@@ -11,7 +11,6 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/cmd/utils"
 	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
@@ -57,7 +56,7 @@ func NewCmdCreateTraceSession(config *cfg.Config) *cobra.Command {
 			default:
 				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
 				fmt.Fprintln(tw, "ID\tAGE")
-				fmt.Fprintf(tw, "%s\t%s\n", created.ID, utils.FmtTime(created.CreatedAt))
+				fmt.Fprintf(tw, "%s\t%s\n", created.ID, formatters.FmtTime(created.CreatedAt))
 				tw.Flush()
 
 				return nil
