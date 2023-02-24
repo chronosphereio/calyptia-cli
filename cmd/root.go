@@ -31,7 +31,7 @@ func NewRootCmd(ctx context.Context) *cobra.Command {
 	}
 
 	token, err := localData.Get(cnfg.KeyToken)
-	if err != nil && errors.Is(err, localdata.ErrNotFound) {
+	if err != nil && !errors.Is(err, localdata.ErrNotFound) {
 		cobra.CheckErr(fmt.Errorf("could not retrieve your stored token: %w", err))
 	}
 
