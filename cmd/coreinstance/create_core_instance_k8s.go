@@ -141,15 +141,15 @@ func newCmdCreateCoreInstanceOnK8s(config *cfg.Config, testClientSet kubernetes.
 
 			if dryRun {
 				fmt.Println("---")
-				GetK8sYaml(secret)
+				printK8sYaml(secret)
 				fmt.Println("---")
-				GetK8sYaml(clusterRole)
+				printK8sYaml(clusterRole)
 				fmt.Println("---")
-				GetK8sYaml(serviceAccount)
+				printK8sYaml(serviceAccount)
 				fmt.Println("---")
-				GetK8sYaml(binding)
+				printK8sYaml(binding)
 				fmt.Println("---")
-				GetK8sYaml(deploy)
+				printK8sYaml(deploy)
 				return nil
 			}
 
@@ -184,12 +184,12 @@ func newCmdCreateCoreInstanceOnK8s(config *cfg.Config, testClientSet kubernetes.
 }
 
 // GetK8sYaml strips empty properties which would typically be marshalled with yaml.Marshal
-func GetK8sYaml(req interface{}) {
+func printK8sYaml(req interface{}) {
 	out, _ := json.Marshal(req)
 	input := strings.NewReader(string(out))
 	var output strings.Builder
 	if err := json2yaml.Convert(&output, input); err != nil {
-		log.Fatalln(err)
+		log.Println("failed to convert JSON to YAML:", err)
 	}
 	fmt.Println(output.String())
 }
