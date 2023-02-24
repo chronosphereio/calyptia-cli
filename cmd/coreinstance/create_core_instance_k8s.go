@@ -190,6 +190,7 @@ func printK8sYaml(req interface{}) {
 	var output strings.Builder
 	if err := json2yaml.Convert(&output, input); err != nil {
 		log.Println("failed to convert JSON to YAML:", err)
+		return
 	}
 	fmt.Println(output.String())
 }
