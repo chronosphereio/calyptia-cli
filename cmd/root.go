@@ -31,19 +31,12 @@ func NewRootCmd(ctx context.Context) *cobra.Command {
 	}
 
 	token, err := localData.Get(cnfg.KeyToken)
-	if err != nil && errors.Is(err, localdata.ErrNotFound) {
-		cobra.CheckErr(fmt.Errorf("could not retrive your stored token: %w", err))
+	if err != nil && !errors.Is(err, localdata.ErrNotFound) {
+		cobra.CheckErr(fmt.Errorf("could not retrieve your stored token: %w", err))
 	}
 
 	cloudURLStr, err := localData.Get(cnfg.KeyBaseURL)
-	if err != nil && errors.Is(err, localdata.ErrNotFound) {
-
-		cobra.CompErrorln(fmt.Sprint(
-			fmt.Sprintf("could not retrive your stored url: %v", err),
-			fmt.Sprintf("\nThe default url %s will be used instead\n", version.DefaultCloudURLStr)))
-	}
-
-	if cloudURLStr == "" {
+	if err != nil && errors.Is(err, localdata.ErrNotFound) { // if BaseURL not found in local storage revert to default value without warning or error
 		cloudURLStr = version.DefaultCloudURLStr
 	}
 
@@ -76,10 +69,10 @@ func NewRootCmd(ctx context.Context) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:           "calyptia",
 		Short:         "Calyptia Cloud CLI",
-		Version:       version.Version,
 		SilenceErrors: true,
 		SilenceUsage:  true,
 	}
+
 	cmd.SetOut(os.Stdout)
 
 	fs := cmd.PersistentFlags()
@@ -94,6 +87,7 @@ func NewRootCmd(ctx context.Context) *cobra.Command {
 		newCmdRollout(config),
 		newCmdDelete(config),
 		top.NewCmdTop(config),
+		version.NewVersionCommand(),
 	)
 
 	return cmd

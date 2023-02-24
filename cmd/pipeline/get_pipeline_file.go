@@ -11,7 +11,6 @@ import (
 	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/cmd/utils"
 	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
@@ -131,7 +130,7 @@ func NewCmdGetPipelineFile(config *cfg.Config) *cobra.Command {
 				if showIDs {
 					fmt.Fprintf(tw, "%s\t", file.ID)
 				}
-				fmt.Fprintf(tw, "%s\t%v\t%s\n", file.Name, file.Encrypted, utils.FmtTime(file.CreatedAt))
+				fmt.Fprintf(tw, "%s\t%v\t%s\n", file.Name, file.Encrypted, formatters.FmtTime(file.CreatedAt))
 				tw.Flush()
 			case "json":
 				return json.NewEncoder(cmd.OutOrStdout()).Encode(file)
@@ -171,7 +170,7 @@ func renderPipelineFiles(w io.Writer, ff []cloud.PipelineFile, showIDs bool) {
 		if showIDs {
 			fmt.Fprintf(tw, "%s\t", f.ID)
 		}
-		fmt.Fprintf(tw, "%s\t%v\t%s\n", f.Name, f.Encrypted, utils.FmtTime(f.CreatedAt))
+		fmt.Fprintf(tw, "%s\t%v\t%s\n", f.Name, f.Encrypted, formatters.FmtTime(f.CreatedAt))
 	}
 	tw.Flush()
 }

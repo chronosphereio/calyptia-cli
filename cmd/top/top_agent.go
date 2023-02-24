@@ -19,6 +19,7 @@ import (
 	"github.com/calyptia/cli/cmd/utils"
 	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/metric"
 	table "github.com/calyptia/go-bubble-table"
 )
 
@@ -298,9 +299,9 @@ func (m AgentModel) viewMetrics() string {
 
 func agentMetricsToTableRows(metrics cloud.AgentMetrics) []table.Row {
 	var rows []table.Row
-	for _, measurementName := range utils.MeasurementNames(metrics.Measurements) {
+	for _, measurementName := range metric.MeasurementNames(metrics.Measurements) {
 		measurement := metrics.Measurements[measurementName]
-		for _, pluginName := range utils.MetricPluginNames(measurement.Plugins) {
+		for _, pluginName := range metric.MetricPluginNames(measurement.Plugins) {
 			// skip internal metrics.
 			if strings.HasPrefix(pluginName, "fluentbit_metrics.") || strings.HasPrefix(pluginName, "calyptia.") {
 				continue

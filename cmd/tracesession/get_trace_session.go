@@ -13,7 +13,6 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/cmd/utils"
 	"github.com/calyptia/cli/completer"
 	cnfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
@@ -167,7 +166,7 @@ func renderTraceSessionsTable(w io.Writer, ss types.TraceSessions, pipelineID st
 				return err
 			}
 		}
-		_, err := fmt.Fprintf(tw, "%s\t%v\t%v\t%s\n", strings.Join(sess.Plugins, ", "), utils.FmtDuration(time.Duration(sess.Lifespan)), sess.Active(), utils.FmtTime(sess.CreatedAt))
+		_, err := fmt.Fprintf(tw, "%s\t%v\t%v\t%s\n", strings.Join(sess.Plugins, ", "), formatters.FmtDuration(time.Duration(sess.Lifespan)), sess.Active(), formatters.FmtTime(sess.CreatedAt))
 		if err != nil {
 			return err
 		}
@@ -200,7 +199,7 @@ func renderTraceSessionTable(w io.Writer, sess types.TraceSession, showIDs bool)
 			return err
 		}
 	}
-	_, err := fmt.Fprintf(tw, "%s\t%v\t%v\t%s\n", strings.Join(sess.Plugins, ", "), utils.FmtDuration(time.Duration(sess.Lifespan)), sess.Active(), utils.FmtTime(sess.CreatedAt))
+	_, err := fmt.Fprintf(tw, "%s\t%v\t%v\t%s\n", strings.Join(sess.Plugins, ", "), formatters.FmtDuration(time.Duration(sess.Lifespan)), sess.Active(), formatters.FmtTime(sess.CreatedAt))
 	if err != nil {
 		return err
 	}

@@ -10,7 +10,6 @@ import (
 	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/cmd/utils"
 	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
@@ -54,7 +53,7 @@ func NewCmdGetPipelineStatusHistory(config *cfg.Config) *cobra.Command {
 					if showIDs {
 						fmt.Fprintf(tw, "%s\t", s.ID)
 					}
-					fmt.Fprintf(tw, "%s\t%s\t%s\n", s.Status, s.Config.ID, utils.FmtTime(s.CreatedAt))
+					fmt.Fprintf(tw, "%s\t%s\t%s\n", s.Status, s.Config.ID, formatters.FmtTime(s.CreatedAt))
 				}
 				tw.Flush()
 			case "json":

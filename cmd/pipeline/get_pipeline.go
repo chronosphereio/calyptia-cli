@@ -11,7 +11,6 @@ import (
 	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/cmd/utils"
 	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
@@ -66,7 +65,7 @@ func NewCmdGetPipelines(config *cfg.Config) *cobra.Command {
 					if showIDs {
 						fmt.Fprintf(tw, "%s\t", p.ID)
 					}
-					fmt.Fprintf(tw, "%s\t%d\t%s\t%s\n", p.Name, p.ReplicasCount, p.Status.Status, utils.FmtTime(p.CreatedAt))
+					fmt.Fprintf(tw, "%s\t%d\t%s\t%s\n", p.Name, p.ReplicasCount, p.Status.Status, formatters.FmtTime(p.CreatedAt))
 				}
 				tw.Flush()
 			case "json":
@@ -207,7 +206,7 @@ func NewCmdGetPipeline(config *cfg.Config) *cobra.Command {
 					if showIDs {
 						fmt.Fprintf(tw, "%s\t", pip.ID)
 					}
-					fmt.Fprintf(tw, "%s\t%d\t%s\t%s\n", pip.Name, pip.ReplicasCount, pip.Status.Status, utils.FmtTime(pip.CreatedAt))
+					fmt.Fprintf(tw, "%s\t%d\t%s\t%s\n", pip.Name, pip.ReplicasCount, pip.Status.Status, formatters.FmtTime(pip.CreatedAt))
 					tw.Flush()
 				}
 				if includeEndpoints {

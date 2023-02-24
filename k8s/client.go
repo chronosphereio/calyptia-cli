@@ -286,6 +286,18 @@ func (client *Client) CreateDeployment(
 									Name:  coreSkipServiceCreationEnvVar,
 									Value: strconv.FormatBool(skipServiceCreation),
 								},
+								{
+									Name:  "POD_NAMESPACE",
+									Value: client.Namespace,
+								},
+								{
+									Name: "DEPLOYMENT_NAME",
+									ValueFrom: &apiv1.EnvVarSource{
+										FieldRef: &apiv1.ObjectFieldSelector{
+											FieldPath: "metadata.name",
+										},
+									},
+								},
 							},
 						},
 					},

@@ -11,7 +11,6 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/cmd/utils"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
@@ -99,7 +98,7 @@ func renderFleetsTable(w io.Writer, fleets types.Fleets, showIDs bool) error {
 				return err
 			}
 		}
-		_, err := fmt.Fprintf(tw, "%s\t%s\t%s\n", fleet.Name, strings.Join(fleet.Tags, ", "), utils.FmtTime(fleet.CreatedAt))
+		_, err := fmt.Fprintf(tw, "%s\t%s\t%s\n", fleet.Name, strings.Join(fleet.Tags, ", "), formatters.FmtTime(fleet.CreatedAt))
 		if err != nil {
 			return err
 		}

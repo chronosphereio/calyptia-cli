@@ -2,6 +2,7 @@ package formatters
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
@@ -13,8 +14,8 @@ import (
 
 	"github.com/Masterminds/sprig/v3"
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/cmd/utils"
 	"github.com/calyptia/cli/helpers"
+	"github.com/hako/durafmt"
 	"github.com/spf13/cobra"
 )
 
@@ -40,7 +41,7 @@ func RenderEndpointsTable(w io.Writer, pp []types.PipelinePort, showIDs bool) {
 		if showIDs {
 			fmt.Fprintf(tw, "%s\t", p.ID)
 		}
-		fmt.Fprintf(tw, "%s\t%d\t%d\t%s\t%s\n", p.Protocol, p.FrontendPort, p.BackendPort, endpoint, utils.FmtTime(p.CreatedAt))
+		fmt.Fprintf(tw, "%s\t%d\t%d\t%s\t%s\n", p.Protocol, p.FrontendPort, p.BackendPort, endpoint, FmtTime(p.CreatedAt))
 	}
 	tw.Flush()
 }
@@ -112,4 +113,52 @@ func RenderCreatedTable(w io.Writer, createdID string, createdAt time.Time) erro
 	}
 
 	return tw.Flush()
+}
+
+func FilterOutEmptyMetadata(metadata types.CoreInstanceMetadata) ([]byte, error) {
+	b, err := json.Marshal(metadata)
+	if err != nil {
+		return nil, err
+	}
+
+	var o map[string]any
+	err = json.Unmarshal(b, &o)
+	if err != nil {
+		return nil, err
+	}
+	for k, v := range o {
+		switch v.(type) {
+		case float64, int:
+			v, ok := v.(float64)
+			if !ok {
+				continue
+			}
+			if v <= 0 {
+				delete(o, k)
+			}
+		default:
+			v, ok := v.(string)
+			if !ok {
+				continue
+			}
+			if v == "" {
+				delete(o, k)
+			}
+		}
+	}
+
+	return json.Marshal(o)
+}
+
+func FmtTime(t time.Time) string {
+	d := time.Since(t)
+	if d < time.Second {
+		return "Just now"
+	}
+
+	return FmtDuration(d)
+}
+
+func FmtDuration(d time.Duration) string {
+	return durafmt.ParseShort(d).LimitFirstN(1).String()
 }

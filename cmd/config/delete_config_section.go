@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/calyptia/cli/cmd/utils"
 	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/confirm"
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
 )
@@ -26,7 +26,7 @@ func NewCmdDeleteConfigSection(config *cfg.Config) *cobra.Command {
 
 			if !confirmed {
 				cmd.Printf("Are you sure you want to delete config section %q? (y/N) ", configSectionKey)
-				ok, err := utils.ReadConfirm(cmd.InOrStdin())
+				ok, err := confirm.Read(cmd.InOrStdin())
 				if err != nil {
 					return err
 				}
