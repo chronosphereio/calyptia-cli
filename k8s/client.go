@@ -243,6 +243,14 @@ func (client *Client) CreateDeployment(
 									Name:  "POD_NAMESPACE",
 									Value: client.Namespace,
 								},
+								{
+									Name: "DEPLOYMENT_NAME",
+									ValueFrom: &apiv1.EnvVarSource{
+										FieldRef: &apiv1.ObjectFieldSelector{
+											FieldPath: "metadata.name",
+										},
+									},
+								},
 							},
 						},
 					},
