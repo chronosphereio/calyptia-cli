@@ -93,21 +93,33 @@ func (client *Client) createOwnNamespace(ctx context.Context) (*apiv1.Namespace,
 	}, metav1.CreateOptions{})
 }
 
-func (client *Client) CreateSecret(ctx context.Context, agg cloud.CreatedCoreInstance) (*apiv1.Secret, error) {
+func (client *Client) CreateSecret(ctx context.Context, agg cloud.CreatedCoreInstance, dryRun bool) (*apiv1.Secret, error) {
 	metadata := client.getObjectMeta(agg, secretObjectType)
-	return client.CoreV1().Secrets(client.Namespace).Create(ctx, &apiv1.Secret{
+	req := &apiv1.Secret{
+
 		ObjectMeta: metadata,
 		Data: map[string][]byte{
 			metadata.Name: agg.PrivateRSAKey,
 		},
-	}, metav1.CreateOptions{})
+	}
+	req.TypeMeta = metav1.TypeMeta{
+		Kind:       "Secret",
+		APIVersion: "v1",
+	}
+
+	options := metav1.CreateOptions{}
+	if dryRun {
+		return req, nil
+	}
+
+	return client.CoreV1().Secrets(client.Namespace).Create(ctx, req, options)
 }
 
 type ClusterRoleOpt struct {
 	EnableOpenShift bool
 }
 
-func (client *Client) CreateClusterRole(ctx context.Context, agg cloud.CreatedCoreInstance, opts ...ClusterRoleOpt) (*rbacv1.ClusterRole, error) {
+func (client *Client) CreateClusterRole(ctx context.Context, agg cloud.CreatedCoreInstance, dryRun bool, opts ...ClusterRoleOpt) (*rbacv1.ClusterRole, error) {
 	apiGroups := []string{"", "apps", "batch", "policy"}
 	resources := []string{
 		"namespaces",
@@ -132,8 +144,7 @@ func (client *Client) CreateClusterRole(ctx context.Context, agg cloud.CreatedCo
 			resources = append(resources, "securitycontextconstraints")
 		}
 	}
-
-	return client.RbacV1().ClusterRoles().Create(ctx, &rbacv1.ClusterRole{
+	req := &rbacv1.ClusterRole{
 		ObjectMeta: client.getObjectMeta(agg, clusterRoleObjectType),
 		Rules: []rbacv1.PolicyRule{
 			{
@@ -152,13 +163,36 @@ func (client *Client) CreateClusterRole(ctx context.Context, agg cloud.CreatedCo
 				},
 			},
 		},
-	}, metav1.CreateOptions{})
+	}
+
+	req.TypeMeta = metav1.TypeMeta{
+		Kind:       "ClusterRole",
+		APIVersion: "rbac.authorization.k8s.io/v1",
+	}
+
+	if dryRun {
+		return req, nil
+	}
+
+	return client.RbacV1().ClusterRoles().Create(ctx, req, metav1.CreateOptions{})
 }
 
-func (client *Client) CreateServiceAccount(ctx context.Context, agg cloud.CreatedCoreInstance) (*apiv1.ServiceAccount, error) {
-	return client.CoreV1().ServiceAccounts(client.Namespace).Create(ctx, &apiv1.ServiceAccount{
+func (client *Client) CreateServiceAccount(ctx context.Context, agg cloud.CreatedCoreInstance, dryRun bool) (*apiv1.ServiceAccount, error) {
+	req := &apiv1.ServiceAccount{
+
 		ObjectMeta: client.getObjectMeta(agg, serviceAccountObjectType),
-	}, metav1.CreateOptions{})
+	}
+
+	req.TypeMeta = metav1.TypeMeta{
+		Kind:       "ServiceAccount",
+		APIVersion: "v1",
+	}
+
+	if dryRun {
+		return req, nil
+	}
+
+	return client.CoreV1().ServiceAccounts(client.Namespace).Create(ctx, req, metav1.CreateOptions{})
 }
 
 func (client *Client) CreateClusterRoleBinding(
@@ -166,8 +200,9 @@ func (client *Client) CreateClusterRoleBinding(
 	agg cloud.CreatedCoreInstance,
 	clusterRole *rbacv1.ClusterRole,
 	serviceAccount *apiv1.ServiceAccount,
+	dryRun bool,
 ) (*rbacv1.ClusterRoleBinding, error) {
-	return client.RbacV1().ClusterRoleBindings().Create(ctx, &rbacv1.ClusterRoleBinding{
+	req := &rbacv1.ClusterRoleBinding{
 		ObjectMeta: client.getObjectMeta(agg, clusterRoleBindingObjectType),
 		RoleRef: rbacv1.RoleRef{
 			APIGroup: rbacv1.GroupName,
@@ -181,7 +216,18 @@ func (client *Client) CreateClusterRoleBinding(
 				Name:      serviceAccount.Name,
 			},
 		},
-	}, metav1.CreateOptions{})
+	}
+
+	req.TypeMeta = metav1.TypeMeta{
+		Kind:       "ClusterRoleBinding",
+		APIVersion: "rbac.authorization.k8s.io/v1",
+	}
+	options := metav1.CreateOptions{}
+	if dryRun {
+		return req, nil
+	}
+
+	return client.RbacV1().ClusterRoleBindings().Create(ctx, req, options)
 }
 
 func (client *Client) CreateDeployment(
@@ -191,10 +237,11 @@ func (client *Client) CreateDeployment(
 	serviceAccount *apiv1.ServiceAccount,
 	tlsVerify bool,
 	skipServiceCreation bool,
+	dryRun bool,
 ) (*appsv1.Deployment, error) {
 	labels := client.LabelsFunc()
 
-	return client.AppsV1().Deployments(client.Namespace).Create(ctx, &appsv1.Deployment{
+	req := &appsv1.Deployment{
 		ObjectMeta: client.getObjectMeta(agg, deploymentObjectType),
 		Spec: appsv1.DeploymentSpec{
 			Replicas: &deploymentReplicas,
@@ -239,13 +286,37 @@ func (client *Client) CreateDeployment(
 									Name:  coreSkipServiceCreationEnvVar,
 									Value: strconv.FormatBool(skipServiceCreation),
 								},
+								{
+									Name:  "POD_NAMESPACE",
+									Value: client.Namespace,
+								},
+								{
+									Name: "DEPLOYMENT_NAME",
+									ValueFrom: &apiv1.EnvVarSource{
+										FieldRef: &apiv1.ObjectFieldSelector{
+											FieldPath: "metadata.name",
+										},
+									},
+								},
 							},
 						},
 					},
 				},
 			},
 		},
-	}, metav1.CreateOptions{})
+	}
+
+	req.TypeMeta = metav1.TypeMeta{
+		Kind:       "Deployment",
+		APIVersion: "apps/v1",
+	}
+
+	options := metav1.CreateOptions{}
+	if dryRun {
+		return req, nil
+	}
+
+	return client.AppsV1().Deployments(client.Namespace).Create(ctx, req, options)
 }
 
 func (client *Client) DeleteDeploymentByLabel(ctx context.Context, label, ns string) error {

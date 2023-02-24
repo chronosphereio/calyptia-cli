@@ -4,11 +4,11 @@ blobs:
     folder: "releases/{{.Version}}"
 
 builds:
-  - main: ./cmd/calyptia
+  - main: .
     id: calyptia
     binary: calyptia
     ldflags:
-      - -s -w -X main.version={{.Version}}
+      - -s -w -X github.com/calyptia/cli/cmd/version.Version={{.Version}}
     targets:
       - darwin_amd64
       - darwin_arm64

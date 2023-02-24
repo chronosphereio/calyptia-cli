@@ -21,6 +21,7 @@ require (
 	github.com/charmbracelet/lipgloss v0.6.0
 	github.com/go-logfmt/logfmt v0.6.0
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
+	github.com/itchyny/json2yaml v0.1.4
 	github.com/joho/godotenv v1.5.1
 	github.com/matryer/moq v0.3.0
 	github.com/pkg/errors v0.9.1
@@ -61,7 +62,6 @@ require (
 	github.com/danieljoos/wincred v1.1.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/emicklei/go-restful/v3 v3.10.1 // indirect
-	github.com/evanphx/json-patch v5.6.0+incompatible // indirect
 	github.com/go-logr/logr v1.2.3 // indirect
 	github.com/go-openapi/jsonpointer v0.19.6 // indirect
 	github.com/go-openapi/jsonreference v0.20.2 // indirect
