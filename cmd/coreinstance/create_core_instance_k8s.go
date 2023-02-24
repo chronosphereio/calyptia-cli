@@ -2,10 +2,14 @@ package coreinstance
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"log"
+	"strings"
 
 	"github.com/calyptia/cli/cmd/utils"
 	"github.com/calyptia/cli/cmd/version"
+	"github.com/itchyny/json2yaml"
 	"github.com/spf13/cobra"
 	apiv1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes"
@@ -28,6 +32,7 @@ func newCmdCreateCoreInstanceOnK8s(config *cfg.Config, testClientSet kubernetes.
 	var skipServiceCreation bool
 	var environment string
 	var tags []string
+	var dryRun bool
 
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	configOverrides := &clientcmd.ConfigOverrides{}
@@ -106,42 +111,52 @@ func newCmdCreateCoreInstanceOnK8s(config *cfg.Config, testClientSet kubernetes.
 				return fmt.Errorf("could not ensure kubernetes namespace exists: %w", err)
 			}
 
-			secret, err := k8sClient.CreateSecret(ctx, created)
+			secret, err := k8sClient.CreateSecret(ctx, created, dryRun)
 			if err != nil {
 				return fmt.Errorf("could not create kubernetes secret from private key: %w", err)
 			}
 
-			fmt.Fprintf(cmd.OutOrStdout(), "secret=%q\n", secret.Name)
-
 			var clusterRoleOpts k8s.ClusterRoleOpt
 
 			clusterRoleOpts.EnableOpenShift = enableOpenShift
-			clusterRole, err := k8sClient.CreateClusterRole(ctx, created, clusterRoleOpts)
+			clusterRole, err := k8sClient.CreateClusterRole(ctx, created, dryRun, clusterRoleOpts)
 			if err != nil {
 				return fmt.Errorf("could not create kubernetes cluster role: %w", err)
 			}
 
-			fmt.Fprintf(cmd.OutOrStdout(), "cluster_role=%q\n", clusterRole.Name)
-
-			serviceAccount, err := k8sClient.CreateServiceAccount(ctx, created)
+			serviceAccount, err := k8sClient.CreateServiceAccount(ctx, created, dryRun)
 			if err != nil {
 				return fmt.Errorf("could not create kubernetes service account: %w", err)
 			}
 
-			fmt.Fprintf(cmd.OutOrStdout(), "service_account=%q\n", serviceAccount.Name)
-
-			binding, err := k8sClient.CreateClusterRoleBinding(ctx, created, clusterRole, serviceAccount)
+			binding, err := k8sClient.CreateClusterRoleBinding(ctx, created, clusterRole, serviceAccount, dryRun)
 			if err != nil {
 				return fmt.Errorf("could not create kubernetes cluster role binding: %w", err)
 			}
 
-			fmt.Fprintf(cmd.OutOrStdout(), "cluster_role_binding=%q\n", binding.Name)
-
-			deploy, err := k8sClient.CreateDeployment(ctx, coreDockerImage, created, serviceAccount, !noTLSVerify, skipServiceCreation)
+			deploy, err := k8sClient.CreateDeployment(ctx, coreDockerImage, created, serviceAccount, !noTLSVerify, skipServiceCreation, dryRun)
 			if err != nil {
 				return fmt.Errorf("could not create kubernetes deployment: %w", err)
 			}
 
+			if dryRun {
+				fmt.Println("---")
+				printK8sYaml(secret)
+				fmt.Println("---")
+				printK8sYaml(clusterRole)
+				fmt.Println("---")
+				printK8sYaml(serviceAccount)
+				fmt.Println("---")
+				printK8sYaml(binding)
+				fmt.Println("---")
+				printK8sYaml(deploy)
+				return nil
+			}
+
+			fmt.Fprintf(cmd.OutOrStdout(), "secret=%q\n", secret.Name)
+			fmt.Fprintf(cmd.OutOrStdout(), "cluster_role=%q\n", clusterRole.Name)
+			fmt.Fprintf(cmd.OutOrStdout(), "service_account=%q\n", serviceAccount.Name)
+			fmt.Fprintf(cmd.OutOrStdout(), "cluster_role_binding=%q\n", binding.Name)
 			fmt.Fprintf(cmd.OutOrStdout(), "deployment=%q\n", deploy.Name)
 			return nil
 		},
@@ -155,6 +170,7 @@ func newCmdCreateCoreInstanceOnK8s(config *cfg.Config, testClientSet kubernetes.
 	fs.BoolVar(&enableOpenShift, "enable-openshift", false, "Enable Open-Shift specific permissions and settings.")
 	fs.BoolVar(&noTLSVerify, "no-tls-verify", false, "Disable TLS verification when connecting to Calyptia Cloud API.")
 	fs.BoolVar(&skipServiceCreation, "skip-service-creation", false, "Skip the creation of kubernetes services for any pipeline under this core instance.")
+	fs.BoolVar(&dryRun, "dry-run", false, "Passing this value will skip creation of any Kubernetes resources and it will return resources as YAML manifest")
 
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 	fs.StringSliceVar(&tags, "tags", nil, "Tags to apply to the core instance")
@@ -165,4 +181,16 @@ func newCmdCreateCoreInstanceOnK8s(config *cfg.Config, testClientSet kubernetes.
 	_ = cmd.RegisterFlagCompletionFunc("version", completer.CompleteCoreContainerVersion)
 
 	return cmd
+}
+
+// GetK8sYaml strips empty properties which would typically be marshalled with yaml.Marshal
+func printK8sYaml(req interface{}) {
+	out, _ := json.Marshal(req)
+	input := strings.NewReader(string(out))
+	var output strings.Builder
+	if err := json2yaml.Convert(&output, input); err != nil {
+		log.Println("failed to convert JSON to YAML:", err)
+		return
+	}
+	fmt.Println(output.String())
 }

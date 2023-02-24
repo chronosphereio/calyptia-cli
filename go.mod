@@ -7,6 +7,7 @@ replace github.com/calyptia/cli/k8s => ./k8s
 require (
 	code.cloudfoundry.org/bytefmt v0.0.0-20211005130812-5bb3c17173e5
 	github.com/Masterminds/sprig/v3 v3.2.3
+	github.com/alecthomas/assert/v2 v2.2.1
 	github.com/aws/aws-sdk-go-v2 v1.17.5
 	github.com/aws/aws-sdk-go-v2/config v1.18.14
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.86.1
@@ -20,6 +21,7 @@ require (
 	github.com/charmbracelet/lipgloss v0.6.0
 	github.com/go-logfmt/logfmt v0.6.0
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
+	github.com/itchyny/json2yaml v0.1.4
 	github.com/joho/godotenv v1.5.1
 	github.com/matryer/moq v0.3.0
 	github.com/pkg/errors v0.9.1
@@ -42,6 +44,7 @@ require (
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
 	github.com/Masterminds/goutils v1.1.1 // indirect
 	github.com/Masterminds/semver/v3 v3.2.0 // indirect
+	github.com/alecthomas/repr v0.2.0 // indirect
 	github.com/alessio/shellescape v1.4.1 // indirect
 	github.com/aws/aws-sdk-go-v2/credentials v1.13.14 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.12.23 // indirect
@@ -74,6 +77,7 @@ require (
 	github.com/googleapis/enterprise-certificate-proxy v0.2.3 // indirect
 	github.com/googleapis/gax-go/v2 v2.7.0 // indirect
 	github.com/hashicorp/go-version v1.6.0 // indirect
+	github.com/hexops/gotextdiff v1.0.3 // indirect
 	github.com/huandu/xstrings v1.4.0 // indirect
 	github.com/imdario/mergo v0.3.13 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
