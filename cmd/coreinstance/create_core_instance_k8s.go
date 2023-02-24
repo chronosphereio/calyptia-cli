@@ -14,10 +14,9 @@ import (
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp" // register GCP auth provider
 	"k8s.io/client-go/tools/clientcmd"
 
+	cloud "github.com/calyptia/api/types"
 	"github.com/calyptia/cli/cmd/utils"
 	"github.com/calyptia/cli/cmd/version"
-
-	cloud "github.com/calyptia/api/types"
 	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/k8s"

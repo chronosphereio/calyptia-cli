@@ -5,14 +5,12 @@ import (
 	"os"
 	"time"
 
-	"github.com/calyptia/cli/gcp"
-
-	rateLimiter "golang.org/x/time/rate"
-
 	"github.com/spf13/cobra"
+	rateLimiter "golang.org/x/time/rate"
 
 	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/gcp"
 )
 
 const burstNumber = 1
