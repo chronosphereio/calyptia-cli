@@ -74,10 +74,10 @@ func NewRootCmd(ctx context.Context) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:           "calyptia",
 		Short:         "Calyptia Cloud CLI",
-		Version:       version.Version,
 		SilenceErrors: true,
 		SilenceUsage:  true,
 	}
+
 	cmd.SetOut(os.Stdout)
 
 	fs := cmd.PersistentFlags()
@@ -92,6 +92,7 @@ func NewRootCmd(ctx context.Context) *cobra.Command {
 		newCmdRollout(config),
 		newCmdDelete(config),
 		top.NewCmdTop(config),
+		version.NewVersionCommand(),
 	)
 
 	return cmd
