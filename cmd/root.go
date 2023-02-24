@@ -36,7 +36,11 @@ func NewRootCmd(ctx context.Context) *cobra.Command {
 	}
 
 	cloudURLStr, err := localData.Get(cnfg.KeyBaseURL)
-	if err != nil && errors.Is(err, localdata.ErrNotFound) { // if BaseURL not found in local storage revert to default value without warning or error
+	if err != nil && !errors.Is(err, localdata.ErrNotFound) {
+		cobra.CheckErr(fmt.Errorf("could not retrieve your stored cloud url: %w", err))
+	}
+
+	if cloudURLStr == "" {
 		cloudURLStr = version.DefaultCloudURLStr
 	}
 
