@@ -7,13 +7,14 @@ import (
 	"strings"
 	"text/tabwriter"
 
+	"github.com/spf13/cobra"
+	"golang.org/x/term"
+	"gopkg.in/yaml.v2"
+
 	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/confirm"
 	"github.com/calyptia/cli/formatters"
-	"github.com/spf13/cobra"
-	"golang.org/x/term"
-	"gopkg.in/yaml.v2"
 )
 
 func NewCmdDeleteTraceSession(config *cfg.Config) *cobra.Command {

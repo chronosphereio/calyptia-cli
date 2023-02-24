@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"github.com/spf13/cobra"
+
 	"github.com/calyptia/cli/cmd/agent"
 	cnfg "github.com/calyptia/cli/cmd/config"
 	"github.com/calyptia/cli/cmd/coreinstance"
@@ -10,7 +12,6 @@ import (
 	"github.com/calyptia/cli/cmd/pipeline"
 	"github.com/calyptia/cli/cmd/tracesession"
 	cfg "github.com/calyptia/cli/config"
-	"github.com/spf13/cobra"
 )
 
 func newCmdDelete(config *cfg.Config) *cobra.Command {

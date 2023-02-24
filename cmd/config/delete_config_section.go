@@ -4,11 +4,12 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/spf13/cobra"
+	"golang.org/x/term"
+
 	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/confirm"
-	"github.com/spf13/cobra"
-	"golang.org/x/term"
 )
 
 func NewCmdDeleteConfigSection(config *cfg.Config) *cobra.Command {

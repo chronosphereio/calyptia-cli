@@ -1,9 +1,10 @@
 package cmd
 
 import (
+	"github.com/spf13/cobra"
+
 	cnfg "github.com/calyptia/cli/cmd/config"
 	cfg "github.com/calyptia/cli/config"
-	"github.com/spf13/cobra"
 )
 
 func newCmdConfig(config *cfg.Config) *cobra.Command {

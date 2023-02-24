@@ -1,9 +1,10 @@
 package pipeline
 
 import (
+	"github.com/spf13/cobra"
+
 	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
-	"github.com/spf13/cobra"
 )
 
 func NewCmdDeletePipelineClusterObject(config *cfg.Config) *cobra.Command {

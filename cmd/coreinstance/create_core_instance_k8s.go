@@ -7,14 +7,15 @@ import (
 	"log"
 	"strings"
 
-	"github.com/calyptia/cli/cmd/utils"
-	"github.com/calyptia/cli/cmd/version"
 	"github.com/itchyny/json2yaml"
 	"github.com/spf13/cobra"
 	apiv1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp" // register GCP auth provider
 	"k8s.io/client-go/tools/clientcmd"
+
+	"github.com/calyptia/cli/cmd/utils"
+	"github.com/calyptia/cli/cmd/version"
 
 	cloud "github.com/calyptia/api/types"
 	"github.com/calyptia/cli/completer"

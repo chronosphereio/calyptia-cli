@@ -8,11 +8,12 @@ import (
 	"regexp"
 	"time"
 
+	"github.com/hako/durafmt"
+	"github.com/spf13/cobra"
+
 	"github.com/calyptia/api/client"
 	cloud "github.com/calyptia/api/types"
 	"github.com/calyptia/cli/localdata"
-	"github.com/hako/durafmt"
-	"github.com/spf13/cobra"
 )
 
 type Config struct {

@@ -3,8 +3,9 @@ package ingestcheck
 import (
 	"context"
 
-	cfg "github.com/calyptia/cli/config"
 	"github.com/spf13/cobra"
+
+	cfg "github.com/calyptia/cli/config"
 )
 
 func NewCmdDeleteIngestCheck(c *cfg.Config) *cobra.Command {

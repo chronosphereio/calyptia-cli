@@ -3,9 +3,10 @@ package main
 import (
 	"context"
 
-	cmd "github.com/calyptia/cli/cmd"
 	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
+
+	cmd "github.com/calyptia/cli/cmd"
 )
 
 func main() {

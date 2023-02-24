@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"strings"
 
+	"golang.org/x/exp/slices"
+
 	"github.com/calyptia/api/types"
 	"github.com/calyptia/cli/slice"
 	fluentbitconfig "github.com/calyptia/go-fluentbit-config"
-	"golang.org/x/exp/slices"
 )
 
 // pluginProps -

@@ -7,6 +7,9 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/spf13/cobra"
+	"golang.org/x/sync/errgroup"
+
 	"github.com/calyptia/api/types"
 	"github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
@@ -14,8 +17,6 @@ import (
 	"github.com/calyptia/cli/slice"
 	"github.com/calyptia/core-images-index/go-index"
 	fluentbitconfig "github.com/calyptia/go-fluentbit-config"
-	"github.com/spf13/cobra"
-	"golang.org/x/sync/errgroup"
 )
 
 type Completer struct {

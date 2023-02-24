@@ -1,9 +1,10 @@
 package cmd
 
 import (
+	"github.com/spf13/cobra"
+
 	"github.com/calyptia/cli/cmd/pipeline"
 	cfg "github.com/calyptia/cli/config"
-	"github.com/spf13/cobra"
 )
 
 func newCmdRollout(config *cfg.Config) *cobra.Command {

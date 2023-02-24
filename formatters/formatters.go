@@ -13,10 +13,11 @@ import (
 	text_template "text/template"
 
 	"github.com/Masterminds/sprig/v3"
-	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/helpers"
 	"github.com/hako/durafmt"
 	"github.com/spf13/cobra"
+
+	"github.com/calyptia/api/types"
+	"github.com/calyptia/cli/helpers"
 )
 
 func CompleteOutputFormat(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {

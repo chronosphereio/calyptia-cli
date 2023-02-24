@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"net/url"
 
+	"github.com/spf13/cobra"
+
 	"github.com/calyptia/cli/cmd/version"
 	cfg "github.com/calyptia/cli/config"
-	"github.com/spf13/cobra"
 )
 
 var ErrURLNotFound = errors.New("url not found")

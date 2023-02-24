@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"github.com/spf13/cobra"
+
 	"github.com/calyptia/cli/cmd/agent"
 	"github.com/calyptia/cli/cmd/clusterobject"
 	cnfg "github.com/calyptia/cli/cmd/config"
@@ -15,7 +17,6 @@ import (
 	"github.com/calyptia/cli/cmd/tracerecord"
 	"github.com/calyptia/cli/cmd/tracesession"
 	cfg "github.com/calyptia/cli/config"
-	"github.com/spf13/cobra"
 )
 
 func newCmdGet(config *cfg.Config) *cobra.Command {

@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"github.com/spf13/cobra"
+
 	cnfg "github.com/calyptia/cli/cmd/config"
 	"github.com/calyptia/cli/cmd/coreinstance"
 	"github.com/calyptia/cli/cmd/environment"
@@ -10,7 +12,6 @@ import (
 	"github.com/calyptia/cli/cmd/resourceprofile"
 	"github.com/calyptia/cli/cmd/tracesession"
 	cfg "github.com/calyptia/cli/config"
-	"github.com/spf13/cobra"
 )
 
 func newCmdCreate(config *cfg.Config) *cobra.Command {

@@ -9,9 +9,10 @@ import (
 
 	rateLimiter "golang.org/x/time/rate"
 
+	"github.com/spf13/cobra"
+
 	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
-	"github.com/spf13/cobra"
 )
 
 const burstNumber = 1

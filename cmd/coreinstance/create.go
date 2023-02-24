@@ -1,8 +1,9 @@
 package coreinstance
 
 import (
-	cfg "github.com/calyptia/cli/config"
 	"github.com/spf13/cobra"
+
+	cfg "github.com/calyptia/cli/config"
 )
 
 func NewCmdCreateCoreInstance(config *cfg.Config) *cobra.Command {

@@ -3,9 +3,10 @@ package coreinstance
 import (
 	"errors"
 
+	"github.com/spf13/cobra"
+
 	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
-	"github.com/spf13/cobra"
 )
 
 func NewCmdUpdateCoreInstanceOnGCP(config *cfg.Config) *cobra.Command {
