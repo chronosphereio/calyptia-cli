@@ -32,7 +32,7 @@ func NewRootCmd(ctx context.Context) *cobra.Command {
 
 	token, err := localData.Get(cnfg.KeyToken)
 	if err != nil && errors.Is(err, localdata.ErrNotFound) {
-		cobra.CheckErr(fmt.Errorf("could not retrive your stored token: %w", err))
+		cobra.CheckErr(fmt.Errorf("could not retrieve your stored token: %w", err))
 	}
 
 	cloudURLStr, err := localData.Get(cnfg.KeyBaseURL)
