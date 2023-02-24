@@ -796,7 +796,7 @@ func pluginNames(kind string) []string {
 	return slice.Unique(out)
 }
 
-// coreInstanceKeys returns unique aggregator names first and then IDs.
+// CoreInstanceKeys returns unique aggregator names first and then IDs.
 func CoreInstanceKeys(aa []types.CoreInstance) []string {
 	namesCount := map[string]int{}
 	for _, a := range aa {

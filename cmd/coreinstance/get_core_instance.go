@@ -104,36 +104,3 @@ func NewCmdGetCoreInstances(config *cfg.Config) *cobra.Command {
 
 	return cmd
 }
-
-// coreInstanceKeys returns unique aggregator names first and then IDs.
-func coreInstanceKeys(aa []cloud.CoreInstance) []string {
-	namesCount := map[string]int{}
-	for _, a := range aa {
-		if _, ok := namesCount[a.Name]; ok {
-			namesCount[a.Name] += 1
-			continue
-		}
-
-		namesCount[a.Name] = 1
-	}
-
-	var out []string
-
-	for _, a := range aa {
-		var nameIsUnique bool
-		for name, count := range namesCount {
-			if a.Name == name && count == 1 {
-				nameIsUnique = true
-				break
-			}
-		}
-		if nameIsUnique {
-			out = append(out, a.Name)
-			continue
-		}
-
-		out = append(out, a.ID)
-	}
-
-	return out
-}
