@@ -11,7 +11,6 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/cmd/utils"
 	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
@@ -98,9 +97,9 @@ func renderTraceRecordsTable(w io.Writer, rr types.TraceRecords, sessionID strin
 		}
 		_, err := fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\t%s\t%d\t%s\n",
 			fmtTraceRecordKind(rec.Kind), rec.TraceID,
-			utils.FmtTime(rec.StartTime), utils.FmtTime(rec.EndTime),
+			formatters.FmtTime(rec.StartTime), formatters.FmtTime(rec.EndTime),
 			rec.PluginInstance, rec.PluginAlias, rec.ReturnCode,
-			utils.FmtTime(rec.CreatedAt),
+			formatters.FmtTime(rec.CreatedAt),
 		)
 		if err != nil {
 			return err

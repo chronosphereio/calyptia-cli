@@ -10,7 +10,6 @@ import (
 	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/cmd/utils"
 	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
@@ -108,7 +107,7 @@ func NewCmdCreateResourceProfile(config *cfg.Config) *cobra.Command {
 			case "table":
 				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
 				fmt.Fprintln(tw, "ID\tAGE")
-				fmt.Fprintf(tw, "%s\t%s\n", rp.ID, utils.FmtTime(rp.CreatedAt))
+				fmt.Fprintf(tw, "%s\t%s\n", rp.ID, formatters.FmtTime(rp.CreatedAt))
 				tw.Flush()
 			case "json":
 				return json.NewEncoder(cmd.OutOrStdout()).Encode(rp)

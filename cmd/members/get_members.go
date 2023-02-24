@@ -10,7 +10,6 @@ import (
 	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/cmd/utils"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
@@ -58,7 +57,7 @@ func NewCmdGetMembers(config *cfg.Config) *cobra.Command {
 					if showIDs {
 						fmt.Fprintf(tw, "%s\t", m.ID)
 					}
-					fmt.Fprintln(tw, utils.FmtTime(m.CreatedAt))
+					fmt.Fprintln(tw, formatters.FmtTime(m.CreatedAt))
 				}
 				tw.Flush()
 			case "json":

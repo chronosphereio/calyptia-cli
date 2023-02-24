@@ -10,9 +10,9 @@ import (
 	"golang.org/x/term"
 
 	awsclient "github.com/calyptia/cli/aws"
-	"github.com/calyptia/cli/cmd/utils"
 	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/confirm"
 )
 
 func NewCmdDeleteCoreInstanceOnAWS(config *cfg.Config, client awsclient.Client) *cobra.Command {
@@ -95,7 +95,7 @@ func NewCmdDeleteCoreInstanceOnAWS(config *cfg.Config, client awsclient.Client) 
 
 			if !confirmDelete {
 				cmd.Print("You confirm the deletion of those resources? [y/N] ")
-				confirmDelete, err = utils.ReadConfirm(cmd.InOrStdin())
+				confirmDelete, err = confirm.Read(cmd.InOrStdin())
 				if err != nil {
 					return err
 				}

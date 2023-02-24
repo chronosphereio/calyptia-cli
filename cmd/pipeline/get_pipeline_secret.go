@@ -11,7 +11,6 @@ import (
 	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/cmd/utils"
 	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
@@ -83,7 +82,7 @@ func renderPipelineSecrets(w io.Writer, ss []cloud.PipelineSecret, showIDs bool)
 		if showIDs {
 			fmt.Fprintf(tw, "%s\t", s.ID)
 		}
-		fmt.Fprintf(tw, "%s\t%s\n", s.Key, utils.FmtTime(s.CreatedAt))
+		fmt.Fprintf(tw, "%s\t%s\n", s.Key, formatters.FmtTime(s.CreatedAt))
 	}
 	tw.Flush()
 }

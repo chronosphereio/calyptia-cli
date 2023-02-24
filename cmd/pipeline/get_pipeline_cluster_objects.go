@@ -10,7 +10,6 @@ import (
 	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/cmd/utils"
 	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
@@ -55,7 +54,7 @@ func NewCmdGetPipelineClusterObjects(config *cfg.Config) *cobra.Command {
 						if showIDs {
 							fmt.Fprintf(tw, "%s\t", c.ID)
 						}
-						fmt.Fprintf(tw, "%s\t%s\t%s\n", c.Name, string(c.Kind), utils.FmtTime(c.CreatedAt))
+						fmt.Fprintf(tw, "%s\t%s\t%s\n", c.Name, string(c.Kind), formatters.FmtTime(c.CreatedAt))
 					}
 					tw.Flush()
 				}
