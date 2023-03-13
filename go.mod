@@ -10,7 +10,7 @@ require (
 	github.com/alecthomas/assert/v2 v2.2.2
 	github.com/aws/aws-sdk-go-v2 v1.17.5
 	github.com/aws/aws-sdk-go-v2/config v1.18.15
-	github.com/aws/aws-sdk-go-v2/service/ec2 v1.87.0
+	github.com/aws/aws-sdk-go-v2/service/ec2 v1.88.0
 	github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi v1.14.5
 	github.com/calyptia/api v1.1.0
 	github.com/calyptia/cli/k8s v0.0.0-20230301080515-e614da33a0a3
@@ -30,7 +30,7 @@ require (
 	github.com/zalando/go-keyring v0.2.2
 	golang.org/x/exp v0.0.0-20230224173230-c95f2b4c22f2
 	golang.org/x/sync v0.1.0
-	golang.org/x/term v0.5.0
+	golang.org/x/term v0.6.0
 	golang.org/x/time v0.3.0
 	google.golang.org/api v0.111.0
 	gopkg.in/yaml.v2 v2.4.0
@@ -110,7 +110,7 @@ require (
 	golang.org/x/mod v0.7.0 // indirect
 	golang.org/x/net v0.7.0 // indirect
 	golang.org/x/oauth2 v0.5.0 // indirect
-	golang.org/x/sys v0.5.0 // indirect
+	golang.org/x/sys v0.6.0 // indirect
 	golang.org/x/text v0.7.0 // indirect
 	golang.org/x/tools v0.4.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
