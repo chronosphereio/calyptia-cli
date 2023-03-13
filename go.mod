@@ -23,7 +23,7 @@ require (
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
 	github.com/itchyny/json2yaml v0.1.4
 	github.com/joho/godotenv v1.5.1
-	github.com/matryer/moq v0.3.0
+	github.com/matryer/moq v0.3.1
 	github.com/pkg/errors v0.9.1
 	github.com/sethvargo/go-retry v0.2.4
 	github.com/spf13/cobra v1.6.1
