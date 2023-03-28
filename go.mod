@@ -11,7 +11,7 @@ require (
 	github.com/aws/aws-sdk-go-v2 v1.17.7
 	github.com/aws/aws-sdk-go-v2/config v1.18.18
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.91.0
-	github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi v1.14.6
+	github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi v1.14.7
 	github.com/calyptia/api v1.1.0
 	github.com/calyptia/cli/k8s v0.0.0-20230313103503-03203eb8da6b
 	github.com/calyptia/core-images-index/go-index v0.0.0-20230308143520-a8d538978a34
