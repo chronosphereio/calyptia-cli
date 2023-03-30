@@ -15,7 +15,7 @@ can be found on [Calyptia Docs](https://docs.calyptia.com).
 
 ```markdown
 go mod download
-go build ./cmd/calyptia
+go build
 ```
 
 ---
@@ -37,7 +37,7 @@ You can even install latest from `main` branch using `Go`:
 ---
 
 ```bash
-go install github.com/calyptia/cli/cmd/calyptia@latest
+go install github.com/calyptia/cli@latest
 ```
 
 ---
