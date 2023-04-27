@@ -3,7 +3,6 @@ package top
 import (
 	"context"
 	"fmt"
-	"golang.org/x/sync/errgroup"
 	"io"
 	"math"
 	"os"
@@ -14,6 +13,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
+	"golang.org/x/sync/errgroup"
 	"golang.org/x/term"
 
 	"github.com/calyptia/api/client"
