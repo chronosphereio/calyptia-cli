@@ -6,6 +6,7 @@ import (
 	"github.com/calyptia/cli/cmd/agent"
 	cnfg "github.com/calyptia/cli/cmd/config"
 	"github.com/calyptia/cli/cmd/coreinstance"
+	"github.com/calyptia/cli/cmd/fleet"
 	"github.com/calyptia/cli/cmd/endpoint"
 	"github.com/calyptia/cli/cmd/environment"
 	"github.com/calyptia/cli/cmd/pipeline"
@@ -22,6 +23,7 @@ func newCmdUpdate(config *cfg.Config) *cobra.Command {
 	cmd.AddCommand(
 		project.NewCmdUpdateProject(config),
 		agent.NewCmdUpdateAgent(config),
+		fleet.NewCmdUpdateFleet(config),
 		pipeline.NewCmdUpdatePipeline(config),
 		pipeline.NewCmdUpdatePipelineSecret(config),
 		pipeline.NewCmdUpdatePipelineFile(config),
