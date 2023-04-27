@@ -23,9 +23,10 @@ func NewCmdUpdateFleet(config *cfg.Config) *cobra.Command {
 	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
-		Use:   "fleet",
-		Short: "Update fleet",
-		Long:  "Update a fleet's shared configuration.",
+		Use:               "fleet",
+		Short:             "Update fleet by name",
+		Long:              "Update a fleet's shared configuration.",
+		Args:              cobra.ExactArgs(1),
 		ValidArgsFunction: completer.CompleteFleets,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var err error
