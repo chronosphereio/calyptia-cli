@@ -11,6 +11,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
+	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
@@ -74,6 +75,58 @@ func NewCmdGetFleets(config *cfg.Config) *cobra.Command {
 	fs.StringSliceVar(&tags, "tags", nil, "Filter fleets by tags")
 	fs.UintVar(&last, "last", 0, "Paginate and retrieve only the last N fleets")
 	fs.StringVar(&before, "before", "", "Paginate and retrieve the fleets before the given cursor")
+	fs.BoolVar(&showIDs, "show-ids", false, "Show fleets IDs. Only applies when output format is table")
+	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
+	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
+
+	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
+
+	return cmd
+}
+
+func NewCmdGetFleet(config *cfg.Config) *cobra.Command {
+	var showIDs bool
+	var outputFormat, goTemplate string
+	completer := completer.Completer{Config: config}
+
+	cmd := &cobra.Command{
+		Use:               "fleet FLEET", // calyptia get fleets
+		Args:              cobra.ExactArgs(1),
+		ValidArgsFunction: completer.CompleteFleets,
+		Short:             "Display a Fleet Fleet",
+		Long:              "Display a Fleet by ID or name",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
+			fleetKey := args[0]
+			fleetID, err := completer.LoadFleetID(fleetKey)
+			if err != nil {
+				return err
+			}
+
+			fleet, err := config.Cloud.Fleet(ctx, fleetID)
+			if err != nil {
+				return err
+			}
+
+			if strings.HasPrefix(outputFormat, "go-template") {
+				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, fleet)
+			}
+
+			switch outputFormat {
+			case "table":
+				return renderFleetsTable(cmd.OutOrStdout(),
+					types.Fleets{Items: []types.Fleet{fleet}}, showIDs)
+			case "json":
+				return json.NewEncoder(cmd.OutOrStdout()).Encode(fleet)
+			case "yml", "yaml":
+				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(fleet)
+			default:
+				return fmt.Errorf("unknown output format %q", outputFormat)
+			}
+		},
+	}
+
+	fs := cmd.Flags()
 	fs.BoolVar(&showIDs, "show-ids", false, "Show fleets IDs. Only applies when output format is table")
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
