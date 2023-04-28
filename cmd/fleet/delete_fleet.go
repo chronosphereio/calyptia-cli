@@ -2,11 +2,12 @@ package fleet
 
 import (
 	"fmt"
-	"strings"
+
+	"github.com/spf13/cobra"
 
 	"github.com/calyptia/cli/completer"
 	"github.com/calyptia/cli/config"
-	"github.com/spf13/cobra"
+	"github.com/calyptia/cli/confirm"
 )
 
 func NewCmdDeleteFleet(config *config.Config) *cobra.Command {
@@ -20,20 +21,16 @@ func NewCmdDeleteFleet(config *config.Config) *cobra.Command {
 		ValidArgsFunction: completer.CompleteFleets,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			fleetKey := args[0]
+
 			if !confirmed {
 				cmd.Printf("Are yo sure you want to delete %q? (y/N)", fleetKey)
-				var answer string
-				_, err := fmt.Scanln(&answer)
-				if err != nil && err.Error() == "unexpected  newline" {
-					err = nil
-				}
-
+				confirmed, err := confirm.Read(cmd.InOrStdin())
 				if err != nil {
-					return fmt.Errorf("could not read answer: %v", err)
+					return err
 				}
 
-				answer = strings.TrimSpace(strings.ToLower(answer))
-				if answer != "y" && answer != "yes" {
+				if !confirmed {
+					cmd.Println("Aborted")
 					return nil
 				}
 			}
