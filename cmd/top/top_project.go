@@ -95,72 +95,10 @@ type GotProjectError struct {
 
 func (m ProjectModel) loadData(ctx context.Context, skipError bool) tea.Cmd {
 	return func() tea.Msg {
-		var project cloud.Project
-		var projectMetrics cloud.ProjectMetrics
-		var agents []cloud.Agent
-		var agentMetricsByAgentID map[string]cloud.AgentMetrics
-		var mu sync.Mutex
+		project, projectMetrics, agents, agentMetricsByAgentID, err := m.loadProjectData(ctx)
 
-		g, gctx := errgroup.WithContext(m.ctx)
-		g.Go(func() error {
-			var err error
-			project, err = m.cloud.Project(gctx, m.projectID)
-			return err
-		})
-		g.Go(func() error {
-			var err error
-			projectMetrics, err = m.cloud.ProjectMetricsV1(gctx, m.projectID, cloud.MetricsParams{
-				Start:    m.metricsStart,
-				Interval: m.metricsInterval,
-			})
-			return err
-		})
-		g.Go(func() error {
-			aa, err := m.cloud.Agents(gctx, m.projectID, cloud.AgentsParams{
-				Last: &m.last,
-			})
-			if err != nil {
-				return err
-			}
-
-			agents = aa.Items
-
-			if len(agents) != 0 {
-				agentMetricsByAgentID = map[string]cloud.AgentMetrics{}
-				metricsStart := time.Now().Add(m.metricsStart)
-				g2, gctx2 := errgroup.WithContext(gctx)
-				for _, agent := range agents {
-					agent := agent
-					// skip metrics request if agent is offline
-					if agent.FirstMetricsAddedAt == nil || agent.FirstMetricsAddedAt.IsZero() || agent.FirstMetricsAddedAt.After(metricsStart) ||
-						agent.LastMetricsAddedAt == nil || agent.LastMetricsAddedAt.IsZero() || agent.LastMetricsAddedAt.Before(metricsStart) {
-						continue
-					}
-
-					g2.Go(func() error {
-						agentMetrics, err := m.cloud.AgentMetricsV1(gctx2, agent.ID, cloud.MetricsParams{
-							Start:    m.metricsStart,
-							Interval: m.metricsInterval,
-						})
-						if err != nil {
-							return err
-						}
-
-						mu.Lock()
-						agentMetricsByAgentID[agent.ID] = agentMetrics
-						mu.Unlock()
-
-						return nil
-					})
-				}
-				return g2.Wait()
-			}
-
-			return nil
-		})
-		if err := g.Wait(); err != nil {
+		if err != nil {
 			if ctx.Err() != nil {
-				// cancelled
 				return nil
 			}
 
@@ -178,6 +116,107 @@ func (m ProjectModel) loadData(ctx context.Context, skipError bool) tea.Cmd {
 			AgentMetricsByAgentID: agentMetricsByAgentID,
 		}
 	}
+}
+
+func (m ProjectModel) loadProjectData(ctx context.Context) (cloud.Project, cloud.ProjectMetrics, []cloud.Agent, map[string]cloud.AgentMetrics, error) {
+	var project cloud.Project
+	var projectMetrics cloud.ProjectMetrics
+	var agents []cloud.Agent
+	var agentMetricsByAgentID map[string]cloud.AgentMetrics
+
+	g, gctx := errgroup.WithContext(ctx)
+	g.Go(func() error {
+		var err error
+		project, err = m.cloud.Project(gctx, m.projectID)
+		return err
+	})
+	g.Go(func() error {
+		var err error
+		projectMetrics, err = m.cloud.ProjectMetricsV1(gctx, m.projectID, cloud.MetricsParams{
+			Start:    m.metricsStart,
+			Interval: m.metricsInterval,
+		})
+		return err
+	})
+	g.Go(func() error {
+		var err error
+		agents, err = m.loadAgents(gctx)
+		if err != nil {
+			return err
+		}
+
+		if len(agents) != 0 {
+			agentMetricsByAgentID, err = m.loadAgentMetrics(gctx, agents)
+			if err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
+
+	if err := g.Wait(); err != nil {
+		return cloud.Project{}, cloud.ProjectMetrics{}, nil, nil, err
+	}
+
+	return project, projectMetrics, agents, agentMetricsByAgentID, nil
+}
+
+func (m ProjectModel) loadAgents(ctx context.Context) ([]cloud.Agent, error) {
+	aa, err := m.cloud.Agents(ctx, m.projectID, cloud.AgentsParams{
+		Last: &m.last,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return aa.Items, nil
+}
+
+func (m ProjectModel) loadAgentMetrics(ctx context.Context, agents []cloud.Agent) (map[string]cloud.AgentMetrics, error) {
+	var mu sync.Mutex
+	agentMetricsByAgentID := map[string]cloud.AgentMetrics{}
+	metricsStart := time.Now().Add(m.metricsStart)
+
+	g, gctx := errgroup.WithContext(ctx)
+	for _, agent := range agents {
+		agent := agent
+
+		if !m.shouldRequestMetrics(agent, metricsStart) {
+			continue
+		}
+
+		g.Go(func() error {
+			agentMetrics, err := m.cloud.AgentMetricsV1(gctx, agent.ID, cloud.MetricsParams{
+				Start:    m.metricsStart,
+				Interval: m.metricsInterval,
+			})
+			if err != nil {
+				return err
+			}
+
+			mu.Lock()
+			agentMetricsByAgentID[agent.ID] = agentMetrics
+			mu.Unlock()
+
+			return nil
+		})
+	}
+
+	if err := g.Wait(); err != nil {
+		return nil, err
+	}
+
+	return agentMetricsByAgentID, nil
+}
+
+func (m ProjectModel) shouldRequestMetrics(agent cloud.Agent, metricsStart time.Time) bool {
+	return agent.FirstMetricsAddedAt != nil &&
+		!agent.FirstMetricsAddedAt.IsZero() &&
+		!agent.FirstMetricsAddedAt.After(metricsStart) &&
+		agent.LastMetricsAddedAt != nil &&
+		!agent.LastMetricsAddedAt.IsZero() &&
+		!agent.LastMetricsAddedAt.Before(metricsStart)
 }
 
 type GotProjectData struct {
