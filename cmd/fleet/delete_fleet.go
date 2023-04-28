@@ -2,8 +2,10 @@ package fleet
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
+	"golang.org/x/term"
 
 	"github.com/calyptia/cli/completer"
 	"github.com/calyptia/cli/config"
@@ -50,7 +52,8 @@ func NewCmdDeleteFleet(config *config.Config) *cobra.Command {
 	}
 
 	fs := cmd.Flags()
-	fs.BoolVarP(&confirmed, "yes", "y", false, "Confirm deletion")
+	isNonInteractive := os.Stdin == nil || !term.IsTerminal(int(os.Stdin.Fd()))
+	fs.BoolVarP(&confirmed, "yes", "y", isNonInteractive, "Confirm deletion")
 
 	return cmd
 }
