@@ -8,6 +8,7 @@ import (
 	"github.com/calyptia/cli/cmd/coreinstance"
 	"github.com/calyptia/cli/cmd/endpoint"
 	"github.com/calyptia/cli/cmd/environment"
+	"github.com/calyptia/cli/cmd/fleet"
 	"github.com/calyptia/cli/cmd/ingestcheck"
 	"github.com/calyptia/cli/cmd/pipeline"
 	"github.com/calyptia/cli/cmd/tracesession"
@@ -23,6 +24,7 @@ func newCmdDelete(config *cfg.Config) *cobra.Command {
 	cmd.AddCommand(
 		agent.NewCmdDeleteAgents(config),
 		agent.NewCmdDeleteAgent(config),
+		fleet.NewCmdDeleteFleet(config),
 		pipeline.NewCmdDeletePipeline(config),
 		pipeline.NewCmdDeletePipelines(config),
 		endpoint.NewCmdDeleteEndpoint(config),
