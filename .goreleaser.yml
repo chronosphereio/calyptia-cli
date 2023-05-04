@@ -7,8 +7,10 @@ builds:
   - main: .
     id: calyptia
     binary: calyptia
+    env:
+      - CGO_ENABLED=0
     ldflags:
-      - -s -w -X github.com/calyptia/cli/cmd/version.Version={{.Version}}
+      - -s -w -X github.com/calyptia/cli/cmd/version.Version={{.Version}} -tags netgo,osusergo
     targets:
       - darwin_amd64
       - darwin_arm64

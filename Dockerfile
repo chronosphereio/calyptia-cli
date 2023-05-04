@@ -8,7 +8,7 @@ WORKDIR /go/src/github.com/calyptia/cli
 
 # Now do the rest of the source code - this way we can speed up local iteration
 COPY . .
-
+ENV CGO_ENABLED=0
 RUN go build -ldflags "-w -s" -tags netgo,osusergo -o /calyptia 
 
 FROM scratch as production
