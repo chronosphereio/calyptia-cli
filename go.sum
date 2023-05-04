@@ -63,6 +63,10 @@ github.com/aymanbagabas/go-osc52/v2 v2.0.1/go.mod h1:uYgXzlJ7ZpABp8OJ+exZzJJhRNQ
 github.com/buger/jsonparser v1.1.1/go.mod h1:6RYKKt7H4d4+iWqouImQ9R2FZql3VbhNgx27UK13J/0=
 github.com/calyptia/api v1.1.0 h1:+usqHIJ4v4/iTU7RUxg8z2erTyEJlenFSfrw5MzI7Vw=
 github.com/calyptia/api v1.1.0/go.mod h1:h1+GpgZeD4URAjx5l+wieGUd30GJo6WR97aQmNRRKZk=
+github.com/calyptia/api v1.2.0 h1:mV9Hi+8gEHJuZf4OiZ3nGgYwQAfiD8tVlxo3r2yPZgg=
+github.com/calyptia/api v1.2.0/go.mod h1:h1+GpgZeD4URAjx5l+wieGUd30GJo6WR97aQmNRRKZk=
+github.com/calyptia/api v1.2.3 h1:1ojoU1b2t/CxXxNzOjRrIiKCNMIU4s+78CqaadnDal8=
+github.com/calyptia/api v1.2.3/go.mod h1:h1+GpgZeD4URAjx5l+wieGUd30GJo6WR97aQmNRRKZk=
 github.com/calyptia/cli/k8s v0.0.0-20230328102112-a4080a1801e2 h1:coVm6yk4dnIhyTUO2H4J3roaeR22KWrtvDVms3f5nvk=
 github.com/calyptia/cli/k8s v0.0.0-20230328102112-a4080a1801e2/go.mod h1:BfDbyuCDzlJPu75J13IKdQxuQYwiX8abyqiiiBM59KE=
 github.com/calyptia/core-images-index/go-index v0.0.0-20230329131858-5e5425063853 h1:FQE1amRoVZQwyo33FgWI5DbIgDmhP1sRPEJDo6K3Lfo=
