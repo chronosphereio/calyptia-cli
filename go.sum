@@ -55,8 +55,8 @@ github.com/aws/smithy-go v1.13.5/go.mod h1:Tg+OJXh4MB2R/uN61Ko2f6hTZwB/ZYGOtib8J
 github.com/aymanbagabas/go-osc52/v2 v2.0.1 h1:HwpRHbFMcZLEVr42D4p7XBqjyuxQH5SMiErDT4WkJ2k=
 github.com/aymanbagabas/go-osc52/v2 v2.0.1/go.mod h1:uYgXzlJ7ZpABp8OJ+exZzJJhRNQ2ASbcXHWsFqH8hp8=
 github.com/buger/jsonparser v1.1.1/go.mod h1:6RYKKt7H4d4+iWqouImQ9R2FZql3VbhNgx27UK13J/0=
-github.com/calyptia/api v1.2.3 h1:1ojoU1b2t/CxXxNzOjRrIiKCNMIU4s+78CqaadnDal8=
-github.com/calyptia/api v1.2.3/go.mod h1:h1+GpgZeD4URAjx5l+wieGUd30GJo6WR97aQmNRRKZk=
+github.com/calyptia/api v1.2.4 h1:hNPTZJLenGe51sJiFKnEzvRZp9HOGEECwkdfUXSqGEM=
+github.com/calyptia/api v1.2.4/go.mod h1:h1+GpgZeD4URAjx5l+wieGUd30GJo6WR97aQmNRRKZk=
 github.com/calyptia/cli/k8s v0.0.0-20230509073739-3fb8a7673248 h1:XftvP54ZX73EnN14NMvSYvYh3lKj/fIKskLfPu6TpJU=
 github.com/calyptia/cli/k8s v0.0.0-20230509073739-3fb8a7673248/go.mod h1:Nvlpz1r4rORD1FBGwD88+tRPDc3N01uMjJac59Xod0I=
 github.com/calyptia/core-images-index/go-index v0.0.0-20230505143500-73127e32579e h1:EVHIkGm1tqDNOjPcy/+GJLPXXTpjpSQsFiDYEUMsXr8=
