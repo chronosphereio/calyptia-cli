@@ -30,7 +30,7 @@ require (
 	golang.org/x/sync v0.2.0
 	golang.org/x/term v0.8.0
 	golang.org/x/time v0.3.0
-	google.golang.org/api v0.121.0
+	google.golang.org/api v0.122.0
 	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/api v0.27.1
 	k8s.io/apimachinery v0.27.1
