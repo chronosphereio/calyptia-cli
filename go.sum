@@ -57,8 +57,8 @@ github.com/aymanbagabas/go-osc52 v1.0.3/go.mod h1:zT8H+Rk4VSabYN90pWyugflM3ZhpTZ
 github.com/aymanbagabas/go-osc52/v2 v2.0.1 h1:HwpRHbFMcZLEVr42D4p7XBqjyuxQH5SMiErDT4WkJ2k=
 github.com/aymanbagabas/go-osc52/v2 v2.0.1/go.mod h1:uYgXzlJ7ZpABp8OJ+exZzJJhRNQ2ASbcXHWsFqH8hp8=
 github.com/buger/jsonparser v1.1.1/go.mod h1:6RYKKt7H4d4+iWqouImQ9R2FZql3VbhNgx27UK13J/0=
-github.com/calyptia/api v1.2.6 h1:UEVr4Y6m/lCruiQ+0B8CXGfx+HgBrkFvysx7hQ83G5s=
-github.com/calyptia/api v1.2.6/go.mod h1:h1+GpgZeD4URAjx5l+wieGUd30GJo6WR97aQmNRRKZk=
+github.com/calyptia/api v1.2.5-0.20230517231036-1e158a17bc54 h1:4QK0FSklINB47LrgwglOLINwRTz7AVbiOjE+l5eJmfU=
+github.com/calyptia/api v1.2.5-0.20230517231036-1e158a17bc54/go.mod h1:h1+GpgZeD4URAjx5l+wieGUd30GJo6WR97aQmNRRKZk=
 github.com/calyptia/cli/k8s v0.0.0-20230509075406-42f7af3ab729 h1:7j6oZE/YapRry8mtzsgWXVlPZRGFtUxTNvFzCmIcAj8=
 github.com/calyptia/cli/k8s v0.0.0-20230509075406-42f7af3ab729/go.mod h1:Nvlpz1r4rORD1FBGwD88+tRPDc3N01uMjJac59Xod0I=
 github.com/calyptia/core-images-index/go-index v0.0.0-20230522081837-7cd52dd6a0d6 h1:z1GU8x0rXoA3Avd+DC7maghPnTaQ/DcV/3dglCwH4Yo=
@@ -67,6 +67,8 @@ github.com/calyptia/go-bubble-table v0.2.1 h1:NWcVRyGCLuP7QIA29uUFSY+IjmWcmUWHjy
 github.com/calyptia/go-bubble-table v0.2.1/go.mod h1:gJvzUOUzfQeA9JmgLumyJYWJMtuRQ7WxxTwc9tjEiGw=
 github.com/calyptia/go-fluentbit-config v0.8.0 h1:C4FIO2uEjNSpMr5VMb7+zCP9kw+/irjcvwQG3q4d5ak=
 github.com/calyptia/go-fluentbit-config v0.8.0/go.mod h1:ZeQb8TOP7iYO9H8qco4ZP7Txs919x2uQ4gR53IWwsGE=
+github.com/calyptia/go-fluentbit-config/v2 v2.0.0-20230330110656-0f7b7a73cb42 h1:NSR9Ztk+4oZMqsk0oOUDK0/uWB/YaczV6Twiex5josc=
+github.com/calyptia/go-fluentbit-config/v2 v2.0.0-20230330110656-0f7b7a73cb42/go.mod h1:8TqbrX6mdJ+1hQmPRSvRWrbEUPMrCIPlNF0d8BjSaHc=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
 github.com/cespare/xxhash v1.1.0/go.mod h1:XrSqR1VqqWfGrhpAt58auRo0WTKS1nRRg3ghfAqPWnc=
 github.com/cespare/xxhash/v2 v2.1.1/go.mod h1:VGX0DQ3Q6kWi7AoAeZDth3/j3BFtOZR5XLFGgcrjCOs=

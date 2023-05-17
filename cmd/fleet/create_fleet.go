@@ -14,7 +14,7 @@ import (
 	"github.com/calyptia/api/types"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
-	fluentbitconfig "github.com/calyptia/go-fluentbit-config"
+	fluentbitconfig "github.com/calyptia/go-fluentbit-config/v2"
 )
 
 func NewCmdCreateFleet(config *cfg.Config) *cobra.Command {
