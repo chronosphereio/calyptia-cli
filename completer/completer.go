@@ -90,6 +90,30 @@ func (c *Completer) CompleteConfigSections(cmd *cobra.Command, args []string, to
 	return configSectionKeys(cc.Items), cobra.ShellCompDirectiveNoFileComp
 }
 
+func (c *Completer) CompleteMembers(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	ctx := cmd.Context()
+	mm, err := c.Config.Cloud.Members(ctx, c.Config.ProjectID, types.MembersParams{})
+	if err != nil {
+		cmd.PrintErrf("fetch members: %v\n", err)
+		return nil, cobra.ShellCompDirectiveError
+	}
+
+	if len(mm.Items) == 0 {
+		return nil, cobra.ShellCompDirectiveNoFileComp
+	}
+
+	out := make([]string, 0, len(mm.Items))
+	for _, m := range mm.Items {
+		out = append(out, fmt.Sprintf("%s\t%s", m.ID, m.User.Email))
+	}
+
+	return out, cobra.ShellCompDirectiveNoFileComp
+}
+
+func (c *Completer) CompletePermissions(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	return []string{"create:*", "read:*", "update:*", "delete:*"}, cobra.ShellCompDirectiveNoFileComp
+}
+
 func (c *Completer) CompleteEnvironments(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	aa, err := c.Config.Cloud.Environments(c.Config.Ctx, c.Config.ProjectID, types.EnvironmentsParams{})
 	if err != nil {
