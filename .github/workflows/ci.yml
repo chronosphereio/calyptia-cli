@@ -19,7 +19,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Checkout cloud-e2e
+      - name: Checkoout cloud-e2e
         uses: actions/checkout@v3
         with:
           repository: calyptia/cloud-e2e
