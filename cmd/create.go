@@ -8,6 +8,7 @@ import (
 	"github.com/calyptia/cli/cmd/environment"
 	"github.com/calyptia/cli/cmd/fleet"
 	"github.com/calyptia/cli/cmd/ingestcheck"
+	"github.com/calyptia/cli/cmd/invitation"
 	"github.com/calyptia/cli/cmd/pipeline"
 	"github.com/calyptia/cli/cmd/resourceprofile"
 	"github.com/calyptia/cli/cmd/tracesession"
@@ -21,6 +22,7 @@ func newCmdCreate(config *cfg.Config) *cobra.Command {
 	}
 
 	cmd.AddCommand(
+		invitation.NewCmdSendInvitation(config),
 		coreinstance.NewCmdCreateCoreInstance(config),
 		pipeline.NewCmdCreatePipeline(config),
 		resourceprofile.NewCmdCreateResourceProfile(config),
