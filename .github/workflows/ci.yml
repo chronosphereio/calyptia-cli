@@ -19,7 +19,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: CHeckoout cloud-e2e
+      - name: Checkout cloud-e2e
         uses: actions/checkout@v3
         with:
           repository: calyptia/cloud-e2e
@@ -54,7 +54,7 @@ jobs:
           target: production
           platforms: linux/amd64
           provenance: false
-          load: true
+          push: true
           tags: ${{ steps.meta-github-image.outputs.tags }}
           labels: ${{ steps.meta-github-image.outputs.labels }}
 
