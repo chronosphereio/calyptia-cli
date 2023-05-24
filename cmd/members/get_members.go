@@ -40,7 +40,7 @@ func NewCmdGetMembers(config *cfg.Config) *cobra.Command {
 				if showIDs {
 					fmt.Fprintf(tw, "ID\t")
 				}
-				fmt.Fprint(tw, "EMAIL\tNAME\tROLES\t")
+				fmt.Fprint(tw, "EMAIL\tNAME\tROLES\tPERMISSIONS\t")
 				if showIDs {
 					fmt.Fprint(tw, "MEMBER-ID\t")
 				}
@@ -53,7 +53,11 @@ func NewCmdGetMembers(config *cfg.Config) *cobra.Command {
 					for i, r := range m.Roles {
 						roles[i] = string(r)
 					}
-					fmt.Fprintf(tw, "%s\t%s\t%s\t", m.User.Email, m.User.Name, strings.Join(roles, ", "))
+					permissions := strings.Join(m.Permissions, ", ")
+					if permissions == "" {
+						permissions = "all"
+					}
+					fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t", m.User.Email, m.User.Name, strings.Join(roles, ", "), permissions)
 					if showIDs {
 						fmt.Fprintf(tw, "%s\t", m.ID)
 					}
