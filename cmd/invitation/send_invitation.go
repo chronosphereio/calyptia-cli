@@ -7,7 +7,8 @@ import (
 )
 
 func NewCmdSendInvitation(config *config.Config) *cobra.Command {
-	redirectURI := "https://core.calyptia.com"
+	var redirectURI string
+
 	if config.BaseURL == "https://cloud-api-dev.calyptia.com" {
 		redirectURI = "https://core-dev.calyptia.com"
 	}
@@ -39,7 +40,7 @@ func NewCmdSendInvitation(config *config.Config) *cobra.Command {
 	}
 
 	fs := cmd.Flags()
-	fs.StringVar(&redirectURI, "redirect-uri", redirectURI, "Redirect URI for the invitation, leave the default value if you don't know what it is")
+	fs.StringVar(&redirectURI, "redirect-uri", "https://core.calyptia.com", "Redirect URI for the invitation, leave the default value if you don't know what it is")
 
 	return cmd
 }
