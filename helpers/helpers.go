@@ -8,7 +8,7 @@ import (
 
 	"github.com/calyptia/api/types"
 	"github.com/calyptia/cli/slice"
-	fluentbitconfig "github.com/calyptia/go-fluentbit-config"
+	fluentbitconfig "github.com/calyptia/go-fluentbit-config/v2"
 )
 
 // pluginProps -

@@ -5,6 +5,7 @@ code.cloudfoundry.org/bytefmt v0.0.0-20230406175530-3579ae0680eb h1:pFPRj/kkkjan
 github.com/Masterminds/goutils v1.1.1 h1:5nUrii3FMTL5diU80unEVvNevw1nH4+ZV4DSLVJLSYI=
 github.com/Masterminds/semver/v3 v3.2.1 h1:RN9w6+7QoMeJVGyfmbcgs28Br8cvmnucEXnY0rYXWg0=
 github.com/Masterminds/sprig/v3 v3.2.3 h1:eL2fZNezLomi0uOLqjQoN6BfsDD+fyLtgbJMAj9n6YA=
+github.com/alessio/shellescape v1.4.1 h1:V7yhSDDn8LP4lc4jS8pFkt0zCnzVJlG5JXy9BVKJUX0=
 github.com/aws/aws-sdk-go-v2 v1.18.0 h1:882kkTpSFhdgYRKVZ/VCgf7sd0ru57p2JCxz4/oN5RY=
 github.com/aws/aws-sdk-go-v2/config v1.18.25 h1:JuYyZcnMPBiFqn87L2cRppo+rNwgah6YwD3VuyvaW6Q=
 github.com/aws/aws-sdk-go-v2/credentials v1.13.24 h1:PjiYyls3QdCrzqUN35jMWtUK1vqVZ+zLfdOa/UPFDp0=
@@ -25,8 +26,8 @@ github.com/calyptia/api v1.2.6-0.20230525165051-4236d71470ea/go.mod h1:P34b0lL1v
 github.com/calyptia/core-images-index/go-index v0.0.0-20230522081837-7cd52dd6a0d6 h1:z1GU8x0rXoA3Avd+DC7maghPnTaQ/DcV/3dglCwH4Yo=
 github.com/calyptia/go-bubble-table v0.2.1 h1:NWcVRyGCLuP7QIA29uUFSY+IjmWcmUWHjy5J/CPb0Rk=
 github.com/calyptia/go-fluentbit-config v0.8.0 h1:C4FIO2uEjNSpMr5VMb7+zCP9kw+/irjcvwQG3q4d5ak=
-github.com/calyptia/go-fluentbit-config v0.8.0/go.mod h1:ZeQb8TOP7iYO9H8qco4ZP7Txs919x2uQ4gR53IWwsGE=
-github.com/calyptia/go-fluentbit-config/v2 v2.0.0-20230522080737-cda242fb5f42 h1:mCcgg0u39SfKjH8BkYUkLsR9uShk2R/oHclLwao6ro4=
+github.com/calyptia/go-fluentbit-config/v2 v2.0.0 h1:2o7qZEbpLX0b+kn3F/+X/RiN/oRw8lDqJKXM5tWSLKg=
+github.com/calyptia/go-fluentbit-config/v2 v2.0.0/go.mod h1:8TqbrX6mdJ+1hQmPRSvRWrbEUPMrCIPlNF0d8BjSaHc=
 github.com/charmbracelet/bubbles v0.15.0 h1:c5vZ3woHV5W2b8YZI1q7v4ZNQaPetfHuoHzx+56Z6TI=
 github.com/charmbracelet/bubbletea v0.24.0 h1:l8PHrft/GIeikDPCUhQe53AJrDD8xGSn0Agirh8xbe8=
 github.com/charmbracelet/lipgloss v0.7.1 h1:17WMwi7N1b1rVWOjMT+rCh7sQkvDU75B2hbZpc5Kc1E=
@@ -86,6 +87,7 @@ github.com/zalando/go-keyring v0.2.3 h1:v9CUu9phlABObO4LPWycf+zwMG7nlbb3t/B5wa97
 go.opencensus.io v0.24.0 h1:y73uSU6J157QMP2kn2r30vwW1A2W2WFwSCGnAVxeaD0=
 golang.org/x/crypto v0.9.0 h1:LF6fAI+IutBocDJ2OT0Q1g8plpYljMZ4+lty+dsqw3g=
 golang.org/x/exp v0.0.0-20230108222341-4b8118a2686a/go.mod h1:CxIveKay+FTh1D0yPZemJVgC/95VzuuOLq5Qi4xnoYc=
+golang.org/x/exp v0.0.0-20230315142452-642cacee5cc0/go.mod h1:CxIveKay+FTh1D0yPZemJVgC/95VzuuOLq5Qi4xnoYc=
 golang.org/x/exp v0.0.0-20230519143937-03e91628a987 h1:3xJIFvzUFbu4ls0BTBYcgbCGhA63eAOEMxIHugyXJqA=
 golang.org/x/mod v0.6.0/go.mod h1:4mET923SAdbXp2ki8ey+zGs1SLqsuM2Y0uvdZR/fUNI=
 golang.org/x/net v0.8.0/go.mod h1:QVkue5JL9kW//ek3r6jTKnTFis1tRmNAW2P1shuFdJc=
