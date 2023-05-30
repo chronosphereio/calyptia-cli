@@ -16,7 +16,7 @@ import (
 	"github.com/calyptia/cli/helpers"
 	"github.com/calyptia/cli/slice"
 	"github.com/calyptia/core-images-index/go-index"
-	fluentbitconfig "github.com/calyptia/go-fluentbit-config"
+	fluentbitconfig "github.com/calyptia/go-fluentbit-config/v2"
 )
 
 type Completer struct {
@@ -310,22 +310,16 @@ func (c *Completer) CompletePipelinePlugins(pipelineKey string, cmd *cobra.Comma
 	// TODO: use instance id instead of name.
 
 	var out []string
-	for _, byName := range conf.Pipeline.Inputs {
-		for name := range byName {
-			out = append(out, name)
-		}
+	for _, plugin := range conf.Pipeline.Inputs {
+		out = append(out, plugin.Name)
 	}
 
-	for _, byName := range conf.Pipeline.Filters {
-		for name := range byName {
-			out = append(out, name)
-		}
+	for _, plugin := range conf.Pipeline.Filters {
+		out = append(out, plugin.Name)
 	}
 
-	for _, byName := range conf.Pipeline.Outputs {
-		for name := range byName {
-			out = append(out, name)
-		}
+	for _, plugin := range conf.Pipeline.Outputs {
+		out = append(out, plugin.Name)
 	}
 
 	return out, cobra.ShellCompDirectiveNoFileComp
