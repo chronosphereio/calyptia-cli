@@ -14,6 +14,7 @@ require (
 	github.com/calyptia/cli/k8s v0.0.0-20230509075406-42f7af3ab729
 	github.com/calyptia/core-images-index/go-index v0.0.0-20230522081837-7cd52dd6a0d6
 	github.com/calyptia/go-bubble-table v0.2.1
+	github.com/calyptia/go-fluentbit-config/v2 v2.0.0-20230522080737-cda242fb5f42
 	github.com/charmbracelet/bubbletea v0.24.0
 	github.com/charmbracelet/lipgloss v0.7.1
 	github.com/go-logfmt/logfmt v0.6.0
@@ -29,7 +30,7 @@ require (
 	golang.org/x/sync v0.2.0
 	golang.org/x/term v0.8.0
 	golang.org/x/time v0.3.0
-	google.golang.org/api v0.123.0
+	google.golang.org/api v0.124.0
 	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/api v0.27.2
 	k8s.io/apimachinery v0.27.2
@@ -54,7 +55,6 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sts v1.19.0 // indirect
 	github.com/aws/smithy-go v1.13.5 // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
-	github.com/calyptia/go-fluentbit-config/v2 v2.0.0-20230522080737-cda242fb5f42 // indirect
 	github.com/charmbracelet/bubbles v0.15.0 // indirect
 	github.com/containerd/console v1.0.4-0.20230313162750-1ae8d489ac81 // indirect
 	github.com/danieljoos/wincred v1.2.0 // indirect
