@@ -88,8 +88,9 @@ func NewCmdDeletePipelines(config *cfg.Config) *cobra.Command {
 				return err
 			}
 
-			pp, err := config.Cloud.Pipelines(ctx, coreInstanceID, types.PipelinesParams{
-				Last: cfg.Ptr(uint(0)),
+			pp, err := config.Cloud.Pipelines(ctx, types.PipelinesParams{
+				Last:           cfg.Ptr(uint(0)),
+				CoreInstanceID: &coreInstanceID,
 			})
 			if err != nil {
 				return fmt.Errorf("could not prefetch pipelines to delete: %w", err)
