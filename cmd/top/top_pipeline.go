@@ -106,8 +106,9 @@ func (m PipelineModel) ReloadData() tea.Msg {
 type ReloadPipelineDataRequested struct{}
 
 func (m PipelineModel) loadPipelineID() tea.Msg {
-	aa, err := m.cloud.ProjectPipelines(m.ctx, m.projectID, cloud.PipelinesParams{
-		Name: &m.pipelineKey,
+	aa, err := m.cloud.Pipelines(m.ctx, cloud.PipelinesParams{
+		Name:      &m.pipelineKey,
+		ProjectID: &m.projectID,
 	})
 	if err != nil {
 		return GotPipelineError{err}

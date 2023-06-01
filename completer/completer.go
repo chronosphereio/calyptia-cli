@@ -435,9 +435,10 @@ func (c *Completer) LoadEnvironmentID(environmentName string) (string, error) {
 }
 
 func (c *Completer) LoadPipelineID(pipelineKey string) (string, error) {
-	pp, err := c.Config.Cloud.ProjectPipelines(c.Config.Ctx, c.Config.ProjectID, types.PipelinesParams{
-		Name: &pipelineKey,
-		Last: config.Ptr(uint(2)),
+	pp, err := c.Config.Cloud.Pipelines(c.Config.Ctx, types.PipelinesParams{
+		Name:      &pipelineKey,
+		Last:      config.Ptr(uint(2)),
+		ProjectID: &c.Config.ProjectID,
 	})
 	if err != nil {
 		return "", err
@@ -475,7 +476,9 @@ func (c *Completer) FetchAllPipelines() ([]types.Pipeline, error) {
 	for _, a := range aa.Items {
 		a := a
 		g.Go(func() error {
-			got, err := c.Config.Cloud.Pipelines(gctx, a.ID, types.PipelinesParams{})
+			got, err := c.Config.Cloud.Pipelines(gctx, types.PipelinesParams{
+				CoreInstanceID: &a.ID,
+			})
 			if err != nil {
 				return err
 			}

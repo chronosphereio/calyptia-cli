@@ -42,9 +42,10 @@ func NewCmdGetPipelines(config *cfg.Config) *cobra.Command {
 				return err
 			}
 
-			pp, err := config.Cloud.Pipelines(config.Ctx, coreInstanceID, cloud.PipelinesParams{
+			pp, err := config.Cloud.Pipelines(config.Ctx, cloud.PipelinesParams{
 				Last:                     &last,
 				RenderWithConfigSections: renderWithConfigSections,
+				CoreInstanceID:           &coreInstanceID,
 			})
 			if err != nil {
 				return fmt.Errorf("could not fetch your pipelines: %w", err)
