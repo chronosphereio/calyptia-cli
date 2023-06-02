@@ -3,7 +3,6 @@ package fleet
 import (
 	"encoding/json"
 	"fmt"
-	"path/filepath"
 	"strings"
 	"text/tabwriter"
 	"time"
@@ -14,7 +13,6 @@ import (
 	"github.com/calyptia/api/types"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
-	fluentbitconfig "github.com/calyptia/go-fluentbit-config/v2"
 )
 
 func NewCmdCreateFleet(config *cfg.Config) *cobra.Command {
@@ -30,11 +28,12 @@ func NewCmdCreateFleet(config *cfg.Config) *cobra.Command {
 			ctx := cmd.Context()
 
 			var err error
-			in.Config, err = readConfig(configFile, configFormat)
+			in.RawConfig, err = readConfig(configFile)
 			if err != nil {
 				return err
 			}
 
+			in.ConfigFormat = types.ConfigFormat(configFormat)
 			in.ProjectID = config.ProjectID
 
 			created, err := config.Cloud.CreateFleet(ctx, in)
@@ -81,19 +80,12 @@ func NewCmdCreateFleet(config *cfg.Config) *cobra.Command {
 	return cmd
 }
 
-func readConfig(filename, format string) (fluentbitconfig.Config, error) {
-	var out fluentbitconfig.Config
-
-	if format == "" || strings.ToLower(format) == "auto" {
-		format = strings.TrimPrefix(filepath.Ext(filename), ".")
-	}
-
-	b, err := cfg.ReadFile(filename)
+func readConfig(filename string) (string, error) {
+	out, err := cfg.ReadFile(filename)
 	if err != nil {
-		return out, err
+		return "", err
 	}
-
-	return fluentbitconfig.ParseAs(string(b), fluentbitconfig.Format(format))
+	return string(out), nil
 }
 
 func completeConfigFormat(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
