@@ -45,7 +45,7 @@ func NewCmdUpdateFleet(config *cfg.Config) *cobra.Command {
 				return err
 			}
 			in.RawConfig = &cfg
-			format := types.ConfigFormat(configFormat)
+			format := getFormat(configFile, configFormat)
 			in.ConfigFormat = &format
 
 			updated, err := config.Cloud.UpdateFleet(ctx, in)

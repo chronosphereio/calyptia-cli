@@ -3,6 +3,7 @@ package fleet
 import (
 	"encoding/json"
 	"fmt"
+	"path/filepath"
 	"strings"
 	"text/tabwriter"
 	"time"
@@ -14,6 +15,13 @@ import (
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
+
+func getFormat(configFile, configFormat string) types.ConfigFormat {
+	if configFormat == "" || strings.ToLower(configFormat) == "auto" {
+		return types.ConfigFormat(strings.TrimPrefix(filepath.Ext(configFile), "."))
+	}
+	return types.ConfigFormat(configFormat)
+}
 
 func NewCmdCreateFleet(config *cfg.Config) *cobra.Command {
 	var in types.CreateFleet
@@ -33,7 +41,7 @@ func NewCmdCreateFleet(config *cfg.Config) *cobra.Command {
 				return err
 			}
 
-			in.ConfigFormat = types.ConfigFormat(configFormat)
+			in.ConfigFormat = getFormat(configFile, configFormat)
 			in.ProjectID = config.ProjectID
 
 			created, err := config.Cloud.CreateFleet(ctx, in)
