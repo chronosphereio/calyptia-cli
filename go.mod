@@ -15,7 +15,7 @@ require (
 	github.com/calyptia/core-images-index/go-index v0.0.0-20230522081837-7cd52dd6a0d6
 	github.com/calyptia/go-bubble-table v0.2.1
 	github.com/calyptia/go-fluentbit-config/v2 v2.0.0-20230522080737-cda242fb5f42
-	github.com/charmbracelet/bubbletea v0.24.0
+	github.com/charmbracelet/bubbletea v0.24.1
 	github.com/charmbracelet/lipgloss v0.7.1
 	github.com/go-logfmt/logfmt v0.6.0
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
