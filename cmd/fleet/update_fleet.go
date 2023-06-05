@@ -40,11 +40,13 @@ func NewCmdUpdateFleet(config *cfg.Config) *cobra.Command {
 			}
 			in.ID = fleetID
 
-			cfg, err := readConfig(configFile, configFormat)
+			cfg, err := readConfig(configFile)
 			if err != nil {
 				return err
 			}
-			in.Config = &cfg
+			in.RawConfig = &cfg
+			format := getFormat(configFile, configFormat)
+			in.ConfigFormat = &format
 
 			updated, err := config.Cloud.UpdateFleet(ctx, in)
 			if err != nil {

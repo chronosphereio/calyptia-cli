@@ -10,10 +10,11 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.18.25
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.98.0
 	github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi v1.14.11
-	github.com/calyptia/api v1.3.1
+	github.com/calyptia/api v1.3.2
 	github.com/calyptia/cli/k8s v0.0.0-20230509075406-42f7af3ab729
 	github.com/calyptia/core-images-index/go-index v0.0.0-20230522081837-7cd52dd6a0d6
 	github.com/calyptia/go-bubble-table v0.2.1
+	github.com/calyptia/go-fluentbit-config/v2 v2.0.0-20230522080737-cda242fb5f42
 	github.com/charmbracelet/bubbletea v0.24.0
 	github.com/charmbracelet/lipgloss v0.7.1
 	github.com/go-logfmt/logfmt v0.6.0
@@ -54,7 +55,6 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sts v1.19.0 // indirect
 	github.com/aws/smithy-go v1.13.5 // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
-	github.com/calyptia/go-fluentbit-config/v2 v2.0.0-20230522080737-cda242fb5f42 // indirect
 	github.com/charmbracelet/bubbles v0.15.0 // indirect
 	github.com/containerd/console v1.0.4-0.20230313162750-1ae8d489ac81 // indirect
 	github.com/danieljoos/wincred v1.2.0 // indirect
