@@ -61,10 +61,10 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				coreInstanceParams.Image = &coreFluentBitDockerImage
 			}
 
-			//created, err := config.Cloud.CreateCoreInstance(ctx, coreInstanceParams)
-			//if err != nil {
-			//	return fmt.Errorf("could not create core instance at calyptia cloud: %w", err)
-			//}
+			created, err := config.Cloud.CreateCoreInstance(ctx, coreInstanceParams)
+			if err != nil {
+				return fmt.Errorf("could not create core instance at calyptia cloud: %w", err)
+			}
 
 			if configOverrides.Context.Namespace == "" {
 				configOverrides.Context.Namespace = apiv1.NamespaceDefault
@@ -97,12 +97,12 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				Config:       kubeClientConfig,
 				LabelsFunc: func() map[string]string {
 					return map[string]string{
-						k8s.LabelVersion:   version.Version,
-						k8s.LabelPartOf:    "calyptia",
-						k8s.LabelManagedBy: "calyptia-cli",
-						k8s.LabelCreatedBy: "calyptia-cli",
-						k8s.LabelProjectID: config.ProjectID,
-						//k8s.LabelAggregatorID: created.ID,
+						k8s.LabelVersion:      version.Version,
+						k8s.LabelPartOf:       "calyptia",
+						k8s.LabelManagedBy:    "calyptia-cli",
+						k8s.LabelCreatedBy:    "calyptia-cli",
+						k8s.LabelProjectID:    config.ProjectID,
+						k8s.LabelAggregatorID: created.ID,
 					}
 				},
 			}
@@ -111,20 +111,29 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				return fmt.Errorf("could not ensure kubernetes namespace exists: %w", err)
 			}
 
-			//secret, err := k8sClient.CreateSecret(ctx, created, dryRun)
-			//if err != nil {
-			//	return fmt.Errorf("could not create kubernetes secret from private key: %w", err)
-			//}
+			secret, err := k8sClient.CreateSecret(ctx, created, dryRun)
+			if err != nil {
+				return fmt.Errorf("could not create kubernetes secret from private key: %w", err)
+			}
 
-			err := k8sClient.CreateOperator(ctx, coreInstanceVersion)
+			resourcesCreated, err := k8sClient.DeployOperator(ctx, coreInstanceVersion)
 			if err != nil {
 				return fmt.Errorf("could not apply kubernetes manifest: %w", err)
 			}
 
-			//_, err = k8sClient.CreateOperatorSyncDeployment(ctx, "core-instance-x")
-			//if err != nil {
-			//	return fmt.Errorf("could not create kubernetes deployment: %w", err)
-			//}
+			//TODO: verify is operator is up before deploy the sync
+			syncDeployment, err := k8sClient.DeployCoreOperatorSync(ctx, created, coreInstanceVersion)
+			if err != nil {
+				return fmt.Errorf("could not create kubernetes deployment: %w", err)
+			}
+
+			fmt.Printf("Core instance created successfully\n")
+			fmt.Printf("Resources created:\n")
+			for _, resource := range resourcesCreated {
+				fmt.Printf("%s=%s\n", resource[0], resource[1])
+			}
+			fmt.Printf("%s=%s\n", syncDeployment.Kind, syncDeployment.Name)
+			fmt.Printf("%s=%s\n", secret.Kind, secret.Name)
 
 			return nil
 		},

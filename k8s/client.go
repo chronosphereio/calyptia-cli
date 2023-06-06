@@ -457,26 +457,22 @@ func (client *Client) FindDeploymentByLabel(ctx context.Context, label string) (
 	return client.AppsV1().Deployments(client.Namespace).List(ctx, metav1.ListOptions{LabelSelector: label})
 }
 
-func (client *Client) CreateOperatorSyncDeployment(
-	ctx context.Context,
-	coreInstance cloud.CreatedCoreInstance,
-) (*appsv1.Deployment, error) {
+func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreInstance cloud.CreatedCoreInstance, version string) (*appsv1.Deployment, error) {
 	labels := client.LabelsFunc()
-
+	const toCloudImage = "ghcr.io/calyptia/core-operator/sync-to-cloud"
+	const fromCloudImage = "ghcr.io/calyptia/core-operator/sync-from-cloud"
+	args := []string{"-cloud_url", client.CloudBaseURL, "-token", client.ProjectToken, "-core_instance", coreInstance.Name, "-namespace", client.Namespace}
 	toCloud := apiv1.Container{
-
-		Name:            coreInstance.Name,
-		Image:           "default sync",
+		Name:            coreInstance.Name + "-sync-to-cloud",
+		Image:           toCloudImage,
 		ImagePullPolicy: apiv1.PullAlways,
-		Args:            []string{"-debug=true"},
-		Env:             []apiv1.EnvVar{},
+		Args:            args,
 	}
 	fromCloud := apiv1.Container{
-		Name:            coreInstance.Name,
-		Image:           "default sync",
+		Name:            coreInstance.Name + "-sync-from-cloud",
+		Image:           fromCloudImage,
 		ImagePullPolicy: apiv1.PullAlways,
-		Args:            []string{"-debug=true"},
-		Env:             []apiv1.EnvVar{},
+		Args:            args,
 	}
 
 	req := &appsv1.Deployment{
@@ -484,7 +480,10 @@ func (client *Client) CreateOperatorSyncDeployment(
 			Kind:       "Deployment",
 			APIVersion: "apps/v1",
 		},
-		ObjectMeta: client.getObjectMeta(coreInstance, deploymentObjectType),
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      coreInstance.Name + "-sync",
+			Namespace: "calyptia-core",
+		},
 		Spec: appsv1.DeploymentSpec{
 			Replicas: &deploymentReplicas,
 			Selector: &metav1.LabelSelector{
@@ -503,31 +502,31 @@ func (client *Client) CreateOperatorSyncDeployment(
 
 	options := metav1.CreateOptions{}
 
-	return client.AppsV1().Deployments(client.Namespace).Create(ctx, req, options)
+	return client.AppsV1().Deployments("calyptia-core").Create(ctx, req, options)
 }
 
-func (client *Client) CreateOperator(ctx context.Context, version string) error {
+func (client *Client) DeployOperator(ctx context.Context, version string) ([][]string, error) {
 	manifest, err := getOperatorManifest(version)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	err = applyOperatorManifest(ctx, client.Config, manifest)
+	applied, err := applyOperatorManifest(ctx, client.Config, manifest)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return applied, nil
 
 }
 
-func applyOperatorManifest(ctx context.Context, config *restclient.Config, manifestFull []byte) error {
+func applyOperatorManifest(ctx context.Context, config *restclient.Config, manifestFull []byte) ([][]string, error) {
 	dynamicClient, err := dynamic.NewForConfig(config)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	manifests := splitManifest(manifestFull)
 
-	var appliedSuccessfully []string
+	var appliedSuccessfully [][]string
 	for _, manifest := range manifests {
 		manifest = strings.TrimSpace(manifest)
 		if manifest == "" {
@@ -539,8 +538,9 @@ func applyOperatorManifest(ctx context.Context, config *restclient.Config, manif
 		_, gvk, err := decoder.Decode([]byte(manifest), nil, obj)
 		if err != nil {
 			fmt.Printf("Failed to decode manifest: %v", err)
-			err := rollbackManifests(ctx, config, appliedSuccessfully)
-			return err
+			//TODO: implement rollback, maybe one level up
+			//err := rollbackManifests(ctx, config, appliedSuccessfully)
+			return nil, err
 		}
 
 		kindPluralized := strings.ToLower(gvk.Kind) + "s"
@@ -549,54 +549,53 @@ func applyOperatorManifest(ctx context.Context, config *restclient.Config, manif
 		created, err := resource.Namespace(obj.GetNamespace()).Create(ctx, obj, metav1.CreateOptions{})
 		if err != nil {
 			fmt.Printf("Failed to apply manifest: %v", err)
-			return err
+			return nil, err
 		}
 
-		appliedSuccessfully = append(appliedSuccessfully, manifest)
-		fmt.Printf("Created %s %s\n", created.GetKind(), created.GetName())
+		appliedSuccessfully = append(appliedSuccessfully, []string{created.GetKind(), created.GetName()})
 	}
-	return nil
+	return appliedSuccessfully, nil
 }
 
-func rollbackManifests(ctx context.Context, config *restclient.Config, manifests []string) error {
-	if len(manifests) == 0 {
-		return nil
-	}
-	fmt.Printf("An error ocurred while applying manifests\n")
-	fmt.Printf("Trying to rollback %d manifests\n", len(manifests))
-
-	dynamicClient, err := dynamic.NewForConfig(config)
-	if err != nil {
-		return err
-	}
-	fmt.Printf("Trying to rollback %d manifests\n", len(manifests))
-	for _, manifest := range manifests {
-		manifest = strings.TrimSpace(manifest)
-		if manifest == "" {
-			continue
-		}
-
-		decoder := yamlk8s.NewDecodingSerializer(unstructured.UnstructuredJSONScheme)
-		obj := &unstructured.Unstructured{}
-		_, gvk, err := decoder.Decode([]byte(manifest), nil, obj)
-		if err != nil {
-			fmt.Printf("Failed to decode manifest: %v", err)
-			continue
-		}
-
-		kindPluralized := strings.ToLower(gvk.Kind) + "s"
-		resource := dynamicClient.Resource(gvk.GroupVersion().WithResource(kindPluralized))
-
-		err = resource.Namespace(obj.GetNamespace()).Delete(ctx, obj.GetName(), metav1.DeleteOptions{})
-		if err != nil {
-			fmt.Printf("Failed to delete manifest: %v", err)
-			return err
-		}
-
-		fmt.Printf("Deleted %s %s\n", obj.GetKind(), obj.GetName())
-	}
-	return nil
-}
+//func rollbackManifests(ctx context.Context, config *restclient.Config, manifests [][]string) error {
+//	if len(manifests) == 0 {
+//		return nil
+//	}
+//	fmt.Printf("An error ocurred while applying manifests\n")
+//	fmt.Printf("Trying to rollback %d manifests\n", len(manifests))
+//
+//	dynamicClient, err := dynamic.NewForConfig(config)
+//	if err != nil {
+//		return err
+//	}
+//	fmt.Printf("Trying to rollback %d manifests\n", len(manifests))
+//	for _, manifest := range manifests {
+//		manifest = strings.TrimSpace(manifest)
+//		if manifest == "" {
+//			continue
+//		}
+//
+//		decoder := yamlk8s.NewDecodingSerializer(unstructured.UnstructuredJSONScheme)
+//		obj := &unstructured.Unstructured{}
+//		_, gvk, err := decoder.Decode([]byte(manifest), nil, obj)
+//		if err != nil {
+//			fmt.Printf("Failed to decode manifest: %v", err)
+//			continue
+//		}
+//
+//		kindPluralized := strings.ToLower(gvk.Kind) + "s"
+//		resource := dynamicClient.Resource(gvk.GroupVersion().WithResource(kindPluralized))
+//
+//		err = resource.Namespace(obj.GetNamespace()).Delete(ctx, obj.GetName(), metav1.DeleteOptions{})
+//		if err != nil {
+//			fmt.Printf("Failed to delete manifest: %v", err)
+//			return err
+//		}
+//
+//		fmt.Printf("Deleted %s %s\n", obj.GetKind(), obj.GetName())
+//	}
+//	return nil
+//}
 
 func splitManifest(manifest []byte) []string {
 	return strings.Split(string(manifest), "---\n")
