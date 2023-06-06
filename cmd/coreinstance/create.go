@@ -14,5 +14,6 @@ func NewCmdCreateCoreInstance(config *cfg.Config) *cobra.Command {
 	cmd.AddCommand(newCmdCreateCoreInstanceOnK8s(config, nil))
 	cmd.AddCommand(newCmdCreateCoreInstanceOnAWS(config, nil, nil))
 	cmd.AddCommand(newCmdCreateCoreInstanceOnGCP(config, nil))
+	cmd.AddCommand(newCmdCreateCoreInstanceOperator(config, nil))
 	return cmd
 }

@@ -2,7 +2,14 @@ package k8s
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"io"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	yamlk8s "k8s.io/apimachinery/pkg/runtime/serializer/yaml"
+	"k8s.io/client-go/dynamic"
+	restclient "k8s.io/client-go/rest"
+	"net/http"
 	"strings"
 
 	"strconv"
@@ -41,6 +48,7 @@ type Client struct {
 	ProjectToken string
 	CloudBaseURL string
 	LabelsFunc   func() map[string]string
+	Config       *restclient.Config
 }
 
 func (client *Client) getObjectMeta(agg cloud.CreatedCoreInstance, objectType objectType) metav1.ObjectMeta {
@@ -447,4 +455,208 @@ func (client *Client) FindDeploymentByName(ctx context.Context, name string) (*a
 
 func (client *Client) FindDeploymentByLabel(ctx context.Context, label string) (*appsv1.DeploymentList, error) {
 	return client.AppsV1().Deployments(client.Namespace).List(ctx, metav1.ListOptions{LabelSelector: label})
+}
+
+func (client *Client) CreateOperatorSyncDeployment(
+	ctx context.Context,
+	coreInstance cloud.CreatedCoreInstance,
+) (*appsv1.Deployment, error) {
+	labels := client.LabelsFunc()
+
+	toCloud := apiv1.Container{
+
+		Name:            coreInstance.Name,
+		Image:           "default sync",
+		ImagePullPolicy: apiv1.PullAlways,
+		Args:            []string{"-debug=true"},
+		Env:             []apiv1.EnvVar{},
+	}
+	fromCloud := apiv1.Container{
+		Name:            coreInstance.Name,
+		Image:           "default sync",
+		ImagePullPolicy: apiv1.PullAlways,
+		Args:            []string{"-debug=true"},
+		Env:             []apiv1.EnvVar{},
+	}
+
+	req := &appsv1.Deployment{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "Deployment",
+			APIVersion: "apps/v1",
+		},
+		ObjectMeta: client.getObjectMeta(coreInstance, deploymentObjectType),
+		Spec: appsv1.DeploymentSpec{
+			Replicas: &deploymentReplicas,
+			Selector: &metav1.LabelSelector{
+				MatchLabels: labels,
+			},
+			Template: apiv1.PodTemplateSpec{
+				ObjectMeta: metav1.ObjectMeta{
+					Labels: labels,
+				},
+				Spec: apiv1.PodSpec{
+					Containers: []apiv1.Container{fromCloud, toCloud},
+				},
+			},
+		},
+	}
+
+	options := metav1.CreateOptions{}
+
+	return client.AppsV1().Deployments(client.Namespace).Create(ctx, req, options)
+}
+
+func (client *Client) CreateOperator(ctx context.Context, version string) error {
+	manifest, err := getOperatorManifest(version)
+	if err != nil {
+		return err
+	}
+	err = applyOperatorManifest(ctx, client.Config, manifest)
+	if err != nil {
+		return err
+	}
+	return nil
+
+}
+
+func applyOperatorManifest(ctx context.Context, config *restclient.Config, manifestFull []byte) error {
+	dynamicClient, err := dynamic.NewForConfig(config)
+	if err != nil {
+		return err
+	}
+
+	manifests := splitManifest(manifestFull)
+
+	var appliedSuccessfully []string
+	for _, manifest := range manifests {
+		manifest = strings.TrimSpace(manifest)
+		if manifest == "" {
+			continue
+		}
+
+		decoder := yamlk8s.NewDecodingSerializer(unstructured.UnstructuredJSONScheme)
+		obj := &unstructured.Unstructured{}
+		_, gvk, err := decoder.Decode([]byte(manifest), nil, obj)
+		if err != nil {
+			fmt.Printf("Failed to decode manifest: %v", err)
+			err := rollbackManifests(ctx, config, appliedSuccessfully)
+			return err
+		}
+
+		kindPluralized := strings.ToLower(gvk.Kind) + "s"
+		resource := dynamicClient.Resource(gvk.GroupVersion().WithResource(kindPluralized))
+
+		created, err := resource.Namespace(obj.GetNamespace()).Create(ctx, obj, metav1.CreateOptions{})
+		if err != nil {
+			fmt.Printf("Failed to apply manifest: %v", err)
+			return err
+		}
+
+		appliedSuccessfully = append(appliedSuccessfully, manifest)
+		fmt.Printf("Created %s %s\n", created.GetKind(), created.GetName())
+	}
+	return nil
+}
+
+func rollbackManifests(ctx context.Context, config *restclient.Config, manifests []string) error {
+	if len(manifests) == 0 {
+		return nil
+	}
+	fmt.Printf("An error ocurred while applying manifests\n")
+	fmt.Printf("Trying to rollback %d manifests\n", len(manifests))
+
+	dynamicClient, err := dynamic.NewForConfig(config)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("Trying to rollback %d manifests\n", len(manifests))
+	for _, manifest := range manifests {
+		manifest = strings.TrimSpace(manifest)
+		if manifest == "" {
+			continue
+		}
+
+		decoder := yamlk8s.NewDecodingSerializer(unstructured.UnstructuredJSONScheme)
+		obj := &unstructured.Unstructured{}
+		_, gvk, err := decoder.Decode([]byte(manifest), nil, obj)
+		if err != nil {
+			fmt.Printf("Failed to decode manifest: %v", err)
+			continue
+		}
+
+		kindPluralized := strings.ToLower(gvk.Kind) + "s"
+		resource := dynamicClient.Resource(gvk.GroupVersion().WithResource(kindPluralized))
+
+		err = resource.Namespace(obj.GetNamespace()).Delete(ctx, obj.GetName(), metav1.DeleteOptions{})
+		if err != nil {
+			fmt.Printf("Failed to delete manifest: %v", err)
+			return err
+		}
+
+		fmt.Printf("Deleted %s %s\n", obj.GetKind(), obj.GetName())
+	}
+	return nil
+}
+
+func splitManifest(manifest []byte) []string {
+	return strings.Split(string(manifest), "---\n")
+}
+
+func getOperatorManifest(version string) ([]byte, error) {
+	const operatorReleases = "https://api.github.com/repos/calyptia/core-operator-releases/releases"
+
+	type Release struct {
+		TagName string `json:"tag_name"`
+		Assets  []struct {
+			BrowserDownloadUrl string `json:"browser_download_url"`
+		} `json:"assets"`
+	}
+
+	resp, err := http.Get(operatorReleases)
+	if err != nil {
+		return nil, err
+	}
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println("Error closing response body:", err)
+		}
+	}(resp.Body)
+
+	var releases []Release
+	err = json.NewDecoder(resp.Body).Decode(&releases)
+	if err != nil {
+		return nil, err
+	}
+
+	if version == "" {
+		version = "v1.0.0-alpha0"
+	}
+
+	var urlForDownload string
+	for _, release := range releases {
+		if release.TagName == version {
+			urlForDownload = release.Assets[0].BrowserDownloadUrl
+		}
+	}
+
+	response, err := http.Get(urlForDownload)
+	if err != nil {
+		fmt.Println("Error downloading manifest:", err)
+		return nil, err
+	}
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			fmt.Println("Error closing response body:", err)
+		}
+	}(response.Body)
+
+	manifestBytes, err := io.ReadAll(response.Body)
+	if err != nil {
+		fmt.Println("Error reading manifest:", err)
+		return nil, err
+	}
+
+	return manifestBytes, nil
 }
