@@ -111,14 +111,14 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				return fmt.Errorf("could not ensure kubernetes namespace exists: %w", err)
 			}
 
-			secret, err := k8sClient.CreateSecret(ctx, created, dryRun)
-			if err != nil {
-				return fmt.Errorf("could not create kubernetes secret from private key: %w", err)
-			}
-
 			resourcesCreated, err := k8sClient.DeployOperator(ctx, coreInstanceVersion)
 			if err != nil {
 				return fmt.Errorf("could not apply kubernetes manifest: %w", err)
+			}
+
+			secret, err := k8sClient.CreateSecret(ctx, created, dryRun)
+			if err != nil {
+				return fmt.Errorf("could not create kubernetes secret from private key: %w", err)
 			}
 
 			//TODO: verify is operator is up before deploy the sync
@@ -132,8 +132,8 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 			for _, resource := range resourcesCreated {
 				fmt.Printf("%s=%s\n", resource[0], resource[1])
 			}
-			fmt.Printf("%s=%s\n", syncDeployment.Kind, syncDeployment.Name)
-			fmt.Printf("%s=%s\n", secret.Kind, secret.Name)
+			fmt.Printf("Deployment=%s\n", syncDeployment.Name)
+			fmt.Printf("Secret=%s\n", secret.Name)
 
 			return nil
 		},

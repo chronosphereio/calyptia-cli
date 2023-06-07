@@ -34,6 +34,8 @@ const (
 	serviceAccountObjectType      objectType = "service-account"
 	coreTLSVerifyEnvVar           string     = "CORE_TLS_VERIFY"
 	coreSkipServiceCreationEnvVar string     = "CORE_INSTANCE_SKIP_SERVICE_CREATION"
+	defaultOperatorNamespace                 = "calyptia-core"
+	defaultOperatorServiceAccount            = "controller-manager"
 )
 
 var (
@@ -119,8 +121,7 @@ func (client *Client) CreateSecret(ctx context.Context, agg cloud.CreatedCoreIns
 	if dryRun {
 		return req, nil
 	}
-
-	return client.CoreV1().Secrets(client.Namespace).Create(ctx, req, options)
+	return client.CoreV1().Secrets(defaultOperatorNamespace).Create(ctx, req, options)
 }
 
 type ClusterRoleOpt struct {
@@ -459,20 +460,37 @@ func (client *Client) FindDeploymentByLabel(ctx context.Context, label string) (
 
 func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreInstance cloud.CreatedCoreInstance, version string) (*appsv1.Deployment, error) {
 	labels := client.LabelsFunc()
-	const toCloudImage = "ghcr.io/calyptia/core-operator/sync-to-cloud"
-	const fromCloudImage = "ghcr.io/calyptia/core-operator/sync-from-cloud"
-	args := []string{"-cloud_url", client.CloudBaseURL, "-token", client.ProjectToken, "-core_instance", coreInstance.Name, "-namespace", client.Namespace}
+	const toCloudImage = "ghcr.io/calyptia/core-operator/sync-to-cloud:v1.0.0-alpha0"
+	const fromCloudImage = "ghcr.io/calyptia/core-operator/sync-from-cloud:v1.0.0-alpha0"
+	env := []apiv1.EnvVar{
+		{
+			Name:  "CORE_INSTANCE",
+			Value: coreInstance.Name,
+		},
+		{
+			Name:  "NAMESPACE",
+			Value: defaultOperatorNamespace,
+		},
+		{
+			Name:  "CLOUD_URL",
+			Value: client.CloudBaseURL,
+		},
+		{
+			Name:  "TOKEN",
+			Value: client.ProjectToken,
+		},
+	}
 	toCloud := apiv1.Container{
 		Name:            coreInstance.Name + "-sync-to-cloud",
 		Image:           toCloudImage,
 		ImagePullPolicy: apiv1.PullAlways,
-		Args:            args,
+		Env:             env,
 	}
 	fromCloud := apiv1.Container{
 		Name:            coreInstance.Name + "-sync-from-cloud",
 		Image:           fromCloudImage,
 		ImagePullPolicy: apiv1.PullAlways,
-		Args:            args,
+		Env:             env,
 	}
 
 	req := &appsv1.Deployment{
@@ -482,7 +500,7 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreInstance c
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      coreInstance.Name + "-sync",
-			Namespace: "calyptia-core",
+			Namespace: defaultOperatorNamespace,
 		},
 		Spec: appsv1.DeploymentSpec{
 			Replicas: &deploymentReplicas,
@@ -494,7 +512,8 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreInstance c
 					Labels: labels,
 				},
 				Spec: apiv1.PodSpec{
-					Containers: []apiv1.Container{fromCloud, toCloud},
+					ServiceAccountName: defaultOperatorServiceAccount,
+					Containers:         []apiv1.Container{fromCloud, toCloud},
 				},
 			},
 		},
@@ -502,7 +521,7 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreInstance c
 
 	options := metav1.CreateOptions{}
 
-	return client.AppsV1().Deployments("calyptia-core").Create(ctx, req, options)
+	return client.AppsV1().Deployments(defaultOperatorNamespace).Create(ctx, req, options)
 }
 
 func (client *Client) DeployOperator(ctx context.Context, version string) ([][]string, error) {
@@ -548,7 +567,6 @@ func applyOperatorManifest(ctx context.Context, config *restclient.Config, manif
 
 		created, err := resource.Namespace(obj.GetNamespace()).Create(ctx, obj, metav1.CreateOptions{})
 		if err != nil {
-			fmt.Printf("Failed to apply manifest: %v", err)
 			return nil, err
 		}
 
@@ -557,7 +575,7 @@ func applyOperatorManifest(ctx context.Context, config *restclient.Config, manif
 	return appliedSuccessfully, nil
 }
 
-//func rollbackManifests(ctx context.Context, config *restclient.Config, manifests [][]string) error {
+//func rollbackManifests(ctx context.Context, config *restclient.Config) error {
 //	if len(manifests) == 0 {
 //		return nil
 //	}
@@ -641,8 +659,7 @@ func getOperatorManifest(version string) ([]byte, error) {
 
 	response, err := http.Get(urlForDownload)
 	if err != nil {
-		fmt.Println("Error downloading manifest:", err)
-		return nil, err
+		return nil, fmt.Errorf("error downloading operator manifest: %w", err)
 	}
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
@@ -653,7 +670,6 @@ func getOperatorManifest(version string) ([]byte, error) {
 
 	manifestBytes, err := io.ReadAll(response.Body)
 	if err != nil {
-		fmt.Println("Error reading manifest:", err)
 		return nil, err
 	}
 
