@@ -116,12 +116,11 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				return fmt.Errorf("could not apply kubernetes manifest: %w", err)
 			}
 
-			secret, err := k8sClient.CreateSecret(ctx, created, dryRun)
+			secret, err := k8sClient.CreateSecretOperatorRSAKey(ctx, created, dryRun)
 			if err != nil {
 				return fmt.Errorf("could not create kubernetes secret from private key: %w", err)
 			}
 
-			//TODO: verify is operator is up before deploy the sync
 			syncDeployment, err := k8sClient.DeployCoreOperatorSync(ctx, created, coreInstanceVersion)
 			if err != nil {
 				return fmt.Errorf("could not create kubernetes deployment: %w", err)

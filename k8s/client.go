@@ -103,6 +103,7 @@ func (client *Client) createOwnNamespace(ctx context.Context) (*apiv1.Namespace,
 	}, metav1.CreateOptions{})
 }
 
+// TODO: DELETE AFTER OPERATOR LAUNCHES and create by k8s become deprecated
 func (client *Client) CreateSecret(ctx context.Context, agg cloud.CreatedCoreInstance, dryRun bool) (*apiv1.Secret, error) {
 	metadata := client.getObjectMeta(agg, secretObjectType)
 	req := &apiv1.Secret{
@@ -110,6 +111,27 @@ func (client *Client) CreateSecret(ctx context.Context, agg cloud.CreatedCoreIns
 		ObjectMeta: metadata,
 		Data: map[string][]byte{
 			metadata.Name: agg.PrivateRSAKey,
+		},
+	}
+	req.TypeMeta = metav1.TypeMeta{
+		Kind:       "Secret",
+		APIVersion: "v1",
+	}
+
+	options := metav1.CreateOptions{}
+	if dryRun {
+		return req, nil
+	}
+	return client.CoreV1().Secrets(client.Namespace).Create(ctx, req, options)
+}
+
+func (client *Client) CreateSecretOperatorRSAKey(ctx context.Context, agg cloud.CreatedCoreInstance, dryRun bool) (*apiv1.Secret, error) {
+	metadata := client.getObjectMeta(agg, secretObjectType)
+	req := &apiv1.Secret{
+
+		ObjectMeta: metadata,
+		Data: map[string][]byte{
+			"private-key": agg.PrivateRSAKey,
 		},
 	}
 	req.TypeMeta = metav1.TypeMeta{
@@ -556,9 +578,6 @@ func applyOperatorManifest(ctx context.Context, config *restclient.Config, manif
 		obj := &unstructured.Unstructured{}
 		_, gvk, err := decoder.Decode([]byte(manifest), nil, obj)
 		if err != nil {
-			fmt.Printf("Failed to decode manifest: %v", err)
-			//TODO: implement rollback, maybe one level up
-			//err := rollbackManifests(ctx, config, appliedSuccessfully)
 			return nil, err
 		}
 
@@ -574,46 +593,6 @@ func applyOperatorManifest(ctx context.Context, config *restclient.Config, manif
 	}
 	return appliedSuccessfully, nil
 }
-
-//func rollbackManifests(ctx context.Context, config *restclient.Config) error {
-//	if len(manifests) == 0 {
-//		return nil
-//	}
-//	fmt.Printf("An error ocurred while applying manifests\n")
-//	fmt.Printf("Trying to rollback %d manifests\n", len(manifests))
-//
-//	dynamicClient, err := dynamic.NewForConfig(config)
-//	if err != nil {
-//		return err
-//	}
-//	fmt.Printf("Trying to rollback %d manifests\n", len(manifests))
-//	for _, manifest := range manifests {
-//		manifest = strings.TrimSpace(manifest)
-//		if manifest == "" {
-//			continue
-//		}
-//
-//		decoder := yamlk8s.NewDecodingSerializer(unstructured.UnstructuredJSONScheme)
-//		obj := &unstructured.Unstructured{}
-//		_, gvk, err := decoder.Decode([]byte(manifest), nil, obj)
-//		if err != nil {
-//			fmt.Printf("Failed to decode manifest: %v", err)
-//			continue
-//		}
-//
-//		kindPluralized := strings.ToLower(gvk.Kind) + "s"
-//		resource := dynamicClient.Resource(gvk.GroupVersion().WithResource(kindPluralized))
-//
-//		err = resource.Namespace(obj.GetNamespace()).Delete(ctx, obj.GetName(), metav1.DeleteOptions{})
-//		if err != nil {
-//			fmt.Printf("Failed to delete manifest: %v", err)
-//			return err
-//		}
-//
-//		fmt.Printf("Deleted %s %s\n", obj.GetKind(), obj.GetName())
-//	}
-//	return nil
-//}
 
 func splitManifest(manifest []byte) []string {
 	return strings.Split(string(manifest), "---\n")
