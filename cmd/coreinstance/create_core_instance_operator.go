@@ -111,28 +111,40 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				return fmt.Errorf("could not ensure kubernetes namespace exists: %w", err)
 			}
 
-			resourcesCreated, err := k8sClient.DeployOperator(ctx, coreInstanceVersion)
-			if err != nil {
-				return fmt.Errorf("could not apply kubernetes manifest: %w", err)
-			}
-
 			secret, err := k8sClient.CreateSecretOperatorRSAKey(ctx, created, dryRun)
 			if err != nil {
 				return fmt.Errorf("could not create kubernetes secret from private key: %w", err)
 			}
 
-			syncDeployment, err := k8sClient.DeployCoreOperatorSync(ctx, created, coreInstanceVersion)
+			var clusterRoleOpts k8s.ClusterRoleOpt
+			clusterRole, err := k8sClient.CreateClusterRole(ctx, created, dryRun, clusterRoleOpts)
+			if err != nil {
+				return fmt.Errorf("could not create kubernetes cluster role: %w", err)
+			}
+
+			serviceAccount, err := k8sClient.CreateServiceAccount(ctx, created, dryRun)
+			if err != nil {
+				return fmt.Errorf("could not create kubernetes service account: %w", err)
+			}
+
+			binding, err := k8sClient.CreateClusterRoleBinding(ctx, created, clusterRole, serviceAccount, dryRun)
+			if err != nil {
+				return fmt.Errorf("could not create kubernetes cluster role binding: %w", err)
+			}
+
+			syncDeployment, err := k8sClient.DeployCoreOperatorSync(ctx, created, serviceAccount.Name)
 			if err != nil {
 				return fmt.Errorf("could not create kubernetes deployment: %w", err)
 			}
 
 			fmt.Printf("Core instance created successfully\n")
 			fmt.Printf("Resources created:\n")
-			for _, resource := range resourcesCreated {
-				fmt.Printf("%s=%s\n", resource[0], resource[1])
-			}
+
 			fmt.Printf("Deployment=%s\n", syncDeployment.Name)
 			fmt.Printf("Secret=%s\n", secret.Name)
+			fmt.Printf("ClusterRole=%s\n", clusterRole.Name)
+			fmt.Printf("ClusterRoleBinding=%s\n", binding.Name)
+			fmt.Printf("ServiceAccount=%s\n", serviceAccount.Name)
 
 			return nil
 		},

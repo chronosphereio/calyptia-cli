@@ -35,7 +35,6 @@ const (
 	coreTLSVerifyEnvVar           string     = "CORE_TLS_VERIFY"
 	coreSkipServiceCreationEnvVar string     = "CORE_INSTANCE_SKIP_SERVICE_CREATION"
 	defaultOperatorNamespace                 = "calyptia-core"
-	defaultOperatorServiceAccount            = "controller-manager"
 )
 
 var (
@@ -143,7 +142,7 @@ func (client *Client) CreateSecretOperatorRSAKey(ctx context.Context, agg cloud.
 	if dryRun {
 		return req, nil
 	}
-	return client.CoreV1().Secrets(defaultOperatorNamespace).Create(ctx, req, options)
+	return client.CoreV1().Secrets(client.Namespace).Create(ctx, req, options)
 }
 
 type ClusterRoleOpt struct {
@@ -151,7 +150,7 @@ type ClusterRoleOpt struct {
 }
 
 func (client *Client) CreateClusterRole(ctx context.Context, agg cloud.CreatedCoreInstance, dryRun bool, opts ...ClusterRoleOpt) (*rbacv1.ClusterRole, error) {
-	apiGroups := []string{"", "apps", "batch", "policy"}
+	apiGroups := []string{"", "apps", "batch", "policy", "core.calyptia.com"}
 	resources := []string{
 		"namespaces",
 		"deployments",
@@ -166,6 +165,9 @@ func (client *Client) CreateClusterRole(ctx context.Context, agg cloud.CreatedCo
 		"nodes",
 		"jobs",
 		"podsecuritypolicies",
+		"pipelines",
+		"pipelines/finalizers",
+		"pipelines/status",
 	}
 
 	if len(opts) > 0 {
@@ -480,7 +482,7 @@ func (client *Client) FindDeploymentByLabel(ctx context.Context, label string) (
 	return client.AppsV1().Deployments(client.Namespace).List(ctx, metav1.ListOptions{LabelSelector: label})
 }
 
-func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreInstance cloud.CreatedCoreInstance, version string) (*appsv1.Deployment, error) {
+func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreInstance cloud.CreatedCoreInstance, serviceAccount string) (*appsv1.Deployment, error) {
 	labels := client.LabelsFunc()
 	const toCloudImage = "ghcr.io/calyptia/core-operator/sync-to-cloud:v1.0.0-alpha0"
 	const fromCloudImage = "ghcr.io/calyptia/core-operator/sync-from-cloud:v1.0.0-alpha0"
@@ -491,7 +493,7 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreInstance c
 		},
 		{
 			Name:  "NAMESPACE",
-			Value: defaultOperatorNamespace,
+			Value: client.Namespace,
 		},
 		{
 			Name:  "CLOUD_URL",
@@ -522,7 +524,7 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreInstance c
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      coreInstance.Name + "-sync",
-			Namespace: defaultOperatorNamespace,
+			Namespace: client.Namespace,
 		},
 		Spec: appsv1.DeploymentSpec{
 			Replicas: &deploymentReplicas,
@@ -534,7 +536,7 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreInstance c
 					Labels: labels,
 				},
 				Spec: apiv1.PodSpec{
-					ServiceAccountName: defaultOperatorServiceAccount,
+					ServiceAccountName: serviceAccount,
 					Containers:         []apiv1.Container{fromCloud, toCloud},
 				},
 			},
@@ -543,15 +545,15 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreInstance c
 
 	options := metav1.CreateOptions{}
 
-	return client.AppsV1().Deployments(defaultOperatorNamespace).Create(ctx, req, options)
+	return client.AppsV1().Deployments(client.Namespace).Create(ctx, req, options)
 }
 
 func (client *Client) DeployOperator(ctx context.Context, version string) ([][]string, error) {
-	manifest, err := getOperatorManifest(version)
+	file, err := getOperatorManifest(version)
 	if err != nil {
 		return nil, err
 	}
-	applied, err := applyOperatorManifest(ctx, client.Config, manifest)
+	applied, err := client.applyOperatorManifest(ctx, file)
 	if err != nil {
 		return nil, err
 	}
@@ -559,8 +561,8 @@ func (client *Client) DeployOperator(ctx context.Context, version string) ([][]s
 
 }
 
-func applyOperatorManifest(ctx context.Context, config *restclient.Config, manifestFull []byte) ([][]string, error) {
-	dynamicClient, err := dynamic.NewForConfig(config)
+func (client *Client) applyOperatorManifest(ctx context.Context, manifestFull []byte) ([][]string, error) {
+	dynamicClient, err := dynamic.NewForConfig(client.Config)
 	if err != nil {
 		return nil, err
 	}
@@ -581,14 +583,33 @@ func applyOperatorManifest(ctx context.Context, config *restclient.Config, manif
 			return nil, err
 		}
 
+		//workaround to avoid creating a namespace, not needed if we remove the namespace from the manifest
+		if gvk.Kind == "Namespace" {
+			continue
+		}
+		namespace := obj.GetNamespace()
+		if namespace == defaultOperatorNamespace {
+			obj.SetNamespace(client.Namespace)
+		}
+
 		kindPluralized := strings.ToLower(gvk.Kind) + "s"
 		resource := dynamicClient.Resource(gvk.GroupVersion().WithResource(kindPluralized))
+
+		//if already exists, skip
+		get, err := resource.Namespace(obj.GetNamespace()).Get(ctx, obj.GetName(), metav1.GetOptions{})
+		if err != nil {
+			if !k8serrors.IsNotFound(err) {
+				return nil, err
+			}
+		}
+		if get != nil {
+			continue
+		}
 
 		created, err := resource.Namespace(obj.GetNamespace()).Create(ctx, obj, metav1.CreateOptions{})
 		if err != nil {
 			return nil, err
 		}
-
 		appliedSuccessfully = append(appliedSuccessfully, []string{created.GetKind(), created.GetName()})
 	}
 	return appliedSuccessfully, nil
