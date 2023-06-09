@@ -73,13 +73,16 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				if err != nil {
 					if errors.Is(err, k8s.ErrNoContext) {
 						cmd.Printf("No context is currently set. Using default namespace.\n")
-						configOverrides.Context.Namespace = apiv1.NamespaceDefault
 					} else {
 						return err
 					}
-				} else {
-					configOverrides.Context.Namespace = namespace
 				}
+				if namespace != "" {
+					configOverrides.Context.Namespace = namespace
+				} else {
+					configOverrides.Context.Namespace = apiv1.NamespaceDefault
+				}
+
 			}
 
 			var clientSet kubernetes.Interface
