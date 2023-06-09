@@ -561,7 +561,7 @@ func (client *Client) DeployOperator(ctx context.Context, version string) ([]Res
 	}
 	applied, err := client.applyOperatorManifest(ctx, file)
 	if err != nil {
-		return nil, err
+		return applied, err
 	}
 	return applied, nil
 
@@ -586,7 +586,7 @@ func (client *Client) applyOperatorManifest(ctx context.Context, manifestFull []
 		obj := &unstructured.Unstructured{}
 		_, gvk, err := decoder.Decode([]byte(manifest), nil, obj)
 		if err != nil {
-			return nil, err
+			return appliedSuccessfully, err
 		}
 
 		//workaround to avoid creating a namespace, not needed if we remove the namespace from the manifest
@@ -606,7 +606,7 @@ func (client *Client) applyOperatorManifest(ctx context.Context, manifestFull []
 		get, err := resource.Namespace(obj.GetNamespace()).Get(ctx, obj.GetName(), metav1.GetOptions{})
 		if err != nil {
 			if !k8serrors.IsNotFound(err) {
-				return nil, err
+				return appliedSuccessfully, err
 			}
 		}
 		if get != nil {
@@ -615,7 +615,7 @@ func (client *Client) applyOperatorManifest(ctx context.Context, manifestFull []
 
 		created, err := resource.Namespace(obj.GetNamespace()).Create(ctx, obj, metav1.CreateOptions{})
 		if err != nil {
-			return nil, err
+			return appliedSuccessfully, err
 		}
 		appliedSuccessfully = append(appliedSuccessfully, ResourceRollBack{Name: created.GetName(), GVR: withResource})
 	}
