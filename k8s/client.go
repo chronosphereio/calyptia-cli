@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 	yamlk8s "k8s.io/apimachinery/pkg/runtime/serializer/yaml"
 	"k8s.io/client-go/dynamic"
 	restclient "k8s.io/client-go/rest"
@@ -617,6 +618,34 @@ func (client *Client) applyOperatorManifest(ctx context.Context, manifestFull []
 		appliedSuccessfully = append(appliedSuccessfully, []string{created.GetKind(), created.GetName()})
 	}
 	return appliedSuccessfully, nil
+}
+func (client *Client) RollbackOperator(ctx context.Context, manifests [][]string) ([][]string, error) {
+
+	dynamicClient, err := dynamic.NewForConfig(client.Config)
+	if err != nil {
+		return nil, err
+	}
+	var deletedResources [][]string
+	for _, manifest := range manifests {
+		kind := manifest[0]
+		name := manifest[1]
+
+		kindPluralized := strings.ToLower(kind) + "s"
+		resource := dynamicClient.Resource(schema.GroupVersionResource{
+			Group:    "",
+			Version:  "v1",
+			Resource: kindPluralized,
+		})
+
+		// Delete the resource
+		err = resource.Namespace(client.Namespace).Delete(ctx, name, metav1.DeleteOptions{})
+		if err != nil {
+			return nil, err
+		}
+
+		deletedResources = append(deletedResources, []string{kind, name})
+	}
+	return deletedResources, nil
 }
 
 func splitManifest(manifest []byte) []string {

@@ -78,7 +78,18 @@ func NewCmdInstall(config *cfg.Config, testClientSet kubernetes.Interface) *cobr
 
 			resourcesCreated, err := k8sClient.DeployOperator(ctx, coreInstanceVersion)
 			if err != nil {
-				return fmt.Errorf("could not apply kubernetes manifest: %w", err)
+				fmt.Printf("could not apply kubernetes manifest, rolling back the following resources:")
+				for _, resource := range resourcesCreated {
+					fmt.Printf("%s=%s\n", resource[0], resource[1])
+				}
+				deleted, err := k8sClient.RollbackOperator(ctx, resourcesCreated)
+				if err != nil {
+					return fmt.Errorf("could not rollback kubernetes manifest: %w", err)
+				}
+				fmt.Printf("successfully rolled back the following resources:")
+				for _, resource := range deleted {
+					fmt.Printf("%s=%s\n", resource[0], resource[1])
+				}
 			}
 			for _, resource := range resourcesCreated {
 				fmt.Printf("%s=%s\n", resource[0], resource[1])
