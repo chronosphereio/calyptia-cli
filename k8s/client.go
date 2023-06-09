@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	yamlk8s "k8s.io/apimachinery/pkg/runtime/serializer/yaml"
 	"k8s.io/client-go/dynamic"
@@ -553,7 +554,7 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreInstance c
 	return client.AppsV1().Deployments(client.Namespace).Create(ctx, req, options)
 }
 
-func (client *Client) DeployOperator(ctx context.Context, version string) ([][]string, error) {
+func (client *Client) DeployOperator(ctx context.Context, version string) ([]ResourceRollBack, error) {
 	file, err := getOperatorManifest(version)
 	if err != nil {
 		return nil, err
@@ -566,7 +567,7 @@ func (client *Client) DeployOperator(ctx context.Context, version string) ([][]s
 
 }
 
-func (client *Client) applyOperatorManifest(ctx context.Context, manifestFull []byte) ([][]string, error) {
+func (client *Client) applyOperatorManifest(ctx context.Context, manifestFull []byte) ([]ResourceRollBack, error) {
 	dynamicClient, err := dynamic.NewForConfig(client.Config)
 	if err != nil {
 		return nil, err
@@ -574,7 +575,7 @@ func (client *Client) applyOperatorManifest(ctx context.Context, manifestFull []
 
 	manifests := splitManifest(manifestFull)
 
-	var appliedSuccessfully [][]string
+	var appliedSuccessfully []ResourceRollBack
 	for _, manifest := range manifests {
 		manifest = strings.TrimSpace(manifest)
 		if manifest == "" {
@@ -598,7 +599,8 @@ func (client *Client) applyOperatorManifest(ctx context.Context, manifestFull []
 		}
 
 		kindPluralized := strings.ToLower(gvk.Kind) + "s"
-		resource := dynamicClient.Resource(gvk.GroupVersion().WithResource(kindPluralized))
+		withResource := gvk.GroupVersion().WithResource(kindPluralized)
+		resource := dynamicClient.Resource(withResource)
 
 		//if already exists, skip
 		get, err := resource.Namespace(obj.GetNamespace()).Get(ctx, obj.GetName(), metav1.GetOptions{})
@@ -615,35 +617,29 @@ func (client *Client) applyOperatorManifest(ctx context.Context, manifestFull []
 		if err != nil {
 			return nil, err
 		}
-		appliedSuccessfully = append(appliedSuccessfully, []string{created.GetKind(), created.GetName()})
+		appliedSuccessfully = append(appliedSuccessfully, ResourceRollBack{Name: created.GetName(), GVR: withResource})
 	}
 	return appliedSuccessfully, nil
 }
-func (client *Client) RollbackOperator(ctx context.Context, manifests [][]string) ([][]string, error) {
 
+type ResourceRollBack struct {
+	Name string
+	GVR  schema.GroupVersionResource
+}
+
+func (client *Client) DeleteResources(ctx context.Context, resources []ResourceRollBack) ([]ResourceRollBack, error) {
 	dynamicClient, err := dynamic.NewForConfig(client.Config)
 	if err != nil {
 		return nil, err
 	}
-	var deletedResources [][]string
-	for _, manifest := range manifests {
-		kind := manifest[0]
-		name := manifest[1]
-
-		kindPluralized := strings.ToLower(kind) + "s"
-		resource := dynamicClient.Resource(schema.GroupVersionResource{
-			Group:    "",
-			Version:  "v1",
-			Resource: kindPluralized,
-		})
-
-		// Delete the resource
-		err = resource.Namespace(client.Namespace).Delete(ctx, name, metav1.DeleteOptions{})
+	var deletedResources []ResourceRollBack
+	for _, r := range resources {
+		resource := dynamicClient.Resource(r.GVR)
+		err = resource.Namespace(client.Namespace).Delete(ctx, r.Name, metav1.DeleteOptions{})
 		if err != nil {
 			return nil, err
 		}
-
-		deletedResources = append(deletedResources, []string{kind, name})
+		deletedResources = append(deletedResources, r)
 	}
 	return deletedResources, nil
 }
@@ -743,4 +739,14 @@ func GetCurrentContextNamespace() (string, error) {
 		return "", ErrNoContext
 	}
 	return context.Namespace, nil
+}
+
+func ExtractGroupVersionResource(obj runtime.Object) (schema.GroupVersionResource, error) {
+	gvk := obj.GetObjectKind().GroupVersionKind()
+	gvr := schema.GroupVersionResource{
+		Group:    gvk.Group,
+		Version:  gvk.Version,
+		Resource: gvk.Kind + "s",
+	}
+	return gvr, nil
 }
