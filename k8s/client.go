@@ -9,6 +9,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	yamlk8s "k8s.io/apimachinery/pkg/runtime/serializer/yaml"
+	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/client-go/dynamic"
 	restclient "k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
@@ -16,6 +17,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"strconv"
 
@@ -749,4 +751,25 @@ func ExtractGroupVersionResource(obj runtime.Object) (schema.GroupVersionResourc
 		Resource: gvk.Kind + "s",
 	}
 	return gvr, nil
+}
+
+func (client *Client) WaitReady(ctx context.Context, deployment *appsv1.Deployment) error {
+	if err := wait.PollImmediate(1*time.Second, 1*time.Minute, client.isDeploymentReady(ctx, deployment)); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (client *Client) isDeploymentReady(ctx context.Context, d *appsv1.Deployment) wait.ConditionFunc {
+	return func() (bool, error) {
+		get, err := client.AppsV1().Deployments(d.Namespace).Get(ctx, d.Name, metav1.GetOptions{})
+		if err != nil {
+			return false, err
+		}
+
+		if get.Status.AvailableReplicas == get.Status.ReadyReplicas {
+			return true, nil
+		}
+		return true, nil
+	}
 }
