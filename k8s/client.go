@@ -9,7 +9,10 @@ import (
 	yamlk8s "k8s.io/apimachinery/pkg/runtime/serializer/yaml"
 	"k8s.io/client-go/dynamic"
 	restclient "k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/clientcmd"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"strconv"
@@ -37,6 +40,7 @@ const (
 	defaultOperatorNamespace                 = "calyptia-core"
 )
 
+var ErrNoContext = fmt.Errorf("no context is currently set")
 var (
 	deploymentReplicas           int32 = 1
 	automountServiceAccountToken       = true
@@ -689,4 +693,25 @@ func getOperatorDownloadURL(version string) (string, error) {
 	}
 
 	return "", fmt.Errorf("version %s not found", version)
+}
+
+func GetCurrentContextNamespace() (string, error) {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+	kubeconfig := filepath.Join(homeDir, ".kube", "config")
+	config, err := clientcmd.LoadFromFile(kubeconfig)
+	if err != nil {
+		return "", err
+	}
+	currentContext := config.CurrentContext
+	if currentContext == "" {
+		return "", ErrNoContext
+	}
+	context := config.Contexts[currentContext]
+	if context == nil {
+		return "", ErrNoContext
+	}
+	return context.Namespace, nil
 }

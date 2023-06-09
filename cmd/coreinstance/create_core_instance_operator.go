@@ -2,6 +2,7 @@ package coreinstance
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/spf13/cobra"
 	apiv1 "k8s.io/api/core/v1"
@@ -67,7 +68,17 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 			}
 
 			if configOverrides.Context.Namespace == "" {
-				configOverrides.Context.Namespace = apiv1.NamespaceDefault
+				namespace, err := k8s.GetCurrentContextNamespace()
+				if err != nil {
+					if errors.Is(err, k8s.ErrNoContext) {
+						cmd.Printf("No context is currently set. Using default namespace.\n")
+						configOverrides.Context.Namespace = apiv1.NamespaceDefault
+					} else {
+						return err
+					}
+				} else {
+					configOverrides.Context.Namespace = namespace
+				}
 			}
 
 			var clientSet kubernetes.Interface

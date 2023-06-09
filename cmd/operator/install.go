@@ -2,6 +2,7 @@ package operator
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/calyptia/cli/cmd/version"
 	cfg "github.com/calyptia/cli/config"
@@ -23,8 +24,19 @@ func NewCmdInstall(config *cfg.Config, testClientSet kubernetes.Interface) *cobr
 		Short:   "Setup a new core operator instance",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.Background()
+
 			if configOverrides.Context.Namespace == "" {
-				configOverrides.Context.Namespace = apiv1.NamespaceDefault
+				namespace, err := k8s.GetCurrentContextNamespace()
+				if err != nil {
+					if errors.Is(err, k8s.ErrNoContext) {
+						cmd.Printf("No context is currently set. Using default namespace.\n")
+						configOverrides.Context.Namespace = apiv1.NamespaceDefault
+					} else {
+						return err
+					}
+				} else {
+					configOverrides.Context.Namespace = namespace
+				}
 			}
 
 			var clientSet kubernetes.Interface
