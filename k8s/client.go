@@ -600,6 +600,25 @@ func (client *Client) applyOperatorManifest(ctx context.Context, manifestFull []
 			obj.SetNamespace(client.Namespace)
 		}
 
+		if gvk.Kind == "ClusterRoleBinding" {
+			crb := &rbacv1.ClusterRoleBinding{}
+			_, _, err := decoder.Decode([]byte(manifest), nil, crb)
+			if err != nil {
+				return nil, err
+			}
+			for i := range crb.Subjects {
+				if crb.Subjects[i].Kind == "ServiceAccount" {
+					crb.Subjects[i].Namespace = client.Namespace
+				}
+			}
+			//convert crb to unstructured
+			unstructuredCRB, err := runtime.DefaultUnstructuredConverter.ToUnstructured(crb)
+			if err != nil {
+				return nil, err
+			}
+			obj = &unstructured.Unstructured{Object: unstructuredCRB}
+		}
+
 		kindPluralized := strings.ToLower(gvk.Kind) + "s"
 		withResource := gvk.GroupVersion().WithResource(kindPluralized)
 		resource := dynamicClient.Resource(withResource)
