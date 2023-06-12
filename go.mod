@@ -5,7 +5,7 @@ go 1.20
 require (
 	code.cloudfoundry.org/bytefmt v0.0.0-20230406175530-3579ae0680eb
 	github.com/Masterminds/sprig/v3 v3.2.3
-	github.com/alecthomas/assert/v2 v2.2.2
+	github.com/alecthomas/assert/v2 v2.3.0
 	github.com/aws/aws-sdk-go-v2 v1.18.0
 	github.com/aws/aws-sdk-go-v2/config v1.18.25
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.98.0
