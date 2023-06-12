@@ -8,7 +8,7 @@ import (
 
 func InferConfigFormat(configFile string) (cloud.ConfigFormat, error) {
 	switch filepath.Ext(configFile) {
-	case ".ini":
+	case ".ini", ".conf":
 		return cloud.ConfigFormatINI, nil
 	case ".yaml", ".yml":
 		return cloud.ConfigFormatYAML, nil
