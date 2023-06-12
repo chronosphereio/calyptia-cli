@@ -37,6 +37,8 @@ func NewCmdCreatePipeline(config *cfg.Config) *cobra.Command {
 	var metadataPairs []string
 	var metadataFile string
 	var environment string
+	var configFormat string
+
 	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
@@ -109,6 +111,7 @@ func NewCmdCreatePipeline(config *cfg.Config) *cobra.Command {
 				Name:                      name,
 				ReplicasCount:             replicasCount,
 				RawConfig:                 string(rawConfig),
+				ConfigFormat:              cloud.ConfigFormat(configFormat),
 				Secrets:                   secrets,
 				AutoCreatePortsFromConfig: autoCreatePortsFromConfig,
 				SkipConfigValidation:      skipConfigValidation,
@@ -156,6 +159,7 @@ func NewCmdCreatePipeline(config *cfg.Config) *cobra.Command {
 	fs.StringVar(&name, "name", "", "Pipeline name; leave it empty to generate a random name")
 	fs.UintVar(&replicasCount, "replicas", 1, "Pipeline replica size")
 	fs.StringVar(&configFile, "config-file", "fluent-bit.conf", "Fluent Bit config file used by pipeline")
+	fs.StringVar(&configFormat, "config-format", string(cloud.ConfigFormatINI), "Default configuration format to use, default:INI (deprecated), will be superseded to YAML.")
 	fs.StringVar(&secretsFile, "secrets-file", "", "Optional file where secrets are defined. You can store key values and reference them inside your config like so:\n{{ secrets.foo }}")
 	fs.StringVar(&secretsFormat, "secrets-format", "auto", "Secrets file format. Allowed: auto, env, json, yaml. Auto tries to detect it from file extension")
 	fs.StringArrayVar(&files, "file", nil, "Optional file. You can reference this file contents from your config like so:\n{{ files.myfile }}\nPass as many as you want; bear in mind the file name can only contain alphanumeric characters.")

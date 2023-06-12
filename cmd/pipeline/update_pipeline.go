@@ -34,6 +34,8 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 	var outputFormat, goTemplate string
 	var metadataPairs []string
 	var metadataFile string
+	var configFormat string
+
 	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
@@ -103,6 +105,7 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 			update := cloud.UpdatePipeline{
 				AutoCreatePortsFromConfig: &autoCreatePortsFromConfig,
 				SkipConfigValidation:      skipConfigValidation,
+				ConfigFormat:              cfg.Ptr(cloud.ConfigFormat(configFormat)),
 				Secrets:                   secrets,
 				Files:                     updatePipelineFiles,
 				Metadata:                  metadata,
@@ -154,6 +157,7 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 	fs := cmd.Flags()
 	fs.StringVar(&newName, "new-name", "", "New pipeline name")
 	fs.StringVar(&newConfigFile, "config-file", "", "New Fluent Bit config file used by pipeline")
+	fs.StringVar(&configFormat, "config-format", string(cloud.ConfigFormatINI), "Default configuration format to use, default:INI (deprecated), will be superseded to YAML.")
 	fs.UintVar(&newReplicasCount, "replicas", 0, "New pipeline replica size")
 	fs.BoolVar(&autoCreatePortsFromConfig, "auto-create-ports", true, "Automatically create pipeline ports from config if updated")
 	fs.BoolVar(&skipConfigValidation, "skip-config-validation", false, "Opt-in to skip config validation (Use with caution as this option might be removed soon)")
