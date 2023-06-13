@@ -22,16 +22,19 @@ import (
 const defaultVersion = "latest"
 
 func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernetes.Interface) *cobra.Command {
-	var coreInstanceName string
-	var coreInstanceVersion string
-	var coreFluentBitDockerImage string
-	var noHealthCheckPipeline bool
-	var enableClusterLogging bool
-	var skipServiceCreation bool
-	var environment string
-	var tags []string
-	var dryRun bool
-	var waitReady bool
+	var (
+		coreInstanceName         string
+		coreInstanceVersion      string
+		coreFluentBitDockerImage string
+		noHealthCheckPipeline    bool
+		enableClusterLogging     bool
+		skipServiceCreation      bool
+		environment              string
+		tags                     []string
+		dryRun                   bool
+		waitReady                bool
+		noTLSVerify              bool
+	)
 
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	configOverrides := &clientcmd.ConfigOverrides{}
@@ -199,7 +202,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 			if coreInstanceVersion == "" {
 				coreInstanceVersion = defaultVersion
 			}
-			syncDeployment, err := k8sClient.DeployCoreOperatorSync(ctx, coreInstanceVersion, created, serviceAccount.Name)
+			syncDeployment, err := k8sClient.DeployCoreOperatorSync(ctx, coreInstanceVersion, !noTLSVerify, created, serviceAccount.Name)
 			if err != nil {
 				fmt.Printf("An error occurred while creating the core operator instance. %w Rolling back created resources.\n", err)
 				resources, err := k8sClient.DeleteResources(ctx, resourcesCreated)
@@ -247,6 +250,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 	fs.BoolVar(&enableClusterLogging, "enable-cluster-logging", false, "Enable cluster logging pipeline creation.")
 	fs.BoolVar(&skipServiceCreation, "skip-service-creation", false, "Skip the creation of kubernetes services for any pipeline under this core instance.")
 	fs.BoolVar(&dryRun, "dry-run", false, "Passing this value will skip creation of any Kubernetes resources and it will return resources as YAML manifest")
+	fs.BoolVar(&noTLSVerify, "no-tls-verify", false, "Disable TLS verification when connecting to Calyptia Cloud API.")
 
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 	fs.StringSliceVar(&tags, "tags", nil, "Tags to apply to the core instance")

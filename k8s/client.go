@@ -491,7 +491,7 @@ func (client *Client) FindDeploymentByLabel(ctx context.Context, label string) (
 	return client.AppsV1().Deployments(client.Namespace).List(ctx, metav1.ListOptions{LabelSelector: label})
 }
 
-func (client *Client) DeployCoreOperatorSync(ctx context.Context, version string, coreInstance cloud.CreatedCoreInstance, serviceAccount string) (*appsv1.Deployment, error) {
+func (client *Client) DeployCoreOperatorSync(ctx context.Context, version string, noTLSVerify bool, coreInstance cloud.CreatedCoreInstance, serviceAccount string) (*appsv1.Deployment, error) {
 	labels := client.LabelsFunc()
 	//TODO: use version to get the image
 	toCloudImage := fmt.Sprintf("ghcr.io/calyptia/core-operator/sync-to-cloud:%s", version)
@@ -516,6 +516,10 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, version string
 		{
 			Name:  "INTERVAL",
 			Value: "15s",
+		},
+		{
+			Name:  "NO_TLS_VERIFY",
+			Value: strconv.FormatBool(noTLSVerify),
 		},
 	}
 	toCloud := apiv1.Container{
