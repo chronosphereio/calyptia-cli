@@ -19,6 +19,8 @@ import (
 	"time"
 )
 
+const defaultVersion = "latest"
+
 func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernetes.Interface) *cobra.Command {
 	var coreInstanceName string
 	var coreInstanceVersion string
@@ -42,31 +44,30 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.Background()
 
-			var environmentID string
-			if environment != "" {
+			var clientSet kubernetes.Interface
+			var kubeClientConfig *restclient.Config
+			if testClientSet != nil {
+				clientSet = testClientSet
+			} else {
 				var err error
-				environmentID, err = completer.LoadEnvironmentID(environment)
+				kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
+				kubeClientConfig, err = kubeConfig.ClientConfig()
 				if err != nil {
 					return err
 				}
-			}
 
-			coreInstanceParams := cloud.CreateCoreInstance{
-				Name:                   coreInstanceName,
-				AddHealthCheckPipeline: !noHealthCheckPipeline,
-				ClusterLogging:         enableClusterLogging,
-				EnvironmentID:          environmentID,
-				Tags:                   tags,
-				SkipServiceCreation:    skipServiceCreation,
-			}
+				clientSet, err = kubernetes.NewForConfig(kubeClientConfig)
+				if err != nil {
+					return err
+				}
 
-			if coreFluentBitDockerImage != "" {
-				coreInstanceParams.Image = &coreFluentBitDockerImage
 			}
-
-			created, err := config.Cloud.CreateCoreInstance(ctx, coreInstanceParams)
-			if err != nil {
-				return fmt.Errorf("could not create core instance at calyptia cloud: %w", err)
+			k8sClient := &k8s.Client{
+				Interface:    clientSet,
+				Namespace:    configOverrides.Context.Namespace,
+				ProjectToken: config.ProjectToken,
+				CloudBaseURL: config.BaseURL,
+				Config:       kubeClientConfig,
 			}
 
 			if configOverrides.Context.Namespace == "" {
@@ -86,46 +87,54 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 
 			}
 
-			var clientSet kubernetes.Interface
-			var kubeClientConfig *restclient.Config
-			if testClientSet != nil {
-				clientSet = testClientSet
-			} else {
-				var err error
-				kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
-				kubeClientConfig, err = kubeConfig.ClientConfig()
-				if err != nil {
-					return err
-				}
-
-				clientSet, err = kubernetes.NewForConfig(kubeClientConfig)
-				if err != nil {
-					return err
-				}
-
-			}
-
-			k8sClient := &k8s.Client{
-				Interface:    clientSet,
-				Namespace:    configOverrides.Context.Namespace,
-				ProjectToken: config.ProjectToken,
-				CloudBaseURL: config.BaseURL,
-				Config:       kubeClientConfig,
-				LabelsFunc: func() map[string]string {
-					return map[string]string{
-						k8s.LabelVersion:      version.Version,
-						k8s.LabelPartOf:       "calyptia",
-						k8s.LabelManagedBy:    "calyptia-cli",
-						k8s.LabelCreatedBy:    "calyptia-cli",
-						k8s.LabelProjectID:    config.ProjectID,
-						k8s.LabelAggregatorID: created.ID,
-					}
-				},
-			}
-
 			if err := k8sClient.EnsureOwnNamespace(ctx); err != nil {
 				return fmt.Errorf("could not ensure kubernetes namespace exists: %w", err)
 			}
+
+			var environmentID string
+			if environment != "" {
+				var err error
+				environmentID, err = completer.LoadEnvironmentID(environment)
+				if err != nil {
+					return err
+				}
+			}
+			metadata, err := getCoreInstanceMetadata(k8sClient)
+			if err != nil {
+				return err
+			}
+			coreInstanceParams := cloud.CreateCoreInstance{
+				Name:                   coreInstanceName,
+				AddHealthCheckPipeline: !noHealthCheckPipeline,
+				ClusterLogging:         enableClusterLogging,
+				EnvironmentID:          environmentID,
+				Tags:                   tags,
+				SkipServiceCreation:    skipServiceCreation,
+				Metadata:               metadata,
+				Version:                coreInstanceVersion,
+			}
+
+			if coreFluentBitDockerImage != "" {
+				coreInstanceParams.Image = &coreFluentBitDockerImage
+			}
+
+			created, err := config.Cloud.CreateCoreInstance(ctx, coreInstanceParams)
+			if err != nil {
+				return fmt.Errorf("could not create core instance at calyptia cloud: %w", err)
+			}
+
+			labelsFunc := func() map[string]string {
+				return map[string]string{
+					k8s.LabelVersion:      version.Version,
+					k8s.LabelPartOf:       "calyptia",
+					k8s.LabelManagedBy:    "calyptia-cli",
+					k8s.LabelCreatedBy:    "calyptia-cli",
+					k8s.LabelProjectID:    config.ProjectID,
+					k8s.LabelAggregatorID: created.ID,
+				}
+			}
+			k8sClient.LabelsFunc = labelsFunc
+
 			var resourcesCreated []k8s.ResourceRollBack
 			secret, err := k8sClient.CreateSecretOperatorRSAKey(ctx, created, dryRun)
 			if err != nil {
@@ -187,7 +196,10 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				return err
 			}
 
-			syncDeployment, err := k8sClient.DeployCoreOperatorSync(ctx, created, serviceAccount.Name)
+			if coreInstanceVersion == "" {
+				coreInstanceVersion = defaultVersion
+			}
+			syncDeployment, err := k8sClient.DeployCoreOperatorSync(ctx, coreInstanceVersion, created, serviceAccount.Name)
 			if err != nil {
 				fmt.Printf("An error occurred while creating the core operator instance. %w Rolling back created resources.\n", err)
 				resources, err := k8sClient.DeleteResources(ctx, resourcesCreated)
@@ -266,4 +278,19 @@ func extractRollBack(name string, obj runtime.Object) (k8s.ResourceRollBack, err
 		GVR:  resource,
 	}
 	return back, err
+}
+
+func getCoreInstanceMetadata(k8s *k8s.Client) (cloud.CoreInstanceMetadata, error) {
+	var metadata cloud.CoreInstanceMetadata
+
+	info, err := k8s.GetClusterInfo()
+	if err != nil {
+		return metadata, err
+	}
+
+	metadata.Namespace = info.Namespace
+	metadata.ClusterVersion = info.Version
+	metadata.ClusterPlatform = info.Platform
+
+	return metadata, nil
 }

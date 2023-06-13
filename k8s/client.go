@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	goversion "github.com/hashicorp/go-version"
 	"io"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -490,10 +491,11 @@ func (client *Client) FindDeploymentByLabel(ctx context.Context, label string) (
 	return client.AppsV1().Deployments(client.Namespace).List(ctx, metav1.ListOptions{LabelSelector: label})
 }
 
-func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreInstance cloud.CreatedCoreInstance, serviceAccount string) (*appsv1.Deployment, error) {
+func (client *Client) DeployCoreOperatorSync(ctx context.Context, version string, coreInstance cloud.CreatedCoreInstance, serviceAccount string) (*appsv1.Deployment, error) {
 	labels := client.LabelsFunc()
-	const toCloudImage = "ghcr.io/calyptia/core-operator/sync-to-cloud:v1.0.0-alpha0"
-	const fromCloudImage = "ghcr.io/calyptia/core-operator/sync-from-cloud:v1.0.0-alpha0"
+	//TODO: use version to get the image
+	toCloudImage := fmt.Sprintf("ghcr.io/calyptia/core-operator/sync-to-cloud:%s", version)
+	fromCloudImage := fmt.Sprintf("ghcr.io/calyptia/core-operator/sync-from-cloud:%s", version)
 	env := []apiv1.EnvVar{
 		{
 			Name:  "CORE_INSTANCE",
@@ -510,6 +512,10 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreInstance c
 		{
 			Name:  "TOKEN",
 			Value: client.ProjectToken,
+		},
+		{
+			Name:  "INTERVAL",
+			Value: "15s",
 		},
 	}
 	toCloud := apiv1.Container{
@@ -791,4 +797,25 @@ func (client *Client) isDeploymentReady(ctx context.Context, d *appsv1.Deploymen
 		}
 		return true, nil
 	}
+}
+
+// ClusterInfo information that is retrieved from the running cluster.
+type ClusterInfo struct {
+	Namespace, Platform, Version string
+}
+
+func (client *Client) GetClusterInfo() (ClusterInfo, error) {
+	var info ClusterInfo
+	serverVersion, err := client.Discovery().ServerVersion()
+	if err != nil {
+		return info, fmt.Errorf("error getting kubernetes version: %w", err)
+	}
+	version, err := goversion.NewVersion(serverVersion.String())
+	if err != nil {
+		return info, fmt.Errorf("could not parse version from kubernetes cluster: %w", err)
+	}
+	info.Version = version.String()
+	info.Namespace = client.Namespace
+	info.Platform = serverVersion.Platform
+	return info, nil
 }
