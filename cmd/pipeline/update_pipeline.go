@@ -108,7 +108,7 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 				format = cloud.ConfigFormat(providedConfigFormat)
 			} else if rawConfig != "" {
 				// infer the configuration format from the file.
-				format, err = InferConfigFormat(rawConfig)
+				format, err = InferConfigFormat(newConfigFile)
 				if err != nil {
 					return err
 				}
