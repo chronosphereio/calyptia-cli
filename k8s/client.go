@@ -44,7 +44,10 @@ const (
 	defaultOperatorNamespace                 = "calyptia-core"
 )
 
-var ErrNoContext = fmt.Errorf("no context is currently set")
+var (
+	ErrNoContext            = fmt.Errorf("no context is currently set")
+	ErrCoreOperatorNotFound = fmt.Errorf("could not find core operator across all namespaces")
+)
 var (
 	deploymentReplicas           int32 = 1
 	automountServiceAccountToken       = true
@@ -820,4 +823,38 @@ func (client *Client) GetClusterInfo() (ClusterInfo, error) {
 	info.Namespace = client.Namespace
 	info.Platform = serverVersion.Platform
 	return info, nil
+}
+
+func (client *Client) CheckOperatorVersion(ctx context.Context) (string, error) {
+	manager, err := client.SearchManagerAcrossAllNamespaces(ctx)
+	if err != nil {
+		return "", err
+	}
+	managerImage := manager.Spec.Template.Spec.Containers[0].Image
+	managerImageVersion := strings.Split(managerImage, ":")[1]
+	if managerImageVersion == "" {
+		return "", fmt.Errorf("could not parse version from manager image: %s", managerImage)
+	}
+	return managerImageVersion, nil
+}
+
+func (client *Client) SearchManagerAcrossAllNamespaces(ctx context.Context) (*appsv1.Deployment, error) {
+	namespaces, err := client.CoreV1().Namespaces().List(ctx, metav1.ListOptions{})
+	if err != nil {
+		return nil, err
+	}
+	var manager *appsv1.Deployment
+	for _, namespace := range namespaces.Items {
+		manager, err = client.AppsV1().Deployments(namespace.Name).Get(ctx, "controller-manager", metav1.GetOptions{})
+		if err != nil && !k8serrors.IsNotFound(err) {
+			return nil, err
+		}
+		if manager.Name != "" {
+			break
+		}
+	}
+	if manager.Name == "" {
+		return nil, ErrCoreOperatorNotFound
+	}
+	return manager, err
 }
