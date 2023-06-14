@@ -46,7 +46,22 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 		Short:   "Setup a new core operator instance",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.Background()
+			if configOverrides.Context.Namespace == "" {
+				namespace, err := k8s.GetCurrentContextNamespace()
+				if err != nil {
+					if errors.Is(err, k8s.ErrNoContext) {
+						cmd.Printf("No context is currently set. Using default namespace.\n")
+					} else {
+						return err
+					}
+				}
+				if namespace != "" {
+					configOverrides.Context.Namespace = namespace
+				} else {
+					configOverrides.Context.Namespace = apiv1.NamespaceDefault
+				}
 
+			}
 			var clientSet kubernetes.Interface
 			var kubeClientConfig *restclient.Config
 			if testClientSet != nil {
@@ -71,23 +86,6 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				ProjectToken: config.ProjectToken,
 				CloudBaseURL: config.BaseURL,
 				Config:       kubeClientConfig,
-			}
-
-			if configOverrides.Context.Namespace == "" {
-				namespace, err := k8s.GetCurrentContextNamespace()
-				if err != nil {
-					if errors.Is(err, k8s.ErrNoContext) {
-						cmd.Printf("No context is currently set. Using default namespace.\n")
-					} else {
-						return err
-					}
-				}
-				if namespace != "" {
-					configOverrides.Context.Namespace = namespace
-				} else {
-					configOverrides.Context.Namespace = apiv1.NamespaceDefault
-				}
-
 			}
 
 			if err := k8sClient.EnsureOwnNamespace(ctx); err != nil {
