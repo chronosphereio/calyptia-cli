@@ -16,7 +16,6 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 	"net/http"
 	"os"
-	"path/filepath"
 	"strings"
 	"time"
 
@@ -752,11 +751,10 @@ func getOperatorDownloadURL(version string) (string, error) {
 }
 
 func GetCurrentContextNamespace() (string, error) {
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		return "", err
+	kubeconfig := os.Getenv(clientcmd.RecommendedConfigPathEnvVar)
+	if kubeconfig == "" {
+		kubeconfig = clientcmd.RecommendedHomeFile
 	}
-	kubeconfig := filepath.Join(homeDir, ".kube", "config")
 	config, err := clientcmd.LoadFromFile(kubeconfig)
 	if err != nil {
 		return "", err
