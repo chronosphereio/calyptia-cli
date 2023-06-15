@@ -543,7 +543,7 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, version string
 			APIVersion: "apps/v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      coreInstance.Name + "-sync",
+			Name:      FormatResourceName(coreInstance.Name, coreInstance.EnvironmentName, "sync"),
 			Namespace: client.Namespace,
 		},
 		Spec: appsv1.DeploymentSpec{
@@ -823,6 +823,79 @@ func (client *Client) GetClusterInfo() (ClusterInfo, error) {
 	info.Namespace = client.Namespace
 	info.Platform = serverVersion.Platform
 	return info, nil
+}
+
+func (client *Client) DeleteCoreInstance(ctx context.Context, name, environment string, shouldWait bool) error {
+	core := struct {
+		Secret, ServiceAccount, ClusterRole, ClusterRoleBinding, Deployment string
+	}{
+		Secret:             FormatResourceName(name, environment, "secret"),
+		ServiceAccount:     FormatResourceName(name, environment, "service-account"),
+		ClusterRole:        FormatResourceName(name, environment, "cluster-role"),
+		ClusterRoleBinding: FormatResourceName(name, environment, "cluster-role-binding"),
+		Deployment:         FormatResourceName(name, environment, "sync"),
+	}
+
+	namespaceList, err := client.CoreV1().Namespaces().List(ctx, metav1.ListOptions{})
+	if err != nil {
+		return err
+	}
+	for _, namespace := range namespaceList.Items {
+		namespaceName := namespace.Name
+
+		// Delete Deployment
+		err = client.AppsV1().Deployments(namespaceName).Delete(ctx, core.Deployment, metav1.DeleteOptions{})
+		if err != nil && !k8serrors.IsNotFound(err) {
+			return err
+		}
+
+		// Delete Secret
+		err = client.CoreV1().Secrets(namespaceName).Delete(ctx, core.Secret, metav1.DeleteOptions{})
+		if err != nil && !k8serrors.IsNotFound(err) {
+			return err
+		}
+
+		// Delete ClusterRole
+		err = client.RbacV1().ClusterRoles().Delete(ctx, core.ClusterRole, metav1.DeleteOptions{})
+		if err != nil && !k8serrors.IsNotFound(err) {
+			return err
+		}
+
+		// Delete ClusterRoleBinding
+		err = client.RbacV1().ClusterRoleBindings().Delete(ctx, core.ClusterRoleBinding, metav1.DeleteOptions{})
+		if err != nil && !k8serrors.IsNotFound(err) {
+			return err
+		}
+
+		// Delete ServiceAccount
+		err = client.CoreV1().ServiceAccounts(namespaceName).Delete(ctx, core.ServiceAccount, metav1.DeleteOptions{})
+		if err != nil && !k8serrors.IsNotFound(err) {
+			return err
+		}
+		if shouldWait {
+			// Wait for the resources to be deleted
+			err = wait.PollImmediate(time.Second, time.Minute, func() (bool, error) {
+				_, err := client.AppsV1().Deployments(namespaceName).Get(ctx, core.Deployment, metav1.GetOptions{})
+				return err != nil, nil
+			})
+			if err != nil {
+				panic(fmt.Errorf("failed to wait for Deployment deletion in namespace %s: %v", namespaceName, err))
+			}
+		}
+	}
+	return nil
+}
+
+// defaultResourceNamePrefix name prefix to use on objects created on the k8s provider.
+const defaultResourceNamePrefix = "calyptia"
+
+// FormatResourceName returns the resource name with a prepended calyptia prefix.
+func FormatResourceName(parts ...string) string {
+	str := strings.Join(parts, "-")
+	if !strings.HasPrefix(str, defaultResourceNamePrefix) {
+		return defaultResourceNamePrefix + "-" + str
+	}
+	return str
 }
 
 func (client *Client) CheckOperatorVersion(ctx context.Context) (string, error) {
