@@ -6,10 +6,10 @@ require (
 	code.cloudfoundry.org/bytefmt v0.0.0-20230406175530-3579ae0680eb
 	github.com/Masterminds/sprig/v3 v3.2.3
 	github.com/alecthomas/assert/v2 v2.2.2
-	github.com/aws/aws-sdk-go-v2 v1.18.0
+	github.com/aws/aws-sdk-go-v2 v1.18.1
 	github.com/aws/aws-sdk-go-v2/config v1.18.25
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.98.0
-	github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi v1.14.11
+	github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi v1.14.14
 	github.com/calyptia/api v1.3.2
 	github.com/calyptia/cli/k8s v0.0.0-20230509075406-42f7af3ab729
 	github.com/calyptia/core-images-index/go-index v0.0.0-20230522081837-7cd52dd6a0d6
@@ -46,8 +46,8 @@ require (
 	github.com/alessio/shellescape v1.4.1 // indirect
 	github.com/aws/aws-sdk-go-v2/credentials v1.13.24 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.13.3 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/configsources v1.1.33 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.4.27 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/configsources v1.1.34 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.4.28 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/ini v1.3.34 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.9.27 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sso v1.12.10 // indirect
