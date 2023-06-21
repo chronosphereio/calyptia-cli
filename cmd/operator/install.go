@@ -120,7 +120,7 @@ func NewCmdInstall(config *cfg.Config, testClientSet kubernetes.Interface) *cobr
 	fs := cmd.Flags()
 	fs.BoolVar(&waitReady, "wait", false, "Wait for the core instance to be ready before returning")
 	fs.StringVar(&coreInstanceVersion, "version", "", "Core instance version")
-	fs.StringVar(&coreDockerImage, "image", "", "Calyptia core docker image to use (fully composed docker image).")
+	fs.StringVar(&coreDockerImage, "image", "", "Calyptia core operator docker image to use (fully composed docker image).")
 
 	clientcmd.BindOverrideFlags(configOverrides, fs, clientcmd.RecommendedConfigOverrideFlags("kube-"))
 	return cmd
