@@ -15,7 +15,7 @@ import (
 const (
 	//nolint: gosec // this is not a secret leak, it's just a format declaration.
 	DefaultCoreDockerImage    = "ghcr.io/calyptia/core"
-	DefaultCoreDockerImageTag = "v1.0.0-RC1"
+	DefaultCoreDockerImageTag = "latest"
 
 	DefaultCoreOperatorDockerImage = "ghcr.io/calyptia/core-operator"
 	// DefaultCoreOperatorDockerImageTag not manually modified, CI should switch this version on every new release.

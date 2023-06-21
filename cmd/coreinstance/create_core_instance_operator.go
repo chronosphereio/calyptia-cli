@@ -269,7 +269,16 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 	fs.StringVar(&coreFluentBitDockerImage, "fluent-bit-image", "", "Calyptia core fluent-bit image to use.")
 
 	fs.StringVar(&coreDockerToCloudImage, "image-to-cloud", "", "Calyptia core operator (to-cloud) docker image to use (fully composed docker image).")
+	err := fs.MarkHidden("image-to-cloud")
+	if err != nil {
+		return nil
+	}
+
 	fs.StringVar(&coreDockerFromCloudImage, "image-from-cloud", "", "Calyptia core operator (from-cloud) docker image to use (fully composed docker image).")
+	err = fs.MarkHidden("image-from-cloud")
+	if err != nil {
+		return nil
+	}
 
 	fs.BoolVar(&waitReady, "wait", false, "Wait for the core instance to be ready before returning")
 	fs.BoolVar(&noHealthCheckPipeline, "no-health-check-pipeline", false, "Disable health check pipeline creation alongside the core instance")
@@ -277,7 +286,6 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 	fs.BoolVar(&skipServiceCreation, "skip-service-creation", false, "Skip the creation of kubernetes services for any pipeline under this core instance.")
 	fs.BoolVar(&dryRun, "dry-run", false, "Passing this value will skip creation of any Kubernetes resources and it will return resources as YAML manifest")
 	fs.BoolVar(&noTLSVerify, "no-tls-verify", false, "Disable TLS verification when connecting to Calyptia Cloud API.")
-
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 	fs.StringSliceVar(&tags, "tags", nil, "Tags to apply to the core instance")
 
