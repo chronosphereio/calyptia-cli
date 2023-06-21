@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/calyptia/cli/cmd/utils"
 	"github.com/calyptia/cli/cmd/version"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/k8s"
@@ -18,6 +19,7 @@ func NewCmdInstall(config *cfg.Config, testClientSet kubernetes.Interface) *cobr
 	configOverrides := &clientcmd.ConfigOverrides{}
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	var coreInstanceVersion string
+	var coreDockerImage string
 	var waitReady bool
 	cmd := &cobra.Command{
 		Use:     "operator",
@@ -80,8 +82,21 @@ func NewCmdInstall(config *cfg.Config, testClientSet kubernetes.Interface) *cobr
 				return fmt.Errorf("could not ensure kubernetes namespace exists: %w", err)
 			}
 
-			resourcesCreated, err := k8sClient.DeployOperator(ctx, coreInstanceVersion)
+			if coreDockerImage == "" {
+				coreDockerImageTag := utils.DefaultCoreOperatorDockerImageTag
+				if coreInstanceVersion != "" {
+					coreDockerImageTag = coreInstanceVersion
+				}
+				coreDockerImage = fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorDockerImage, coreDockerImageTag)
+			}
+
+			resourcesCreated, err := k8sClient.DeployOperator(ctx, coreInstanceVersion, coreDockerImage)
 			if err != nil {
+				if len(resourcesCreated) == 0 {
+					fmt.Printf("no resources have been created, skipping rollback: %s\n", err.Error())
+					return nil
+				}
+
 				fmt.Printf("could not apply kubernetes manifest, rolling back the following resources:")
 				for _, resource := range resourcesCreated {
 					fmt.Printf("%s=%s\n", resource.GVR.Resource, resource.Name)
@@ -95,6 +110,7 @@ func NewCmdInstall(config *cfg.Config, testClientSet kubernetes.Interface) *cobr
 					fmt.Printf("%s=%s\n", r.GVR.Resource, r.Name)
 				}
 			}
+
 			for _, resource := range resourcesCreated {
 				fmt.Printf("%s=%s\n", resource.GVR.Resource, resource.Name)
 			}
@@ -104,6 +120,8 @@ func NewCmdInstall(config *cfg.Config, testClientSet kubernetes.Interface) *cobr
 	fs := cmd.Flags()
 	fs.BoolVar(&waitReady, "wait", false, "Wait for the core instance to be ready before returning")
 	fs.StringVar(&coreInstanceVersion, "version", "", "Core instance version")
+	fs.StringVar(&coreDockerImage, "image", "", "Calyptia core operator docker image to use (fully composed docker image).")
+
 	clientcmd.BindOverrideFlags(configOverrides, fs, clientcmd.RecommendedConfigOverrideFlags("kube-"))
 	return cmd
 }
