@@ -1,127 +1,160 @@
 package operator
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"github.com/calyptia/cli/cmd/utils"
-	"github.com/calyptia/cli/cmd/version"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/k8s"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
+	"io"
 	apiv1 "k8s.io/api/core/v1"
+	"k8s.io/cli-runtime/pkg/genericclioptions"
 	"k8s.io/client-go/kubernetes"
-	restclient "k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
+	"k8s.io/component-base/logs"
+	kubectl "k8s.io/kubectl/pkg/cmd"
+	"log"
+	"os"
+	"regexp"
+	"strings"
 )
 
 func NewCmdInstall(config *cfg.Config, testClientSet kubernetes.Interface) *cobra.Command {
 	configOverrides := &clientcmd.ConfigOverrides{}
-	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	var coreInstanceVersion string
 	var coreDockerImage string
 	var waitReady bool
+	namespace := apiv1.NamespaceDefault
 	cmd := &cobra.Command{
 		Use:     "operator",
 		Aliases: []string{"opr"},
 		Short:   "Setup a new core operator instance",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx := context.Background()
+			kctl := newKubectlCmd()
 
-			if configOverrides.Context.Namespace == "" {
-				namespace, err := k8s.GetCurrentContextNamespace()
-				if err != nil {
-					if errors.Is(err, k8s.ErrNoContext) {
-						cmd.Printf("No context is currently set. Using default namespace.\n")
-					} else {
-						return err
-					}
-				}
-				if namespace != "" {
-					configOverrides.Context.Namespace = namespace
-				} else {
-					configOverrides.Context.Namespace = apiv1.NamespaceDefault
-				}
-
-			}
-
-			var clientSet kubernetes.Interface
-			var kubeClientConfig *restclient.Config
-			if testClientSet != nil {
-				clientSet = testClientSet
-			} else {
-				var err error
-				kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
-				kubeClientConfig, err = kubeConfig.ClientConfig()
-				if err != nil {
-					return err
-				}
-
-				clientSet, err = kubernetes.NewForConfig(kubeClientConfig)
-				if err != nil {
-					return err
-				}
-
-			}
-			k8sClient := &k8s.Client{
-				Interface:    clientSet,
-				Namespace:    configOverrides.Context.Namespace,
-				ProjectToken: config.ProjectToken,
-				CloudBaseURL: config.BaseURL,
-				Config:       kubeClientConfig,
-				LabelsFunc: func() map[string]string {
-					return map[string]string{
-						k8s.LabelVersion:   version.Version,
-						k8s.LabelPartOf:    "calyptia",
-						k8s.LabelManagedBy: "calyptia-cli",
-						k8s.LabelCreatedBy: "calyptia-cli",
-					}
-				},
-			}
-			if err := k8sClient.EnsureOwnNamespace(ctx); err != nil {
-				return fmt.Errorf("could not ensure kubernetes namespace exists: %w", err)
-			}
-
-			if coreDockerImage == "" {
-				coreDockerImageTag := utils.DefaultCoreOperatorDockerImageTag
-				if coreInstanceVersion != "" {
-					coreDockerImageTag = coreInstanceVersion
-				}
-				coreDockerImage = fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorDockerImage, coreDockerImageTag)
-			}
-
-			resourcesCreated, err := k8sClient.DeployOperator(ctx, coreInstanceVersion, coreDockerImage)
+			n, err := k8s.GetCurrentContextNamespace()
 			if err != nil {
-				if len(resourcesCreated) == 0 {
-					fmt.Printf("no resources have been created, skipping rollback: %s\n", err.Error())
-					return nil
-				}
-
-				fmt.Printf("could not apply kubernetes manifest, rolling back the following resources:")
-				for _, resource := range resourcesCreated {
-					fmt.Printf("%s=%s\n", resource.GVR.Resource, resource.Name)
-				}
-				deleted, err := k8sClient.DeleteResources(ctx, resourcesCreated)
-				if err != nil {
-					return fmt.Errorf("could not rollback kubernetes manifest: %w", err)
-				}
-				fmt.Printf("successfully rolled back the following resources:")
-				for _, r := range deleted {
-					fmt.Printf("%s=%s\n", r.GVR.Resource, r.Name)
+				if errors.Is(err, k8s.ErrNoContext) {
+					cmd.Printf("No context is currently set. Using default namespace.\n")
+				} else {
+					return err
 				}
 			}
-
-			for _, resource := range resourcesCreated {
-				fmt.Printf("%s=%s\n", resource.GVR.Resource, resource.Name)
+			if n != "" {
+				namespace = n
 			}
+
+			yaml, err := prepareManifest(coreDockerImage, coreInstanceVersion, namespace)
+			if err != nil {
+				return err
+			}
+
+			kctl.SetArgs([]string{"apply", "-f", yaml})
+
+			err = kctl.Execute()
+			if err != nil {
+				return err
+			}
+
+			cmd.Printf("Core operator manager successfully installed.\n")
 			return nil
 		},
 	}
 	fs := cmd.Flags()
 	fs.BoolVar(&waitReady, "wait", false, "Wait for the core instance to be ready before returning")
-	fs.StringVar(&coreInstanceVersion, "version", "", "Core instance version")
-	fs.StringVar(&coreDockerImage, "image", "", "Calyptia core operator docker image to use (fully composed docker image).")
+	fs.StringVar(&coreInstanceVersion, "version", utils.DefaultCoreOperatorDockerImageTag, "Core instance version")
+	fs.StringVar(&namespace, "n", apiv1.NamespaceDefault, "Namespace to install the core manager in (informed namespace > current-context namespace > default namespace)")
+	fs.StringVar(&coreDockerImage, "image", utils.DefaultCoreOperatorDockerImage, "Calyptia core manager docker image to use (fully composed docker image).")
+	_ = cmd.Flags().MarkHidden("image")
 
 	clientcmd.BindOverrideFlags(configOverrides, fs, clientcmd.RecommendedConfigOverrideFlags("kube-"))
+	return cmd
+}
+
+func prepareManifest(coreInstanceVersion, coreDockerImage, namespace string) (string, error) {
+	file, err := k8s.GetOperatorManifest(coreInstanceVersion)
+	if err != nil {
+		return "", err
+	}
+
+	strFile := string(file)
+
+	withNamespace := addNamespace(strFile, namespace)
+
+	withImage := addImage(coreDockerImage, coreInstanceVersion, withNamespace)
+
+	dir, err := os.MkdirTemp("", "calyptia-operator")
+	if err != nil {
+		return "", err
+	}
+	defer os.RemoveAll(dir)
+
+	fileLocation := fmt.Sprintf("%s/operator.yaml", dir)
+	err = os.WriteFile(fileLocation, []byte(withImage), 0644)
+	return fileLocation, err
+}
+
+func addImage(coreDockerImage, coreInstanceVersion, file string) string {
+	pattern := `image:\s*ghcr.io/calyptia/core-operator:[^\n\r]*`
+	regex := regexp.MustCompile(pattern)
+	match := regex.FindString(file)
+	if match == "" {
+		log.Fatalf("Failed to find the image field in the YAML")
+	}
+	updatedMatch := fmt.Sprintf("image: %s:%s\n", coreDockerImage, coreInstanceVersion)
+	return regex.ReplaceAllString(file, updatedMatch)
+}
+
+func addNamespace(s string, namespace string) string {
+	return strings.ReplaceAll(s, "namespace: calyptia-core", fmt.Sprintf("namespace: %s", namespace))
+}
+
+func newKubectlCmd() *cobra.Command {
+	_ = pflag.CommandLine.MarkHidden("log-flush-frequency")
+	_ = pflag.CommandLine.MarkHidden("version")
+
+	oo := io.Discard
+	oo = os.Stdout
+	args := kubectl.KubectlOptions{
+		IOStreams: genericclioptions.IOStreams{
+			In:     os.Stdin,
+			Out:    oo,
+			ErrOut: os.Stderr,
+		},
+		Arguments: os.Args,
+	}
+
+	cmd := kubectl.NewKubectlCommand(args)
+
+	cmd.Aliases = []string{"kc"}
+	cmd.Hidden = true
+	// Get handle on the original kubectl prerun so we can call it later
+	originalPreRunE := cmd.PersistentPreRunE
+	cmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
+		// Call parents pre-run if exists, cobra does not do this automatically
+		// See: https://github.com/spf13/cobra/issues/216
+		if parent := cmd.Parent(); parent != nil {
+			if parent.PersistentPreRun != nil {
+				parent.PersistentPreRun(parent, args)
+			}
+			if parent.PersistentPreRunE != nil {
+				err := parent.PersistentPreRunE(parent, args)
+				if err != nil {
+					return err
+				}
+			}
+		}
+		return originalPreRunE(cmd, args)
+	}
+
+	originalRun := cmd.Run
+	cmd.RunE = func(cmd *cobra.Command, args []string) error {
+		originalRun(cmd, args)
+		return nil
+	}
+
+	logs.AddFlags(cmd.PersistentFlags())
 	return cmd
 }
