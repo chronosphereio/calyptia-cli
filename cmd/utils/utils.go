@@ -15,10 +15,19 @@ import (
 const (
 	//nolint: gosec // this is not a secret leak, it's just a format declaration.
 	DefaultCoreDockerImage    = "ghcr.io/calyptia/core"
-	DefaultCoreDockerImageTag = "latest"
+	DefaultCoreDockerImageTag = "v1.0.0-RC1"
 
-	DefaultCoreOperatorDockerImage    = "ghcr.io/calyptia/core-operator"
-	DefaultCoreOperatorDockerImageTag = "latest"
+	DefaultCoreOperatorDockerImage = "ghcr.io/calyptia/core-operator"
+	// DefaultCoreOperatorDockerImageTag not manually modified, CI should switch this version on every new release.
+	DefaultCoreOperatorDockerImageTag = "v1.0.0-RC1"
+
+	DefaultCoreOperatorToCloudDockerImage = "ghcr.io/calyptia/core-operator/sync-to-cloud"
+	// DefaultCoreOperatorToCloudDockerImageTag not manually modified, CI should switch this version on every new release.
+	DefaultCoreOperatorToCloudDockerImageTag = "v1.0.0-RC1"
+
+	DefaultCoreOperatorFromCloudDockerImage = "ghcr.io/calyptia/core-operator/sync-from-cloud"
+	// DefaultCoreOperatorFromCloudDockerImageTag not manually modified, CI should switch this version on every new release.
+	DefaultCoreOperatorFromCloudDockerImageTag = "v1.0.0-RC1"
 )
 
 type RecordCell struct {
