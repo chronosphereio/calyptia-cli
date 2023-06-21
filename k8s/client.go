@@ -113,7 +113,7 @@ func (client *Client) createOwnNamespace(ctx context.Context) (*apiv1.Namespace,
 	}, metav1.CreateOptions{})
 }
 
-// TODO: DELETE AFTER OPERATOR LAUNCHES and create by k8s become deprecated
+// CreateSecret TODO: DELETE AFTER OPERATOR LAUNCHES and create by k8s become deprecated
 func (client *Client) CreateSecret(ctx context.Context, agg cloud.CreatedCoreInstance, dryRun bool) (*apiv1.Secret, error) {
 	metadata := client.getObjectMeta(agg, secretObjectType)
 	req := &apiv1.Secret{
@@ -568,12 +568,12 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, version string
 	return client.AppsV1().Deployments(client.Namespace).Create(ctx, req, options)
 }
 
-func (client *Client) DeployOperator(ctx context.Context, version string) ([]ResourceRollBack, error) {
+func (client *Client) DeployOperator(ctx context.Context, version, image string) ([]ResourceRollBack, error) {
 	file, err := getOperatorManifest(version)
 	if err != nil {
 		return nil, err
 	}
-	applied, err := client.applyOperatorManifest(ctx, file)
+	applied, err := client.applyOperatorManifest(ctx, file, image)
 	if err != nil {
 		return applied, err
 	}
@@ -581,7 +581,7 @@ func (client *Client) DeployOperator(ctx context.Context, version string) ([]Res
 
 }
 
-func (client *Client) applyOperatorManifest(ctx context.Context, manifestFull []byte) ([]ResourceRollBack, error) {
+func (client *Client) applyOperatorManifest(ctx context.Context, manifestFull []byte, image string) ([]ResourceRollBack, error) {
 	dynamicClient, err := dynamic.NewForConfig(client.Config)
 	if err != nil {
 		return nil, err
@@ -607,9 +607,19 @@ func (client *Client) applyOperatorManifest(ctx context.Context, manifestFull []
 		if gvk.Kind == "Namespace" {
 			continue
 		}
-		namespace := obj.GetNamespace()
-		if namespace == defaultOperatorNamespace {
-			obj.SetNamespace(client.Namespace)
+
+		if gvk.Kind == "Deployment" && image != "" {
+			deployment := &appsv1.Deployment{}
+			_, _, err := decoder.Decode([]byte(manifest), nil, deployment)
+			if err != nil {
+				return nil, err
+			}
+			deployment.Spec.Template.Spec.Containers[0].Image = image
+			unstructuredCRB, err := runtime.DefaultUnstructuredConverter.ToUnstructured(deployment)
+			if err != nil {
+				return nil, err
+			}
+			obj = &unstructured.Unstructured{Object: unstructuredCRB}
 		}
 
 		if gvk.Kind == "ClusterRoleBinding" {
@@ -634,6 +644,11 @@ func (client *Client) applyOperatorManifest(ctx context.Context, manifestFull []
 		kindPluralized := strings.ToLower(gvk.Kind) + "s"
 		withResource := gvk.GroupVersion().WithResource(kindPluralized)
 		resource := dynamicClient.Resource(withResource)
+
+		namespace := obj.GetNamespace()
+		if namespace == defaultOperatorNamespace {
+			obj.SetNamespace(client.Namespace)
+		}
 
 		//if already exists, skip
 		get, err := resource.Namespace(obj.GetNamespace()).Get(ctx, obj.GetName(), metav1.GetOptions{})

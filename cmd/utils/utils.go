@@ -16,6 +16,9 @@ const (
 	//nolint: gosec // this is not a secret leak, it's just a format declaration.
 	DefaultCoreDockerImage    = "ghcr.io/calyptia/core"
 	DefaultCoreDockerImageTag = "latest"
+
+	DefaultCoreOperatorDockerImage    = "ghcr.io/calyptia/core-operator"
+	DefaultCoreOperatorDockerImageTag = "latest"
 )
 
 type RecordCell struct {
