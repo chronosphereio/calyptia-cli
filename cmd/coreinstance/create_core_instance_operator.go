@@ -110,7 +110,6 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 			}
 
 			fmt.Printf("Found calyptia core operator installed, version: %s...\n", operatorVersion)
-
 			metadata, err := getCoreInstanceMetadata(k8sClient)
 			if err != nil {
 				return err
@@ -124,7 +123,12 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				Tags:                   tags,
 				SkipServiceCreation:    skipServiceCreation,
 				Metadata:               metadata,
-				Version:                operatorVersion,
+			}
+
+			// Only set the version if != latest, otherwise use the default value
+			// for registering this core instance.
+			if operatorVersion != utils.LatestVersion {
+				coreInstanceParams.Version = operatorVersion
 			}
 
 			if coreFluentBitDockerImage != "" {
