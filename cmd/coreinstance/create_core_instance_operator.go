@@ -109,8 +109,12 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				return err
 			}
 
-			fmt.Printf("Found calyptia core operator installed, version: %s...\n", operatorVersion)
+			// If the version is set to "latest", use the last registered official tag.
+			if operatorVersion == utils.LatestVersion {
+				operatorVersion = utils.DefaultCoreOperatorDockerImageTag
+			}
 
+			fmt.Printf("Found calyptia core operator installed, version: %s...\n", operatorVersion)
 			metadata, err := getCoreInstanceMetadata(k8sClient)
 			if err != nil {
 				return err
