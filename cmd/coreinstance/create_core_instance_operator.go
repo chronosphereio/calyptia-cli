@@ -125,8 +125,8 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				Metadata:               metadata,
 			}
 
-			// If version is set to != latest, use the provided version, otherwise
-			// let it be the default value.
+			// Only set the version if != latest, otherwise use the default value
+			// for registering this core instance.
 			if operatorVersion != utils.LatestVersion {
 				coreInstanceParams.Version = operatorVersion
 			}
