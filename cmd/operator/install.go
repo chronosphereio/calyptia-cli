@@ -4,25 +4,20 @@ import (
 	"errors"
 	"fmt"
 	"github.com/calyptia/cli/cmd/utils"
-	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/k8s"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
-	"io"
 	apiv1 "k8s.io/api/core/v1"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
-	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/component-base/logs"
 	kubectl "k8s.io/kubectl/pkg/cmd"
-	"log"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 )
 
-func NewCmdInstall(config *cfg.Config, testClientSet kubernetes.Interface) *cobra.Command {
-	configOverrides := &clientcmd.ConfigOverrides{}
+func NewCmdInstall() *cobra.Command {
 	var coreInstanceVersion string
 	var coreDockerImage string
 	var waitReady bool
@@ -33,7 +28,6 @@ func NewCmdInstall(config *cfg.Config, testClientSet kubernetes.Interface) *cobr
 		Short:   "Setup a new core operator instance",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			kctl := newKubectlCmd()
-
 			n, err := k8s.GetCurrentContextNamespace()
 			if err != nil {
 				if errors.Is(err, k8s.ErrNoContext) {
@@ -52,11 +46,13 @@ func NewCmdInstall(config *cfg.Config, testClientSet kubernetes.Interface) *cobr
 			}
 
 			kctl.SetArgs([]string{"apply", "-f", yaml})
+			//get original flags from kubectl
 
 			err = kctl.Execute()
 			if err != nil {
 				return err
 			}
+			os.RemoveAll(yaml)
 
 			cmd.Printf("Core operator manager successfully installed.\n")
 			return nil
@@ -68,43 +64,46 @@ func NewCmdInstall(config *cfg.Config, testClientSet kubernetes.Interface) *cobr
 	fs.StringVar(&namespace, "n", apiv1.NamespaceDefault, "Namespace to install the core manager in (informed namespace > current-context namespace > default namespace)")
 	fs.StringVar(&coreDockerImage, "image", utils.DefaultCoreOperatorDockerImage, "Calyptia core manager docker image to use (fully composed docker image).")
 	_ = cmd.Flags().MarkHidden("image")
-
-	clientcmd.BindOverrideFlags(configOverrides, fs, clientcmd.RecommendedConfigOverrideFlags("kube-"))
 	return cmd
 }
 
-func prepareManifest(coreInstanceVersion, coreDockerImage, namespace string) (string, error) {
+func prepareManifest(coreDockerImage, coreInstanceVersion, namespace string) (string, error) {
 	file, err := k8s.GetOperatorManifest(coreInstanceVersion)
 	if err != nil {
 		return "", err
 	}
 
-	strFile := string(file)
+	fullFile := string(file)
 
-	withNamespace := addNamespace(strFile, namespace)
+	splitFile := strings.Split(fullFile, "---\n")
+	withoutNamespaceCreation := strings.Join(splitFile[1:], "---\n")
 
-	withImage := addImage(coreDockerImage, coreInstanceVersion, withNamespace)
+	withNamespace := addNamespace(withoutNamespaceCreation, namespace)
+
+	withImage, err := addImage(coreDockerImage, coreInstanceVersion, withNamespace)
+	if err != nil {
+		return "", err
+	}
 
 	dir, err := os.MkdirTemp("", "calyptia-operator")
 	if err != nil {
 		return "", err
 	}
-	defer os.RemoveAll(dir)
 
-	fileLocation := fmt.Sprintf("%s/operator.yaml", dir)
+	fileLocation := filepath.Join(dir, "operator.yaml")
 	err = os.WriteFile(fileLocation, []byte(withImage), 0644)
 	return fileLocation, err
 }
 
-func addImage(coreDockerImage, coreInstanceVersion, file string) string {
-	pattern := `image:\s*ghcr.io/calyptia/core-operator:[^\n\r]*`
-	regex := regexp.MustCompile(pattern)
-	match := regex.FindString(file)
+func addImage(coreDockerImage, coreInstanceVersion, file string) (string, error) {
+	const pattern string = `image:\s*ghcr.io/calyptia/core-operator:[^\n\r]*`
+	reImagePattern := regexp.MustCompile(pattern)
+	match := reImagePattern.FindString(file)
 	if match == "" {
-		log.Fatalf("Failed to find the image field in the YAML")
+		return "", errors.New("could not find image in manifest")
 	}
-	updatedMatch := fmt.Sprintf("image: %s:%s\n", coreDockerImage, coreInstanceVersion)
-	return regex.ReplaceAllString(file, updatedMatch)
+	updatedMatch := fmt.Sprintf("image: %s:%s", coreDockerImage, coreInstanceVersion) // Remove '\n' at the end
+	return reImagePattern.ReplaceAllString(file, updatedMatch), nil
 }
 
 func addNamespace(s string, namespace string) string {
@@ -115,12 +114,10 @@ func newKubectlCmd() *cobra.Command {
 	_ = pflag.CommandLine.MarkHidden("log-flush-frequency")
 	_ = pflag.CommandLine.MarkHidden("version")
 
-	oo := io.Discard
-	oo = os.Stdout
 	args := kubectl.KubectlOptions{
 		IOStreams: genericclioptions.IOStreams{
 			In:     os.Stdin,
-			Out:    oo,
+			Out:    os.Stdout,
 			ErrOut: os.Stderr,
 		},
 		Arguments: os.Args,

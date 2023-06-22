@@ -584,7 +584,7 @@ func (client *Client) DeleteResources(ctx context.Context, resources []ResourceR
 	return deletedResources, nil
 }
 
-func GetOperatorManifest(version string) ([]byte, error) {
+var GetOperatorManifest = func(version string) ([]byte, error) {
 	url, err := getOperatorDownloadURL(version)
 	if err != nil {
 		return nil, err
