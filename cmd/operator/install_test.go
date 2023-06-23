@@ -130,7 +130,7 @@ spec:
 		}
 
 		// Test the prepareManifest function
-		resultFile, err := prepareManifest(coreInstanceVersion, coreDockerImage, namespace)
+		resultFile, err := prepareManifest(coreInstanceVersion, coreDockerImage, namespace, false)
 
 		// Verify the results
 		if err != nil {

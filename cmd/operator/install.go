@@ -1,8 +1,12 @@
 package operator
 
 import (
+	"context"
 	"errors"
 	"fmt"
+	k8serrors "k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/tools/clientcmd"
 	"strconv"
 
 	"github.com/calyptia/cli/cmd/utils"
@@ -50,7 +54,27 @@ func NewCmdInstall() *cobra.Command {
 				namespace = n
 			}
 
-			yaml, err := prepareManifest(coreDockerImage, coreInstanceVersion, namespace)
+			loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
+			configOverrides := &clientcmd.ConfigOverrides{}
+			kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
+			kubeClientConfig, err := kubeConfig.ClientConfig()
+			if err != nil {
+				return err
+			}
+
+			clientSet, err := kubernetes.NewForConfig(kubeClientConfig)
+			if err != nil {
+				return err
+			}
+			k := &k8s.Client{
+				Interface: clientSet,
+			}
+			_, err = k.GetNamespace(context.Background(), namespace)
+			if !k8serrors.IsNotFound(err) {
+				return err
+			}
+
+			yaml, err := prepareManifest(coreDockerImage, coreInstanceVersion, namespace, k8serrors.IsNotFound(err))
 			if err != nil {
 				return err
 			}
@@ -85,18 +109,16 @@ func NewCmdInstall() *cobra.Command {
 	return cmd
 }
 
-func prepareManifest(coreDockerImage, coreInstanceVersion, namespace string) (string, error) {
+func prepareManifest(coreDockerImage, coreInstanceVersion, namespace string, createNamespace bool) (string, error) {
 	file, err := k8s.GetOperatorManifest(coreInstanceVersion)
 	if err != nil {
 		return "", err
 	}
 
 	fullFile := string(file)
+	solveNamespace := solveNamespaceCreation(createNamespace, fullFile, namespace)
 
-	splitFile := strings.Split(fullFile, "---\n")
-	withoutNamespaceCreation := strings.Join(splitFile[1:], "---\n")
-
-	withNamespace := addNamespace(withoutNamespaceCreation, namespace)
+	withNamespace := addNamespace(solveNamespace, namespace)
 
 	withImage, err := addImage(coreDockerImage, coreInstanceVersion, withNamespace)
 	if err != nil {
@@ -111,6 +133,17 @@ func prepareManifest(coreDockerImage, coreInstanceVersion, namespace string) (st
 	fileLocation := filepath.Join(dir, "operator.yaml")
 	err = os.WriteFile(fileLocation, []byte(withImage), 0644)
 	return fileLocation, err
+}
+
+func solveNamespaceCreation(createNamespace bool, fullFile string, namespace string) string {
+	if !createNamespace {
+		splitFile := strings.Split(fullFile, "---\n")
+		return strings.Join(splitFile[1:], "---\n")
+	}
+	if _, err := strconv.Atoi(namespace); err == nil {
+		namespace = fmt.Sprintf(`"%s"`, namespace)
+	}
+	return strings.ReplaceAll(fullFile, "name: calyptia-core", fmt.Sprintf("name: %s", namespace))
 }
 
 func addImage(coreDockerImage, coreInstanceVersion, file string) (string, error) {

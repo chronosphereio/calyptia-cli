@@ -834,3 +834,8 @@ func (client *Client) SearchManagerAcrossAllNamespaces(ctx context.Context) (*ap
 	}
 	return manager, err
 }
+
+// GetNamespace returns the namespace if it exists.
+func (client *Client) GetNamespace(ctx context.Context, name string) (*apiv1.Namespace, error) {
+	return client.CoreV1().Namespaces().Get(ctx, name, metav1.GetOptions{})
+}
