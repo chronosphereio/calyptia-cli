@@ -6,10 +6,8 @@ import (
 	"fmt"
 	goversion "github.com/hashicorp/go-version"
 	"io"
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-	yamlk8s "k8s.io/apimachinery/pkg/runtime/serializer/yaml"
 	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/client-go/dynamic"
 	restclient "k8s.io/client-go/rest"
@@ -564,108 +562,6 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, fromCloudImage
 	return client.AppsV1().Deployments(client.Namespace).Create(ctx, req, options)
 }
 
-func (client *Client) DeployOperator(ctx context.Context, version, image string) ([]ResourceRollBack, error) {
-	file, err := getOperatorManifest(version)
-	if err != nil {
-		return nil, err
-	}
-	applied, err := client.applyOperatorManifest(ctx, file, image)
-	if err != nil {
-		return applied, err
-	}
-	return applied, nil
-
-}
-
-func (client *Client) applyOperatorManifest(ctx context.Context, manifestFull []byte, image string) ([]ResourceRollBack, error) {
-	dynamicClient, err := dynamic.NewForConfig(client.Config)
-	if err != nil {
-		return nil, err
-	}
-
-	manifests := splitManifest(manifestFull)
-
-	var appliedSuccessfully []ResourceRollBack
-	for _, manifest := range manifests {
-		manifest = strings.TrimSpace(manifest)
-		if manifest == "" {
-			continue
-		}
-
-		decoder := yamlk8s.NewDecodingSerializer(unstructured.UnstructuredJSONScheme)
-		obj := &unstructured.Unstructured{}
-		_, gvk, err := decoder.Decode([]byte(manifest), nil, obj)
-		if err != nil {
-			return appliedSuccessfully, err
-		}
-
-		//workaround to avoid creating a namespace, not needed if we remove the namespace from the manifest
-		if gvk.Kind == "Namespace" {
-			continue
-		}
-
-		if gvk.Kind == "Deployment" && image != "" {
-			deployment := &appsv1.Deployment{}
-			_, _, err := decoder.Decode([]byte(manifest), nil, deployment)
-			if err != nil {
-				return nil, err
-			}
-			deployment.Spec.Template.Spec.Containers[0].Image = image
-			unstructuredCRB, err := runtime.DefaultUnstructuredConverter.ToUnstructured(deployment)
-			if err != nil {
-				return nil, err
-			}
-			obj = &unstructured.Unstructured{Object: unstructuredCRB}
-		}
-
-		if gvk.Kind == "ClusterRoleBinding" {
-			crb := &rbacv1.ClusterRoleBinding{}
-			_, _, err := decoder.Decode([]byte(manifest), nil, crb)
-			if err != nil {
-				return nil, err
-			}
-			for i := range crb.Subjects {
-				if crb.Subjects[i].Kind == "ServiceAccount" {
-					crb.Subjects[i].Namespace = client.Namespace
-				}
-			}
-			//convert crb to unstructured
-			unstructuredCRB, err := runtime.DefaultUnstructuredConverter.ToUnstructured(crb)
-			if err != nil {
-				return nil, err
-			}
-			obj = &unstructured.Unstructured{Object: unstructuredCRB}
-		}
-
-		kindPluralized := strings.ToLower(gvk.Kind) + "s"
-		withResource := gvk.GroupVersion().WithResource(kindPluralized)
-		resource := dynamicClient.Resource(withResource)
-
-		namespace := obj.GetNamespace()
-		if namespace == defaultOperatorNamespace {
-			obj.SetNamespace(client.Namespace)
-		}
-
-		//if already exists, skip
-		get, err := resource.Namespace(obj.GetNamespace()).Get(ctx, obj.GetName(), metav1.GetOptions{})
-		if err != nil {
-			if !k8serrors.IsNotFound(err) {
-				return appliedSuccessfully, err
-			}
-		}
-		if get != nil {
-			continue
-		}
-
-		created, err := resource.Namespace(obj.GetNamespace()).Create(ctx, obj, metav1.CreateOptions{})
-		if err != nil {
-			return appliedSuccessfully, err
-		}
-		appliedSuccessfully = append(appliedSuccessfully, ResourceRollBack{Name: created.GetName(), GVR: withResource})
-	}
-	return appliedSuccessfully, nil
-}
-
 type ResourceRollBack struct {
 	Name string
 	GVR  schema.GroupVersionResource
@@ -688,11 +584,7 @@ func (client *Client) DeleteResources(ctx context.Context, resources []ResourceR
 	return deletedResources, nil
 }
 
-func splitManifest(manifest []byte) []string {
-	return strings.Split(string(manifest), "---\n")
-}
-
-func getOperatorManifest(version string) ([]byte, error) {
+var GetOperatorManifest = func(version string) ([]byte, error) {
 	url, err := getOperatorDownloadURL(version)
 	if err != nil {
 		return nil, err
@@ -941,4 +833,9 @@ func (client *Client) SearchManagerAcrossAllNamespaces(ctx context.Context) (*ap
 		return nil, ErrCoreOperatorNotFound
 	}
 	return manager, err
+}
+
+// GetNamespace returns the namespace if it exists.
+func (client *Client) GetNamespace(ctx context.Context, name string) (*apiv1.Namespace, error) {
+	return client.CoreV1().Namespaces().Get(ctx, name, metav1.GetOptions{})
 }
