@@ -86,7 +86,7 @@ func NewCmdInstall() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			os.RemoveAll(yaml)
+			defer os.RemoveAll(yaml)
 
 			cmd.Printf("Core operator manager successfully installed.\n")
 			return nil
@@ -118,7 +118,7 @@ func prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace stri
 	fullFile := string(file)
 	solveNamespace := solveNamespaceCreation(createNamespace, fullFile, namespace)
 
-	withNamespace := addNamespace(solveNamespace, namespace)
+	withNamespace := injectNamespace(solveNamespace, namespace)
 
 	withImage, err := addImage(coreDockerImage, coreInstanceVersion, withNamespace)
 	if err != nil {
@@ -157,7 +157,7 @@ func addImage(coreDockerImage, coreInstanceVersion, file string) (string, error)
 	return reImagePattern.ReplaceAllString(file, updatedMatch), nil
 }
 
-func addNamespace(s string, namespace string) string {
+func injectNamespace(s string, namespace string) string {
 	if _, err := strconv.Atoi(namespace); err == nil {
 		namespace = fmt.Sprintf(`"%s"`, namespace)
 	}
