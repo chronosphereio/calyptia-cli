@@ -4,12 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/calyptia/cli/cmd/utils"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 	"strconv"
 
-	"github.com/calyptia/cli/cmd/utils"
 	"github.com/calyptia/cli/k8s"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -74,7 +74,7 @@ func NewCmdInstall() *cobra.Command {
 				return err
 			}
 
-			yaml, err := prepareManifest(coreDockerImage, coreInstanceVersion, namespace, k8serrors.IsNotFound(err))
+			yaml, err := prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace, k8serrors.IsNotFound(err))
 			if err != nil {
 				return err
 			}
@@ -109,7 +109,7 @@ func NewCmdInstall() *cobra.Command {
 	return cmd
 }
 
-func prepareManifest(coreDockerImage, coreInstanceVersion, namespace string, createNamespace bool) (string, error) {
+func prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace string, createNamespace bool) (string, error) {
 	file, err := k8s.GetOperatorManifest(coreInstanceVersion)
 	if err != nil {
 		return "", err
