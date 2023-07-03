@@ -70,7 +70,7 @@ func NewCmdInstall() *cobra.Command {
 				Interface: clientSet,
 			}
 			_, err = k.GetNamespace(context.Background(), namespace)
-			if !k8serrors.IsNotFound(err) {
+			if err != nil && !k8serrors.IsNotFound(err) {
 				return err
 			}
 
