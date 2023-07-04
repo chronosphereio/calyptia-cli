@@ -9,7 +9,6 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 	kubectl "k8s.io/kubectl/pkg/cmd"
 	"os"
-	"path/filepath"
 )
 
 func NewCmdUninstall() *cobra.Command {
@@ -90,7 +89,16 @@ func prepareUninstallManifest(version string, namespace string) (string, error) 
 		return "", err
 	}
 
-	fileLocation := filepath.Join(dir, "operator.yaml")
-	err = os.WriteFile(fileLocation, []byte(withNamespace), 0644)
-	return fileLocation, err
+	sysFile, err := os.CreateTemp(dir, "operator_*.yaml")
+	if err != nil {
+		return "", err
+	}
+	defer sysFile.Close()
+
+	_, err = sysFile.WriteString(withNamespace)
+	if err != nil {
+		return "", err
+	}
+
+	return sysFile.Name(), nil
 }

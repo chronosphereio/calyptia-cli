@@ -18,7 +18,6 @@ import (
 	"k8s.io/component-base/logs"
 	kubectl "k8s.io/kubectl/pkg/cmd"
 	"os"
-	"path/filepath"
 	"regexp"
 	"strings"
 )
@@ -130,9 +129,14 @@ func prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace stri
 		return "", err
 	}
 
-	fileLocation := filepath.Join(dir, "operator.yaml")
-	err = os.WriteFile(fileLocation, []byte(withImage), 0644)
-	return fileLocation, err
+	temp, err := os.CreateTemp(dir, "operator_*.yaml")
+
+	_, err = temp.WriteString(withImage)
+	if err != nil {
+		return "", err
+	}
+
+	return temp.Name(), err
 }
 
 func solveNamespaceCreation(createNamespace bool, fullFile string, namespace string) string {
