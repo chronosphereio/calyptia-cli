@@ -90,6 +90,7 @@ func NewRootCmd(ctx context.Context) *cobra.Command {
 		newCmdUpdate(config),
 		newCmdRollout(config),
 		newCmdInstall(),
+		newCmdUninstall(),
 		newCmdDelete(config),
 		top.NewCmdTop(config),
 		version.NewVersionCommand(),

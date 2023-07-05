@@ -4,12 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/calyptia/cli/cmd/utils"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 	"strconv"
 
-	"github.com/calyptia/cli/cmd/utils"
 	"github.com/calyptia/cli/k8s"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -18,7 +18,6 @@ import (
 	"k8s.io/component-base/logs"
 	kubectl "k8s.io/kubectl/pkg/cmd"
 	"os"
-	"path/filepath"
 	"regexp"
 	"strings"
 )
@@ -74,7 +73,7 @@ func NewCmdInstall() *cobra.Command {
 				return err
 			}
 
-			yaml, err := prepareManifest(coreDockerImage, coreInstanceVersion, namespace, k8serrors.IsNotFound(err))
+			yaml, err := prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace, k8serrors.IsNotFound(err))
 			if err != nil {
 				return err
 			}
@@ -86,7 +85,7 @@ func NewCmdInstall() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			os.RemoveAll(yaml)
+			defer os.RemoveAll(yaml)
 
 			cmd.Printf("Core operator manager successfully installed.\n")
 			return nil
@@ -109,7 +108,7 @@ func NewCmdInstall() *cobra.Command {
 	return cmd
 }
 
-func prepareManifest(coreDockerImage, coreInstanceVersion, namespace string, createNamespace bool) (string, error) {
+func prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace string, createNamespace bool) (string, error) {
 	file, err := k8s.GetOperatorManifest(coreInstanceVersion)
 	if err != nil {
 		return "", err
@@ -118,7 +117,7 @@ func prepareManifest(coreDockerImage, coreInstanceVersion, namespace string, cre
 	fullFile := string(file)
 	solveNamespace := solveNamespaceCreation(createNamespace, fullFile, namespace)
 
-	withNamespace := addNamespace(solveNamespace, namespace)
+	withNamespace := injectNamespace(solveNamespace, namespace)
 
 	withImage, err := addImage(coreDockerImage, coreInstanceVersion, withNamespace)
 	if err != nil {
@@ -130,9 +129,14 @@ func prepareManifest(coreDockerImage, coreInstanceVersion, namespace string, cre
 		return "", err
 	}
 
-	fileLocation := filepath.Join(dir, "operator.yaml")
-	err = os.WriteFile(fileLocation, []byte(withImage), 0644)
-	return fileLocation, err
+	temp, err := os.CreateTemp(dir, "operator_*.yaml")
+
+	_, err = temp.WriteString(withImage)
+	if err != nil {
+		return "", err
+	}
+
+	return temp.Name(), err
 }
 
 func solveNamespaceCreation(createNamespace bool, fullFile string, namespace string) string {
@@ -157,7 +161,7 @@ func addImage(coreDockerImage, coreInstanceVersion, file string) (string, error)
 	return reImagePattern.ReplaceAllString(file, updatedMatch), nil
 }
 
-func addNamespace(s string, namespace string) string {
+func injectNamespace(s string, namespace string) string {
 	if _, err := strconv.Atoi(namespace); err == nil {
 		namespace = fmt.Sprintf(`"%s"`, namespace)
 	}
