@@ -63,6 +63,7 @@ func NewRootCmd(ctx context.Context) *cobra.Command {
 
 		projectID, err := cnfg.DecodeToken([]byte(token))
 		if err != nil {
+			cobra.CheckErr(err)
 			return
 		}
 

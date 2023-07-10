@@ -4,8 +4,8 @@
 /calyptia
 gha-creds-*.json
 
-# Created by https://www.toptal.com/developers/gitignore/api/go,linux,macos,windows,visualstudiocode,vim,emacs,dotenv
-# Edit at https://www.toptal.com/developers/gitignore?templates=go,linux,macos,windows,visualstudiocode,vim,emacs,dotenv
+# Created by https://www.toptal.com/developers/gitignore/api/go,linux,macos,windows,visualstudiocode,vim,emacs,dotenv,git
+# Edit at https://www.toptal.com/developers/gitignore?templates=go,linux,macos,windows,visualstudiocode,vim,emacs,dotenv,git
 
 ### dotenv ###
 .env
@@ -61,7 +61,25 @@ flycheck_*.el
 /network-security.data
 
 
+### Git ###
+# Created by git for backups. To disable backups in Git:
+# $ git config --global mergetool.keepBackup false
+*.orig
+
+# Created by git when using merge tools for conflicts
+*.BACKUP.*
+*.BASE.*
+*.LOCAL.*
+*.REMOTE.*
+*_BACKUP_*.txt
+*_BASE_*.txt
+*_LOCAL_*.txt
+*_REMOTE_*.txt
+
 ### Go ###
+# If you prefer the allow list template instead of the deny list, see community template:
+# https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
+#
 # Binaries for programs and plugins
 *.exe
 *.exe~
@@ -78,9 +96,8 @@ flycheck_*.el
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
-### Go Patch ###
-/vendor/
-/Godeps/
+# Go workspace file
+# go.work #keep
 
 ### Linux ###
 
@@ -125,6 +142,10 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
+### macOS Patch ###
+# iCloud generated files
+*.icloud
+
 ### Vim ###
 # Swap
 [._]*.s[a-v][a-z]
@@ -151,10 +172,13 @@ tags
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-*.code-workspace
+!.vscode/*.code-snippets
 
 # Local History for Visual Studio Code
 .history/
+
+# Built Visual Studio Code Extensions
+*.vsix
 
 ### VisualStudioCode Patch ###
 # Ignore all local history of files
@@ -187,4 +211,4 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# End of https://www.toptal.com/developers/gitignore/api/go,linux,macos,windows,visualstudiocode,vim,emacs,dotenv
+# End of https://www.toptal.com/developers/gitignore/api/go,linux,macos,windows,visualstudiocode,vim,emacs,dotenv,git
