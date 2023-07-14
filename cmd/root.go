@@ -83,6 +83,7 @@ func NewRootCmd(ctx context.Context) *cobra.Command {
 	fs := cmd.PersistentFlags()
 	fs.StringVar(&cloudURLStr, "cloud-url", cfg.Env("CALYPTIA_CLOUD_URL", cloudURLStr), "Calyptia Cloud URL")
 	fs.StringVar(&token, "token", cfg.Env("CALYPTIA_CLOUD_TOKEN", token), "Calyptia Cloud Project token")
+	fs.Lookup("token").DefValue = "check with the 'calyptia config current_token' command"
 
 	cmd.AddCommand(
 		newCmdConfig(config),
