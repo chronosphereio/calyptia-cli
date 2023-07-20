@@ -35,8 +35,8 @@ jobs:
       - name: Update default Core Fluent Bit version
         run: |
           sed -i -E "s/DefaultCoreOperatorDockerImageTag = .*$/DefaultCoreOperatorDockerImageTag = \"$NEW_VERSION\"/g" cmd/utils/utils.go
-          sed -i -E "s/DefaultCoreOperatorToCloudDockerImageTag = .*$/DefaultCoreOperatorDockerImageTag = \"$NEW_VERSION\"/g" cmd/utils/utils.go
-          sed -i -E "s/DefaultCoreOperatorFromCloudDockerImageTag = .*$/DefaultCoreOperatorDockerImageTag = \"$NEW_VERSION\"/g" cmd/utils/utils.go
+          sed -i -E "s/DefaultCoreOperatorToCloudDockerImageTag = .*$/DefaultCoreOperatorToCloudDockerImageTag = \"$NEW_VERSION\"/g" cmd/utils/utils.go
+          sed -i -E "s/DefaultCoreOperatorFromCloudDockerImageTag = .*$/DefaultCoreOperatorFromCloudDockerImageTag = \"$NEW_VERSION\"/g" cmd/utils/utils.go
 
           cat cmd/utils/utils.go
         env:
