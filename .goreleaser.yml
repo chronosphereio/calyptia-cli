@@ -6,6 +6,8 @@ blobs:
 builds:
   - main: .
     id: calyptia
+    env:
+      - CGO_ENABLED=0
     binary: calyptia
     ldflags:
       - -s -w -X github.com/calyptia/cli/cmd/version.Version={{.Version}}
