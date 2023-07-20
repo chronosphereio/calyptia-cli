@@ -514,6 +514,10 @@ func (c *Completer) LoadFleetID(key string) (string, error) {
 		Last:      config.Ptr(uint(1)),
 	})
 	if err != nil {
+		if strings.Contains(err.Error(), "invalid fleet name") && config.ValidUUID(key) {
+			return key, nil
+		}
+
 		return "", err
 	}
 
