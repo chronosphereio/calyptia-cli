@@ -1,5 +1,6 @@
 /cli
 /fluent-bit.conf
+/fluent-bit.yaml
 .idea/
 /calyptia
 gha-creds-*.json
