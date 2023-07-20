@@ -9,6 +9,8 @@ on:
   workflow_dispatch:
 jobs:
   cloud-e2e:
+    # Do not run for releases, no point
+    if: ${{ ! startsWith(github.ref, 'refs/tags/v') }}
     name: Run calyptia/cloud-e2e tests
     strategy:
       fail-fast: true
