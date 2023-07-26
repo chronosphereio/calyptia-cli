@@ -2,6 +2,7 @@ package operator
 
 import (
 	"context"
+	"embed"
 	"errors"
 	"fmt"
 	"github.com/calyptia/cli/cmd/utils"
@@ -25,8 +26,10 @@ import (
 	kubectl "k8s.io/kubectl/pkg/cmd"
 )
 
+//go:embed manifest.yaml
+var manifest embed.FS
+
 func NewCmdInstall() *cobra.Command {
-	var coreInstanceVersion string
 	var coreDockerImage string
 	var waitReady bool
 
@@ -75,7 +78,7 @@ func NewCmdInstall() *cobra.Command {
 			if err != nil && !k8serrors.IsNotFound(err) {
 				return err
 			}
-			yaml, err := prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace, k8serrors.IsNotFound(err))
+			yaml, err := prepareInstallManifest(coreDockerImage, namespace, k8serrors.IsNotFound(err))
 			defer os.RemoveAll(yaml)
 			if err != nil {
 				return err
@@ -116,7 +119,6 @@ func NewCmdInstall() *cobra.Command {
 	fs := cmd.Flags()
 
 	fs.BoolVar(&waitReady, "wait", false, "Wait for the core instance to be ready before returning")
-	fs.StringVar(&coreInstanceVersion, "version", utils.DefaultCoreOperatorDockerImageTag, "Core instance version")
 	fs.StringVar(&coreDockerImage, "image", utils.DefaultCoreOperatorDockerImage, "Calyptia core manager docker image to use (fully composed docker image).")
 	_ = cmd.Flags().MarkHidden("image")
 	return cmd
@@ -147,21 +149,15 @@ func extractDeployment(yml string) (string, error) {
 	return deployName, nil
 }
 
-func prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace string, createNamespace bool) (string, error) {
-	file, err := k8s.GetOperatorManifest(coreInstanceVersion)
+func prepareInstallManifest(coreDockerImage, namespace string, createNamespace bool) (string, error) {
+	yaml, err := manifest.ReadFile("manifest.yaml")
 	if err != nil {
 		return "", err
 	}
-
-	fullFile := string(file)
+	fullFile := string(yaml)
 	solveNamespace := solveNamespaceCreation(createNamespace, fullFile, namespace)
 
 	withNamespace := injectNamespace(solveNamespace, namespace)
-
-	withImage, err := addImage(coreDockerImage, coreInstanceVersion, withNamespace)
-	if err != nil {
-		return "", err
-	}
 
 	dir, err := os.MkdirTemp("", "calyptia-operator")
 	if err != nil {
@@ -170,7 +166,7 @@ func prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace stri
 
 	temp, err := os.CreateTemp(dir, "operator_*.yaml")
 
-	_, err = temp.WriteString(withImage)
+	_, err = temp.WriteString(withNamespace)
 	if err != nil {
 		return "", err
 	}

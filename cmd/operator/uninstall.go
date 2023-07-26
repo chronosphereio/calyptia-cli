@@ -1,12 +1,8 @@
 package operator
 
 import (
-	"context"
-	"github.com/calyptia/cli/k8s"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
-	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/tools/clientcmd"
 	kubectl "k8s.io/kubectl/pkg/cmd"
 	"os"
 )
@@ -24,28 +20,8 @@ func NewCmdUninstall() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			kctl := newKubectlCmd()
 			namespace := cmd.Flag("namespace").Value.String()
-			loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
-			configOverrides := &clientcmd.ConfigOverrides{}
-			kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
-			kubeClientConfig, err := kubeConfig.ClientConfig()
-			if err != nil {
-				return err
-			}
 
-			clientSet, err := kubernetes.NewForConfig(kubeClientConfig)
-			if err != nil {
-				return err
-			}
-			k := &k8s.Client{
-				Interface: clientSet,
-			}
-
-			version, err := k.CheckOperatorVersion(context.Background())
-			if err != nil {
-				return err
-			}
-
-			yaml, err := prepareUninstallManifest(version, namespace)
+			yaml, err := prepareUninstallManifest(namespace)
 			if err != nil {
 				return err
 			}
@@ -72,8 +48,8 @@ func NewCmdUninstall() *cobra.Command {
 	return cmd
 }
 
-func prepareUninstallManifest(version string, namespace string) (string, error) {
-	file, err := k8s.GetOperatorManifest(version)
+func prepareUninstallManifest(namespace string) (string, error) {
+	file, err := manifest.ReadFile("manifest.yaml")
 	if err != nil {
 		return "", err
 	}

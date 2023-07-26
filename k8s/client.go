@@ -2,10 +2,8 @@ package k8s
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
+
 	"os"
 	"strings"
 	"time"
@@ -17,6 +15,7 @@ import (
 	"k8s.io/client-go/dynamic"
 	restclient "k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
+
 
 	"strconv"
 
@@ -587,78 +586,6 @@ func (client *Client) DeleteResources(ctx context.Context, resources []ResourceR
 		deletedResources = append(deletedResources, r)
 	}
 	return deletedResources, nil
-}
-
-var GetOperatorManifest = func(version string) ([]byte, error) {
-	url, err := getOperatorDownloadURL(version)
-	if err != nil {
-		return nil, err
-	}
-	response, err := http.Get(url)
-	if err != nil {
-		return nil, fmt.Errorf("error downloading operator manifest: %w", err)
-	}
-	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
-			fmt.Println("Error closing response body:", err)
-		}
-	}(response.Body)
-
-	manifestBytes, err := io.ReadAll(response.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	return manifestBytes, nil
-}
-
-func getOperatorDownloadURL(version string) (string, error) {
-	const operatorReleases = "https://api.github.com/repos/calyptia/core-operator-releases/releases"
-	type Release struct {
-		TagName string `json:"tag_name"`
-		Assets  []struct {
-			BrowserDownloadUrl string `json:"browser_download_url"`
-		} `json:"assets"`
-	}
-
-	resp, err := http.Get(operatorReleases)
-	if err != nil {
-		return "", fmt.Errorf("failed to get releases: %w", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("unexpected HTTP status: %d", resp.StatusCode)
-	}
-
-	var releases []Release
-	err = json.NewDecoder(resp.Body).Decode(&releases)
-	if err != nil {
-		return "", fmt.Errorf("failed to decode releases: %w", err)
-	}
-
-	if len(releases) == 0 {
-		return "", fmt.Errorf("no releases found")
-	}
-
-	if version == "" {
-		if len(releases[0].Assets) == 0 {
-			return "", fmt.Errorf("no assets found for the latest release")
-		}
-		return releases[0].Assets[0].BrowserDownloadUrl, nil
-	}
-
-	for _, release := range releases {
-		if release.TagName == version {
-			if len(release.Assets) == 0 {
-				return "", fmt.Errorf("no assets found for the version: %s", version)
-			}
-			return release.Assets[0].BrowserDownloadUrl, nil
-		}
-	}
-
-	return "", fmt.Errorf("version %s not found", version)
 }
 
 func GetCurrentContextNamespace() (string, error) {
