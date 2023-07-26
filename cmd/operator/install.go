@@ -4,9 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"path/filepath"
 	"strconv"
 
 	"github.com/calyptia/cli/cmd/utils"
+	operatormanifest "github.com/calyptia/cli/operator-manifest"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
@@ -78,8 +80,8 @@ func NewCmdInstall() *cobra.Command {
 			if err != nil {
 				return err
 			}
-
-			kctl.SetArgs([]string{"apply", "-f", yaml})
+			
+			kctl.SetArgs([]string{"apply", "-k", yaml})
 			//get original flags from kubectl
 
 			err = kctl.Execute()
@@ -110,34 +112,29 @@ func NewCmdInstall() *cobra.Command {
 }
 
 func prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace string, createNamespace bool) (string, error) {
-	file, err := k8s.GetOperatorManifest(coreInstanceVersion)
-	if err != nil {
-		return "", err
+	tmpdir := os.TempDir()
+
+	manifestNames := operatormanifest.AssetNames()
+	for _, name := range manifestNames {
+		dir := filepath.Dir(name)
+		if dir != "." {
+			if err := os.MkdirAll(filepath.Join(tmpdir, dir), 0700); err != nil {
+				return "", err
+			}
+		}
+
+		f, err := os.Create(filepath.Join(tmpdir, name))
+		if err != nil {
+			return "", nil
+		}
+
+		content, _ := operatormanifest.Asset(name)
+		if _, err := f.Write(content); err != nil {
+			return "", nil
+		}
+
 	}
-
-	fullFile := string(file)
-	solveNamespace := solveNamespaceCreation(createNamespace, fullFile, namespace)
-
-	withNamespace := injectNamespace(solveNamespace, namespace)
-
-	withImage, err := addImage(coreDockerImage, coreInstanceVersion, withNamespace)
-	if err != nil {
-		return "", err
-	}
-
-	dir, err := os.MkdirTemp("", "calyptia-operator")
-	if err != nil {
-		return "", err
-	}
-
-	temp, err := os.CreateTemp(dir, "operator_*.yaml")
-
-	_, err = temp.WriteString(withImage)
-	if err != nil {
-		return "", err
-	}
-
-	return temp.Name(), err
+	return filepath.Join(tmpdir, "config", "default"), nil
 }
 
 func solveNamespaceCreation(createNamespace bool, fullFile string, namespace string) string {

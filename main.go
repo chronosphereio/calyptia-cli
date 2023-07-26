@@ -9,6 +9,7 @@ import (
 	cmd "github.com/calyptia/cli/cmd"
 )
 
+//go:generate go-bindata -modtime 1 -prefix "../../" -o operator-manifest/manifest_data.go -pkg=cmd -ignore=debug/ -ignore=local/ -ignore=prometheus/ -ignore=samples/ ../../config/... manifests/...
 func main() {
 	_ = godotenv.Load()
 
