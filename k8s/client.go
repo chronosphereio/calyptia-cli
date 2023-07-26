@@ -4,18 +4,19 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	goversion "github.com/hashicorp/go-version"
 	"io"
+	"net/http"
+	"os"
+	"strings"
+	"time"
+
+	goversion "github.com/hashicorp/go-version"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/client-go/dynamic"
 	restclient "k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
-	"net/http"
-	"os"
-	"strings"
-	"time"
 
 	"strconv"
 
@@ -491,7 +492,7 @@ func (client *Client) FindDeploymentByLabel(ctx context.Context, label string) (
 	return client.AppsV1().Deployments(client.Namespace).List(ctx, metav1.ListOptions{LabelSelector: label})
 }
 
-func (client *Client) DeployCoreOperatorSync(ctx context.Context, fromCloudImage, toCloudImage string, noTLSVerify bool, coreInstance cloud.CreatedCoreInstance, serviceAccount string) (*appsv1.Deployment, error) {
+func (client *Client) DeployCoreOperatorSync(ctx context.Context, fromCloudImage, toCloudImage string, metricsPort string, noTLSVerify bool, coreInstance cloud.CreatedCoreInstance, serviceAccount string) (*appsv1.Deployment, error) {
 	labels := client.LabelsFunc()
 	env := []apiv1.EnvVar{
 		{
@@ -517,6 +518,10 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, fromCloudImage
 		{
 			Name:  "NO_TLS_VERIFY",
 			Value: strconv.FormatBool(noTLSVerify),
+		},
+		{
+			Name:  "METRICS_PORT",
+			Value: metricsPort,
 		},
 	}
 	toCloud := apiv1.Container{
@@ -821,7 +826,7 @@ func (client *Client) SearchManagerAcrossAllNamespaces(ctx context.Context) (*ap
 	}
 	var manager *appsv1.Deployment
 	for _, namespace := range namespaces.Items {
-		manager, err = client.AppsV1().Deployments(namespace.Name).Get(ctx, "controller-manager", metav1.GetOptions{})
+		manager, err = client.AppsV1().Deployments(namespace.Name).Get(ctx, "calyptia-core-controller-manager", metav1.GetOptions{})
 		if err != nil && !k8serrors.IsNotFound(err) {
 			return nil, err
 		}
