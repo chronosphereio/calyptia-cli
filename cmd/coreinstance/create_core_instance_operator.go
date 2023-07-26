@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
+
 	cloud "github.com/calyptia/api/types"
 	"github.com/calyptia/cli/cmd/utils"
 	"github.com/calyptia/cli/cmd/version"
@@ -17,7 +19,6 @@ import (
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp" // register GCP auth provider
 	restclient "k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
-	"time"
 )
 
 func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernetes.Interface) *cobra.Command {
@@ -34,6 +35,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 		dryRun                   bool
 		waitReady                bool
 		noTLSVerify              bool
+		metricsPort              string
 	)
 
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
@@ -229,7 +231,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				coreDockerFromCloudImage = fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorFromCloudDockerImage, coreDockerFromCloudImageTag)
 			}
 
-			syncDeployment, err := k8sClient.DeployCoreOperatorSync(ctx, coreDockerFromCloudImage, coreDockerToCloudImage, !noTLSVerify, created, serviceAccount.Name)
+			syncDeployment, err := k8sClient.DeployCoreOperatorSync(ctx, coreDockerFromCloudImage, coreDockerToCloudImage, metricsPort, !noTLSVerify, created, serviceAccount.Name)
 			if err != nil {
 				fmt.Printf("An error occurred while creating the core operator instance. %w Rolling back created resources.\n", err)
 				resources, err := k8sClient.DeleteResources(ctx, resourcesCreated)
@@ -290,6 +292,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 	fs.BoolVar(&skipServiceCreation, "skip-service-creation", false, "Skip the creation of kubernetes services for any pipeline under this core instance.")
 	fs.BoolVar(&dryRun, "dry-run", false, "Passing this value will skip creation of any Kubernetes resources and it will return resources as YAML manifest")
 	fs.BoolVar(&noTLSVerify, "no-tls-verify", false, "Disable TLS verification when connecting to Calyptia Cloud API.")
+	fs.StringVar(&metricsPort, "metrics-port", "15334", "Port for metrics endpoint.")
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 	fs.StringSliceVar(&tags, "tags", nil, "Tags to apply to the core instance")
 
