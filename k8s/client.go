@@ -691,24 +691,24 @@ func ExtractGroupVersionResource(obj runtime.Object) (schema.GroupVersionResourc
 	return gvr, nil
 }
 
-func (client *Client) WaitReady(ctx context.Context, deployment *appsv1.Deployment) error {
-	if err := wait.PollImmediate(1*time.Second, 1*time.Minute, client.isDeploymentReady(ctx, deployment)); err != nil {
+func (client *Client) WaitReady(ctx context.Context, namespace, name string) error {
+	if err := wait.PollImmediate(1*time.Second, 1*time.Minute, client.isDeploymentReady(ctx, namespace, name)); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (client *Client) isDeploymentReady(ctx context.Context, d *appsv1.Deployment) wait.ConditionFunc {
+func (client *Client) isDeploymentReady(ctx context.Context, namespace, name string) wait.ConditionFunc {
 	return func() (bool, error) {
-		get, err := client.AppsV1().Deployments(d.Namespace).Get(ctx, d.Name, metav1.GetOptions{})
+		get, err := client.AppsV1().Deployments(namespace).Get(ctx, name, metav1.GetOptions{})
 		if err != nil {
 			return false, err
 		}
 
-		if get.Status.AvailableReplicas == get.Status.ReadyReplicas {
+		if get.Status.ReadyReplicas >= 1 {
 			return true, nil
 		}
-		return true, nil
+		return false, nil
 	}
 }
 

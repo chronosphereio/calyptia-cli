@@ -244,7 +244,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 			if waitReady {
 				start := time.Now()
 				fmt.Printf("Waiting for core instance to be ready...\n")
-				err := k8sClient.WaitReady(ctx, syncDeployment)
+				err := k8sClient.WaitReady(ctx, syncDeployment.Namespace, syncDeployment.Name)
 				if err != nil {
 					return err
 				}

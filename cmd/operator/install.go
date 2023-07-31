@@ -4,12 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"strconv"
-
 	"github.com/calyptia/cli/cmd/utils"
+	"gopkg.in/yaml.v3"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
+	"strconv"
+	"time"
 
 	"os"
 	"regexp"
@@ -75,18 +76,30 @@ func NewCmdInstall() *cobra.Command {
 				return err
 			}
 			yaml, err := prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace, k8serrors.IsNotFound(err))
+			defer os.RemoveAll(yaml)
 			if err != nil {
 				return err
 			}
 
 			kctl.SetArgs([]string{"apply", "-f", yaml})
-			//get original flags from kubectl
-
 			err = kctl.Execute()
 			if err != nil {
 				return err
 			}
-			defer os.RemoveAll(yaml)
+
+			if waitReady {
+				deployment, err := extractDeployment(yaml)
+				if err != nil {
+					return err
+				}
+				start := time.Now()
+				fmt.Printf("Waiting for core operator manager to be ready...\n")
+				err = k.WaitReady(context.Background(), namespace, deployment)
+				if err != nil {
+					return err
+				}
+				fmt.Printf("Core operator manager is ready. Took %s\n", time.Since(start))
+			}
 
 			cmd.Printf("Core operator manager successfully installed.\n")
 			return nil
@@ -107,6 +120,31 @@ func NewCmdInstall() *cobra.Command {
 	fs.StringVar(&coreDockerImage, "image", utils.DefaultCoreOperatorDockerImage, "Calyptia core manager docker image to use (fully composed docker image).")
 	_ = cmd.Flags().MarkHidden("image")
 	return cmd
+}
+
+// extractDeployment extracts the name of the deployment from the yaml file
+// provided. It assumes that the last yaml document is the deployment.
+// This is a temporary solution until we have a better way to do this.
+// Possibly we will strip it out when we change the way we install the
+// operator.
+func extractDeployment(yml string) (string, error) {
+	file, err := os.ReadFile(yml)
+	if err != nil {
+		return "", err
+	}
+	splitFile := strings.Split(string(file), "---\n")
+	deployment := splitFile[len(splitFile)-1]
+	var deploymentConfig struct {
+		Metadata struct {
+			Name string `yaml:"name"`
+		}
+	}
+	err = yaml.Unmarshal([]byte(deployment), &deploymentConfig)
+	if err != nil {
+		return "", err
+	}
+	deployName := deploymentConfig.Metadata.Name
+	return deployName, nil
 }
 
 func prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace string, createNamespace bool) (string, error) {
