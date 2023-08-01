@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 
@@ -23,7 +24,17 @@ func NewRootCmd(ctx context.Context) *cobra.Command {
 		Client: http.DefaultClient,
 	}
 
-	localData := localdata.New(cnfg.ServiceName, cnfg.BackUpFolder)
+	baseDir, err := os.UserHomeDir()
+	if err != nil {
+		// no home dir is available, lets fallback to the current working directory
+		// if fails to get current working directory, we are on a failure scenario.
+		baseDir, err = os.Getwd()
+		if err != nil {
+			cobra.CheckErr(fmt.Errorf("could not set a base directory for storing local configuration: %w", err))
+		}
+	}
+
+	localData := localdata.New(cnfg.ServiceName, filepath.Join(baseDir, cnfg.BackUpFolder))
 	config := &cfg.Config{
 		Ctx:       ctx,
 		Cloud:     client,
@@ -31,6 +42,7 @@ func NewRootCmd(ctx context.Context) *cobra.Command {
 	}
 
 	token, err := localData.Get(cnfg.KeyToken)
+	// if no data is found (which is okay, the default token will be tried from the parameter --token)
 	if err != nil && !errors.Is(err, localdata.ErrNotFound) {
 		cobra.CheckErr(fmt.Errorf("could not retrieve your stored token: %w", err))
 	}
