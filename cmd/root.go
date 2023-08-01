@@ -24,17 +24,16 @@ func NewRootCmd(ctx context.Context) *cobra.Command {
 		Client: http.DefaultClient,
 	}
 
-	baseDir, err := os.UserHomeDir()
-	if err != nil {
-		// no home dir is available, lets fallback to the current working directory
-		// if fails to get current working directory, we are on a failure scenario.
-		baseDir, err = os.Getwd()
+	storageDir := os.Getenv("CALYPTIA_STORAGE_DIR")
+	if storageDir == "" {
+		baseDir, err := os.UserHomeDir()
 		if err != nil {
 			cobra.CheckErr(fmt.Errorf("could not set a base directory for storing local configuration: %w", err))
 		}
+		storageDir = filepath.Join(baseDir, cnfg.BackUpFolder)
 	}
 
-	localData := localdata.New(cnfg.ServiceName, filepath.Join(baseDir, cnfg.BackUpFolder))
+	localData := localdata.New(cnfg.ServiceName, storageDir)
 	config := &cfg.Config{
 		Ctx:       ctx,
 		Cloud:     client,
@@ -42,7 +41,6 @@ func NewRootCmd(ctx context.Context) *cobra.Command {
 	}
 
 	token, err := localData.Get(cnfg.KeyToken)
-	// if no data is found (which is okay, the default token will be tried from the parameter --token)
 	if err != nil && !errors.Is(err, localdata.ErrNotFound) {
 		cobra.CheckErr(fmt.Errorf("could not retrieve your stored token: %w", err))
 	}
