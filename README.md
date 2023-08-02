@@ -68,6 +68,14 @@ calyptia get members --token TOKEN
 
 ---
 
+## Environment variables
+
+A list of the supported environment variables that will override the provided flags.
+
+- CALYPTIA_CLOUD_URL: URL of the cloud API (default: https://cloud-api.calyptia.com/)
+- CALYPTIA_CLOUD_TOKEN: Cloud project token (default: None)
+- CALYPTIA_STORAGE_DIR: Path to store the local configuration (fallback to $HOME/.calyptia)
+
 ## Commands
 
 ```bash

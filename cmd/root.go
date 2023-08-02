@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 
@@ -23,7 +24,16 @@ func NewRootCmd(ctx context.Context) *cobra.Command {
 		Client: http.DefaultClient,
 	}
 
-	localData := localdata.New(cnfg.ServiceName, cnfg.BackUpFolder)
+	storageDir := os.Getenv("CALYPTIA_STORAGE_DIR")
+	if storageDir == "" {
+		baseDir, err := os.UserHomeDir()
+		if err != nil {
+			cobra.CheckErr(fmt.Errorf("could not set a base directory for storing local configuration: %w", err))
+		}
+		storageDir = filepath.Join(baseDir, cnfg.BackUpFolder)
+	}
+
+	localData := localdata.New(cnfg.ServiceName, storageDir)
 	config := &cfg.Config{
 		Ctx:       ctx,
 		Cloud:     client,

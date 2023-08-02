@@ -38,12 +38,7 @@ func (k *Keyring) Save(key, data string) error {
 		return nil
 	}
 
-	home, err := os.UserHomeDir()
-	if err != nil {
-		return fmt.Errorf("could not get user home dir: %w", err)
-	}
-
-	fileName := filepath.Join(home, k.backupFile, key)
+	fileName := filepath.Join(k.backupFile, key)
 	if _, err := os.Stat(fileName); os.IsNotExist(err) {
 		dir := filepath.Dir(fileName)
 		err = os.MkdirAll(dir, fs.ModePerm)
@@ -72,12 +67,7 @@ func (k *Keyring) Get(key string) (string, error) {
 		return data, nil
 	}
 
-	home, err := os.UserHomeDir()
-	if err != nil {
-		return "", fmt.Errorf("could not get user home dir: %w", err)
-	}
-
-	b, err := readFile(filepath.Join(home, k.backupFile, key))
+	b, err := readFile(filepath.Join(k.backupFile, key))
 	if errors.Is(err, fs.ErrNotExist) {
 		return "", ErrNotFound
 	}
@@ -99,12 +89,7 @@ func (k *Keyring) Delete(key string) error {
 		return nil
 	}
 
-	home, err := os.UserHomeDir()
-	if err != nil {
-		return err
-	}
-
-	fileName := filepath.Join(home, k.backupFile, key)
+	fileName := filepath.Join(k.backupFile, key)
 	_, err = os.Stat(fileName)
 
 	if errors.Is(err, fs.ErrNotExist) {
