@@ -9,6 +9,10 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+  - package-ecosystem: "gomod" # See documentation for possible values
+    directory: "/k8s" # Location of package manifests
+    schedule:
+      interval: "weekly"
   # Maintain dependencies for GitHub Actions
   - package-ecosystem: "github-actions"
     directory: "/"
