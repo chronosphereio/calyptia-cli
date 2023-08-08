@@ -30,9 +30,8 @@ func NewCmdInstall() *cobra.Command {
 	var coreDockerImage string
 	var waitReady bool
 
-	// Create a new default kubectl command and retrieve its flags
-	kubectlCmd := kubectl.NewDefaultKubectlCommand()
-	kubectlFlags := kubectlCmd.Flags()
+	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
+	configOverrides := &clientcmd.ConfigOverrides{}
 
 	cmd := &cobra.Command{
 		Use:     "operator",
@@ -40,7 +39,7 @@ func NewCmdInstall() *cobra.Command {
 		Short:   "Setup a new core operator instance",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			kctl := newKubectlCmd()
-			namespace := cmd.Flag("namespace").Value.String()
+			namespace := cmd.Flag("kube-namespace").Value.String()
 			if namespace == "" {
 				namespace = apiv1.NamespaceDefault
 			}
@@ -56,8 +55,6 @@ func NewCmdInstall() *cobra.Command {
 				namespace = n
 			}
 
-			loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
-			configOverrides := &clientcmd.ConfigOverrides{}
 			kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
 			kubeClientConfig, err := kubeConfig.ClientConfig()
 			if err != nil {
@@ -106,19 +103,15 @@ func NewCmdInstall() *cobra.Command {
 		},
 	}
 
-	kubectlFlags.VisitAll(func(flag *pflag.Flag) {
-		if flag.Name == "log-flush-frequency" || flag.Name == "version" {
-			return
-		}
-		cmd.PersistentFlags().AddFlag(flag)
-	})
-
 	fs := cmd.Flags()
 
 	fs.BoolVar(&waitReady, "wait", false, "Wait for the core instance to be ready before returning")
 	fs.StringVar(&coreInstanceVersion, "version", utils.DefaultCoreOperatorDockerImageTag, "Core instance version")
 	fs.StringVar(&coreDockerImage, "image", utils.DefaultCoreOperatorDockerImage, "Calyptia core manager docker image to use (fully composed docker image).")
 	_ = cmd.Flags().MarkHidden("image")
+
+	clientcmd.BindOverrideFlags(configOverrides, fs, clientcmd.RecommendedConfigOverrideFlags("kube-"))
+
 	return cmd
 }
 
