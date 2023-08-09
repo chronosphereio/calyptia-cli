@@ -4,13 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strconv"
+	"time"
+
 	"github.com/calyptia/cli/cmd/utils"
 	"gopkg.in/yaml.v3"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
-	"strconv"
-	"time"
 
 	"os"
 	"regexp"
@@ -30,9 +31,8 @@ func NewCmdInstall() *cobra.Command {
 	var coreDockerImage string
 	var waitReady bool
 
-	// Create a new default kubectl command and retrieve its flags
-	kubectlCmd := kubectl.NewDefaultKubectlCommand()
-	kubectlFlags := kubectlCmd.Flags()
+	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
+	configOverrides := &clientcmd.ConfigOverrides{}
 
 	cmd := &cobra.Command{
 		Use:     "operator",
@@ -56,8 +56,6 @@ func NewCmdInstall() *cobra.Command {
 				namespace = n
 			}
 
-			loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
-			configOverrides := &clientcmd.ConfigOverrides{}
 			kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
 			kubeClientConfig, err := kubeConfig.ClientConfig()
 			if err != nil {
@@ -106,12 +104,13 @@ func NewCmdInstall() *cobra.Command {
 		},
 	}
 
-	kubectlFlags.VisitAll(func(flag *pflag.Flag) {
-		if flag.Name == "log-flush-frequency" || flag.Name == "version" {
-			return
-		}
-		cmd.PersistentFlags().AddFlag(flag)
-	})
+	// kubectlFlags.VisitAll(func(flag *pflag.Flag) {
+	// 	if flag.Name == "log-flush-frequency" || flag.Name == "version" {
+	// 		return
+	// 	}
+	// 	fmt.Println(flag)
+	// 	cmd.PersistentFlags().AddFlag(flag)
+	// })
 
 	fs := cmd.Flags()
 
@@ -119,6 +118,8 @@ func NewCmdInstall() *cobra.Command {
 	fs.StringVar(&coreInstanceVersion, "version", utils.DefaultCoreOperatorDockerImageTag, "Core instance version")
 	fs.StringVar(&coreDockerImage, "image", utils.DefaultCoreOperatorDockerImage, "Calyptia core manager docker image to use (fully composed docker image).")
 	_ = cmd.Flags().MarkHidden("image")
+	clientcmd.BindOverrideFlags(configOverrides, fs, clientcmd.RecommendedConfigOverrideFlags("kube-"))
+
 	return cmd
 }
 
