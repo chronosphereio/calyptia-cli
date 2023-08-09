@@ -11,7 +11,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.110.1
 	github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi v1.15.2
 	github.com/calyptia/api v1.3.2
-	github.com/calyptia/cli/k8s v0.0.0-20230807084429-312c84bc29c8
+	github.com/calyptia/cli/k8s pwhelan-core-cloud-url
 	github.com/calyptia/core-images-index/go-index v0.0.0-20230802173820-59c960f86863
 	github.com/calyptia/go-bubble-table v0.2.1
 	github.com/calyptia/go-fluentbit-config/v2 v2.0.0

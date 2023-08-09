@@ -277,6 +277,7 @@ func (client *Client) CreateDeployment(
 	ctx context.Context,
 	image string,
 	agg cloud.CreatedCoreInstance,
+	coreCloudURL string,
 	serviceAccount *apiv1.ServiceAccount,
 	tlsVerify bool,
 	skipServiceCreation bool,
@@ -315,11 +316,7 @@ func (client *Client) CreateDeployment(
 								},
 								{
 									Name:  "AGGREGATOR_FLUENTBIT_CLOUD_URL",
-									Value: client.CloudBaseURL,
-								},
-								{
-									Name:  "NATS_URL",
-									Value: fmt.Sprintf("nats://tcp-4222-nats-messaging.%s.svc.cluster.local:4222", client.Namespace),
+									Value: coreCloudURL,
 								},
 								{
 									Name:  coreTLSVerifyEnvVar,
@@ -492,7 +489,7 @@ func (client *Client) FindDeploymentByLabel(ctx context.Context, label string) (
 	return client.AppsV1().Deployments(client.Namespace).List(ctx, metav1.ListOptions{LabelSelector: label})
 }
 
-func (client *Client) DeployCoreOperatorSync(ctx context.Context, fromCloudImage, toCloudImage string, metricsPort string, noTLSVerify bool, coreInstance cloud.CreatedCoreInstance, serviceAccount string) (*appsv1.Deployment, error) {
+func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, fromCloudImage, toCloudImage string, metricsPort string, noTLSVerify bool, coreInstance cloud.CreatedCoreInstance, serviceAccount string) (*appsv1.Deployment, error) {
 	labels := client.LabelsFunc()
 	env := []apiv1.EnvVar{
 		{
@@ -505,7 +502,7 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, fromCloudImage
 		},
 		{
 			Name:  "CLOUD_URL",
-			Value: client.CloudBaseURL,
+			Value: coreCloudURL,
 		},
 		{
 			Name:  "TOKEN",
