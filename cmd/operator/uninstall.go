@@ -2,20 +2,19 @@ package operator
 
 import (
 	"context"
+	"os"
+
 	"github.com/calyptia/cli/k8s"
 	"github.com/spf13/cobra"
-	"github.com/spf13/pflag"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
-	kubectl "k8s.io/kubectl/pkg/cmd"
-	"os"
 )
 
 func NewCmdUninstall() *cobra.Command {
 
 	// Create a new default kubectl command and retrieve its flags
-	kubectlCmd := kubectl.NewDefaultKubectlCommand()
-	kubectlFlags := kubectlCmd.Flags()
+	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
+	configOverrides := &clientcmd.ConfigOverrides{}
 
 	cmd := &cobra.Command{
 		Use:     "operator",
@@ -24,8 +23,6 @@ func NewCmdUninstall() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			kctl := newKubectlCmd()
 			namespace := cmd.Flag("namespace").Value.String()
-			loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
-			configOverrides := &clientcmd.ConfigOverrides{}
 			kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
 			kubeClientConfig, err := kubeConfig.ClientConfig()
 			if err != nil {
@@ -62,13 +59,8 @@ func NewCmdUninstall() *cobra.Command {
 			return nil
 		},
 	}
-
-	kubectlFlags.VisitAll(func(flag *pflag.Flag) {
-		if flag.Name == "log-flush-frequency" || flag.Name == "version" {
-			return
-		}
-		cmd.PersistentFlags().AddFlag(flag)
-	})
+	fs := cmd.Flags()
+	clientcmd.BindOverrideFlags(configOverrides, fs, clientcmd.RecommendedConfigOverrideFlags("kube-"))
 	return cmd
 }
 
@@ -81,7 +73,6 @@ func prepareUninstallManifest(version string, namespace string) (string, error) 
 	fullFile := string(file)
 
 	solveNamespace := solveNamespaceCreation(false, fullFile, namespace)
-
 	withNamespace := injectNamespace(solveNamespace, namespace)
 
 	dir, err := os.MkdirTemp("", "calyptia-operator")
