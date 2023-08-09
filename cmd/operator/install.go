@@ -104,14 +104,6 @@ func NewCmdInstall() *cobra.Command {
 		},
 	}
 
-	// kubectlFlags.VisitAll(func(flag *pflag.Flag) {
-	// 	if flag.Name == "log-flush-frequency" || flag.Name == "version" {
-	// 		return
-	// 	}
-	// 	fmt.Println(flag)
-	// 	cmd.PersistentFlags().AddFlag(flag)
-	// })
-
 	fs := cmd.Flags()
 
 	fs.BoolVar(&waitReady, "wait", false, "Wait for the core instance to be ready before returning")
