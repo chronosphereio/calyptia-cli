@@ -83,11 +83,16 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				}
 
 			}
+
+			if coreCloudURL == "" {
+				coreCloudURL = config.BaseURL
+			}
+
 			k8sClient := &k8s.Client{
 				Interface:    clientSet,
 				Namespace:    configOverrides.Context.Namespace,
 				ProjectToken: config.ProjectToken,
-				CloudBaseURL: config.BaseURL,
+				CloudBaseURL: coreCloudURL,
 				Config:       kubeClientConfig,
 			}
 
