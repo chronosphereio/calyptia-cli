@@ -22,7 +22,7 @@ func NewCmdUninstall() *cobra.Command {
 		Short:   "Uninstall operator components",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			kctl := newKubectlCmd()
-			namespace := cmd.Flag("namespace").Value.String()
+			namespace := cmd.Flag("kube-namespace").Value.String()
 			kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
 			kubeClientConfig, err := kubeConfig.ClientConfig()
 			if err != nil {
