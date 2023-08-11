@@ -100,8 +100,8 @@ github.com/blang/semver/v4 v4.0.0 h1:1PFHFE6yCCTv8C1TeyNNarDzntLi7wMI5i/pzqYIsAM
 github.com/blang/semver/v4 v4.0.0/go.mod h1:IbckMUScFkM3pff0VJDNKRiT6TG/YpiHIM2yvyW5YoQ=
 github.com/calyptia/api v1.3.2 h1:WBchjCU66ECofNPvgpMkqwqv4B6Jf8wM9iGfER5ctXU=
 github.com/calyptia/api v1.3.2/go.mod h1:h1+GpgZeD4URAjx5l+wieGUd30GJo6WR97aQmNRRKZk=
-github.com/calyptia/cli/k8s v0.0.0-20230807084429-312c84bc29c8 h1:nmNFsW6jR1k4BzL2b4tVijAzq+8THUvOpfZJFDTH3Us=
-github.com/calyptia/cli/k8s v0.0.0-20230807084429-312c84bc29c8/go.mod h1:e5YezefRxA2YvCNjHc6v9T+Mfhs+xbbHHcgPfvkIu4I=
+github.com/calyptia/cli/k8s v0.0.0-20230809224058-d5066c867b62 h1:eMM33AEHgmpJFRnXkGemeqfpw573wP1vqCXB4AUDzsI=
+github.com/calyptia/cli/k8s v0.0.0-20230809224058-d5066c867b62/go.mod h1:e5YezefRxA2YvCNjHc6v9T+Mfhs+xbbHHcgPfvkIu4I=
 github.com/calyptia/core-images-index/go-index v0.0.0-20230802173820-59c960f86863 h1:Xy/lYPgJJIXmTzal6/gL9p3VxojbA2OyrOur8rTs9WY=
 github.com/calyptia/core-images-index/go-index v0.0.0-20230802173820-59c960f86863/go.mod h1:9+aUlL+o9dpq2wcF4CLEQlPAcjlmuwohVRvOxNN6TWk=
 github.com/calyptia/go-bubble-table v0.2.1 h1:NWcVRyGCLuP7QIA29uUFSY+IjmWcmUWHjy5J/CPb0Rk=
