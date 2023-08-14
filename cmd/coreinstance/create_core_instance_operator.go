@@ -123,6 +123,11 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				return err
 			}
 
+			metadata.ClusterName, err = getClusterName()
+			if err != nil {
+				return err
+			}
+
 			coreInstanceParams := cloud.CreateCoreInstance{
 				Name:                   coreInstanceName,
 				AddHealthCheckPipeline: !noHealthCheckPipeline,
@@ -345,4 +350,19 @@ func getCoreInstanceMetadata(k8s *k8s.Client) (cloud.CoreInstanceMetadata, error
 	metadata.ClusterPlatform = info.Platform
 
 	return metadata, nil
+}
+
+func getClusterName() (string, error) {
+	var err error
+	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
+	rawKubeConfig, err := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, &clientcmd.ConfigOverrides{}).RawConfig()
+	if err != nil {
+		return "", err
+	}
+	clusterName := rawKubeConfig.CurrentContext
+	if clusterName == "" {
+		clusterName = "default"
+	}
+
+	return clusterName, nil
 }
