@@ -20,15 +20,15 @@ const (
 
 	DefaultCoreOperatorDockerImage = "ghcr.io/calyptia/core-operator"
 	// DefaultCoreOperatorDockerImageTag not manually modified, CI should switch this version on every new release.
-	DefaultCoreOperatorDockerImageTag = "v1.0.13"
+	DefaultCoreOperatorDockerImageTag = "v1.0.14"
 
 	DefaultCoreOperatorToCloudDockerImage = "ghcr.io/calyptia/core-operator/sync-to-cloud"
 	// DefaultCoreOperatorToCloudDockerImageTag not manually modified, CI should switch this version on every new release.
-	DefaultCoreOperatorToCloudDockerImageTag = "v1.0.13"
+	DefaultCoreOperatorToCloudDockerImageTag = "v1.0.14"
 
 	DefaultCoreOperatorFromCloudDockerImage = "ghcr.io/calyptia/core-operator/sync-from-cloud"
 	// DefaultCoreOperatorFromCloudDockerImageTag not manually modified, CI should switch this version on every new release.
-	DefaultCoreOperatorFromCloudDockerImageTag = "v1.0.13"
+	DefaultCoreOperatorFromCloudDockerImageTag = "v1.0.14"
 )
 
 type RecordCell struct {
