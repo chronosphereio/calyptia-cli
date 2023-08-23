@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/spf13/cobra"
 	apiv1 "k8s.io/api/core/v1"
@@ -14,6 +15,7 @@ import (
 	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/k8s"
+	semver "github.com/hashicorp/go-version"
 )
 
 func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernetes.Interface) *cobra.Command {
@@ -34,6 +36,16 @@ func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 		Short:             "update a core instance operator",
 		Args:              cobra.ExactArgs(1),
 		ValidArgsFunction: completer.CompleteCoreInstances,
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			if strings.HasPrefix(newVersion, "v") {
+				if _, err := semver.NewSemver(newVersion); err != nil {
+					return err
+				}
+			} else {
+				return fmt.Errorf("version string should start with prefix v")
+			}
+			return nil
+		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.Background()
 			coreInstanceKey := args[0]

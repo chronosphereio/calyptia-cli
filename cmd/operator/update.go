@@ -3,6 +3,7 @@ package operator
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/calyptia/cli/cmd/utils"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
@@ -10,6 +11,7 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 
 	"github.com/calyptia/cli/k8s"
+	semver "github.com/hashicorp/go-version"
 	"github.com/spf13/cobra"
 	apiv1 "k8s.io/api/core/v1"
 )
@@ -25,6 +27,16 @@ func NewCmdUpdate() *cobra.Command {
 		Use:     "operator",
 		Aliases: []string{"opr"},
 		Short:   "Update core operator",
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			if strings.HasPrefix(coreOperatorVersion, "v") {
+				if _, err := semver.NewSemver(coreOperatorVersion); err != nil {
+					return err
+				}
+			} else {
+				return fmt.Errorf("version string should start with prefix v")
+			}
+			return nil
+		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var namespace string
 			if configOverrides.Context.Namespace == "" {
@@ -35,10 +47,6 @@ func NewCmdUpdate() *cobra.Command {
 			if kubeNamespaceFlag != nil {
 				namespace = kubeNamespaceFlag.Value.String()
 			}
-
-			// if namespace == "" {
-			// 	namespace = apiv1.NamespaceDefault
-			// }
 
 			n, err := k8s.GetCurrentContextNamespace()
 			if err != nil {
@@ -76,7 +84,7 @@ func NewCmdUpdate() *cobra.Command {
 				return fmt.Errorf("could not update kubernetes deployment: %w", err)
 			}
 
-			cmd.Printf("Core operator manager successfully installed.\n")
+			cmd.Printf("Core operator manager successfully updated.\n")
 			return nil
 		},
 	}

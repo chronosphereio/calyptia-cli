@@ -545,8 +545,7 @@ func (client *Client) UpdateOperatorDeploymentByLabel(ctx context.Context, label
 		return fmt.Errorf("no container found in deployment %s", deployment.Name)
 	}
 
-	deployment.Spec.Template.Spec.Containers[0].Image = fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorDockerImage, newImage)
-
+	deployment.Spec.Template.Spec.Containers[0].Image =  newImage
 	_, err = client.AppsV1().Deployments(client.Namespace).Update(ctx, &deployment, metav1.UpdateOptions{})
 	if err != nil {
 		return err
