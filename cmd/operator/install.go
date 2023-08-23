@@ -40,10 +40,17 @@ func NewCmdInstall() *cobra.Command {
 		Short:   "Setup a new core operator instance",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			kctl := newKubectlCmd()
-			namespace := cmd.Flag("kube-namespace").Value.String()
+			var namespace string
+			
+			kubeNamespaceFlag := cmd.Flag("kube-namespace")
+			if kubeNamespaceFlag != nil {
+				namespace = kubeNamespaceFlag.Value.String()
+			}
+		
 			if namespace == "" {
 				namespace = apiv1.NamespaceDefault
 			}
+		
 			n, err := k8s.GetCurrentContextNamespace()
 			if err != nil {
 				if errors.Is(err, k8s.ErrNoContext) {

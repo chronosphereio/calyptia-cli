@@ -1,10 +1,18 @@
 package k8s
 
 import (
+	"context"
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/calyptia/cli/cmd/utils"
+	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes/fake"
 )
 
 func TestGetCurrentContextNamespace(t *testing.T) {
@@ -91,4 +99,133 @@ contexts: []
 		t.Fatal(err)
 	}
 	os.Unsetenv("HOME")
+}
+
+func TestUpdateOperatorDeploymentByLabel(t *testing.T) {
+	dd := appsv1.Deployment{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "test",
+			Namespace: "default",
+			Labels: map[string]string{
+				LabelComponent: "manager",
+				LabelCreatedBy: "operator",
+				LabelInstance:  "controller-manager",
+			},
+		},
+		Spec: appsv1.DeploymentSpec{
+			Replicas: nil,
+			Template: corev1.PodTemplateSpec{
+				ObjectMeta: metav1.ObjectMeta{
+					Name: "test",
+				},
+				Spec: corev1.PodSpec{
+					Containers: []corev1.Container{
+						{
+							Image: "Test",
+						},
+					},
+				},
+			},
+		},
+	}
+
+	tt := []struct {
+		name      string
+		client    Client
+		manager   string
+		expectErr bool
+	}{
+		{
+			name: "update operator pass",
+			client: Client{Interface: fake.NewSimpleClientset(&dd),
+				Namespace: "default"},
+			manager:   "manager",
+			expectErr: false,
+		},
+		{
+			name: "update operator fail",
+			client: Client{Interface: fake.NewSimpleClientset(&dd),
+				Namespace: "default"},
+			manager:   "manager1",
+			expectErr: true,
+		},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.name, func(t *testing.T) {
+
+			label := fmt.Sprintf("%s=%s,%s=%s,%s=%s", LabelComponent, tc.manager, LabelCreatedBy, "operator", LabelInstance, "controller-manager")
+
+			if err := tc.client.UpdateOperatorDeploymentByLabel(context.TODO(), label, fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorDockerImage, "1234")); err != nil && !tc.expectErr {
+				t.Errorf("failed to find deployment by label %s", err)
+			}
+		})
+	}
+}
+
+func TestUpdateSyncDeploymentByLabel(t *testing.T) {
+	dd := appsv1.Deployment{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "test",
+			Namespace: "default",
+			Labels: map[string]string{
+				LabelComponent:    "operator",
+				LabelCreatedBy:    "calyptia-cli",
+				LabelAggregatorID: "444",
+			},
+		},
+		Spec: appsv1.DeploymentSpec{
+			Replicas: nil,
+			Template: corev1.PodTemplateSpec{
+				ObjectMeta: metav1.ObjectMeta{
+					Name: "test",
+				},
+				Spec: corev1.PodSpec{
+					Containers: []corev1.Container{
+						{
+							Name:  "sync-to-cloud",
+							Image: "Test",
+						},
+						{
+							Name:  "sync-from-cloud",
+							Image: "Test",
+						},
+					},
+				},
+			},
+		},
+	}
+
+	tt := []struct {
+		name      string
+		client    Client
+		aggID     string
+		expectErr bool
+	}{
+		{
+			name: "update sync pass",
+			client: Client{Interface: fake.NewSimpleClientset(&dd),
+				Namespace: "default"},
+			aggID:     "444",
+			expectErr: false,
+		},
+		{
+			name: "update sync fail",
+			client: Client{Interface: fake.NewSimpleClientset(&dd),
+				Namespace: "default"},
+			aggID:     "333",
+			expectErr: true,
+		},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.name, func(t *testing.T) {
+
+			label := fmt.Sprintf("%s=%s,%s=%s,%s=%s", LabelComponent, "operator", LabelCreatedBy, "calyptia-cli", LabelAggregatorID, tc.aggID)
+
+			if err := tc.client.UpdateSyncDeploymentByLabel(context.TODO(), label, fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorDockerImage, "1234"), "true"); err != nil && !tc.expectErr {
+				t.Errorf("failed to find deployment by label %s", err)
+			}
+		})
+	}
 }

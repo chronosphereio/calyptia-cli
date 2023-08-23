@@ -28,6 +28,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 
 	cloud "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/cmd/utils"
 )
 
 type objectType string
@@ -39,6 +40,7 @@ const (
 	secretObjectType              objectType = "secret"
 	serviceAccountObjectType      objectType = "service-account"
 	coreTLSVerifyEnvVar           string     = "CORE_TLS_VERIFY"
+	syncTLSVerifyEnvVar           string     = "NO_TLS_VERIFY"
 	coreSkipServiceCreationEnvVar string     = "CORE_INSTANCE_SKIP_SERVICE_CREATION"
 	defaultOperatorNamespace                 = "calyptia-core"
 )
@@ -452,7 +454,67 @@ func (client *Client) UpdateDeploymentByLabel(ctx context.Context, label, newIma
 
 	found := false
 	for idx, envVar := range envVars {
-		if envVar.Name == coreTLSVerifyEnvVar {
+		if envVar.Name == coreTLSVerifyEnvVar || envVar.Name == syncTLSVerifyEnvVar {
+			if envVar.Value != tlsVerify {
+				envVars[idx].Value = tlsVerify
+			}
+			found = true
+		}
+	}
+
+	if !found {
+		envVars = append(envVars, apiv1.EnvVar{
+			Name:  syncTLSVerifyEnvVar,
+			Value: tlsVerify,
+		})
+	}
+
+	deployment.Spec.Template.Spec.Containers[0].Env = envVars
+
+	_, err = client.AppsV1().Deployments(client.Namespace).Update(ctx, &deployment, metav1.UpdateOptions{})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (client *Client) UpdateSyncDeploymentByLabel(ctx context.Context, label, newImage, tlsVerify string) error {
+	deploymentList, err := client.FindDeploymentByLabel(ctx, label)
+	if err != nil {
+		return err
+	}
+	if len(deploymentList.Items) == 0 {
+		return fmt.Errorf("no deployment found with label %s", label)
+	}
+	deployment := deploymentList.Items[0]
+	if len(deployment.Spec.Template.Spec.Containers) == 0 {
+		return fmt.Errorf("no container found in deployment %s", deployment.Name)
+	}
+
+	for i, container := range deployment.Spec.Template.Spec.Containers {
+		if strings.Contains(container.Name, "to-cloud") {
+			deployment.Spec.Template.Spec.Containers[i].Image = fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorToCloudDockerImage, newImage)
+			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, tlsVerify)
+		}
+		if strings.Contains(container.Name, "from-cloud") {
+			deployment.Spec.Template.Spec.Containers[i].Image = fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorFromCloudDockerImage, newImage)
+			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, tlsVerify)
+		}
+	}
+
+	_, err = client.AppsV1().Deployments(client.Namespace).Update(ctx, &deployment, metav1.UpdateOptions{})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (client *Client) updateEnvVars(envVars []apiv1.EnvVar, tlsVerify string) []apiv1.EnvVar {
+	found := false
+	for idx, envVar := range envVars {
+		if envVar.Name == syncTLSVerifyEnvVar {
 			if envVar.Value != tlsVerify {
 				envVars[idx].Value = tlsVerify
 			}
@@ -467,7 +529,23 @@ func (client *Client) UpdateDeploymentByLabel(ctx context.Context, label, newIma
 		})
 	}
 
-	deployment.Spec.Template.Spec.Containers[0].Env = envVars
+	return envVars
+}
+
+func (client *Client) UpdateOperatorDeploymentByLabel(ctx context.Context, label string, newImage string) error {
+	deploymentList, err := client.FindDeploymentByLabel(ctx, label)
+	if err != nil {
+		return err
+	}
+	if len(deploymentList.Items) == 0 {
+		return fmt.Errorf("no deployment found with label %s", label)
+	}
+	deployment := deploymentList.Items[0]
+	if len(deployment.Spec.Template.Spec.Containers) == 0 {
+		return fmt.Errorf("no container found in deployment %s", deployment.Name)
+	}
+
+	deployment.Spec.Template.Spec.Containers[0].Image = fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorDockerImage, newImage)
 
 	_, err = client.AppsV1().Deployments(client.Namespace).Update(ctx, &deployment, metav1.UpdateOptions{})
 	if err != nil {
@@ -542,6 +620,7 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, 
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      FormatResourceName(coreInstance.Name, coreInstance.EnvironmentName, "sync"),
 			Namespace: client.Namespace,
+			Labels:    labels,
 		},
 		Spec: appsv1.DeploymentSpec{
 			Replicas: &deploymentReplicas,
