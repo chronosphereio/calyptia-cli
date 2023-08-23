@@ -16,31 +16,9 @@ jobs:
       - uses: actions/checkout@v3
         with:
           token: ${{ secrets.CI_PAT }}
+          fetch-depth: 0
 
-      - id: get-core-operator-release
-        run: |
-          curl -sSfl -H "Authorization: Bearer $GITHUB_TOKEN"  https://api.github.com/repos/calyptia/core-operator/releases/latest
-          LATEST_RELEASE_TAG=$(curl -sSfl -H "Authorization: Bearer $GITHUB_TOKEN"  https://api.github.com/repos/calyptia/core-operator/releases/latest|jq -r .tag_name)
-          echo "Found tag for latest Core Operator release: $LATEST_RELEASE_TAG"
-          # Strip the v's
-          if [[ "$LATEST_RELEASE_TAG" =~ ^v?([0-9]+\.[0-9]+\.[0-9])+$ ]] ; then
-              LATEST_RELEASE_TAG=${BASH_REMATCH[1]}
-              echo "Updated to: $LATEST_RELEASE_TAG"
-          fi
-          echo "tag=$LATEST_RELEASE_TAG" >> $GITHUB_OUTPUT
-        shell: bash
-        env:
-          GITHUB_TOKEN: ${{ secrets.CI_PAT }}
-
-      - name: Update default Core Fluent Bit version
-        run: |
-          sed -i -E "s/DefaultCoreOperatorDockerImageTag = .*$/DefaultCoreOperatorDockerImageTag = \"$NEW_VERSION\"/g" cmd/utils/utils.go
-          sed -i -E "s/DefaultCoreOperatorToCloudDockerImageTag = .*$/DefaultCoreOperatorToCloudDockerImageTag = \"$NEW_VERSION\"/g" cmd/utils/utils.go
-          sed -i -E "s/DefaultCoreOperatorFromCloudDockerImageTag = .*$/DefaultCoreOperatorFromCloudDockerImageTag = \"$NEW_VERSION\"/g" cmd/utils/utils.go
-
-          cat cmd/utils/utils.go
-        env:
-          NEW_VERSION: ${{ steps.get-core-operator-release.outputs.tag }}
+      - run: ./scripts/update-versions.sh
         shell: bash
 
       - name: Generate PR

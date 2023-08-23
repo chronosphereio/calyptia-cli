@@ -8,117 +8,199 @@ on:
   pull_request:
   workflow_dispatch:
 jobs:
-  cloud-e2e:
-    # Do not run for releases, no point
-    if: ${{ ! startsWith(github.ref, 'refs/tags/v') }}
-    name: Run calyptia/cloud-e2e tests
-    strategy:
-      fail-fast: true
-      matrix:
-        k8s-release: ["v1.23.5", "v1.22.7", "v1.21.10"]
+  ci-get-metadata:
+    name: Get metadata
     runs-on: ubuntu-latest
+    permissions:
+      contents: none
+    outputs:
+      image: ${{ steps.image.outputs.image }}
+      release-version: ${{ steps.version.outputs.version }}
     steps:
-      - name: Checkout
+      - name: internal image
+        if: ${{ ! startsWith(github.ref, 'refs/tags/v') }}
+        run: |
+          echo "WORKFLOW_IMAGE=ghcr.io/calyptia/internal/core" >> $GITHUB_ENV
+          echo "RELEASE_VERSION=v0.1-dev" >> $GITHUB_ENV
+        shell: bash
+
+      - name: release image
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          echo "WORKFLOW_IMAGE=ghcr.io/${{ github.repository }}" >> $GITHUB_ENV
+          echo "RELEASE_VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
+        shell: bash
+
+      - id: image
+        run: |
+          echo "Using image: $WORKFLOW_IMAGE"
+          echo "image=$WORKFLOW_IMAGE" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - id: version
+        run: |
+          echo "Using version: $RELEASE_VERSION"
+          echo "version=$RELEASE_VERSION" >> $GITHUB_OUTPUT
+        shell: bash
+
+  # Taken from https://docs.docker.com/build/ci/github-actions/multi-platform/#distribute-build-across-multiple-runners
+  # We split this out to make it easier to restart just one of them if it fails and do all in parallel
+  ci-build-single-arch-container-images:
+    needs:
+      - ci-get-metadata
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - amd64
+          - arm64
+    name: ${{ matrix.platform }} container image build
+    runs-on: ${{ (contains(matrix.platform, 'arm') && 'actuated-arm64') || 'actuated' }}
+    steps:
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Checkoout cloud-e2e
-        uses: actions/checkout@v3
-        with:
-          repository: calyptia/cloud-e2e
-          token: ${{ secrets.CI_PAT }}
-          ref: "main"
-          path: cloud-e2e
+      - name: Set up Actuated mirror
+        if: contains(matrix.platform, 'arm')
+        uses: self-actuated/hub-mirror@master
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
       - name: Log in to the Container registry
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
-          username: ${{ secrets.CI_USERNAME }}
-          password: ${{ secrets.CI_PAT }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract image metadata
-        id: meta-github-image
+      - name: Build and push by digest the standard production image
+        id: production
+        uses: docker/build-push-action@v4
+        with:
+          # Use path context rather than Git context as we want local files
+          context: .
+          outputs: type=image,name=${{ needs.ci-get-metadata.outputs.image }},push-by-digest=true,name-canonical=true,push=true
+          platforms: linux/${{ matrix.platform }}
+          provenance: false
+          labels: |
+            org.opencontainers.image.title="calyptia/cli" \
+            org.opencontainers.image.description="Calyptia Core CLI" \
+            org.opencontainers.image.url="https://calyptia.com/products/calyptia-core/"
+            org.opencontainers.image.licenses="/licenses/calyptia.txt"
+            org.opencontainers.image.maintainer="Jorge Niedbalski <jorge@calyptia.com>" \
+            org.opencontainers.image.vendor="Calyptia Inc"
+            org.calyptia.contact="support@calyptia.com"
+
+      - name: Export production digest
+        run: |
+          mkdir -p /tmp/digests
+          digest="${{ steps.production.outputs.digest }}"
+          touch "/tmp/digests/${digest#sha256:}"
+        shell: bash
+
+      - name: Upload production digest
+        uses: actions/upload-artifact@v3
+        with:
+          name: production-digests
+          path: /tmp/digests/*
+          if-no-files-found: error
+          retention-days: 1
+
+  # Take the digests and produce a multi-arch manifest from them.
+  ci-build-container-image-manifest:
+    permissions:
+      contents: read
+      packages: write
+    name: Upload multi-arch container image manifests
+    runs-on: ubuntu-latest
+    needs:
+      - ci-get-metadata
+      - ci-build-single-arch-container-images
+    outputs:
+      tag: ${{ needs.ci-get-metadata.outputs.image }}:${{ steps.meta.outputs.version }}
+      image: ${{ needs.ci-get-metadata.outputs.image }}
+      version: ${{ steps.meta.outputs.version }}
+    steps:
+      - name: Extract metadata from Github
+        id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ghcr.io/${{ github.repository }}
+          images: ${{ needs.ci-get-metadata.outputs.image }}
           tags: |
+            # Get the raw tag, e.g. 1.2.3, and a purely numeric one
+            type=semver,pattern={{version}},event=tag
+            type=semver,pattern={{raw}},event=tag
+            type=semver,pattern={{major}},event=tag
+            type=semver,pattern=v{{major}},event=tag
+            # defaults for others
+            type=schedule
+            type=ref,event=branch
             type=ref,event=pr
             type=raw,value=main,enable=${{ endsWith(github.ref, github.event.repository.default_branch) }}
-            type=raw,value=latest,enable=${{ startsWith(github.ref, 'refs/tags/v') }}
+          labels: |
+            org.opencontainers.image.title="calyptia/cli" \
+            org.opencontainers.image.description="Calyptia Core CLI" \
+            org.opencontainers.image.url="https://calyptia.com/products/calyptia-core/"
+            org.opencontainers.image.licenses="/licenses/calyptia.txt"
+            org.opencontainers.image.maintainer="Jorge Niedbalski <jorge@calyptia.com>" \
+            org.opencontainers.image.vendor="Calyptia Inc"
+            org.calyptia.contact="support@calyptia.com"
+
+      - name: Download digests
+        uses: actions/download-artifact@v3
+        with:
+          name: production-digests
+          path: /tmp/digests
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Build and load docker image
-        uses: docker/build-push-action@v4
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
         with:
-          context: .
-          target: production
-          platforms: linux/amd64
-          provenance: false
-          push: true
-          tags: ${{ steps.meta-github-image.outputs.tags }}
-          labels: ${{ steps.meta-github-image.outputs.labels }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - id: image-tag
+      - name: Create production manifest
         run: |
-          echo "TAG=$(echo $FULL_TAG | cut -d ":" -f2)" >> $GITHUB_OUTPUT
-        env:
-          FULL_TAG: ${{ steps.meta-github-image.outputs.tags }}
+          docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
+            $(printf '${{ needs.ci-get-metadata.outputs.image }}@sha256:%s ' *)
+        shell: bash
+        working-directory: /tmp/digests
 
-      - name: Create k8s Kind Cluster
-        uses: helm/kind-action@v1.8.0
-        with:
-          node_image: kindest/node:${{ matrix.k8s-release }}
-          cluster_name: kind
-
-      - name: Install dependencies
+      - name: Inspect image
         run: |
-          sudo apt update
-          sudo apt install -y httpie jq
+          docker buildx imagetools inspect ${{ needs.ci-get-metadata.outputs.image }}:${{ steps.meta.outputs.version }}
         shell: bash
 
-      - name: Setup BATS
-        uses: mig4/setup-bats@v1
-        with:
-          bats-version: 1.7.0
-
-      - name: Load required images in the kind cluster
-        run: |
-          docker pull $CALYPTIA_CLOUD_IMAGE:$CALYPTIA_CLOUD_IMAGE_TAG
-          kind load docker-image $CALYPTIA_CLOUD_IMAGE:$CALYPTIA_CLOUD_IMAGE_TAG
-
-          docker pull $CALYPTIA_CORE_IMAGE:$CALYPTIA_CORE_IMAGE_TAG
-          kind load docker-image $CALYPTIA_CORE_IMAGE:$CALYPTIA_CORE_IMAGE_TAG
-        env:
-          CALYPTIA_CLOUD_IMAGE: ghcr.io/calyptia/cloud/all-in-one
-          CALYPTIA_CLOUD_IMAGE_TAG: main
-          CALYPTIA_CORE_IMAGE: ghcr.io/calyptia/core
-          CALYPTIA_CORE_IMAGE_TAG: main
-
-      - name: Setup google credentials
-        uses: google-github-actions/auth@v0
-        with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
-          export_environment_variables: true
-          create_credentials_file: true
-
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v0
-
-      - name: Run bats tests
-        run: |
-          ./run-bats.sh
-        shell: bash
-        timeout-minutes: 25
-        env:
-          CALYPTIA_CLOUD_IMAGE: ghcr.io/calyptia/cloud/all-in-one
-          CALYPTIA_CLOUD_IMAGE_TAG: main
-          CALYPTIA_CORE_IMAGE: ghcr.io/calyptia/core
-          CALYPTIA_CORE_IMAGE_TAG: main
-          CALYPTIA_CLI_IMAGE: ghcr.io/calyptia/cli
-          CALYPTIA_CLI_IMAGE_TAG: ${{ steps.image-tag.outputs.TAG }}
-        working-directory: cloud-e2e
+  cloud-e2e:
+    # Do not run for releases, no point
+    if: ${{ ! startsWith(github.ref, 'refs/tags/v') }}
+    name: Run calyptia/cloud-e2e tests
+    needs:
+      - ci-build-container-image-manifest
+    # Invoke via public repo, the public/private has to match
+    uses: calyptia/core-product-release/.github/workflows/call-integration-tests.yaml@main
+    permissions:
+      contents: read
+      packages: read
+      id-token: write
+    with:
+      cli-image: ${{ needs.ci-build-container-image-manifest.outputs.tag }}
+    secrets:
+      registry-username: ${{ secrets.CI_USERNAME }}
+      registry-password: ${{ secrets.CI_PAT }}
+      # Replace with playground key after: https://app.asana.com/0/1205042382663691/1205231066738712/f
+      google-access-key: ${{ secrets.GCP_SA_KEY }}
+      github-token: ${{ secrets.CI_PAT }}
 
   release:
     name: Release the artefacts
