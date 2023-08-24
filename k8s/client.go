@@ -44,6 +44,7 @@ const (
 	syncTLSVerifyEnvVar           string     = "NO_TLS_VERIFY"
 	coreSkipServiceCreationEnvVar string     = "CORE_INSTANCE_SKIP_SERVICE_CREATION"
 	defaultOperatorNamespace                 = "calyptia-core"
+	noContainersErrString                    = "no containers found in deployment %s"
 )
 
 var (
@@ -446,7 +447,7 @@ func (client *Client) UpdateDeploymentByLabel(ctx context.Context, label, newIma
 	}
 	deployment := deploymentList.Items[0]
 	if len(deployment.Spec.Template.Spec.Containers) == 0 {
-		return fmt.Errorf("no container found in deployment %s", deployment.Name)
+		return fmt.Errorf(noContainersErrString, deployment.Name)
 	}
 
 	deployment.Spec.Template.Spec.Containers[0].Image = newImage
@@ -490,7 +491,7 @@ func (client *Client) UpdateSyncDeploymentByLabel(ctx context.Context, label, ne
 	}
 	deployment := deploymentList.Items[0]
 	if len(deployment.Spec.Template.Spec.Containers) == 0 {
-		return fmt.Errorf("no container found in deployment %s", deployment.Name)
+		return fmt.Errorf(noContainersErrString, deployment.Name)
 	}
 
 	for i, container := range deployment.Spec.Template.Spec.Containers {
@@ -557,7 +558,7 @@ func (client *Client) UpdateOperatorDeploymentByLabel(ctx context.Context, label
 	}
 	deployment := deploymentList.Items[0]
 	if len(deployment.Spec.Template.Spec.Containers) == 0 {
-		return fmt.Errorf("no container found in deployment %s", deployment.Name)
+		return fmt.Errorf(noContainersErrString, deployment.Name)
 	}
 
 	deployment.Spec.Template.Spec.Containers[0].Image = newImage
