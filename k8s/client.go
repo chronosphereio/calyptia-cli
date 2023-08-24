@@ -13,6 +13,7 @@ import (
 	goversion "github.com/hashicorp/go-version"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/client-go/dynamic"
 	restclient "k8s.io/client-go/rest"
@@ -28,6 +29,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 
 	cloud "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/cmd/utils"
 )
 
 type objectType string
@@ -39,8 +41,10 @@ const (
 	secretObjectType              objectType = "secret"
 	serviceAccountObjectType      objectType = "service-account"
 	coreTLSVerifyEnvVar           string     = "CORE_TLS_VERIFY"
+	syncTLSVerifyEnvVar           string     = "NO_TLS_VERIFY"
 	coreSkipServiceCreationEnvVar string     = "CORE_INSTANCE_SKIP_SERVICE_CREATION"
 	defaultOperatorNamespace                 = "calyptia-core"
+	noContainersErrString                    = "no containers found in deployment %s"
 )
 
 var (
@@ -443,7 +447,7 @@ func (client *Client) UpdateDeploymentByLabel(ctx context.Context, label, newIma
 	}
 	deployment := deploymentList.Items[0]
 	if len(deployment.Spec.Template.Spec.Containers) == 0 {
-		return fmt.Errorf("no container found in deployment %s", deployment.Name)
+		return fmt.Errorf(noContainersErrString, deployment.Name)
 	}
 
 	deployment.Spec.Template.Spec.Containers[0].Image = newImage
@@ -452,7 +456,81 @@ func (client *Client) UpdateDeploymentByLabel(ctx context.Context, label, newIma
 
 	found := false
 	for idx, envVar := range envVars {
-		if envVar.Name == coreTLSVerifyEnvVar {
+		if envVar.Name == coreTLSVerifyEnvVar || envVar.Name == syncTLSVerifyEnvVar {
+			if envVar.Value != tlsVerify {
+				envVars[idx].Value = tlsVerify
+			}
+			found = true
+		}
+	}
+
+	if !found {
+		envVars = append(envVars, apiv1.EnvVar{
+			Name:  syncTLSVerifyEnvVar,
+			Value: tlsVerify,
+		})
+	}
+
+	deployment.Spec.Template.Spec.Containers[0].Env = envVars
+
+	_, err = client.AppsV1().Deployments(client.Namespace).Update(ctx, &deployment, metav1.UpdateOptions{})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (client *Client) UpdateSyncDeploymentByLabel(ctx context.Context, label, newImage, tlsVerify string, verbose bool) error {
+	deploymentList, err := client.FindDeploymentByLabel(ctx, label)
+	if err != nil {
+		return err
+	}
+	if len(deploymentList.Items) == 0 {
+		return fmt.Errorf("no deployment found with label %s", label)
+	}
+	deployment := deploymentList.Items[0]
+	if len(deployment.Spec.Template.Spec.Containers) == 0 {
+		return fmt.Errorf(noContainersErrString, deployment.Name)
+	}
+
+	for i, container := range deployment.Spec.Template.Spec.Containers {
+		if strings.Contains(container.Name, "to-cloud") {
+			deployment.Spec.Template.Spec.Containers[i].Image = fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorToCloudDockerImage, newImage)
+			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, tlsVerify)
+		}
+		if strings.Contains(container.Name, "from-cloud") {
+			deployment.Spec.Template.Spec.Containers[i].Image = fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorFromCloudDockerImage, newImage)
+			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, tlsVerify)
+		}
+	}
+
+	_, err = client.AppsV1().Deployments(client.Namespace).Update(ctx, &deployment, metav1.UpdateOptions{})
+	if err != nil {
+		return err
+	}
+
+	if err := client.rolloutDeployment(ctx, deployment.Namespace, deployment.Name); err != nil {
+		return err
+	}
+
+	if err := client.WaitReady(ctx, deployment.Namespace, deployment.Name, verbose); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (client *Client) rolloutDeployment(ctx context.Context, namespace, deployment string) error {
+	data := fmt.Sprintf(`{"spec": {"template": {"metadata": {"annotations": {"kubectl.kubernetes.io/restartedAt": "%s"}}}}}`, time.Now().Format("20060102150405"))
+	_, err := client.AppsV1().Deployments(namespace).Patch(ctx, deployment, types.StrategicMergePatchType, []byte(data), metav1.PatchOptions{})
+
+	return err
+}
+
+func (client *Client) updateEnvVars(envVars []apiv1.EnvVar, tlsVerify string) []apiv1.EnvVar {
+	found := false
+	for idx, envVar := range envVars {
+		if envVar.Name == syncTLSVerifyEnvVar {
 			if envVar.Value != tlsVerify {
 				envVars[idx].Value = tlsVerify
 			}
@@ -467,13 +545,35 @@ func (client *Client) UpdateDeploymentByLabel(ctx context.Context, label, newIma
 		})
 	}
 
-	deployment.Spec.Template.Spec.Containers[0].Env = envVars
+	return envVars
+}
 
+func (client *Client) UpdateOperatorDeploymentByLabel(ctx context.Context, label string, newImage string, verbose bool) error {
+	deploymentList, err := client.FindDeploymentByLabel(ctx, label)
+	if err != nil {
+		return err
+	}
+	if len(deploymentList.Items) == 0 {
+		return fmt.Errorf("no deployment found with label %s", label)
+	}
+	deployment := deploymentList.Items[0]
+	if len(deployment.Spec.Template.Spec.Containers) == 0 {
+		return fmt.Errorf(noContainersErrString, deployment.Name)
+	}
+
+	deployment.Spec.Template.Spec.Containers[0].Image = newImage
 	_, err = client.AppsV1().Deployments(client.Namespace).Update(ctx, &deployment, metav1.UpdateOptions{})
 	if err != nil {
 		return err
 	}
 
+	if err := client.rolloutDeployment(ctx, deployment.Namespace, deployment.Name); err != nil {
+		return err
+	}
+
+	if err := client.WaitReady(ctx, deployment.Namespace, deployment.Name, verbose); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -542,6 +642,7 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, 
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      FormatResourceName(coreInstance.Name, coreInstance.EnvironmentName, "sync"),
 			Namespace: client.Namespace,
+			Labels:    labels,
 		},
 		Spec: appsv1.DeploymentSpec{
 			Replicas: &deploymentReplicas,
@@ -688,24 +789,61 @@ func ExtractGroupVersionResource(obj runtime.Object) (schema.GroupVersionResourc
 	return gvr, nil
 }
 
-func (client *Client) WaitReady(ctx context.Context, namespace, name string) error {
-	if err := wait.PollImmediate(1*time.Second, 1*time.Minute, client.isDeploymentReady(ctx, namespace, name)); err != nil {
+func (client *Client) WaitReady(ctx context.Context, namespace, name string, verbose bool) error {
+	if err := wait.PollUntilContextTimeout(ctx, 3*time.Second, 30*time.Second, false, client.isDeploymentReady(ctx, namespace, name)); err != nil {
+		if verbose {
+			get, err := client.AppsV1().Deployments(namespace).Get(ctx, name, metav1.GetOptions{})
+			if err != nil {
+				return err
+			}
+
+			pods, err := client.CoreV1().Pods(namespace).List(ctx, metav1.ListOptions{LabelSelector: metav1.FormatLabelSelector(get.Spec.Selector)})
+			if err != nil {
+				return err
+			}
+
+			podMessages := map[string]string{}
+			for _, pod := range pods.Items {
+				var containerStatus []string
+				for _, status := range pod.Status.ContainerStatuses {
+					if status.State.Waiting != nil {
+						containerStatus = append(containerStatus, status.State.Waiting.Message)
+					}
+				}
+				if len(containerStatus) != 0 {
+					podMessages[pod.Name] = strings.Join(containerStatus, "\n")
+				}
+			}
+			if len(podMessages) != 0 {
+				var message string
+				for k, v := range podMessages {
+					message += fmt.Sprintf("* pod %s, Message: %s'\n", k, v)
+				}
+				return fmt.Errorf("failed while waiting for deployment to start:\n%s", message)
+			}
+		}
 		return err
 	}
 	return nil
 }
 
-func (client *Client) isDeploymentReady(ctx context.Context, namespace, name string) wait.ConditionFunc {
-	return func() (bool, error) {
+func (client *Client) isDeploymentReady(ctx context.Context, namespace, name string) wait.ConditionWithContextFunc {
+	return func(ctx context.Context) (done bool, err error) {
 		get, err := client.AppsV1().Deployments(namespace).Get(ctx, name, metav1.GetOptions{})
 		if err != nil {
 			return false, err
 		}
 
-		if get.Status.ReadyReplicas >= 1 {
-			return true, nil
+		pods, err := client.CoreV1().Pods(namespace).List(ctx, metav1.ListOptions{LabelSelector: metav1.FormatLabelSelector(get.Spec.Selector)})
+		if err != nil {
+			return false, err
 		}
-		return false, nil
+
+		var running bool
+		for _, pod := range pods.Items {
+			running = pod.Status.Phase == apiv1.PodRunning
+		}
+		return running, nil
 	}
 }
 

@@ -10,6 +10,7 @@ import (
 	"github.com/calyptia/cli/cmd/environment"
 	"github.com/calyptia/cli/cmd/fleet"
 	"github.com/calyptia/cli/cmd/members"
+	"github.com/calyptia/cli/cmd/operator"
 	"github.com/calyptia/cli/cmd/pipeline"
 	"github.com/calyptia/cli/cmd/project"
 	cfg "github.com/calyptia/cli/config"
@@ -35,6 +36,7 @@ func newCmdUpdate(config *cfg.Config) *cobra.Command {
 		environment.NewCmdUpdateEnvironment(config),
 		cnfg.NewCmdUpdateConfigSection(config),
 		cnfg.NewCmdUpdateConfigSectionSet(config),
+		operator.NewCmdUpdate(),
 	)
 
 	return cmd

@@ -157,18 +157,20 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				return map[string]string{
 					k8s.LabelVersion:      version.Version,
 					k8s.LabelPartOf:       "calyptia",
+					k8s.LabelComponent:    "operator",
 					k8s.LabelManagedBy:    "calyptia-cli",
 					k8s.LabelCreatedBy:    "calyptia-cli",
 					k8s.LabelProjectID:    config.ProjectID,
 					k8s.LabelAggregatorID: created.ID,
 				}
 			}
+
 			k8sClient.LabelsFunc = labelsFunc
 
 			var resourcesCreated []k8s.ResourceRollBack
 			secret, err := k8sClient.CreateSecretOperatorRSAKey(ctx, created, dryRun)
 			if err != nil {
-				fmt.Printf("An error occurred while creating the core operator instance. %w Rolling back created resources.\n", err)
+				fmt.Printf("An error occurred while creating the core operator instance. %s Rolling back created resources.\n", err)
 				resources, err := k8sClient.DeleteResources(ctx, resourcesCreated)
 				if err != nil {
 					return fmt.Errorf("could not delete resources: %w", err)
@@ -183,7 +185,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 			var clusterRoleOpts k8s.ClusterRoleOpt
 			clusterRole, err := k8sClient.CreateClusterRole(ctx, created, dryRun, clusterRoleOpts)
 			if err != nil {
-				fmt.Printf("An error occurred while creating the core operator instance. %w Rolling back created resources.\n", err)
+				fmt.Printf("An error occurred while creating the core operator instance. %s Rolling back created resources.\n", err)
 				resources, err := k8sClient.DeleteResources(ctx, resourcesCreated)
 				if err != nil {
 					return fmt.Errorf("could not delete resources: %w", err)
@@ -198,7 +200,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 
 			serviceAccount, err := k8sClient.CreateServiceAccount(ctx, created, dryRun)
 			if err != nil {
-				fmt.Printf("An error occurred while creating the core operator instance. %w Rolling back created resources.\n", err)
+				fmt.Printf("An error occurred while creating the core operator instance. %s Rolling back created resources.\n", err)
 				resources, err := k8sClient.DeleteResources(ctx, resourcesCreated)
 				if err != nil {
 					return fmt.Errorf("could not delete resources: %w", err)
@@ -213,7 +215,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 
 			binding, err := k8sClient.CreateClusterRoleBinding(ctx, created, clusterRole, serviceAccount, dryRun)
 			if err != nil {
-				fmt.Printf("An error occurred while creating the core operator instance. %w Rolling back created resources.\n", err)
+				fmt.Printf("An error occurred while creating the core operator instance. %s Rolling back created resources.\n", err)
 				resources, err := k8sClient.DeleteResources(ctx, resourcesCreated)
 				if err != nil {
 					return fmt.Errorf("could not delete resources: %w", err)
@@ -244,7 +246,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 
 			syncDeployment, err := k8sClient.DeployCoreOperatorSync(ctx, coreCloudURL, coreDockerFromCloudImage, coreDockerToCloudImage, metricsPort, !noTLSVerify, created, serviceAccount.Name)
 			if err != nil {
-				fmt.Printf("An error occurred while creating the core operator instance. %w Rolling back created resources.\n", err)
+				fmt.Printf("An error occurred while creating the core operator instance. %s Rolling back created resources.\n", err)
 				resources, err := k8sClient.DeleteResources(ctx, resourcesCreated)
 				if err != nil {
 					return fmt.Errorf("could not delete resources: %w", err)
@@ -255,7 +257,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 			if waitReady {
 				start := time.Now()
 				fmt.Printf("Waiting for core instance to be ready...\n")
-				err := k8sClient.WaitReady(ctx, syncDeployment.Namespace, syncDeployment.Name)
+				err := k8sClient.WaitReady(ctx, syncDeployment.Namespace, syncDeployment.Name, false)
 				if err != nil {
 					return err
 				}
