@@ -37,12 +37,11 @@ func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 		Args:              cobra.ExactArgs(1),
 		ValidArgsFunction: completer.CompleteCoreInstances,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			if strings.HasPrefix(newVersion, "v") {
-				if _, err := semver.NewSemver(newVersion); err != nil {
-					return err
-				}
-			} else {
-				return fmt.Errorf("version string should start with prefix v")
+			if !strings.HasPrefix(newVersion, "v") {
+				newVersion = fmt.Sprintf("v%s", newVersion)
+			}
+			if _, err := semver.NewSemver(newVersion); err != nil {
+				return err
 			}
 			return nil
 		},
@@ -132,8 +131,9 @@ func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 					return fmt.Errorf("could not ensure kubernetes namespace exists: %w", err)
 				}
 
+				cmd.Printf("Waiting for core-instance to update...\n")
 				if err := k8sClient.UpdateSyncDeploymentByLabel(ctx, label, newVersion, strconv.FormatBool(!noTLSVerify)); err != nil {
-					return fmt.Errorf("could not update kubernetes deployment: %w", err)
+					return fmt.Errorf("an error occurred: could not update core-instance: %w", err)
 				}
 
 				if err != nil {
@@ -143,7 +143,6 @@ func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 
 			}
 
-			cmd.Printf("calyptia-core instance successfully updated\n")
 			return nil
 		},
 	}

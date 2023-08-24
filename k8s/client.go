@@ -13,6 +13,7 @@ import (
 	goversion "github.com/hashicorp/go-version"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/client-go/dynamic"
 	restclient "k8s.io/client-go/rest"
@@ -508,7 +509,21 @@ func (client *Client) UpdateSyncDeploymentByLabel(ctx context.Context, label, ne
 		return err
 	}
 
+	if err := client.rolloutDeployment(ctx, deployment.Namespace, deployment.Name); err != nil {
+		return err
+	}
+
+	if err := client.WaitReady(ctx, deployment.Namespace, deployment.Name); err != nil {
+		return err
+	}
 	return nil
+}
+
+func (client *Client) rolloutDeployment(ctx context.Context, namespace, deployment string) error {
+	data := fmt.Sprintf(`{"spec": {"template": {"metadata": {"annotations": {"kubectl.kubernetes.io/restartedAt": "%s"}}}}}`, time.Now().Format("20060102150405"))
+	_, err := client.AppsV1().Deployments(namespace).Patch(ctx, deployment, types.StrategicMergePatchType, []byte(data), metav1.PatchOptions{})
+
+	return err
 }
 
 func (client *Client) updateEnvVars(envVars []apiv1.EnvVar, tlsVerify string) []apiv1.EnvVar {
@@ -545,12 +560,19 @@ func (client *Client) UpdateOperatorDeploymentByLabel(ctx context.Context, label
 		return fmt.Errorf("no container found in deployment %s", deployment.Name)
 	}
 
-	deployment.Spec.Template.Spec.Containers[0].Image =  newImage
+	deployment.Spec.Template.Spec.Containers[0].Image = newImage
 	_, err = client.AppsV1().Deployments(client.Namespace).Update(ctx, &deployment, metav1.UpdateOptions{})
 	if err != nil {
 		return err
 	}
 
+	if err := client.rolloutDeployment(ctx, deployment.Namespace, deployment.Name); err != nil {
+		return err
+	}
+
+	if err := client.WaitReady(ctx, deployment.Namespace, deployment.Name); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -767,23 +789,58 @@ func ExtractGroupVersionResource(obj runtime.Object) (schema.GroupVersionResourc
 }
 
 func (client *Client) WaitReady(ctx context.Context, namespace, name string) error {
-	if err := wait.PollImmediate(1*time.Second, 1*time.Minute, client.isDeploymentReady(ctx, namespace, name)); err != nil {
+	if err := wait.PollUntilContextTimeout(ctx, 3*time.Second, 30*time.Second, false, client.isDeploymentReady(ctx, namespace, name)); err != nil {
+		get, err := client.AppsV1().Deployments(namespace).Get(ctx, name, metav1.GetOptions{})
+		if err != nil {
+			return err
+		}
+
+		pods, err := client.CoreV1().Pods(namespace).List(ctx, metav1.ListOptions{LabelSelector: metav1.FormatLabelSelector(get.Spec.Selector)})
+		if err != nil {
+			return err
+		}
+
+		podMessages := map[string]string{}
+		for _, pod := range pods.Items {
+			var containerStatus []string
+			for _, status := range pod.Status.ContainerStatuses {
+				if status.State.Waiting != nil {
+					containerStatus = append(containerStatus, status.State.Waiting.Message)
+				}
+			}
+			if len(containerStatus) != 0 {
+				podMessages[pod.Name] = strings.Join(containerStatus, "\n")
+			}
+		}
+		if len(podMessages) != 0 {
+			var message string
+			for k, v := range podMessages {
+				message += fmt.Sprintf("* pod %s, Message: %s'\n", k, v)
+			}
+			return fmt.Errorf("failed while waiting for deployment to start:\n%s", message)
+		}
 		return err
 	}
 	return nil
 }
 
-func (client *Client) isDeploymentReady(ctx context.Context, namespace, name string) wait.ConditionFunc {
-	return func() (bool, error) {
+func (client *Client) isDeploymentReady(ctx context.Context, namespace, name string) wait.ConditionWithContextFunc {
+	return func(ctx context.Context) (done bool, err error) {
 		get, err := client.AppsV1().Deployments(namespace).Get(ctx, name, metav1.GetOptions{})
 		if err != nil {
 			return false, err
 		}
 
-		if get.Status.ReadyReplicas >= 1 {
-			return true, nil
+		pods, err := client.CoreV1().Pods(namespace).List(ctx, metav1.ListOptions{LabelSelector: metav1.FormatLabelSelector(get.Spec.Selector)})
+		if err != nil {
+			return false, err
 		}
-		return false, nil
+
+		var running bool
+		for _, pod := range pods.Items {
+			running = pod.Status.Phase == apiv1.PodRunning
+		}
+		return running, nil
 	}
 }
 

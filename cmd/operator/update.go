@@ -28,12 +28,11 @@ func NewCmdUpdate() *cobra.Command {
 		Aliases: []string{"opr"},
 		Short:   "Update core operator",
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			if strings.HasPrefix(coreOperatorVersion, "v") {
-				if _, err := semver.NewSemver(coreOperatorVersion); err != nil {
-					return err
-				}
-			} else {
-				return fmt.Errorf("version string should start with prefix v")
+			if !strings.HasPrefix(coreOperatorVersion, "v") {
+				coreOperatorVersion = fmt.Sprintf("v%s", coreOperatorVersion)
+			}
+			if _, err := semver.NewSemver(coreOperatorVersion); err != nil {
+				return err
 			}
 			return nil
 		},
@@ -80,11 +79,13 @@ func NewCmdUpdate() *cobra.Command {
 			}
 
 			label := fmt.Sprintf("%s=%s,%s=%s,%s=%s", k8s.LabelComponent, "manager", k8s.LabelCreatedBy, "operator", k8s.LabelInstance, "controller-manager")
+			cmd.Printf("Waiting for core-operator to update...\n")
 			if err := k.UpdateOperatorDeploymentByLabel(cmd.Context(), label, fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorDockerImage, coreOperatorVersion)); err != nil {
-				return fmt.Errorf("could not update kubernetes deployment: %w", err)
+				return fmt.Errorf("an error occurred: could not update core-operator: %w", err)
 			}
 
-			cmd.Printf("Core operator manager successfully updated.\n")
+			cmd.Printf("Core operator manager successfully updated to version %s\n", coreOperatorVersion)
+
 			return nil
 		},
 	}

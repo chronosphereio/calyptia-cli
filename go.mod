@@ -19,6 +19,7 @@ require (
 	github.com/charmbracelet/lipgloss v0.7.1
 	github.com/go-logfmt/logfmt v0.6.0
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
+	github.com/hashicorp/go-version v1.6.0
 	github.com/itchyny/json2yaml v0.1.4
 	github.com/joho/godotenv v1.5.1
 	github.com/matryer/moq v0.3.2
@@ -99,7 +100,6 @@ require (
 	github.com/googleapis/enterprise-certificate-proxy v0.2.5 // indirect
 	github.com/googleapis/gax-go/v2 v2.12.0 // indirect
 	github.com/gregjones/httpcache v0.0.0-20180305231024-9cad4c3443a7 // indirect
-	github.com/hashicorp/go-version v1.6.0 // indirect
 	github.com/hexops/gotextdiff v1.0.3 // indirect
 	github.com/huandu/xstrings v1.3.3 // indirect
 	github.com/imdario/mergo v0.3.11 // indirect
