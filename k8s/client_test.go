@@ -10,6 +10,7 @@ import (
 
 	"github.com/calyptia/cli/cmd/utils"
 	appsv1 "k8s.io/api/apps/v1"
+	apiv1 "k8s.io/api/core/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes/fake"
@@ -113,6 +114,12 @@ func TestUpdateOperatorDeploymentByLabel(t *testing.T) {
 			},
 		},
 		Spec: appsv1.DeploymentSpec{
+			Selector: &metav1.LabelSelector{
+				MatchLabels: map[string]string{
+					LabelComponent: "manager",
+					LabelCreatedBy: "operator",
+					LabelInstance:  "controller-manager",
+				}},
 			Replicas: nil,
 			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
@@ -129,6 +136,28 @@ func TestUpdateOperatorDeploymentByLabel(t *testing.T) {
 		},
 	}
 
+	pod := corev1.Pod{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "test",
+			Namespace: "default",
+			Labels: map[string]string{
+				LabelComponent: "manager",
+				LabelCreatedBy: "operator",
+				LabelInstance:  "controller-manager",
+			},
+		},
+		Spec: corev1.PodSpec{
+			Containers: []corev1.Container{
+				{
+					Image: "Test",
+				},
+			},
+		},
+		Status: corev1.PodStatus{
+			Phase: apiv1.PodRunning,
+		},
+	}
+
 	tt := []struct {
 		name      string
 		client    Client
@@ -137,14 +166,16 @@ func TestUpdateOperatorDeploymentByLabel(t *testing.T) {
 	}{
 		{
 			name: "update operator pass",
-			client: Client{Interface: fake.NewSimpleClientset(&dd),
+			client: Client{
+				Interface: fake.NewSimpleClientset(&dd, &pod),
 				Namespace: "default"},
 			manager:   "manager",
 			expectErr: false,
 		},
 		{
 			name: "update operator fail",
-			client: Client{Interface: fake.NewSimpleClientset(&dd),
+			client: Client{
+				Interface: fake.NewSimpleClientset(&dd, &pod),
 				Namespace: "default"},
 			manager:   "manager1",
 			expectErr: true,
@@ -156,7 +187,7 @@ func TestUpdateOperatorDeploymentByLabel(t *testing.T) {
 
 			label := fmt.Sprintf("%s=%s,%s=%s,%s=%s", LabelComponent, tc.manager, LabelCreatedBy, "operator", LabelInstance, "controller-manager")
 
-			if err := tc.client.UpdateOperatorDeploymentByLabel(context.TODO(), label, fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorDockerImage, "1234")); err != nil && !tc.expectErr {
+			if err := tc.client.UpdateOperatorDeploymentByLabel(context.TODO(), label, fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorDockerImage, "1234"), false); err != nil && !tc.expectErr {
 				t.Errorf("failed to find deployment by label %s", err)
 			}
 		})
@@ -175,11 +206,23 @@ func TestUpdateSyncDeploymentByLabel(t *testing.T) {
 			},
 		},
 		Spec: appsv1.DeploymentSpec{
+			Selector: &metav1.LabelSelector{
+				MatchLabels: map[string]string{
+					LabelComponent:    "operator",
+					LabelCreatedBy:    "calyptia-cli",
+					LabelAggregatorID: "444",
+				}},
 			Replicas: nil,
 			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
 					Name: "test",
+					Labels: map[string]string{
+						LabelComponent:    "operator",
+						LabelCreatedBy:    "calyptia-cli",
+						LabelAggregatorID: "444",
+					},
 				},
+
 				Spec: corev1.PodSpec{
 					Containers: []corev1.Container{
 						{
@@ -196,6 +239,33 @@ func TestUpdateSyncDeploymentByLabel(t *testing.T) {
 		},
 	}
 
+	pod := corev1.Pod{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "test",
+			Namespace: "default",
+			Labels: map[string]string{
+				LabelComponent:    "operator",
+				LabelCreatedBy:    "calyptia-cli",
+				LabelAggregatorID: "444",
+			},
+		},
+		Spec: corev1.PodSpec{
+			Containers: []corev1.Container{
+				{
+					Name:  "sync-to-cloud",
+					Image: "Test",
+				},
+				{
+					Name:  "sync-from-cloud",
+					Image: "Test",
+				},
+			},
+		},
+		Status: corev1.PodStatus{
+			Phase: apiv1.PodRunning,
+		},
+	}
+
 	tt := []struct {
 		name      string
 		client    Client
@@ -204,14 +274,16 @@ func TestUpdateSyncDeploymentByLabel(t *testing.T) {
 	}{
 		{
 			name: "update sync pass",
-			client: Client{Interface: fake.NewSimpleClientset(&dd),
+			client: Client{
+				Interface: fake.NewSimpleClientset(&dd, &pod),
 				Namespace: "default"},
 			aggID:     "444",
 			expectErr: false,
 		},
 		{
 			name: "update sync fail",
-			client: Client{Interface: fake.NewSimpleClientset(&dd),
+			client: Client{
+				Interface: fake.NewSimpleClientset(&dd, &pod),
 				Namespace: "default"},
 			aggID:     "333",
 			expectErr: true,
@@ -223,7 +295,7 @@ func TestUpdateSyncDeploymentByLabel(t *testing.T) {
 
 			label := fmt.Sprintf("%s=%s,%s=%s,%s=%s", LabelComponent, "operator", LabelCreatedBy, "calyptia-cli", LabelAggregatorID, tc.aggID)
 
-			if err := tc.client.UpdateSyncDeploymentByLabel(context.TODO(), label, fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorDockerImage, "1234"), "true"); err != nil && !tc.expectErr {
+			if err := tc.client.UpdateSyncDeploymentByLabel(context.TODO(), label, fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorDockerImage, "1234"), "true", false); err != nil && !tc.expectErr {
 				t.Errorf("failed to find deployment by label %s", err)
 			}
 		})

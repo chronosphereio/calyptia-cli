@@ -19,6 +19,7 @@ import (
 func NewCmdUpdate() *cobra.Command {
 	var coreOperatorVersion string
 	var waitReady bool
+	var verbose bool
 
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	configOverrides := &clientcmd.ConfigOverrides{}
@@ -80,8 +81,12 @@ func NewCmdUpdate() *cobra.Command {
 
 			label := fmt.Sprintf("%s=%s,%s=%s,%s=%s", k8s.LabelComponent, "manager", k8s.LabelCreatedBy, "operator", k8s.LabelInstance, "controller-manager")
 			cmd.Printf("Waiting for core-operator to update...\n")
-			if err := k.UpdateOperatorDeploymentByLabel(cmd.Context(), label, fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorDockerImage, coreOperatorVersion)); err != nil {
-				return fmt.Errorf("an error occurred: could not update core-operator: %w", err)
+			if err := k.UpdateOperatorDeploymentByLabel(cmd.Context(), label, fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorDockerImage, coreOperatorVersion), verbose); err != nil {
+				if !verbose {
+					return fmt.Errorf("could not update core-operator to version %s for extra details use --verbose flag", coreOperatorVersion)
+				}
+				return fmt.Errorf("could not update core-operator to version %s, \n%s", coreOperatorVersion, err)
+
 			}
 
 			cmd.Printf("Core operator manager successfully updated to version %s\n", coreOperatorVersion)
@@ -93,6 +98,7 @@ func NewCmdUpdate() *cobra.Command {
 	fs := cmd.Flags()
 
 	fs.BoolVar(&waitReady, "wait", false, "Wait for the core instance to be ready before returning")
+	fs.BoolVar(&verbose, "verbose", false, "Print verbose command output")
 	fs.StringVar(&coreOperatorVersion, "version", utils.DefaultCoreOperatorDockerImageTag, "Core instance version")
 	_ = cmd.Flags().MarkHidden("image")
 	clientcmd.BindOverrideFlags(configOverrides, fs, clientcmd.RecommendedConfigOverrideFlags("kube-"))

@@ -25,6 +25,7 @@ func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 		enableClusterLogging  bool
 		noTLSVerify           bool
 		skipServiceCreation   bool
+		verbose               bool
 	)
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	configOverrides := &clientcmd.ConfigOverrides{}
@@ -132,8 +133,11 @@ func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				}
 
 				cmd.Printf("Waiting for core-instance to update...\n")
-				if err := k8sClient.UpdateSyncDeploymentByLabel(ctx, label, newVersion, strconv.FormatBool(!noTLSVerify)); err != nil {
-					return fmt.Errorf("an error occurred: could not update core-instance: %w", err)
+				if err := k8sClient.UpdateSyncDeploymentByLabel(ctx, label, newVersion, strconv.FormatBool(!noTLSVerify), verbose); err != nil {
+					if !verbose {
+						return fmt.Errorf("could not update core-instance to version %s for extra details use --verbose flag", newVersion)
+					}
+					return fmt.Errorf("could not update core-instance: to version %s %w", newVersion, err)
 				}
 
 				if err != nil {
@@ -153,6 +157,7 @@ func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 	fs.BoolVar(&enableClusterLogging, "enable-cluster-logging", false, "Enable cluster logging functionality")
 	fs.BoolVar(&disableClusterLogging, "disable-cluster-logging", false, "Disable cluster logging functionality")
 	fs.BoolVar(&noTLSVerify, "no-tls-verify", false, "Disable TLS verification when connecting to Calyptia Cloud API.")
+	fs.BoolVar(&verbose, "verbose", false, "Print verbose command output")
 	fs.BoolVar(&skipServiceCreation, "skip-service-creation", false, "Skip the creation of kubernetes services for any pipeline under this core instance.")
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", completer.CompleteEnvironments)
