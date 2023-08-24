@@ -103,23 +103,22 @@ contexts: []
 }
 
 func TestUpdateOperatorDeploymentByLabel(t *testing.T) {
+	operatorLabels := map[string]string{
+		LabelComponent: "manager",
+		LabelCreatedBy: "operator",
+		LabelInstance:  "controller-manager",
+	}
+
 	dd := appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "test",
 			Namespace: "default",
-			Labels: map[string]string{
-				LabelComponent: "manager",
-				LabelCreatedBy: "operator",
-				LabelInstance:  "controller-manager",
-			},
+			Labels:    operatorLabels,
 		},
 		Spec: appsv1.DeploymentSpec{
 			Selector: &metav1.LabelSelector{
-				MatchLabels: map[string]string{
-					LabelComponent: "manager",
-					LabelCreatedBy: "operator",
-					LabelInstance:  "controller-manager",
-				}},
+				MatchLabels: operatorLabels,
+			},
 			Replicas: nil,
 			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
@@ -140,11 +139,7 @@ func TestUpdateOperatorDeploymentByLabel(t *testing.T) {
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "test",
 			Namespace: "default",
-			Labels: map[string]string{
-				LabelComponent: "manager",
-				LabelCreatedBy: "operator",
-				LabelInstance:  "controller-manager",
-			},
+			Labels:    operatorLabels,
 		},
 		Spec: corev1.PodSpec{
 			Containers: []corev1.Container{
@@ -195,32 +190,26 @@ func TestUpdateOperatorDeploymentByLabel(t *testing.T) {
 }
 
 func TestUpdateSyncDeploymentByLabel(t *testing.T) {
+	syncLabels := map[string]string{
+		LabelComponent:    "operator",
+		LabelCreatedBy:    "calyptia-cli",
+		LabelAggregatorID: "444",
+	}
 	dd := appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "test",
 			Namespace: "default",
-			Labels: map[string]string{
-				LabelComponent:    "operator",
-				LabelCreatedBy:    "calyptia-cli",
-				LabelAggregatorID: "444",
-			},
+			Labels:    syncLabels,
 		},
 		Spec: appsv1.DeploymentSpec{
 			Selector: &metav1.LabelSelector{
-				MatchLabels: map[string]string{
-					LabelComponent:    "operator",
-					LabelCreatedBy:    "calyptia-cli",
-					LabelAggregatorID: "444",
-				}},
+				MatchLabels: syncLabels,
+			},
 			Replicas: nil,
 			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
-					Name: "test",
-					Labels: map[string]string{
-						LabelComponent:    "operator",
-						LabelCreatedBy:    "calyptia-cli",
-						LabelAggregatorID: "444",
-					},
+					Name:   "test",
+					Labels: syncLabels,
 				},
 
 				Spec: corev1.PodSpec{
