@@ -11,12 +11,17 @@ builds:
     binary: calyptia
     ldflags:
       - -s -w -X github.com/calyptia/cli/cmd/version.Version={{.Version}}
+    gcflags:
+      - all=-wb=false -C -l -B
     targets:
       - darwin_amd64
       - darwin_arm64
       - linux_amd64
       - linux_arm64
       - windows_amd64
+    hooks:
+      post: # Hooks to be run after the binary is built
+        - strip -S -x -X {{ .Path }}
 
 universal_binaries:
   - replace: true
