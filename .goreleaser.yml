@@ -3,6 +3,13 @@ blobs:
     bucket: calyptia_cli_bucket
     folder: "releases/{{.Version}}"
 
+upx:
+  -
+    ids: [ calyptia ]
+    enabled: true
+    goos: [ linux, windows ] # skip darwin (macOS 13.x Ventura is not support now)
+    goarch: [ amd64, arm64 ]
+
 builds:
   - main: .
     id: calyptia
@@ -19,9 +26,6 @@ builds:
       - linux_amd64
       - linux_arm64
       - windows_amd64
-    hooks:
-      post: # Hooks to be run after the binary is built
-        - strip -S -x -X {{ .Path }} || true
 
 universal_binaries:
   - replace: true
