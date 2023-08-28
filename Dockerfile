@@ -1,4 +1,4 @@
-FROM golang:1.19 as build
+FROM golang:1.21 as build
 
 # Install certificates
 # hadolint ignore=DL3008,DL3015
@@ -9,7 +9,7 @@ WORKDIR /go/src/github.com/calyptia/cli
 # Now do the rest of the source code - this way we can speed up local iteration
 COPY . .
 
-RUN go build -ldflags "-w -s" -tags netgo,osusergo -o /calyptia 
+RUN go build -a -gcflags=all="-C -l -B" -ldflags="-w -s" -tags netgo,osusergo -o /calyptia
 
 FROM scratch as production
 LABEL org.opencontainers.image.title="calyptia/cli" \
