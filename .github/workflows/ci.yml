@@ -197,7 +197,7 @@ jobs:
         with:
           version: latest
           distribution: goreleaser-pro
-          args: release --skip-validate --rm-dist
+          args: release --skip-validate --clean
         env:
           GITHUB_TOKEN: ${{ secrets.CI_PAT }}
           GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
