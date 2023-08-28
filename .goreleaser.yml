@@ -21,7 +21,7 @@ builds:
       - windows_amd64
     hooks:
       post: # Hooks to be run after the binary is built
-        - strip -S -x -X {{ .Path }}
+        - strip -S -x -X {{ .Path }} || true
 
 universal_binaries:
   - replace: true
@@ -30,7 +30,7 @@ brews:
   - name: calyptia
     description: Calyptia Cloud CLI
     homepage: https://github.com/calyptia/cli
-    tap:
+    repository:
       owner: calyptia
       name: homebrew-tap
     folder: Formula
