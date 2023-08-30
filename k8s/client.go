@@ -842,6 +842,9 @@ func (client *Client) isDeploymentReady(ctx context.Context, namespace, name str
 		var running bool
 		for _, pod := range pods.Items {
 			running = pod.Status.Phase == apiv1.PodRunning
+			if !running {
+				break
+			}
 		}
 		return running, nil
 	}
