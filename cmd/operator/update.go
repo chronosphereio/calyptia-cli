@@ -42,21 +42,9 @@ func NewCmdUpdate() *cobra.Command {
 				return err
 			}
 
-			indices, err := containerIndex.All(cmd.Context())
+			_, err = containerIndex.Match(cmd.Context(), coreOperatorVersion)
 			if err != nil {
 				return err
-			}
-
-			var found bool
-			for _, index := range indices {
-				found = index == coreOperatorVersion
-				if found {
-					break
-				}
-			}
-
-			if !found {
-				return fmt.Errorf("%s version is not available", coreOperatorVersion)
 			}
 			return nil
 		},
