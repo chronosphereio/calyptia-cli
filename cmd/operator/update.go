@@ -37,14 +37,14 @@ func NewCmdUpdate() *cobra.Command {
 				return err
 			}
 
-			containerIndex, err := index.NewContainer()
+			operatorIndex, err := index.NewOperator()
 			if err != nil {
 				return err
 			}
 
-			_, err = containerIndex.Match(cmd.Context(), coreOperatorVersion)
+			_, err = operatorIndex.Match(cmd.Context(), coreOperatorVersion)
 			if err != nil {
-				return err
+				return fmt.Errorf("core-operator image tag %s is not available", coreOperatorVersion)
 			}
 			return nil
 		},

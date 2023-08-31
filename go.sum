@@ -66,6 +66,8 @@ github.com/calyptia/cli/k8s v0.0.0-20230824165254-bdb6c15160d6 h1:kzcm/sLIx8piaY
 github.com/calyptia/cli/k8s v0.0.0-20230824165254-bdb6c15160d6/go.mod h1:CvkWcv3I814qVOVkP/UqJEy3wf3lF6Tss8/OFDEflDQ=
 github.com/calyptia/core-images-index/go-index v0.0.0-20230824152146-76a802fcc2ef h1:03BtrXqVORHYOO5YleH6DFnCUVNNnzDPBE3mRnjdh/U=
 github.com/calyptia/core-images-index/go-index v0.0.0-20230824152146-76a802fcc2ef/go.mod h1:9+aUlL+o9dpq2wcF4CLEQlPAcjlmuwohVRvOxNN6TWk=
+github.com/calyptia/core-images-index/go-index v0.0.0-20230831205126-d2594da758bd h1:RAzlEO/caxj2yXDMkpXtphkDsvSs3ALhThFFykWZg4o=
+github.com/calyptia/core-images-index/go-index v0.0.0-20230831205126-d2594da758bd/go.mod h1:9+aUlL+o9dpq2wcF4CLEQlPAcjlmuwohVRvOxNN6TWk=
 github.com/calyptia/go-bubble-table v0.2.1 h1:NWcVRyGCLuP7QIA29uUFSY+IjmWcmUWHjy5J/CPb0Rk=
 github.com/calyptia/go-bubble-table v0.2.1/go.mod h1:gJvzUOUzfQeA9JmgLumyJYWJMtuRQ7WxxTwc9tjEiGw=
 github.com/calyptia/go-fluentbit-config/v2 v2.0.0 h1:2o7qZEbpLX0b+kn3F/+X/RiN/oRw8lDqJKXM5tWSLKg=
