@@ -15,6 +15,7 @@ import (
 	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/k8s"
+	"github.com/calyptia/core-images-index/go-index"
 	semver "github.com/hashicorp/go-version"
 )
 
@@ -44,6 +45,29 @@ func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 			if _, err := semver.NewSemver(newVersion); err != nil {
 				return err
 			}
+
+			containerIndex, err := index.NewContainer()
+			if err != nil {
+				return err
+			}
+
+			indices, err := containerIndex.All(cmd.Context())
+			if err != nil {
+				return err
+			}
+
+			var found bool
+			for _, index := range indices {
+				found = index == newVersion
+				if found {
+					break
+				}
+			}
+
+			if !found {
+				return fmt.Errorf("%s version is not available", newVersion)
+			}
+
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {

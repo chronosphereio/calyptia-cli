@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/calyptia/cli/cmd/utils"
+	"github.com/calyptia/core-images-index/go-index"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
@@ -34,6 +35,28 @@ func NewCmdUpdate() *cobra.Command {
 			}
 			if _, err := semver.NewSemver(coreOperatorVersion); err != nil {
 				return err
+			}
+
+			containerIndex, err := index.NewContainer()
+			if err != nil {
+				return err
+			}
+
+			indices, err := containerIndex.All(cmd.Context())
+			if err != nil {
+				return err
+			}
+
+			var found bool
+			for _, index := range indices {
+				found = index == coreOperatorVersion
+				if found {
+					break
+				}
+			}
+
+			if !found {
+				return fmt.Errorf("%s version is not available", coreOperatorVersion)
 			}
 			return nil
 		},
