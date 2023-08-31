@@ -23,7 +23,7 @@ import (
 func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 	var newName string
 	var newConfigFile string
-	var newReplicasCount uint
+	var newReplicasCount int
 	var autoCreatePortsFromConfig bool
 	var skipConfigValidation bool
 	var secretsFile string
@@ -127,9 +127,10 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 			if newName != "" {
 				update.Name = &newName
 			}
-			if newReplicasCount != 0 {
-				update.ReplicasCount = &newReplicasCount
+			if newReplicasCount >= 0 {
+				update.ReplicasCount = cfg.Ptr(uint(newReplicasCount))
 			}
+
 			if rawConfig != "" {
 				update.RawConfig = &rawConfig
 			}
@@ -172,7 +173,7 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 	fs.StringVar(&newName, "new-name", "", "New pipeline name")
 	fs.StringVar(&newConfigFile, "config-file", "", "New Fluent Bit config file used by pipeline")
 	fs.StringVar(&providedConfigFormat, "config-format", "", "Default configuration format to use (yaml, ini(deprecated))")
-	fs.UintVar(&newReplicasCount, "replicas", 0, "New pipeline replica size")
+	fs.IntVar(&newReplicasCount, "replicas", -1, "New pipeline replica size")
 	fs.BoolVar(&autoCreatePortsFromConfig, "auto-create-ports", true, "Automatically create pipeline ports from config if updated")
 	fs.BoolVar(&skipConfigValidation, "skip-config-validation", false, "Opt-in to skip config validation (Use with caution as this option might be removed soon)")
 	fs.StringVar(&secretsFile, "secrets-file", "", "Optional file containing a full definition of all secrets.\nThe format is derived either from the extension or the --secrets-format argument.\nThese can be referenced in pipeline files as such:\n{{ secrets.name }}\nThe prefix is the same for all secrets, the name is defined in the secrets file.")
