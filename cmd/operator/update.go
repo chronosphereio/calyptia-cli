@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/calyptia/cli/cmd/utils"
+	"github.com/calyptia/core-images-index/go-index"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
@@ -34,6 +35,16 @@ func NewCmdUpdate() *cobra.Command {
 			}
 			if _, err := semver.NewSemver(coreOperatorVersion); err != nil {
 				return err
+			}
+
+			operatorIndex, err := index.NewOperator()
+			if err != nil {
+				return err
+			}
+
+			_, err = operatorIndex.Match(cmd.Context(), coreOperatorVersion)
+			if err != nil {
+				return fmt.Errorf("core-operator image tag %s is not available", coreOperatorVersion)
 			}
 			return nil
 		},

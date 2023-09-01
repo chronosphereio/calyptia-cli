@@ -12,7 +12,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi v1.15.5
 	github.com/calyptia/api v1.3.2
 	github.com/calyptia/cli/k8s v0.0.0-20230824165254-bdb6c15160d6
-	github.com/calyptia/core-images-index/go-index v0.0.0-20230824152146-76a802fcc2ef
+	github.com/calyptia/core-images-index/go-index v0.0.0-20230831205126-d2594da758bd
 	github.com/calyptia/go-bubble-table v0.2.1
 	github.com/calyptia/go-fluentbit-config/v2 v2.0.0
 	github.com/charmbracelet/bubbletea v0.24.2

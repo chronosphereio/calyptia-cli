@@ -15,7 +15,7 @@ import (
 	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/k8s"
-	semver "github.com/hashicorp/go-version"
+	"github.com/calyptia/core-images-index/go-index"
 )
 
 func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernetes.Interface) *cobra.Command {
@@ -41,8 +41,14 @@ func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 			if !strings.HasPrefix(newVersion, "v") {
 				newVersion = fmt.Sprintf("v%s", newVersion)
 			}
-			if _, err := semver.NewSemver(newVersion); err != nil {
+			operatorIndex, err := index.NewOperator()
+			if err != nil {
 				return err
+			}
+
+			_, err = operatorIndex.Match(cmd.Context(), newVersion)
+			if err != nil {
+				return fmt.Errorf("core_instance image tag %s is not available", newVersion)
 			}
 			return nil
 		},
@@ -161,7 +167,7 @@ func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 	fs.BoolVar(&skipServiceCreation, "skip-service-creation", false, "Skip the creation of kubernetes services for any pipeline under this core instance.")
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", completer.CompleteEnvironments)
-	_ = cmd.RegisterFlagCompletionFunc("version", completer.CompleteCoreContainerVersion)
+	_ = cmd.RegisterFlagCompletionFunc("version", completer.CompleteCoreOperatorVersion)
 	clientcmd.BindOverrideFlags(configOverrides, fs, clientcmd.RecommendedConfigOverrideFlags("kube-"))
 	return cmd
 }
