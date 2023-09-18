@@ -118,18 +118,6 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 				format = cloud.ConfigFormatINI
 			}
 
-			var strategy = cloud.DefaultDeploymentStrategy
-			if deploymentStrategy == "" {
-				if hotReload {
-					strategy = cloud.DeploymentStrategyHotReload
-				}
-			} else {
-				if !isValidDeploymentStrategy(deploymentStrategy) {
-					return fmt.Errorf("invalid provided deployment strategy: %s", deploymentStrategy)
-				}
-				strategy = cloud.DeploymentStrategy(deploymentStrategy)
-			}
-
 			update := cloud.UpdatePipeline{
 				AutoCreatePortsFromConfig: &autoCreatePortsFromConfig,
 				SkipConfigValidation:      skipConfigValidation,
@@ -137,7 +125,23 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 				Secrets:                   secrets,
 				Files:                     updatePipelineFiles,
 				Metadata:                  metadata,
-				DeploymentStrategy:        &strategy,
+			}
+
+			var strategy *cloud.DeploymentStrategy
+			if deploymentStrategy == "" {
+				if hotReload {
+					strategy = cfg.Ptr(cloud.DeploymentStrategyHotReload)
+				}
+			} else {
+				if !isValidDeploymentStrategy(deploymentStrategy) {
+					return fmt.Errorf("invalid provided deployment strategy: %s", deploymentStrategy)
+				}
+				s := cloud.DeploymentStrategy(deploymentStrategy)
+				strategy = &s
+			}
+
+			if strategy != nil {
+				update.DeploymentStrategy = strategy
 			}
 
 			if newName != "" {
