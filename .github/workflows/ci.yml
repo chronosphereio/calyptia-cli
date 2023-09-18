@@ -50,7 +50,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Build and load docker image
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         with:
           context: .
           target: production
@@ -168,7 +168,7 @@ jobs:
             type=sha,prefix=,suffix=,format=short
 
       - name: Build and push docker image
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         with:
           context: .
           target: production
