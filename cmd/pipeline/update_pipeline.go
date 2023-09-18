@@ -36,7 +36,6 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 	var metadataFile string
 	var providedConfigFormat string
 	var deploymentStrategy string
-	var hotReload bool
 
 	completer := completer.Completer{Config: config}
 
@@ -128,11 +127,7 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 			}
 
 			var strategy *cloud.DeploymentStrategy
-			if deploymentStrategy == "" {
-				if hotReload {
-					strategy = cfg.Ptr(cloud.DeploymentStrategyHotReload)
-				}
-			} else {
+			if deploymentStrategy != "" {
 				if !isValidDeploymentStrategy(deploymentStrategy) {
 					return fmt.Errorf("invalid provided deployment strategy: %s", deploymentStrategy)
 				}
@@ -199,7 +194,6 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 	fs.StringVar(&secretsFile, "secrets-file", "", "Optional file containing a full definition of all secrets.\nThe format is derived either from the extension or the --secrets-format argument.\nThese can be referenced in pipeline files as such:\n{{ secrets.name }}\nThe prefix is the same for all secrets, the name is defined in the secrets file.")
 	fs.StringVar(&secretsFormat, "secrets-format", "auto", "Secrets file format. Allowed: auto, env, json, yaml. If not set it is derived from secrets file extension")
 	fs.StringVar(&deploymentStrategy, "deployment-strategy", "", "The deployment strategy to use when deploying this pipeline in cluster (hotReload or recreate (default)).")
-	fs.BoolVar(&hotReload, "hot-reload", false, "Use the hotReload deployment strategy when deploying the pipeline to the cluster, (mutually exclusive with deployment-strategy)")
 	fs.StringArrayVar(&files, "file", nil, "Optional file. You can reference this file contents from your config like so:\n{{ files.myfile }}\nPass as many as you want; bear in mind the file name can only contain alphanumeric characters.")
 	fs.BoolVar(&encryptFiles, "encrypt-files", false, "Encrypt file contents")
 	fs.StringVar(&image, "image", "", "Fluent-bit docker image")
