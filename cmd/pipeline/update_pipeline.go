@@ -35,6 +35,7 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 	var metadataPairs []string
 	var metadataFile string
 	var providedConfigFormat string
+	var deploymentStrategy string
 
 	completer := completer.Completer{Config: config}
 
@@ -116,6 +117,11 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 				format = cloud.ConfigFormatINI
 			}
 
+			if deploymentStrategy != "" && !isValidDeploymentStrategy(deploymentStrategy) {
+				return fmt.Errorf("invalid provided deployment strategy: %s", deploymentStrategy)
+			}
+
+			strategy := cloud.DeploymentStrategy(deploymentStrategy)
 			update := cloud.UpdatePipeline{
 				AutoCreatePortsFromConfig: &autoCreatePortsFromConfig,
 				SkipConfigValidation:      skipConfigValidation,
@@ -123,7 +129,9 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 				Secrets:                   secrets,
 				Files:                     updatePipelineFiles,
 				Metadata:                  metadata,
+				DeploymentStrategy:        &strategy,
 			}
+
 			if newName != "" {
 				update.Name = &newName
 			}
@@ -178,6 +186,8 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 	fs.BoolVar(&skipConfigValidation, "skip-config-validation", false, "Opt-in to skip config validation (Use with caution as this option might be removed soon)")
 	fs.StringVar(&secretsFile, "secrets-file", "", "Optional file containing a full definition of all secrets.\nThe format is derived either from the extension or the --secrets-format argument.\nThese can be referenced in pipeline files as such:\n{{ secrets.name }}\nThe prefix is the same for all secrets, the name is defined in the secrets file.")
 	fs.StringVar(&secretsFormat, "secrets-format", "auto", "Secrets file format. Allowed: auto, env, json, yaml. If not set it is derived from secrets file extension")
+	fs.StringVar(&deploymentStrategy, "deployment-strategy", deploymentStrategy, "The deployment strategy to use when deploying this pipeline in cluster (hotReload or recreate (default)).")
+
 	fs.StringArrayVar(&files, "file", nil, "Optional file. You can reference this file contents from your config like so:\n{{ files.myfile }}\nPass as many as you want; bear in mind the file name can only contain alphanumeric characters.")
 	fs.BoolVar(&encryptFiles, "encrypt-files", false, "Encrypt file contents")
 	fs.StringVar(&image, "image", "", "Fluent-bit docker image")

@@ -10,7 +10,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.18.37
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.115.0
 	github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi v1.15.5
-	github.com/calyptia/api v1.3.2
+	github.com/calyptia/api v1.5.1
 	github.com/calyptia/cli/k8s v0.0.0-20230824165254-bdb6c15160d6
 	github.com/calyptia/core-images-index/go-index v0.0.0-20230831205126-d2594da758bd
 	github.com/calyptia/go-bubble-table v0.2.1
@@ -72,6 +72,7 @@ require (
 	github.com/danieljoos/wincred v1.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/daviddengcn/go-colortext v1.0.0 // indirect
+	github.com/deepmap/oapi-codegen v1.8.2 // indirect
 	github.com/docker/distribution v2.8.2+incompatible // indirect
 	github.com/emicklei/go-restful/v3 v3.9.0 // indirect
 	github.com/evanphx/json-patch v5.6.0+incompatible // indirect
@@ -101,6 +102,9 @@ require (
 	github.com/huandu/xstrings v1.3.3 // indirect
 	github.com/imdario/mergo v0.3.11 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
+	github.com/influxdata/influxdb v1.11.2 // indirect
+	github.com/influxdata/influxdb-client-go/v2 v2.12.3 // indirect
+	github.com/influxdata/line-protocol v0.0.0-20200327222509-2487e7298839 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/jonboulle/clockwork v0.2.2 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
@@ -137,9 +141,12 @@ require (
 	github.com/prometheus/common v0.44.0 // indirect
 	github.com/prometheus/procfs v0.10.1 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
+	github.com/rjeczalik/interfaces v0.3.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/shopspring/decimal v1.2.0 // indirect
 	github.com/spf13/cast v1.3.1 // indirect
+	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect
+	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	github.com/xlab/treeprint v1.2.0 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.starlark.net v0.0.0-20230525235612-a134d8f9ddca // indirect

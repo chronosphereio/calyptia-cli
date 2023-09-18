@@ -4,16 +4,20 @@ package cmd
 
 import (
 	"context"
-
 	"github.com/calyptia/api/types"
+	"github.com/calyptia/go-fluentbit-config/v2"
+	"net/url"
 )
 
 // Client is an interface generated for "github.com/calyptia/api/client.Client".
 type Client interface {
+	AWSCustomerRedirect(context.Context, string) (*url.URL, error)
 	AcceptInvitation(context.Context, types.AcceptInvitation) error
 	ActiveTraceSession(context.Context, string) (types.TraceSession, error)
+	AddAgentMetricsV1(context.Context, string, []types.Metric) (types.MetricsOverTimeByPlugin, error)
 	Agent(context.Context, string) (types.Agent, error)
 	AgentConfigHistory(context.Context, string, types.AgentConfigHistoryParams) (types.AgentConfigHistory, error)
+	AgentErrors(context.Context, types.ListAgentErrors) (types.AgentErrors, error)
 	AgentMetrics(context.Context, string, types.MetricsParams) (types.MetricsSummary, error)
 	AgentMetricsByPlugin(context.Context, string, types.MetricsParams) (types.MetricsSummaryPlugin, error)
 	AgentMetricsOverTimeByPlugin(context.Context, string, types.MetricsParams) (types.MetricsOverTimeByPlugin, error)
@@ -21,6 +25,8 @@ type Client interface {
 	AgentOverTimeMetrics(context.Context, string, types.MetricsParams) (types.MetricsOverTime, error)
 	Agents(context.Context, string, types.AgentsParams) (types.Agents, error)
 	ClusterObject(context.Context, string) (types.ClusterObject, error)
+	ClusterObjectRegex(context.Context, string) (types.ClusterObjectRegex, error)
+	ClusterObjectRegexes(context.Context, types.ListClusterObjectRegexes) (types.ClusterObjectRegexes, error)
 	ClusterObjects(context.Context, string, types.ClusterObjectParams) (types.ClusterObjects, error)
 	ConfigSection(context.Context, string) (types.ConfigSection, error)
 	ConfigSections(context.Context, string, types.ConfigSectionsParams) (types.ConfigSections, error)
@@ -34,34 +40,39 @@ type Client interface {
 	CoreInstanceOverTimeMetrics(context.Context, string, types.MetricsParams) (types.MetricsOverTime, error)
 	CoreInstancePing(context.Context, string) (types.CoreInstancePingResponse, error)
 	CoreInstances(context.Context, string, types.CoreInstancesParams) (types.CoreInstances, error)
-	CreateClusterObject(context.Context, string, types.CreateClusterObject) (types.CreatedClusterObject, error)
-	CreateConfigSection(context.Context, string, types.CreateConfigSection) (types.CreatedConfigSection, error)
+	CreateAWSContractFromToken(context.Context, types.CreateAWSContractFromToken) error
+	CreateAgentError(context.Context, types.CreateAgentError) (types.Created, error)
+	CreateClusterObject(context.Context, string, types.CreateClusterObject) (types.Created, error)
+	CreateClusterObjectRegex(context.Context, types.CreateClusterObjectRegex) (types.Created, error)
+	CreateConfigSection(context.Context, string, types.CreateConfigSection) (types.Created, error)
 	CreateCoreInstance(context.Context, types.CreateCoreInstance) (types.CreatedCoreInstance, error)
-	CreateCoreInstanceCheck(context.Context, string, types.CreateCoreInstanceCheck) (types.CreatedCoreInstanceCheck, error)
+	CreateCoreInstanceCheck(context.Context, string, types.Check) (types.Created, error)
 	CreateEnvironment(context.Context, string, types.CreateEnvironment) (types.CreatedEnvironment, error)
-	CreateFleet(context.Context, types.CreateFleet) (types.CreatedFleet, error)
-	CreateIngestCheck(context.Context, string, types.CreateIngestCheck) (types.CreatedIngestCheck, error)
+	CreateFleet(context.Context, types.CreateFleet) (types.Created, error)
+	CreateIngestCheck(context.Context, string, types.CreateIngestCheck) (types.Created, error)
 	CreateInvitation(context.Context, string, types.CreateInvitation) error
 	CreatePipeline(context.Context, string, types.CreatePipeline) (types.CreatedPipeline, error)
-	CreatePipelineCheck(context.Context, string, types.CreatePipelineCheck) (types.CreatedPipelineCheck, error)
-	CreatePipelineFile(context.Context, string, types.CreatePipelineFile) (types.CreatedPipelineFile, error)
+	CreatePipelineCheck(context.Context, string, types.CreatePipelineCheck) (types.Created, error)
+	CreatePipelineFile(context.Context, string, types.CreatePipelineFile) (types.Created, error)
 	CreatePipelinePort(context.Context, string, types.CreatePipelinePort) (types.CreatedPipelinePort, error)
-	CreatePipelineSecret(context.Context, string, types.CreatePipelineSecret) (types.CreatedPipelineSecret, error)
+	CreatePipelineSecret(context.Context, string, types.CreatePipelineSecret) (types.Created, error)
 	CreateProcessingRule(context.Context, types.CreateProcessingRule) (types.CreatedProcessingRule, error)
+	CreateProcessingRuleTemplate(context.Context, types.CreateProcessingRuleTemplate) (types.Created, error)
 	CreateProject(context.Context, types.CreateProject) (types.CreatedProject, error)
-	CreateResourceProfile(context.Context, string, types.CreateResourceProfile) (types.CreatedResourceProfile, error)
+	CreateResourceProfile(context.Context, string, types.CreateResourceProfile) (types.Created, error)
 	CreateToken(context.Context, string, types.CreateToken) (types.Token, error)
 	CreateTraceRecord(context.Context, string, types.CreateTraceRecord) (types.CreatedTraceRecord, error)
-	CreateTraceSession(context.Context, string, types.CreateTraceSession) (types.CreatedTraceSession, error)
+	CreateTraceSession(context.Context, string, types.CreateTraceSession) (types.Created, error)
 	DeleteAgent(context.Context, string) error
 	DeleteAgents(context.Context, string, ...string) error
 	DeleteClusterObject(context.Context, string) error
+	DeleteClusterObjectRegex(context.Context, string) error
 	DeleteConfigSection(context.Context, string) error
 	DeleteCoreInstance(context.Context, string) error
 	DeleteCoreInstanceCheck(context.Context, string) error
 	DeleteCoreInstances(context.Context, string, ...string) error
 	DeleteEnvironment(context.Context, string) error
-	DeleteFleet(context.Context, string) (types.DeletedFleet, error)
+	DeleteFleet(context.Context, string) (types.Deleted, error)
 	DeleteIngestCheck(context.Context, string) error
 	DeletePipeline(context.Context, string) error
 	DeletePipelineCheck(context.Context, string) error
@@ -71,11 +82,15 @@ type Client interface {
 	DeletePipelineSecret(context.Context, string) error
 	DeletePipelines(context.Context, string, ...string) error
 	DeleteProcessingRule(context.Context, string) error
+	DeleteProcessingRuleTemplate(context.Context, string) (types.Deleted, error)
 	DeleteResourceProfile(context.Context, string) error
 	DeleteToken(context.Context, string) error
+	DismissAgentError(context.Context, types.DismissAgentError) (types.DismissedAgentError, error)
 	Environments(context.Context, string, types.EnvironmentsParams) (types.Environments, error)
-	Fleet(context.Context, string) (types.Fleet, error)
+	Fleet(context.Context, types.FleetParams) (types.Fleet, error)
+	FleetConfig(context.Context, string, types.FleetConfigParams) (*fluentbitconfig.Config, error)
 	Fleets(context.Context, types.FleetsParams) (types.Fleets, error)
+	Health(context.Context) (types.Health, error)
 	IngestCheck(context.Context, string) (types.IngestCheck, error)
 	IngestChecks(context.Context, string, types.IngestChecksParams) (types.IngestChecks, error)
 	Members(context.Context, string, types.MembersParams) (types.Memberships, error)
@@ -86,6 +101,7 @@ type Client interface {
 	PipelineConfigHistory(context.Context, string, types.PipelineConfigHistoryParams) (types.PipelineConfigHistory, error)
 	PipelineFile(context.Context, string) (types.PipelineFile, error)
 	PipelineFiles(context.Context, string, types.PipelineFilesParams) (types.PipelineFiles, error)
+	PipelineMetadata(context.Context, string, ...string) (types.PipelineMetadata, error)
 	PipelineMetrics(context.Context, string, types.MetricsParams) (types.MetricsSummary, error)
 	PipelineMetricsByPlugin(context.Context, string, types.MetricsParams) (types.MetricsSummaryPlugin, error)
 	PipelineMetricsOverTimeByPlugin(context.Context, string, types.MetricsParams) (types.MetricsOverTimeByPlugin, error)
@@ -96,18 +112,20 @@ type Client interface {
 	PipelineSecret(context.Context, string) (types.PipelineSecret, error)
 	PipelineSecrets(context.Context, string, types.PipelineSecretsParams) (types.PipelineSecrets, error)
 	PipelineStatusHistory(context.Context, string, types.PipelineStatusHistoryParams) (types.PipelineStatusHistory, error)
-	Pipelines(context.Context, string, types.PipelinesParams) (types.Pipelines, error)
+	Pipelines(context.Context, types.PipelinesParams) (types.Pipelines, error)
 	PipelinesMetricsV1(context.Context, string, types.PipelinesMetricsParams) (types.PipelinesMetrics, error)
 	PreviewProcessingRule(context.Context, types.PreviewProcessingRule) ([]types.FluentBitLog, error)
 	ProcessingRule(context.Context, string) (types.ProcessingRule, error)
+	ProcessingRuleTemplates(context.Context, types.ListProcessingRuleTemplates) (types.ProcessingRuleTemplates, error)
 	ProcessingRules(context.Context, types.ProcessingRulesParams) (types.ProcessingRules, error)
 	Project(context.Context, string) (types.Project, error)
 	ProjectMetricsV1(context.Context, string, types.MetricsParams) (types.ProjectMetrics, error)
-	ProjectPipelines(context.Context, string, types.PipelinesParams) (types.Pipelines, error)
 	Projects(context.Context, types.ProjectsParams) (types.Projects, error)
+	PushAWSMarketplaceSubscriptionNotification(context.Context, types.AWSMarketplaceSubscriptionNotification) error
 	RegisterAgent(context.Context, types.RegisterAgent) (types.RegisteredAgent, error)
 	ResourceProfile(context.Context, string) (types.ResourceProfile, error)
 	ResourceProfiles(context.Context, string, types.ResourceProfilesParams) (types.ResourceProfiles, error)
+	Search(context.Context, types.SearchQuery) ([]types.SearchResult, error)
 	SendVerificationEmail(context.Context) error
 	SetAgentToken(string)
 	SetCoreInstanceToken(string)
@@ -121,24 +139,28 @@ type Client interface {
 	TraceSessions(context.Context, string, types.TraceSessionsParams) (types.TraceSessions, error)
 	UpdateAgent(context.Context, string, types.UpdateAgent) error
 	UpdateClusterObject(context.Context, string, types.UpdateClusterObject) error
-	UpdateConfigSection(context.Context, string, types.UpdateConfigSection) (types.UpdatedConfigSection, error)
+	UpdateClusterObjectRegex(context.Context, types.UpdateClusterObjectRegex) (types.Updated, error)
+	UpdateConfigSection(context.Context, string, types.UpdateConfigSection) (types.Updated, error)
 	UpdateConfigSectionSet(context.Context, string, ...string) error
 	UpdateCoreInstance(context.Context, string, types.UpdateCoreInstance) error
 	UpdateCoreInstanceCheck(context.Context, string, types.UpdateCoreInstanceCheck) error
 	UpdateEnvironment(context.Context, string, types.UpdateEnvironment) error
-	UpdateFleet(context.Context, types.UpdateFleet) (types.UpdatedFleet, error)
+	UpdateFleet(context.Context, types.UpdateFleet) (types.Updated, error)
 	UpdateIngestCheck(context.Context, string, types.UpdateIngestCheck) error
+	UpdateMember(context.Context, types.UpdateMember) error
 	UpdatePipeline(context.Context, string, types.UpdatePipeline) (types.UpdatedPipeline, error)
 	UpdatePipelineCheck(context.Context, string, types.UpdatePipelineCheck) error
 	UpdatePipelineClusterObjects(context.Context, string, types.UpdatePipelineClusterObjects) error
 	UpdatePipelineFile(context.Context, string, types.UpdatePipelineFile) error
+	UpdatePipelineMetadata(context.Context, string, types.UpdatePipelineMetadata) error
 	UpdatePipelinePort(context.Context, string, types.UpdatePipelinePort) error
 	UpdatePipelineSecret(context.Context, string, types.UpdatePipelineSecret) error
-	UpdateProcessingRule(context.Context, types.UpdateProcessingRule) (types.UpdatedProcessingRule, error)
+	UpdateProcessingRule(context.Context, types.UpdateProcessingRule) (types.Updated, error)
+	UpdateProcessingRuleTemplate(context.Context, types.UpdateProcessingRuleTemplate) (types.Updated, error)
 	UpdateProject(context.Context, string, types.UpdateProject) error
 	UpdateResourceProfile(context.Context, string, types.UpdateResourceProfile) error
-	UpdateToken(context.Context, string, types.UpdateToken) error
-	UpdateTraceSession(context.Context, string, types.UpdateTraceSession) (types.UpdatedTraceSession, error)
+	UpdateToken(context.Context, types.UpdateToken) error
+	UpdateTraceSession(context.Context, string, types.UpdateTraceSession) (types.Updated, error)
 	ValidateConfig(context.Context, types.AgentType, types.ValidatingConfig) (types.ValidatedConfig, error)
 	ValidateConfigV2(context.Context, types.ValidatingConfig) (types.ValidatedConfigV2, error)
 }
