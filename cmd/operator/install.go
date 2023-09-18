@@ -2,6 +2,8 @@ package operator
 
 import (
 	"context"
+	"embed"
+	_ "embed"
 	"errors"
 	"fmt"
 	"strconv"
@@ -25,6 +27,9 @@ import (
 	"k8s.io/component-base/logs"
 	kubectl "k8s.io/kubectl/pkg/cmd"
 )
+
+//go:embed manifest.yaml
+var f embed.FS
 
 func NewCmdInstall() *cobra.Command {
 	var coreInstanceVersion string
@@ -148,14 +153,12 @@ func extractDeployment(yml string) (string, error) {
 }
 
 func prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace string, createNamespace bool) (string, error) {
-	file, err := k8s.GetOperatorManifest(coreInstanceVersion)
+	file, err := f.ReadFile("manifest.yaml")
 	if err != nil {
 		return "", err
 	}
-
 	fullFile := string(file)
 	solveNamespace := solveNamespaceCreation(createNamespace, fullFile, namespace)
-
 	withNamespace := injectNamespace(solveNamespace, namespace)
 
 	withImage, err := addImage(coreDockerImage, coreInstanceVersion, withNamespace)
