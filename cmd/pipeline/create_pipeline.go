@@ -39,19 +39,23 @@ func NewCmdCreatePipeline(config *cfg.Config) *cobra.Command {
 	var providedConfigFormat string
 	var deploymentStrategy string
 	var hotReload bool
+	var rawConfig []byte
 
 	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:   "pipeline",
 		Short: "Create a new pipeline",
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			var err error
+			rawConfig, err = readFile(configFile)
+			if err != nil {
+				return err
+			}
+			return nil
+		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// TODO: support `@INCLUDE`. See https://docs.fluentbit.io/manual/administration/configuring-fluent-bit/configuration-file#config_include_file-1
-			rawConfig, err := readFile(configFile)
-			if err != nil {
-				return fmt.Errorf("could not read config file: %w", err)
-			}
-
 			secrets, err := parseCreatePipelineSecret(secretsFile, secretsFormat)
 			if err != nil {
 				return fmt.Errorf("could not read secrets file: %w", err)
