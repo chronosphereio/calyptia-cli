@@ -37,6 +37,7 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 	var providedConfigFormat string
 	var deploymentStrategy string
 	var hotReload bool
+	var rawConfig string
 
 	completer := completer.Completer{Config: config}
 
@@ -45,17 +46,16 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 		Short:             "Update a single pipeline by ID or name",
 		Args:              cobra.ExactArgs(1),
 		ValidArgsFunction: completer.CompletePipelines,
-		RunE: func(cmd *cobra.Command, args []string) error {
-			var rawConfig string
-			if newConfigFile != "" {
-				b, err := cfg.ReadFile(newConfigFile)
-				if err != nil {
-					return fmt.Errorf("could not read config file: %w", err)
-				}
-
-				rawConfig = string(b)
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			b, err := cfg.ReadFile(newConfigFile)
+			if err != nil {
+				return fmt.Errorf("could not read config file: %w", err)
 			}
 
+			rawConfig = string(b)
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
 			secrets, err := parseUpdatePipelineSecrets(secretsFile, secretsFormat)
 			if err != nil {
 				return err
