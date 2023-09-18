@@ -131,8 +131,11 @@ func NewCmdCreatePipeline(config *cfg.Config) *cobra.Command {
 				if hotReload {
 					strategy = cloud.DeploymentStrategyHotReload
 				}
-			} else if !isValidDeploymentStrategy(deploymentStrategy) {
-				return fmt.Errorf("invalid provided deployment strategy: %s", deploymentStrategy)
+			} else {
+				if !isValidDeploymentStrategy(deploymentStrategy) {
+					return fmt.Errorf("invalid provided deployment strategy: %s", deploymentStrategy)
+				}
+				strategy = cloud.DeploymentStrategy(deploymentStrategy)
 			}
 
 			in := cloud.CreatePipeline{
