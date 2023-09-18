@@ -61,12 +61,12 @@ func NewCmdGetPipelines(config *cfg.Config) *cobra.Command {
 				if showIDs {
 					fmt.Fprintf(tw, "ID\t")
 				}
-				fmt.Fprintln(tw, "NAME\tREPLICAS\tSTATUS\tAGE")
+				fmt.Fprintln(tw, "NAME\tREPLICAS\tSTATUS\tSTRATEGY\tAGE")
 				for _, p := range pp.Items {
 					if showIDs {
 						fmt.Fprintf(tw, "%s\t", p.ID)
 					}
-					fmt.Fprintf(tw, "%s\t%d\t%s\t%s\n", p.Name, p.ReplicasCount, p.Status.Status, formatters.FmtTime(p.CreatedAt))
+					fmt.Fprintf(tw, "%s\t%d\t%s\t%s\t%s\n", p.Name, p.ReplicasCount, p.Status.Status, string(p.DeploymentStrategy), formatters.FmtTime(p.CreatedAt))
 				}
 				tw.Flush()
 			case "json":
@@ -203,11 +203,11 @@ func NewCmdGetPipeline(config *cfg.Config) *cobra.Command {
 					if showIDs {
 						fmt.Fprint(tw, "ID\t")
 					}
-					fmt.Fprintln(tw, "NAME\tREPLICAS\tSTATUS\tAGE")
+					fmt.Fprintln(tw, "NAME\tREPLICAS\tSTATUS\tSTRATEGY\tAGE")
 					if showIDs {
 						fmt.Fprintf(tw, "%s\t", pip.ID)
 					}
-					fmt.Fprintf(tw, "%s\t%d\t%s\t%s\n", pip.Name, pip.ReplicasCount, pip.Status.Status, formatters.FmtTime(pip.CreatedAt))
+					fmt.Fprintf(tw, "%s\t%d\t%s\t%s\t%s\n", pip.Name, pip.ReplicasCount, pip.Status.Status, string(pip.DeploymentStrategy), formatters.FmtTime(pip.CreatedAt))
 					tw.Flush()
 				}
 				if includeEndpoints {

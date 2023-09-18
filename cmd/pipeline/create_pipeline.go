@@ -10,14 +10,13 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/joho/godotenv"
-	"github.com/spf13/cobra"
-	"gopkg.in/yaml.v2"
-
 	cloud "github.com/calyptia/api/types"
 	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
+	"github.com/joho/godotenv"
+	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v2"
 )
 
 func NewCmdCreatePipeline(config *cfg.Config) *cobra.Command {
@@ -38,19 +37,25 @@ func NewCmdCreatePipeline(config *cfg.Config) *cobra.Command {
 	var metadataFile string
 	var environment string
 	var providedConfigFormat string
+	var deploymentStrategy string
+	var hotReload bool
+	var rawConfig []byte
 
 	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:   "pipeline",
 		Short: "Create a new pipeline",
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			var err error
+			rawConfig, err = readFile(configFile)
+			if err != nil {
+				return err
+			}
+			return nil
+		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// TODO: support `@INCLUDE`. See https://docs.fluentbit.io/manual/administration/configuring-fluent-bit/configuration-file#config_include_file-1
-			rawConfig, err := readFile(configFile)
-			if err != nil {
-				return fmt.Errorf("could not read config file: %w", err)
-			}
-
 			secrets, err := parseCreatePipelineSecret(secretsFile, secretsFormat)
 			if err != nil {
 				return fmt.Errorf("could not read secrets file: %w", err)
@@ -121,6 +126,18 @@ func NewCmdCreatePipeline(config *cfg.Config) *cobra.Command {
 				format = cloud.ConfigFormatINI
 			}
 
+			var strategy = cloud.DefaultDeploymentStrategy
+			if deploymentStrategy == "" {
+				if hotReload {
+					strategy = cloud.DeploymentStrategyHotReload
+				}
+			} else {
+				if !isValidDeploymentStrategy(deploymentStrategy) {
+					return fmt.Errorf("invalid provided deployment strategy: %s", deploymentStrategy)
+				}
+				strategy = cloud.DeploymentStrategy(deploymentStrategy)
+			}
+
 			in := cloud.CreatePipeline{
 				Name:                      name,
 				ReplicasCount:             replicasCount,
@@ -132,6 +149,7 @@ func NewCmdCreatePipeline(config *cfg.Config) *cobra.Command {
 				ResourceProfileName:       resourceProfileName,
 				Files:                     addFilesPayload,
 				Metadata:                  metadata,
+				DeploymentStrategy:        strategy,
 			}
 
 			if image != "" {
@@ -178,6 +196,8 @@ func NewCmdCreatePipeline(config *cfg.Config) *cobra.Command {
 	fs.StringVar(&secretsFormat, "secrets-format", "auto", "Secrets file format. Allowed: auto, env, json, yaml. Auto tries to detect it from file extension")
 	fs.StringArrayVar(&files, "file", nil, "Optional file. You can reference this file contents from your config like so:\n{{ files.myfile }}\nPass as many as you want; bear in mind the file name can only contain alphanumeric characters.")
 	fs.BoolVar(&encryptFiles, "encrypt-files", false, "Encrypt file contents")
+	fs.StringVar(&deploymentStrategy, "deployment-strategy", "", "The deployment strategy to use when deploying this pipeline in cluster (hotReload or recreate (default)).")
+	fs.BoolVar(&hotReload, "hot-reload", false, "Use the hotReload deployment strategy when deploying the pipeline to the cluster, (mutually exclusive with deployment-strategy)")
 	fs.StringVar(&image, "image", "", "Fluent-bit docker image")
 	fs.BoolVar(&autoCreatePortsFromConfig, "auto-create-ports", true, "Automatically create pipeline ports from config")
 	fs.BoolVar(&skipConfigValidation, "skip-config-validation", false, "Opt-in to skip config validation (Use with caution as this option might be removed soon)")
@@ -318,4 +338,13 @@ func parseMetadataPairs(pairs []string) (*json.RawMessage, error) {
 	*metadata = b
 
 	return metadata, nil
+}
+
+func isValidDeploymentStrategy(s string) bool {
+	for _, v := range cloud.AllValidDeploymentStrategies {
+		if cloud.DeploymentStrategy(s) == v {
+			return true
+		}
+	}
+	return false
 }
