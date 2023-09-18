@@ -103,7 +103,7 @@ func NewCmdGetFleet(config *cfg.Config) *cobra.Command {
 				return err
 			}
 
-			fleet, err := config.Cloud.Fleet(ctx, fleetID)
+			fleet, err := config.Cloud.Fleet(ctx, types.FleetParams{FleetID: fleetID})
 			if err != nil {
 				return err
 			}

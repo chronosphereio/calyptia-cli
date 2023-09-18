@@ -5,9 +5,10 @@ package cmd
 
 import (
 	"context"
+	"github.com/calyptia/api/types"
+	"github.com/calyptia/go-fluentbit-config/v2"
+	"net/url"
 	"sync"
-
-	cloud "github.com/calyptia/api/types"
 )
 
 // Ensure, that ClientMock does implement Client.
@@ -20,133 +21,160 @@ var _ Client = &ClientMock{}
 //
 //		// make and configure a mocked Client
 //		mockedClient := &ClientMock{
-//			AcceptInvitationFunc: func(contextMoqParam context.Context, acceptInvitation cloud.AcceptInvitation) error {
+//			AWSCustomerRedirectFunc: func(contextMoqParam context.Context, s string) (*url.URL, error) {
+//				panic("mock out the AWSCustomerRedirect method")
+//			},
+//			AcceptInvitationFunc: func(contextMoqParam context.Context, acceptInvitation types.AcceptInvitation) error {
 //				panic("mock out the AcceptInvitation method")
 //			},
-//			ActiveTraceSessionFunc: func(contextMoqParam context.Context, s string) (cloud.TraceSession, error) {
+//			ActiveTraceSessionFunc: func(contextMoqParam context.Context, s string) (types.TraceSession, error) {
 //				panic("mock out the ActiveTraceSession method")
 //			},
-//			AgentFunc: func(contextMoqParam context.Context, s string) (cloud.Agent, error) {
+//			AddAgentMetricsV1Func: func(contextMoqParam context.Context, s string, metrics []types.Metric) (types.MetricsOverTimeByPlugin, error) {
+//				panic("mock out the AddAgentMetricsV1 method")
+//			},
+//			AgentFunc: func(contextMoqParam context.Context, s string) (types.Agent, error) {
 //				panic("mock out the Agent method")
 //			},
-//			AgentConfigHistoryFunc: func(contextMoqParam context.Context, s string, agentConfigHistoryParams cloud.AgentConfigHistoryParams) (cloud.AgentConfigHistory, error) {
+//			AgentConfigHistoryFunc: func(contextMoqParam context.Context, s string, agentConfigHistoryParams types.AgentConfigHistoryParams) (types.AgentConfigHistory, error) {
 //				panic("mock out the AgentConfigHistory method")
 //			},
-//			AgentMetricsFunc: func(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.MetricsSummary, error) {
+//			AgentErrorsFunc: func(contextMoqParam context.Context, listAgentErrors types.ListAgentErrors) (types.AgentErrors, error) {
+//				panic("mock out the AgentErrors method")
+//			},
+//			AgentMetricsFunc: func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsSummary, error) {
 //				panic("mock out the AgentMetrics method")
 //			},
-//			AgentMetricsByPluginFunc: func(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.MetricsSummaryPlugin, error) {
+//			AgentMetricsByPluginFunc: func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsSummaryPlugin, error) {
 //				panic("mock out the AgentMetricsByPlugin method")
 //			},
-//			AgentMetricsOverTimeByPluginFunc: func(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.MetricsOverTimeByPlugin, error) {
+//			AgentMetricsOverTimeByPluginFunc: func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTimeByPlugin, error) {
 //				panic("mock out the AgentMetricsOverTimeByPlugin method")
 //			},
-//			AgentMetricsV1Func: func(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.AgentMetrics, error) {
+//			AgentMetricsV1Func: func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.AgentMetrics, error) {
 //				panic("mock out the AgentMetricsV1 method")
 //			},
-//			AgentOverTimeMetricsFunc: func(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.MetricsOverTime, error) {
+//			AgentOverTimeMetricsFunc: func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTime, error) {
 //				panic("mock out the AgentOverTimeMetrics method")
 //			},
-//			AgentsFunc: func(contextMoqParam context.Context, s string, agentsParams cloud.AgentsParams) (cloud.Agents, error) {
+//			AgentsFunc: func(contextMoqParam context.Context, s string, agentsParams types.AgentsParams) (types.Agents, error) {
 //				panic("mock out the Agents method")
 //			},
-//			ClusterObjectFunc: func(contextMoqParam context.Context, s string) (cloud.ClusterObject, error) {
+//			ClusterObjectFunc: func(contextMoqParam context.Context, s string) (types.ClusterObject, error) {
 //				panic("mock out the ClusterObject method")
 //			},
-//			ClusterObjectsFunc: func(contextMoqParam context.Context, s string, clusterObjectParams cloud.ClusterObjectParams) (cloud.ClusterObjects, error) {
+//			ClusterObjectRegexFunc: func(contextMoqParam context.Context, s string) (types.ClusterObjectRegex, error) {
+//				panic("mock out the ClusterObjectRegex method")
+//			},
+//			ClusterObjectRegexesFunc: func(contextMoqParam context.Context, listClusterObjectRegexes types.ListClusterObjectRegexes) (types.ClusterObjectRegexes, error) {
+//				panic("mock out the ClusterObjectRegexes method")
+//			},
+//			ClusterObjectsFunc: func(contextMoqParam context.Context, s string, clusterObjectParams types.ClusterObjectParams) (types.ClusterObjects, error) {
 //				panic("mock out the ClusterObjects method")
 //			},
-//			ConfigSectionFunc: func(contextMoqParam context.Context, s string) (cloud.ConfigSection, error) {
+//			ConfigSectionFunc: func(contextMoqParam context.Context, s string) (types.ConfigSection, error) {
 //				panic("mock out the ConfigSection method")
 //			},
-//			ConfigSectionsFunc: func(contextMoqParam context.Context, s string, configSectionsParams cloud.ConfigSectionsParams) (cloud.ConfigSections, error) {
+//			ConfigSectionsFunc: func(contextMoqParam context.Context, s string, configSectionsParams types.ConfigSectionsParams) (types.ConfigSections, error) {
 //				panic("mock out the ConfigSections method")
 //			},
-//			CoreInstanceFunc: func(contextMoqParam context.Context, s string) (cloud.CoreInstance, error) {
+//			CoreInstanceFunc: func(contextMoqParam context.Context, s string) (types.CoreInstance, error) {
 //				panic("mock out the CoreInstance method")
 //			},
-//			CoreInstanceCheckFunc: func(contextMoqParam context.Context, s string) (cloud.CoreInstanceCheck, error) {
+//			CoreInstanceCheckFunc: func(contextMoqParam context.Context, s string) (types.CoreInstanceCheck, error) {
 //				panic("mock out the CoreInstanceCheck method")
 //			},
-//			CoreInstanceChecksFunc: func(contextMoqParam context.Context, s string, coreInstanceChecksParams cloud.CoreInstanceChecksParams) (cloud.CoreInstanceChecks, error) {
+//			CoreInstanceChecksFunc: func(contextMoqParam context.Context, s string, coreInstanceChecksParams types.CoreInstanceChecksParams) (types.CoreInstanceChecks, error) {
 //				panic("mock out the CoreInstanceChecks method")
 //			},
-//			CoreInstanceMetricsFunc: func(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.MetricsSummary, error) {
+//			CoreInstanceMetricsFunc: func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsSummary, error) {
 //				panic("mock out the CoreInstanceMetrics method")
 //			},
-//			CoreInstanceMetricsByPluginFunc: func(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.MetricsSummaryPlugin, error) {
+//			CoreInstanceMetricsByPluginFunc: func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsSummaryPlugin, error) {
 //				panic("mock out the CoreInstanceMetricsByPlugin method")
 //			},
-//			CoreInstanceMetricsOverTimeByPluginFunc: func(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.MetricsOverTimeByPlugin, error) {
+//			CoreInstanceMetricsOverTimeByPluginFunc: func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTimeByPlugin, error) {
 //				panic("mock out the CoreInstanceMetricsOverTimeByPlugin method")
 //			},
-//			CoreInstanceMetricsV1Func: func(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.CoreInstanceMetricsV1, error) {
+//			CoreInstanceMetricsV1Func: func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.CoreInstanceMetricsV1, error) {
 //				panic("mock out the CoreInstanceMetricsV1 method")
 //			},
-//			CoreInstanceOverTimeMetricsFunc: func(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.MetricsOverTime, error) {
+//			CoreInstanceOverTimeMetricsFunc: func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTime, error) {
 //				panic("mock out the CoreInstanceOverTimeMetrics method")
 //			},
-//			CoreInstancePingFunc: func(contextMoqParam context.Context, s string) (cloud.CoreInstancePingResponse, error) {
+//			CoreInstancePingFunc: func(contextMoqParam context.Context, s string) (types.CoreInstancePingResponse, error) {
 //				panic("mock out the CoreInstancePing method")
 //			},
-//			CoreInstancesFunc: func(contextMoqParam context.Context, s string, coreInstancesParams cloud.CoreInstancesParams) (cloud.CoreInstances, error) {
+//			CoreInstancesFunc: func(contextMoqParam context.Context, s string, coreInstancesParams types.CoreInstancesParams) (types.CoreInstances, error) {
 //				panic("mock out the CoreInstances method")
 //			},
-//			CreateClusterObjectFunc: func(contextMoqParam context.Context, s string, createClusterObject cloud.CreateClusterObject) (cloud.CreatedClusterObject, error) {
+//			CreateAWSContractFromTokenFunc: func(contextMoqParam context.Context, createAWSContractFromToken types.CreateAWSContractFromToken) error {
+//				panic("mock out the CreateAWSContractFromToken method")
+//			},
+//			CreateAgentErrorFunc: func(contextMoqParam context.Context, createAgentError types.CreateAgentError) (types.Created, error) {
+//				panic("mock out the CreateAgentError method")
+//			},
+//			CreateClusterObjectFunc: func(contextMoqParam context.Context, s string, createClusterObject types.CreateClusterObject) (types.Created, error) {
 //				panic("mock out the CreateClusterObject method")
 //			},
-//			CreateConfigSectionFunc: func(contextMoqParam context.Context, s string, createConfigSection cloud.CreateConfigSection) (cloud.CreatedConfigSection, error) {
+//			CreateClusterObjectRegexFunc: func(contextMoqParam context.Context, createClusterObjectRegex types.CreateClusterObjectRegex) (types.Created, error) {
+//				panic("mock out the CreateClusterObjectRegex method")
+//			},
+//			CreateConfigSectionFunc: func(contextMoqParam context.Context, s string, createConfigSection types.CreateConfigSection) (types.Created, error) {
 //				panic("mock out the CreateConfigSection method")
 //			},
-//			CreateCoreInstanceFunc: func(contextMoqParam context.Context, createCoreInstance cloud.CreateCoreInstance) (cloud.CreatedCoreInstance, error) {
+//			CreateCoreInstanceFunc: func(contextMoqParam context.Context, createCoreInstance types.CreateCoreInstance) (types.CreatedCoreInstance, error) {
 //				panic("mock out the CreateCoreInstance method")
 //			},
-//			CreateCoreInstanceCheckFunc: func(contextMoqParam context.Context, s string, createCoreInstanceCheck cloud.CreateCoreInstanceCheck) (cloud.CreatedCoreInstanceCheck, error) {
+//			CreateCoreInstanceCheckFunc: func(contextMoqParam context.Context, s string, check types.Check) (types.Created, error) {
 //				panic("mock out the CreateCoreInstanceCheck method")
 //			},
-//			CreateEnvironmentFunc: func(contextMoqParam context.Context, s string, createEnvironment cloud.CreateEnvironment) (cloud.CreatedEnvironment, error) {
+//			CreateEnvironmentFunc: func(contextMoqParam context.Context, s string, createEnvironment types.CreateEnvironment) (types.CreatedEnvironment, error) {
 //				panic("mock out the CreateEnvironment method")
 //			},
-//			CreateFleetFunc: func(contextMoqParam context.Context, createFleet cloud.CreateFleet) (cloud.CreatedFleet, error) {
+//			CreateFleetFunc: func(contextMoqParam context.Context, createFleet types.CreateFleet) (types.Created, error) {
 //				panic("mock out the CreateFleet method")
 //			},
-//			CreateIngestCheckFunc: func(contextMoqParam context.Context, s string, createIngestCheck cloud.CreateIngestCheck) (cloud.CreatedIngestCheck, error) {
+//			CreateIngestCheckFunc: func(contextMoqParam context.Context, s string, createIngestCheck types.CreateIngestCheck) (types.Created, error) {
 //				panic("mock out the CreateIngestCheck method")
 //			},
-//			CreateInvitationFunc: func(contextMoqParam context.Context, s string, createInvitation cloud.CreateInvitation) error {
+//			CreateInvitationFunc: func(contextMoqParam context.Context, s string, createInvitation types.CreateInvitation) error {
 //				panic("mock out the CreateInvitation method")
 //			},
-//			CreatePipelineFunc: func(contextMoqParam context.Context, s string, createPipeline cloud.CreatePipeline) (cloud.CreatedPipeline, error) {
+//			CreatePipelineFunc: func(contextMoqParam context.Context, s string, createPipeline types.CreatePipeline) (types.CreatedPipeline, error) {
 //				panic("mock out the CreatePipeline method")
 //			},
-//			CreatePipelineCheckFunc: func(contextMoqParam context.Context, s string, createPipelineCheck cloud.CreatePipelineCheck) (cloud.CreatedPipelineCheck, error) {
+//			CreatePipelineCheckFunc: func(contextMoqParam context.Context, s string, createPipelineCheck types.CreatePipelineCheck) (types.Created, error) {
 //				panic("mock out the CreatePipelineCheck method")
 //			},
-//			CreatePipelineFileFunc: func(contextMoqParam context.Context, s string, createPipelineFile cloud.CreatePipelineFile) (cloud.CreatedPipelineFile, error) {
+//			CreatePipelineFileFunc: func(contextMoqParam context.Context, s string, createPipelineFile types.CreatePipelineFile) (types.Created, error) {
 //				panic("mock out the CreatePipelineFile method")
 //			},
-//			CreatePipelinePortFunc: func(contextMoqParam context.Context, s string, createPipelinePort cloud.CreatePipelinePort) (cloud.CreatedPipelinePort, error) {
+//			CreatePipelinePortFunc: func(contextMoqParam context.Context, s string, createPipelinePort types.CreatePipelinePort) (types.CreatedPipelinePort, error) {
 //				panic("mock out the CreatePipelinePort method")
 //			},
-//			CreatePipelineSecretFunc: func(contextMoqParam context.Context, s string, createPipelineSecret cloud.CreatePipelineSecret) (cloud.CreatedPipelineSecret, error) {
+//			CreatePipelineSecretFunc: func(contextMoqParam context.Context, s string, createPipelineSecret types.CreatePipelineSecret) (types.Created, error) {
 //				panic("mock out the CreatePipelineSecret method")
 //			},
-//			CreateProcessingRuleFunc: func(contextMoqParam context.Context, createProcessingRule cloud.CreateProcessingRule) (cloud.CreatedProcessingRule, error) {
+//			CreateProcessingRuleFunc: func(contextMoqParam context.Context, createProcessingRule types.CreateProcessingRule) (types.CreatedProcessingRule, error) {
 //				panic("mock out the CreateProcessingRule method")
 //			},
-//			CreateProjectFunc: func(contextMoqParam context.Context, createProject cloud.CreateProject) (cloud.CreatedProject, error) {
+//			CreateProcessingRuleTemplateFunc: func(contextMoqParam context.Context, createProcessingRuleTemplate types.CreateProcessingRuleTemplate) (types.Created, error) {
+//				panic("mock out the CreateProcessingRuleTemplate method")
+//			},
+//			CreateProjectFunc: func(contextMoqParam context.Context, createProject types.CreateProject) (types.CreatedProject, error) {
 //				panic("mock out the CreateProject method")
 //			},
-//			CreateResourceProfileFunc: func(contextMoqParam context.Context, s string, createResourceProfile cloud.CreateResourceProfile) (cloud.CreatedResourceProfile, error) {
+//			CreateResourceProfileFunc: func(contextMoqParam context.Context, s string, createResourceProfile types.CreateResourceProfile) (types.Created, error) {
 //				panic("mock out the CreateResourceProfile method")
 //			},
-//			CreateTokenFunc: func(contextMoqParam context.Context, s string, createToken cloud.CreateToken) (cloud.Token, error) {
+//			CreateTokenFunc: func(contextMoqParam context.Context, s string, createToken types.CreateToken) (types.Token, error) {
 //				panic("mock out the CreateToken method")
 //			},
-//			CreateTraceRecordFunc: func(contextMoqParam context.Context, s string, createTraceRecord cloud.CreateTraceRecord) (cloud.CreatedTraceRecord, error) {
+//			CreateTraceRecordFunc: func(contextMoqParam context.Context, s string, createTraceRecord types.CreateTraceRecord) (types.CreatedTraceRecord, error) {
 //				panic("mock out the CreateTraceRecord method")
 //			},
-//			CreateTraceSessionFunc: func(contextMoqParam context.Context, s string, createTraceSession cloud.CreateTraceSession) (cloud.CreatedTraceSession, error) {
+//			CreateTraceSessionFunc: func(contextMoqParam context.Context, s string, createTraceSession types.CreateTraceSession) (types.Created, error) {
 //				panic("mock out the CreateTraceSession method")
 //			},
 //			DeleteAgentFunc: func(contextMoqParam context.Context, s string) error {
@@ -157,6 +185,9 @@ var _ Client = &ClientMock{}
 //			},
 //			DeleteClusterObjectFunc: func(contextMoqParam context.Context, s string) error {
 //				panic("mock out the DeleteClusterObject method")
+//			},
+//			DeleteClusterObjectRegexFunc: func(contextMoqParam context.Context, s string) error {
+//				panic("mock out the DeleteClusterObjectRegex method")
 //			},
 //			DeleteConfigSectionFunc: func(contextMoqParam context.Context, s string) error {
 //				panic("mock out the DeleteConfigSection method")
@@ -173,7 +204,7 @@ var _ Client = &ClientMock{}
 //			DeleteEnvironmentFunc: func(contextMoqParam context.Context, s string) error {
 //				panic("mock out the DeleteEnvironment method")
 //			},
-//			DeleteFleetFunc: func(contextMoqParam context.Context, s string) (cloud.DeletedFleet, error) {
+//			DeleteFleetFunc: func(contextMoqParam context.Context, s string) (types.Deleted, error) {
 //				panic("mock out the DeleteFleet method")
 //			},
 //			DeleteIngestCheckFunc: func(contextMoqParam context.Context, s string) error {
@@ -203,116 +234,137 @@ var _ Client = &ClientMock{}
 //			DeleteProcessingRuleFunc: func(contextMoqParam context.Context, s string) error {
 //				panic("mock out the DeleteProcessingRule method")
 //			},
+//			DeleteProcessingRuleTemplateFunc: func(contextMoqParam context.Context, s string) (types.Deleted, error) {
+//				panic("mock out the DeleteProcessingRuleTemplate method")
+//			},
 //			DeleteResourceProfileFunc: func(contextMoqParam context.Context, s string) error {
 //				panic("mock out the DeleteResourceProfile method")
 //			},
 //			DeleteTokenFunc: func(contextMoqParam context.Context, s string) error {
 //				panic("mock out the DeleteToken method")
 //			},
-//			EnvironmentsFunc: func(contextMoqParam context.Context, s string, environmentsParams cloud.EnvironmentsParams) (cloud.Environments, error) {
+//			DismissAgentErrorFunc: func(contextMoqParam context.Context, dismissAgentError types.DismissAgentError) (types.DismissedAgentError, error) {
+//				panic("mock out the DismissAgentError method")
+//			},
+//			EnvironmentsFunc: func(contextMoqParam context.Context, s string, environmentsParams types.EnvironmentsParams) (types.Environments, error) {
 //				panic("mock out the Environments method")
 //			},
-//			FleetFunc: func(contextMoqParam context.Context, s string) (cloud.Fleet, error) {
+//			FleetFunc: func(contextMoqParam context.Context, fleetParams types.FleetParams) (types.Fleet, error) {
 //				panic("mock out the Fleet method")
 //			},
-//			FleetsFunc: func(contextMoqParam context.Context, fleetsParams cloud.FleetsParams) (cloud.Fleets, error) {
+//			FleetConfigFunc: func(contextMoqParam context.Context, s string, fleetConfigParams types.FleetConfigParams) (*fluentbitconfig.Config, error) {
+//				panic("mock out the FleetConfig method")
+//			},
+//			FleetsFunc: func(contextMoqParam context.Context, fleetsParams types.FleetsParams) (types.Fleets, error) {
 //				panic("mock out the Fleets method")
 //			},
-//			IngestCheckFunc: func(contextMoqParam context.Context, s string) (cloud.IngestCheck, error) {
+//			HealthFunc: func(contextMoqParam context.Context) (types.Health, error) {
+//				panic("mock out the Health method")
+//			},
+//			IngestCheckFunc: func(contextMoqParam context.Context, s string) (types.IngestCheck, error) {
 //				panic("mock out the IngestCheck method")
 //			},
-//			IngestChecksFunc: func(contextMoqParam context.Context, s string, ingestChecksParams cloud.IngestChecksParams) (cloud.IngestChecks, error) {
+//			IngestChecksFunc: func(contextMoqParam context.Context, s string, ingestChecksParams types.IngestChecksParams) (types.IngestChecks, error) {
 //				panic("mock out the IngestChecks method")
 //			},
-//			MembersFunc: func(contextMoqParam context.Context, s string, membersParams cloud.MembersParams) (cloud.Memberships, error) {
+//			MembersFunc: func(contextMoqParam context.Context, s string, membersParams types.MembersParams) (types.Memberships, error) {
 //				panic("mock out the Members method")
 //			},
-//			PipelineFunc: func(contextMoqParam context.Context, s string, pipelineParams cloud.PipelineParams) (cloud.Pipeline, error) {
+//			PipelineFunc: func(contextMoqParam context.Context, s string, pipelineParams types.PipelineParams) (types.Pipeline, error) {
 //				panic("mock out the Pipeline method")
 //			},
-//			PipelineCheckFunc: func(contextMoqParam context.Context, s string) (cloud.PipelineCheck, error) {
+//			PipelineCheckFunc: func(contextMoqParam context.Context, s string) (types.PipelineCheck, error) {
 //				panic("mock out the PipelineCheck method")
 //			},
-//			PipelineChecksFunc: func(contextMoqParam context.Context, s string, pipelineChecksParams cloud.PipelineChecksParams) (cloud.PipelineChecks, error) {
+//			PipelineChecksFunc: func(contextMoqParam context.Context, s string, pipelineChecksParams types.PipelineChecksParams) (types.PipelineChecks, error) {
 //				panic("mock out the PipelineChecks method")
 //			},
-//			PipelineClusterObjectsFunc: func(contextMoqParam context.Context, s string, pipelineClusterObjectsParams cloud.PipelineClusterObjectsParams) (cloud.ClusterObjects, error) {
+//			PipelineClusterObjectsFunc: func(contextMoqParam context.Context, s string, pipelineClusterObjectsParams types.PipelineClusterObjectsParams) (types.ClusterObjects, error) {
 //				panic("mock out the PipelineClusterObjects method")
 //			},
-//			PipelineConfigHistoryFunc: func(contextMoqParam context.Context, s string, pipelineConfigHistoryParams cloud.PipelineConfigHistoryParams) (cloud.PipelineConfigHistory, error) {
+//			PipelineConfigHistoryFunc: func(contextMoqParam context.Context, s string, pipelineConfigHistoryParams types.PipelineConfigHistoryParams) (types.PipelineConfigHistory, error) {
 //				panic("mock out the PipelineConfigHistory method")
 //			},
-//			PipelineFileFunc: func(contextMoqParam context.Context, s string) (cloud.PipelineFile, error) {
+//			PipelineFileFunc: func(contextMoqParam context.Context, s string) (types.PipelineFile, error) {
 //				panic("mock out the PipelineFile method")
 //			},
-//			PipelineFilesFunc: func(contextMoqParam context.Context, s string, pipelineFilesParams cloud.PipelineFilesParams) (cloud.PipelineFiles, error) {
+//			PipelineFilesFunc: func(contextMoqParam context.Context, s string, pipelineFilesParams types.PipelineFilesParams) (types.PipelineFiles, error) {
 //				panic("mock out the PipelineFiles method")
 //			},
-//			PipelineMetricsFunc: func(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.MetricsSummary, error) {
+//			PipelineMetadataFunc: func(contextMoqParam context.Context, s string, strings ...string) (types.PipelineMetadata, error) {
+//				panic("mock out the PipelineMetadata method")
+//			},
+//			PipelineMetricsFunc: func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsSummary, error) {
 //				panic("mock out the PipelineMetrics method")
 //			},
-//			PipelineMetricsByPluginFunc: func(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.MetricsSummaryPlugin, error) {
+//			PipelineMetricsByPluginFunc: func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsSummaryPlugin, error) {
 //				panic("mock out the PipelineMetricsByPlugin method")
 //			},
-//			PipelineMetricsOverTimeByPluginFunc: func(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.MetricsOverTimeByPlugin, error) {
+//			PipelineMetricsOverTimeByPluginFunc: func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTimeByPlugin, error) {
 //				panic("mock out the PipelineMetricsOverTimeByPlugin method")
 //			},
-//			PipelineMetricsV1Func: func(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.AgentMetrics, error) {
+//			PipelineMetricsV1Func: func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.AgentMetrics, error) {
 //				panic("mock out the PipelineMetricsV1 method")
 //			},
-//			PipelineOverTimeMetricsFunc: func(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.MetricsOverTime, error) {
+//			PipelineOverTimeMetricsFunc: func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTime, error) {
 //				panic("mock out the PipelineOverTimeMetrics method")
 //			},
-//			PipelinePortFunc: func(contextMoqParam context.Context, s string) (cloud.PipelinePort, error) {
+//			PipelinePortFunc: func(contextMoqParam context.Context, s string) (types.PipelinePort, error) {
 //				panic("mock out the PipelinePort method")
 //			},
-//			PipelinePortsFunc: func(contextMoqParam context.Context, s string, pipelinePortsParams cloud.PipelinePortsParams) (cloud.PipelinePorts, error) {
+//			PipelinePortsFunc: func(contextMoqParam context.Context, s string, pipelinePortsParams types.PipelinePortsParams) (types.PipelinePorts, error) {
 //				panic("mock out the PipelinePorts method")
 //			},
-//			PipelineSecretFunc: func(contextMoqParam context.Context, s string) (cloud.PipelineSecret, error) {
+//			PipelineSecretFunc: func(contextMoqParam context.Context, s string) (types.PipelineSecret, error) {
 //				panic("mock out the PipelineSecret method")
 //			},
-//			PipelineSecretsFunc: func(contextMoqParam context.Context, s string, pipelineSecretsParams cloud.PipelineSecretsParams) (cloud.PipelineSecrets, error) {
+//			PipelineSecretsFunc: func(contextMoqParam context.Context, s string, pipelineSecretsParams types.PipelineSecretsParams) (types.PipelineSecrets, error) {
 //				panic("mock out the PipelineSecrets method")
 //			},
-//			PipelineStatusHistoryFunc: func(contextMoqParam context.Context, s string, pipelineStatusHistoryParams cloud.PipelineStatusHistoryParams) (cloud.PipelineStatusHistory, error) {
+//			PipelineStatusHistoryFunc: func(contextMoqParam context.Context, s string, pipelineStatusHistoryParams types.PipelineStatusHistoryParams) (types.PipelineStatusHistory, error) {
 //				panic("mock out the PipelineStatusHistory method")
 //			},
-//			PipelinesFunc: func(contextMoqParam context.Context, s string, pipelinesParams cloud.PipelinesParams) (cloud.Pipelines, error) {
+//			PipelinesFunc: func(contextMoqParam context.Context, pipelinesParams types.PipelinesParams) (types.Pipelines, error) {
 //				panic("mock out the Pipelines method")
 //			},
-//			PipelinesMetricsV1Func: func(contextMoqParam context.Context, s string, pipelinesMetricsParams cloud.PipelinesMetricsParams) (cloud.PipelinesMetrics, error) {
+//			PipelinesMetricsV1Func: func(contextMoqParam context.Context, s string, pipelinesMetricsParams types.PipelinesMetricsParams) (types.PipelinesMetrics, error) {
 //				panic("mock out the PipelinesMetricsV1 method")
 //			},
-//			PreviewProcessingRuleFunc: func(contextMoqParam context.Context, previewProcessingRule cloud.PreviewProcessingRule) ([]cloud.FluentBitLog, error) {
+//			PreviewProcessingRuleFunc: func(contextMoqParam context.Context, previewProcessingRule types.PreviewProcessingRule) ([]types.FluentBitLog, error) {
 //				panic("mock out the PreviewProcessingRule method")
 //			},
-//			ProcessingRuleFunc: func(contextMoqParam context.Context, s string) (cloud.ProcessingRule, error) {
+//			ProcessingRuleFunc: func(contextMoqParam context.Context, s string) (types.ProcessingRule, error) {
 //				panic("mock out the ProcessingRule method")
 //			},
-//			ProcessingRulesFunc: func(contextMoqParam context.Context, processingRulesParams cloud.ProcessingRulesParams) (cloud.ProcessingRules, error) {
+//			ProcessingRuleTemplatesFunc: func(contextMoqParam context.Context, listProcessingRuleTemplates types.ListProcessingRuleTemplates) (types.ProcessingRuleTemplates, error) {
+//				panic("mock out the ProcessingRuleTemplates method")
+//			},
+//			ProcessingRulesFunc: func(contextMoqParam context.Context, processingRulesParams types.ProcessingRulesParams) (types.ProcessingRules, error) {
 //				panic("mock out the ProcessingRules method")
 //			},
-//			ProjectFunc: func(contextMoqParam context.Context, s string) (cloud.Project, error) {
+//			ProjectFunc: func(contextMoqParam context.Context, s string) (types.Project, error) {
 //				panic("mock out the Project method")
 //			},
-//			ProjectMetricsV1Func: func(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.ProjectMetrics, error) {
+//			ProjectMetricsV1Func: func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.ProjectMetrics, error) {
 //				panic("mock out the ProjectMetricsV1 method")
 //			},
-//			ProjectPipelinesFunc: func(contextMoqParam context.Context, s string, pipelinesParams cloud.PipelinesParams) (cloud.Pipelines, error) {
-//				panic("mock out the ProjectPipelines method")
-//			},
-//			ProjectsFunc: func(contextMoqParam context.Context, projectsParams cloud.ProjectsParams) (cloud.Projects, error) {
+//			ProjectsFunc: func(contextMoqParam context.Context, projectsParams types.ProjectsParams) (types.Projects, error) {
 //				panic("mock out the Projects method")
 //			},
-//			RegisterAgentFunc: func(contextMoqParam context.Context, registerAgent cloud.RegisterAgent) (cloud.RegisteredAgent, error) {
+//			PushAWSMarketplaceSubscriptionNotificationFunc: func(contextMoqParam context.Context, aWSMarketplaceSubscriptionNotification types.AWSMarketplaceSubscriptionNotification) error {
+//				panic("mock out the PushAWSMarketplaceSubscriptionNotification method")
+//			},
+//			RegisterAgentFunc: func(contextMoqParam context.Context, registerAgent types.RegisterAgent) (types.RegisteredAgent, error) {
 //				panic("mock out the RegisterAgent method")
 //			},
-//			ResourceProfileFunc: func(contextMoqParam context.Context, s string) (cloud.ResourceProfile, error) {
+//			ResourceProfileFunc: func(contextMoqParam context.Context, s string) (types.ResourceProfile, error) {
 //				panic("mock out the ResourceProfile method")
 //			},
-//			ResourceProfilesFunc: func(contextMoqParam context.Context, s string, resourceProfilesParams cloud.ResourceProfilesParams) (cloud.ResourceProfiles, error) {
+//			ResourceProfilesFunc: func(contextMoqParam context.Context, s string, resourceProfilesParams types.ResourceProfilesParams) (types.ResourceProfiles, error) {
 //				panic("mock out the ResourceProfiles method")
+//			},
+//			SearchFunc: func(contextMoqParam context.Context, searchQuery types.SearchQuery) ([]types.SearchResult, error) {
+//				panic("mock out the Search method")
 //			},
 //			SendVerificationEmailFunc: func(contextMoqParam context.Context) error {
 //				panic("mock out the SendVerificationEmail method")
@@ -329,88 +381,100 @@ var _ Client = &ClientMock{}
 //			SetUserAgentFunc: func(s string)  {
 //				panic("mock out the SetUserAgent method")
 //			},
-//			TerminateActiveTraceSessionFunc: func(contextMoqParam context.Context, s string) (cloud.TerminatedTraceSession, error) {
+//			TerminateActiveTraceSessionFunc: func(contextMoqParam context.Context, s string) (types.TerminatedTraceSession, error) {
 //				panic("mock out the TerminateActiveTraceSession method")
 //			},
-//			TokenFunc: func(contextMoqParam context.Context, s string) (cloud.Token, error) {
+//			TokenFunc: func(contextMoqParam context.Context, s string) (types.Token, error) {
 //				panic("mock out the Token method")
 //			},
-//			TokensFunc: func(contextMoqParam context.Context, s string, tokensParams cloud.TokensParams) (cloud.Tokens, error) {
+//			TokensFunc: func(contextMoqParam context.Context, s string, tokensParams types.TokensParams) (types.Tokens, error) {
 //				panic("mock out the Tokens method")
 //			},
-//			TraceRecordsFunc: func(contextMoqParam context.Context, s string, traceRecordsParams cloud.TraceRecordsParams) (cloud.TraceRecords, error) {
+//			TraceRecordsFunc: func(contextMoqParam context.Context, s string, traceRecordsParams types.TraceRecordsParams) (types.TraceRecords, error) {
 //				panic("mock out the TraceRecords method")
 //			},
-//			TraceSessionFunc: func(contextMoqParam context.Context, s string) (cloud.TraceSession, error) {
+//			TraceSessionFunc: func(contextMoqParam context.Context, s string) (types.TraceSession, error) {
 //				panic("mock out the TraceSession method")
 //			},
-//			TraceSessionsFunc: func(contextMoqParam context.Context, s string, traceSessionsParams cloud.TraceSessionsParams) (cloud.TraceSessions, error) {
+//			TraceSessionsFunc: func(contextMoqParam context.Context, s string, traceSessionsParams types.TraceSessionsParams) (types.TraceSessions, error) {
 //				panic("mock out the TraceSessions method")
 //			},
-//			UpdateAgentFunc: func(contextMoqParam context.Context, s string, updateAgent cloud.UpdateAgent) error {
+//			UpdateAgentFunc: func(contextMoqParam context.Context, s string, updateAgent types.UpdateAgent) error {
 //				panic("mock out the UpdateAgent method")
 //			},
-//			UpdateClusterObjectFunc: func(contextMoqParam context.Context, s string, updateClusterObject cloud.UpdateClusterObject) error {
+//			UpdateClusterObjectFunc: func(contextMoqParam context.Context, s string, updateClusterObject types.UpdateClusterObject) error {
 //				panic("mock out the UpdateClusterObject method")
 //			},
-//			UpdateConfigSectionFunc: func(contextMoqParam context.Context, s string, updateConfigSection cloud.UpdateConfigSection) (cloud.UpdatedConfigSection, error) {
+//			UpdateClusterObjectRegexFunc: func(contextMoqParam context.Context, updateClusterObjectRegex types.UpdateClusterObjectRegex) (types.Updated, error) {
+//				panic("mock out the UpdateClusterObjectRegex method")
+//			},
+//			UpdateConfigSectionFunc: func(contextMoqParam context.Context, s string, updateConfigSection types.UpdateConfigSection) (types.Updated, error) {
 //				panic("mock out the UpdateConfigSection method")
 //			},
 //			UpdateConfigSectionSetFunc: func(contextMoqParam context.Context, s string, strings ...string) error {
 //				panic("mock out the UpdateConfigSectionSet method")
 //			},
-//			UpdateCoreInstanceFunc: func(contextMoqParam context.Context, s string, updateCoreInstance cloud.UpdateCoreInstance) error {
+//			UpdateCoreInstanceFunc: func(contextMoqParam context.Context, s string, updateCoreInstance types.UpdateCoreInstance) error {
 //				panic("mock out the UpdateCoreInstance method")
 //			},
-//			UpdateCoreInstanceCheckFunc: func(contextMoqParam context.Context, s string, updateCoreInstanceCheck cloud.UpdateCoreInstanceCheck) error {
+//			UpdateCoreInstanceCheckFunc: func(contextMoqParam context.Context, s string, updateCoreInstanceCheck types.UpdateCoreInstanceCheck) error {
 //				panic("mock out the UpdateCoreInstanceCheck method")
 //			},
-//			UpdateEnvironmentFunc: func(contextMoqParam context.Context, s string, updateEnvironment cloud.UpdateEnvironment) error {
+//			UpdateEnvironmentFunc: func(contextMoqParam context.Context, s string, updateEnvironment types.UpdateEnvironment) error {
 //				panic("mock out the UpdateEnvironment method")
 //			},
-//			UpdateFleetFunc: func(contextMoqParam context.Context, updateFleet cloud.UpdateFleet) (cloud.UpdatedFleet, error) {
+//			UpdateFleetFunc: func(contextMoqParam context.Context, updateFleet types.UpdateFleet) (types.Updated, error) {
 //				panic("mock out the UpdateFleet method")
 //			},
-//			UpdateIngestCheckFunc: func(contextMoqParam context.Context, s string, updateIngestCheck cloud.UpdateIngestCheck) error {
+//			UpdateIngestCheckFunc: func(contextMoqParam context.Context, s string, updateIngestCheck types.UpdateIngestCheck) error {
 //				panic("mock out the UpdateIngestCheck method")
 //			},
-//			UpdatePipelineFunc: func(contextMoqParam context.Context, s string, updatePipeline cloud.UpdatePipeline) (cloud.UpdatedPipeline, error) {
+//			UpdateMemberFunc: func(contextMoqParam context.Context, updateMember types.UpdateMember) error {
+//				panic("mock out the UpdateMember method")
+//			},
+//			UpdatePipelineFunc: func(contextMoqParam context.Context, s string, updatePipeline types.UpdatePipeline) (types.UpdatedPipeline, error) {
 //				panic("mock out the UpdatePipeline method")
 //			},
-//			UpdatePipelineCheckFunc: func(contextMoqParam context.Context, s string, updatePipelineCheck cloud.UpdatePipelineCheck) error {
+//			UpdatePipelineCheckFunc: func(contextMoqParam context.Context, s string, updatePipelineCheck types.UpdatePipelineCheck) error {
 //				panic("mock out the UpdatePipelineCheck method")
 //			},
-//			UpdatePipelineClusterObjectsFunc: func(contextMoqParam context.Context, s string, updatePipelineClusterObjects cloud.UpdatePipelineClusterObjects) error {
+//			UpdatePipelineClusterObjectsFunc: func(contextMoqParam context.Context, s string, updatePipelineClusterObjects types.UpdatePipelineClusterObjects) error {
 //				panic("mock out the UpdatePipelineClusterObjects method")
 //			},
-//			UpdatePipelineFileFunc: func(contextMoqParam context.Context, s string, updatePipelineFile cloud.UpdatePipelineFile) error {
+//			UpdatePipelineFileFunc: func(contextMoqParam context.Context, s string, updatePipelineFile types.UpdatePipelineFile) error {
 //				panic("mock out the UpdatePipelineFile method")
 //			},
-//			UpdatePipelinePortFunc: func(contextMoqParam context.Context, s string, updatePipelinePort cloud.UpdatePipelinePort) error {
+//			UpdatePipelineMetadataFunc: func(contextMoqParam context.Context, s string, updatePipelineMetadata types.UpdatePipelineMetadata) error {
+//				panic("mock out the UpdatePipelineMetadata method")
+//			},
+//			UpdatePipelinePortFunc: func(contextMoqParam context.Context, s string, updatePipelinePort types.UpdatePipelinePort) error {
 //				panic("mock out the UpdatePipelinePort method")
 //			},
-//			UpdatePipelineSecretFunc: func(contextMoqParam context.Context, s string, updatePipelineSecret cloud.UpdatePipelineSecret) error {
+//			UpdatePipelineSecretFunc: func(contextMoqParam context.Context, s string, updatePipelineSecret types.UpdatePipelineSecret) error {
 //				panic("mock out the UpdatePipelineSecret method")
 //			},
-//			UpdateProcessingRuleFunc: func(contextMoqParam context.Context, updateProcessingRule cloud.UpdateProcessingRule) (cloud.UpdatedProcessingRule, error) {
+//			UpdateProcessingRuleFunc: func(contextMoqParam context.Context, updateProcessingRule types.UpdateProcessingRule) (types.Updated, error) {
 //				panic("mock out the UpdateProcessingRule method")
 //			},
-//			UpdateProjectFunc: func(contextMoqParam context.Context, s string, updateProject cloud.UpdateProject) error {
+//			UpdateProcessingRuleTemplateFunc: func(contextMoqParam context.Context, updateProcessingRuleTemplate types.UpdateProcessingRuleTemplate) (types.Updated, error) {
+//				panic("mock out the UpdateProcessingRuleTemplate method")
+//			},
+//			UpdateProjectFunc: func(contextMoqParam context.Context, s string, updateProject types.UpdateProject) error {
 //				panic("mock out the UpdateProject method")
 //			},
-//			UpdateResourceProfileFunc: func(contextMoqParam context.Context, s string, updateResourceProfile cloud.UpdateResourceProfile) error {
+//			UpdateResourceProfileFunc: func(contextMoqParam context.Context, s string, updateResourceProfile types.UpdateResourceProfile) error {
 //				panic("mock out the UpdateResourceProfile method")
 //			},
-//			UpdateTokenFunc: func(contextMoqParam context.Context, s string, updateToken cloud.UpdateToken) error {
+//			UpdateTokenFunc: func(contextMoqParam context.Context, updateToken types.UpdateToken) error {
 //				panic("mock out the UpdateToken method")
 //			},
-//			UpdateTraceSessionFunc: func(contextMoqParam context.Context, s string, updateTraceSession cloud.UpdateTraceSession) (cloud.UpdatedTraceSession, error) {
+//			UpdateTraceSessionFunc: func(contextMoqParam context.Context, s string, updateTraceSession types.UpdateTraceSession) (types.Updated, error) {
 //				panic("mock out the UpdateTraceSession method")
 //			},
-//			ValidateConfigFunc: func(contextMoqParam context.Context, agentType cloud.AgentType, validatingConfig cloud.ValidatingConfig) (cloud.ValidatedConfig, error) {
+//			ValidateConfigFunc: func(contextMoqParam context.Context, agentType types.AgentType, validatingConfig types.ValidatingConfig) (types.ValidatedConfig, error) {
 //				panic("mock out the ValidateConfig method")
 //			},
-//			ValidateConfigV2Func: func(contextMoqParam context.Context, validatingConfig cloud.ValidatingConfig) (cloud.ValidatedConfigV2, error) {
+//			ValidateConfigV2Func: func(contextMoqParam context.Context, validatingConfig types.ValidatingConfig) (types.ValidatedConfigV2, error) {
 //				panic("mock out the ValidateConfigV2 method")
 //			},
 //		}
@@ -420,134 +484,161 @@ var _ Client = &ClientMock{}
 //
 //	}
 type ClientMock struct {
+	// AWSCustomerRedirectFunc mocks the AWSCustomerRedirect method.
+	AWSCustomerRedirectFunc func(contextMoqParam context.Context, s string) (*url.URL, error)
+
 	// AcceptInvitationFunc mocks the AcceptInvitation method.
-	AcceptInvitationFunc func(contextMoqParam context.Context, acceptInvitation cloud.AcceptInvitation) error
+	AcceptInvitationFunc func(contextMoqParam context.Context, acceptInvitation types.AcceptInvitation) error
 
 	// ActiveTraceSessionFunc mocks the ActiveTraceSession method.
-	ActiveTraceSessionFunc func(contextMoqParam context.Context, s string) (cloud.TraceSession, error)
+	ActiveTraceSessionFunc func(contextMoqParam context.Context, s string) (types.TraceSession, error)
+
+	// AddAgentMetricsV1Func mocks the AddAgentMetricsV1 method.
+	AddAgentMetricsV1Func func(contextMoqParam context.Context, s string, metrics []types.Metric) (types.MetricsOverTimeByPlugin, error)
 
 	// AgentFunc mocks the Agent method.
-	AgentFunc func(contextMoqParam context.Context, s string) (cloud.Agent, error)
+	AgentFunc func(contextMoqParam context.Context, s string) (types.Agent, error)
 
 	// AgentConfigHistoryFunc mocks the AgentConfigHistory method.
-	AgentConfigHistoryFunc func(contextMoqParam context.Context, s string, agentConfigHistoryParams cloud.AgentConfigHistoryParams) (cloud.AgentConfigHistory, error)
+	AgentConfigHistoryFunc func(contextMoqParam context.Context, s string, agentConfigHistoryParams types.AgentConfigHistoryParams) (types.AgentConfigHistory, error)
+
+	// AgentErrorsFunc mocks the AgentErrors method.
+	AgentErrorsFunc func(contextMoqParam context.Context, listAgentErrors types.ListAgentErrors) (types.AgentErrors, error)
 
 	// AgentMetricsFunc mocks the AgentMetrics method.
-	AgentMetricsFunc func(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.MetricsSummary, error)
+	AgentMetricsFunc func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsSummary, error)
 
 	// AgentMetricsByPluginFunc mocks the AgentMetricsByPlugin method.
-	AgentMetricsByPluginFunc func(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.MetricsSummaryPlugin, error)
+	AgentMetricsByPluginFunc func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsSummaryPlugin, error)
 
 	// AgentMetricsOverTimeByPluginFunc mocks the AgentMetricsOverTimeByPlugin method.
-	AgentMetricsOverTimeByPluginFunc func(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.MetricsOverTimeByPlugin, error)
+	AgentMetricsOverTimeByPluginFunc func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTimeByPlugin, error)
 
 	// AgentMetricsV1Func mocks the AgentMetricsV1 method.
-	AgentMetricsV1Func func(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.AgentMetrics, error)
+	AgentMetricsV1Func func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.AgentMetrics, error)
 
 	// AgentOverTimeMetricsFunc mocks the AgentOverTimeMetrics method.
-	AgentOverTimeMetricsFunc func(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.MetricsOverTime, error)
+	AgentOverTimeMetricsFunc func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTime, error)
 
 	// AgentsFunc mocks the Agents method.
-	AgentsFunc func(contextMoqParam context.Context, s string, agentsParams cloud.AgentsParams) (cloud.Agents, error)
+	AgentsFunc func(contextMoqParam context.Context, s string, agentsParams types.AgentsParams) (types.Agents, error)
 
 	// ClusterObjectFunc mocks the ClusterObject method.
-	ClusterObjectFunc func(contextMoqParam context.Context, s string) (cloud.ClusterObject, error)
+	ClusterObjectFunc func(contextMoqParam context.Context, s string) (types.ClusterObject, error)
+
+	// ClusterObjectRegexFunc mocks the ClusterObjectRegex method.
+	ClusterObjectRegexFunc func(contextMoqParam context.Context, s string) (types.ClusterObjectRegex, error)
+
+	// ClusterObjectRegexesFunc mocks the ClusterObjectRegexes method.
+	ClusterObjectRegexesFunc func(contextMoqParam context.Context, listClusterObjectRegexes types.ListClusterObjectRegexes) (types.ClusterObjectRegexes, error)
 
 	// ClusterObjectsFunc mocks the ClusterObjects method.
-	ClusterObjectsFunc func(contextMoqParam context.Context, s string, clusterObjectParams cloud.ClusterObjectParams) (cloud.ClusterObjects, error)
+	ClusterObjectsFunc func(contextMoqParam context.Context, s string, clusterObjectParams types.ClusterObjectParams) (types.ClusterObjects, error)
 
 	// ConfigSectionFunc mocks the ConfigSection method.
-	ConfigSectionFunc func(contextMoqParam context.Context, s string) (cloud.ConfigSection, error)
+	ConfigSectionFunc func(contextMoqParam context.Context, s string) (types.ConfigSection, error)
 
 	// ConfigSectionsFunc mocks the ConfigSections method.
-	ConfigSectionsFunc func(contextMoqParam context.Context, s string, configSectionsParams cloud.ConfigSectionsParams) (cloud.ConfigSections, error)
+	ConfigSectionsFunc func(contextMoqParam context.Context, s string, configSectionsParams types.ConfigSectionsParams) (types.ConfigSections, error)
 
 	// CoreInstanceFunc mocks the CoreInstance method.
-	CoreInstanceFunc func(contextMoqParam context.Context, s string) (cloud.CoreInstance, error)
+	CoreInstanceFunc func(contextMoqParam context.Context, s string) (types.CoreInstance, error)
 
 	// CoreInstanceCheckFunc mocks the CoreInstanceCheck method.
-	CoreInstanceCheckFunc func(contextMoqParam context.Context, s string) (cloud.CoreInstanceCheck, error)
+	CoreInstanceCheckFunc func(contextMoqParam context.Context, s string) (types.CoreInstanceCheck, error)
 
 	// CoreInstanceChecksFunc mocks the CoreInstanceChecks method.
-	CoreInstanceChecksFunc func(contextMoqParam context.Context, s string, coreInstanceChecksParams cloud.CoreInstanceChecksParams) (cloud.CoreInstanceChecks, error)
+	CoreInstanceChecksFunc func(contextMoqParam context.Context, s string, coreInstanceChecksParams types.CoreInstanceChecksParams) (types.CoreInstanceChecks, error)
 
 	// CoreInstanceMetricsFunc mocks the CoreInstanceMetrics method.
-	CoreInstanceMetricsFunc func(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.MetricsSummary, error)
+	CoreInstanceMetricsFunc func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsSummary, error)
 
 	// CoreInstanceMetricsByPluginFunc mocks the CoreInstanceMetricsByPlugin method.
-	CoreInstanceMetricsByPluginFunc func(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.MetricsSummaryPlugin, error)
+	CoreInstanceMetricsByPluginFunc func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsSummaryPlugin, error)
 
 	// CoreInstanceMetricsOverTimeByPluginFunc mocks the CoreInstanceMetricsOverTimeByPlugin method.
-	CoreInstanceMetricsOverTimeByPluginFunc func(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.MetricsOverTimeByPlugin, error)
+	CoreInstanceMetricsOverTimeByPluginFunc func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTimeByPlugin, error)
 
 	// CoreInstanceMetricsV1Func mocks the CoreInstanceMetricsV1 method.
-	CoreInstanceMetricsV1Func func(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.CoreInstanceMetricsV1, error)
+	CoreInstanceMetricsV1Func func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.CoreInstanceMetricsV1, error)
 
 	// CoreInstanceOverTimeMetricsFunc mocks the CoreInstanceOverTimeMetrics method.
-	CoreInstanceOverTimeMetricsFunc func(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.MetricsOverTime, error)
+	CoreInstanceOverTimeMetricsFunc func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTime, error)
 
 	// CoreInstancePingFunc mocks the CoreInstancePing method.
-	CoreInstancePingFunc func(contextMoqParam context.Context, s string) (cloud.CoreInstancePingResponse, error)
+	CoreInstancePingFunc func(contextMoqParam context.Context, s string) (types.CoreInstancePingResponse, error)
 
 	// CoreInstancesFunc mocks the CoreInstances method.
-	CoreInstancesFunc func(contextMoqParam context.Context, s string, coreInstancesParams cloud.CoreInstancesParams) (cloud.CoreInstances, error)
+	CoreInstancesFunc func(contextMoqParam context.Context, s string, coreInstancesParams types.CoreInstancesParams) (types.CoreInstances, error)
+
+	// CreateAWSContractFromTokenFunc mocks the CreateAWSContractFromToken method.
+	CreateAWSContractFromTokenFunc func(contextMoqParam context.Context, createAWSContractFromToken types.CreateAWSContractFromToken) error
+
+	// CreateAgentErrorFunc mocks the CreateAgentError method.
+	CreateAgentErrorFunc func(contextMoqParam context.Context, createAgentError types.CreateAgentError) (types.Created, error)
 
 	// CreateClusterObjectFunc mocks the CreateClusterObject method.
-	CreateClusterObjectFunc func(contextMoqParam context.Context, s string, createClusterObject cloud.CreateClusterObject) (cloud.CreatedClusterObject, error)
+	CreateClusterObjectFunc func(contextMoqParam context.Context, s string, createClusterObject types.CreateClusterObject) (types.Created, error)
+
+	// CreateClusterObjectRegexFunc mocks the CreateClusterObjectRegex method.
+	CreateClusterObjectRegexFunc func(contextMoqParam context.Context, createClusterObjectRegex types.CreateClusterObjectRegex) (types.Created, error)
 
 	// CreateConfigSectionFunc mocks the CreateConfigSection method.
-	CreateConfigSectionFunc func(contextMoqParam context.Context, s string, createConfigSection cloud.CreateConfigSection) (cloud.CreatedConfigSection, error)
+	CreateConfigSectionFunc func(contextMoqParam context.Context, s string, createConfigSection types.CreateConfigSection) (types.Created, error)
 
 	// CreateCoreInstanceFunc mocks the CreateCoreInstance method.
-	CreateCoreInstanceFunc func(contextMoqParam context.Context, createCoreInstance cloud.CreateCoreInstance) (cloud.CreatedCoreInstance, error)
+	CreateCoreInstanceFunc func(contextMoqParam context.Context, createCoreInstance types.CreateCoreInstance) (types.CreatedCoreInstance, error)
 
 	// CreateCoreInstanceCheckFunc mocks the CreateCoreInstanceCheck method.
-	CreateCoreInstanceCheckFunc func(contextMoqParam context.Context, s string, createCoreInstanceCheck cloud.CreateCoreInstanceCheck) (cloud.CreatedCoreInstanceCheck, error)
+	CreateCoreInstanceCheckFunc func(contextMoqParam context.Context, s string, check types.Check) (types.Created, error)
 
 	// CreateEnvironmentFunc mocks the CreateEnvironment method.
-	CreateEnvironmentFunc func(contextMoqParam context.Context, s string, createEnvironment cloud.CreateEnvironment) (cloud.CreatedEnvironment, error)
+	CreateEnvironmentFunc func(contextMoqParam context.Context, s string, createEnvironment types.CreateEnvironment) (types.CreatedEnvironment, error)
 
 	// CreateFleetFunc mocks the CreateFleet method.
-	CreateFleetFunc func(contextMoqParam context.Context, createFleet cloud.CreateFleet) (cloud.CreatedFleet, error)
+	CreateFleetFunc func(contextMoqParam context.Context, createFleet types.CreateFleet) (types.Created, error)
 
 	// CreateIngestCheckFunc mocks the CreateIngestCheck method.
-	CreateIngestCheckFunc func(contextMoqParam context.Context, s string, createIngestCheck cloud.CreateIngestCheck) (cloud.CreatedIngestCheck, error)
+	CreateIngestCheckFunc func(contextMoqParam context.Context, s string, createIngestCheck types.CreateIngestCheck) (types.Created, error)
 
 	// CreateInvitationFunc mocks the CreateInvitation method.
-	CreateInvitationFunc func(contextMoqParam context.Context, s string, createInvitation cloud.CreateInvitation) error
+	CreateInvitationFunc func(contextMoqParam context.Context, s string, createInvitation types.CreateInvitation) error
 
 	// CreatePipelineFunc mocks the CreatePipeline method.
-	CreatePipelineFunc func(contextMoqParam context.Context, s string, createPipeline cloud.CreatePipeline) (cloud.CreatedPipeline, error)
+	CreatePipelineFunc func(contextMoqParam context.Context, s string, createPipeline types.CreatePipeline) (types.CreatedPipeline, error)
 
 	// CreatePipelineCheckFunc mocks the CreatePipelineCheck method.
-	CreatePipelineCheckFunc func(contextMoqParam context.Context, s string, createPipelineCheck cloud.CreatePipelineCheck) (cloud.CreatedPipelineCheck, error)
+	CreatePipelineCheckFunc func(contextMoqParam context.Context, s string, createPipelineCheck types.CreatePipelineCheck) (types.Created, error)
 
 	// CreatePipelineFileFunc mocks the CreatePipelineFile method.
-	CreatePipelineFileFunc func(contextMoqParam context.Context, s string, createPipelineFile cloud.CreatePipelineFile) (cloud.CreatedPipelineFile, error)
+	CreatePipelineFileFunc func(contextMoqParam context.Context, s string, createPipelineFile types.CreatePipelineFile) (types.Created, error)
 
 	// CreatePipelinePortFunc mocks the CreatePipelinePort method.
-	CreatePipelinePortFunc func(contextMoqParam context.Context, s string, createPipelinePort cloud.CreatePipelinePort) (cloud.CreatedPipelinePort, error)
+	CreatePipelinePortFunc func(contextMoqParam context.Context, s string, createPipelinePort types.CreatePipelinePort) (types.CreatedPipelinePort, error)
 
 	// CreatePipelineSecretFunc mocks the CreatePipelineSecret method.
-	CreatePipelineSecretFunc func(contextMoqParam context.Context, s string, createPipelineSecret cloud.CreatePipelineSecret) (cloud.CreatedPipelineSecret, error)
+	CreatePipelineSecretFunc func(contextMoqParam context.Context, s string, createPipelineSecret types.CreatePipelineSecret) (types.Created, error)
 
 	// CreateProcessingRuleFunc mocks the CreateProcessingRule method.
-	CreateProcessingRuleFunc func(contextMoqParam context.Context, createProcessingRule cloud.CreateProcessingRule) (cloud.CreatedProcessingRule, error)
+	CreateProcessingRuleFunc func(contextMoqParam context.Context, createProcessingRule types.CreateProcessingRule) (types.CreatedProcessingRule, error)
+
+	// CreateProcessingRuleTemplateFunc mocks the CreateProcessingRuleTemplate method.
+	CreateProcessingRuleTemplateFunc func(contextMoqParam context.Context, createProcessingRuleTemplate types.CreateProcessingRuleTemplate) (types.Created, error)
 
 	// CreateProjectFunc mocks the CreateProject method.
-	CreateProjectFunc func(contextMoqParam context.Context, createProject cloud.CreateProject) (cloud.CreatedProject, error)
+	CreateProjectFunc func(contextMoqParam context.Context, createProject types.CreateProject) (types.CreatedProject, error)
 
 	// CreateResourceProfileFunc mocks the CreateResourceProfile method.
-	CreateResourceProfileFunc func(contextMoqParam context.Context, s string, createResourceProfile cloud.CreateResourceProfile) (cloud.CreatedResourceProfile, error)
+	CreateResourceProfileFunc func(contextMoqParam context.Context, s string, createResourceProfile types.CreateResourceProfile) (types.Created, error)
 
 	// CreateTokenFunc mocks the CreateToken method.
-	CreateTokenFunc func(contextMoqParam context.Context, s string, createToken cloud.CreateToken) (cloud.Token, error)
+	CreateTokenFunc func(contextMoqParam context.Context, s string, createToken types.CreateToken) (types.Token, error)
 
 	// CreateTraceRecordFunc mocks the CreateTraceRecord method.
-	CreateTraceRecordFunc func(contextMoqParam context.Context, s string, createTraceRecord cloud.CreateTraceRecord) (cloud.CreatedTraceRecord, error)
+	CreateTraceRecordFunc func(contextMoqParam context.Context, s string, createTraceRecord types.CreateTraceRecord) (types.CreatedTraceRecord, error)
 
 	// CreateTraceSessionFunc mocks the CreateTraceSession method.
-	CreateTraceSessionFunc func(contextMoqParam context.Context, s string, createTraceSession cloud.CreateTraceSession) (cloud.CreatedTraceSession, error)
+	CreateTraceSessionFunc func(contextMoqParam context.Context, s string, createTraceSession types.CreateTraceSession) (types.Created, error)
 
 	// DeleteAgentFunc mocks the DeleteAgent method.
 	DeleteAgentFunc func(contextMoqParam context.Context, s string) error
@@ -557,6 +648,9 @@ type ClientMock struct {
 
 	// DeleteClusterObjectFunc mocks the DeleteClusterObject method.
 	DeleteClusterObjectFunc func(contextMoqParam context.Context, s string) error
+
+	// DeleteClusterObjectRegexFunc mocks the DeleteClusterObjectRegex method.
+	DeleteClusterObjectRegexFunc func(contextMoqParam context.Context, s string) error
 
 	// DeleteConfigSectionFunc mocks the DeleteConfigSection method.
 	DeleteConfigSectionFunc func(contextMoqParam context.Context, s string) error
@@ -574,7 +668,7 @@ type ClientMock struct {
 	DeleteEnvironmentFunc func(contextMoqParam context.Context, s string) error
 
 	// DeleteFleetFunc mocks the DeleteFleet method.
-	DeleteFleetFunc func(contextMoqParam context.Context, s string) (cloud.DeletedFleet, error)
+	DeleteFleetFunc func(contextMoqParam context.Context, s string) (types.Deleted, error)
 
 	// DeleteIngestCheckFunc mocks the DeleteIngestCheck method.
 	DeleteIngestCheckFunc func(contextMoqParam context.Context, s string) error
@@ -603,116 +697,137 @@ type ClientMock struct {
 	// DeleteProcessingRuleFunc mocks the DeleteProcessingRule method.
 	DeleteProcessingRuleFunc func(contextMoqParam context.Context, s string) error
 
+	// DeleteProcessingRuleTemplateFunc mocks the DeleteProcessingRuleTemplate method.
+	DeleteProcessingRuleTemplateFunc func(contextMoqParam context.Context, s string) (types.Deleted, error)
+
 	// DeleteResourceProfileFunc mocks the DeleteResourceProfile method.
 	DeleteResourceProfileFunc func(contextMoqParam context.Context, s string) error
 
 	// DeleteTokenFunc mocks the DeleteToken method.
 	DeleteTokenFunc func(contextMoqParam context.Context, s string) error
 
+	// DismissAgentErrorFunc mocks the DismissAgentError method.
+	DismissAgentErrorFunc func(contextMoqParam context.Context, dismissAgentError types.DismissAgentError) (types.DismissedAgentError, error)
+
 	// EnvironmentsFunc mocks the Environments method.
-	EnvironmentsFunc func(contextMoqParam context.Context, s string, environmentsParams cloud.EnvironmentsParams) (cloud.Environments, error)
+	EnvironmentsFunc func(contextMoqParam context.Context, s string, environmentsParams types.EnvironmentsParams) (types.Environments, error)
 
 	// FleetFunc mocks the Fleet method.
-	FleetFunc func(contextMoqParam context.Context, s string) (cloud.Fleet, error)
+	FleetFunc func(contextMoqParam context.Context, fleetParams types.FleetParams) (types.Fleet, error)
+
+	// FleetConfigFunc mocks the FleetConfig method.
+	FleetConfigFunc func(contextMoqParam context.Context, s string, fleetConfigParams types.FleetConfigParams) (*fluentbitconfig.Config, error)
 
 	// FleetsFunc mocks the Fleets method.
-	FleetsFunc func(contextMoqParam context.Context, fleetsParams cloud.FleetsParams) (cloud.Fleets, error)
+	FleetsFunc func(contextMoqParam context.Context, fleetsParams types.FleetsParams) (types.Fleets, error)
+
+	// HealthFunc mocks the Health method.
+	HealthFunc func(contextMoqParam context.Context) (types.Health, error)
 
 	// IngestCheckFunc mocks the IngestCheck method.
-	IngestCheckFunc func(contextMoqParam context.Context, s string) (cloud.IngestCheck, error)
+	IngestCheckFunc func(contextMoqParam context.Context, s string) (types.IngestCheck, error)
 
 	// IngestChecksFunc mocks the IngestChecks method.
-	IngestChecksFunc func(contextMoqParam context.Context, s string, ingestChecksParams cloud.IngestChecksParams) (cloud.IngestChecks, error)
+	IngestChecksFunc func(contextMoqParam context.Context, s string, ingestChecksParams types.IngestChecksParams) (types.IngestChecks, error)
 
 	// MembersFunc mocks the Members method.
-	MembersFunc func(contextMoqParam context.Context, s string, membersParams cloud.MembersParams) (cloud.Memberships, error)
+	MembersFunc func(contextMoqParam context.Context, s string, membersParams types.MembersParams) (types.Memberships, error)
 
 	// PipelineFunc mocks the Pipeline method.
-	PipelineFunc func(contextMoqParam context.Context, s string, pipelineParams cloud.PipelineParams) (cloud.Pipeline, error)
+	PipelineFunc func(contextMoqParam context.Context, s string, pipelineParams types.PipelineParams) (types.Pipeline, error)
 
 	// PipelineCheckFunc mocks the PipelineCheck method.
-	PipelineCheckFunc func(contextMoqParam context.Context, s string) (cloud.PipelineCheck, error)
+	PipelineCheckFunc func(contextMoqParam context.Context, s string) (types.PipelineCheck, error)
 
 	// PipelineChecksFunc mocks the PipelineChecks method.
-	PipelineChecksFunc func(contextMoqParam context.Context, s string, pipelineChecksParams cloud.PipelineChecksParams) (cloud.PipelineChecks, error)
+	PipelineChecksFunc func(contextMoqParam context.Context, s string, pipelineChecksParams types.PipelineChecksParams) (types.PipelineChecks, error)
 
 	// PipelineClusterObjectsFunc mocks the PipelineClusterObjects method.
-	PipelineClusterObjectsFunc func(contextMoqParam context.Context, s string, pipelineClusterObjectsParams cloud.PipelineClusterObjectsParams) (cloud.ClusterObjects, error)
+	PipelineClusterObjectsFunc func(contextMoqParam context.Context, s string, pipelineClusterObjectsParams types.PipelineClusterObjectsParams) (types.ClusterObjects, error)
 
 	// PipelineConfigHistoryFunc mocks the PipelineConfigHistory method.
-	PipelineConfigHistoryFunc func(contextMoqParam context.Context, s string, pipelineConfigHistoryParams cloud.PipelineConfigHistoryParams) (cloud.PipelineConfigHistory, error)
+	PipelineConfigHistoryFunc func(contextMoqParam context.Context, s string, pipelineConfigHistoryParams types.PipelineConfigHistoryParams) (types.PipelineConfigHistory, error)
 
 	// PipelineFileFunc mocks the PipelineFile method.
-	PipelineFileFunc func(contextMoqParam context.Context, s string) (cloud.PipelineFile, error)
+	PipelineFileFunc func(contextMoqParam context.Context, s string) (types.PipelineFile, error)
 
 	// PipelineFilesFunc mocks the PipelineFiles method.
-	PipelineFilesFunc func(contextMoqParam context.Context, s string, pipelineFilesParams cloud.PipelineFilesParams) (cloud.PipelineFiles, error)
+	PipelineFilesFunc func(contextMoqParam context.Context, s string, pipelineFilesParams types.PipelineFilesParams) (types.PipelineFiles, error)
+
+	// PipelineMetadataFunc mocks the PipelineMetadata method.
+	PipelineMetadataFunc func(contextMoqParam context.Context, s string, strings ...string) (types.PipelineMetadata, error)
 
 	// PipelineMetricsFunc mocks the PipelineMetrics method.
-	PipelineMetricsFunc func(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.MetricsSummary, error)
+	PipelineMetricsFunc func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsSummary, error)
 
 	// PipelineMetricsByPluginFunc mocks the PipelineMetricsByPlugin method.
-	PipelineMetricsByPluginFunc func(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.MetricsSummaryPlugin, error)
+	PipelineMetricsByPluginFunc func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsSummaryPlugin, error)
 
 	// PipelineMetricsOverTimeByPluginFunc mocks the PipelineMetricsOverTimeByPlugin method.
-	PipelineMetricsOverTimeByPluginFunc func(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.MetricsOverTimeByPlugin, error)
+	PipelineMetricsOverTimeByPluginFunc func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTimeByPlugin, error)
 
 	// PipelineMetricsV1Func mocks the PipelineMetricsV1 method.
-	PipelineMetricsV1Func func(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.AgentMetrics, error)
+	PipelineMetricsV1Func func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.AgentMetrics, error)
 
 	// PipelineOverTimeMetricsFunc mocks the PipelineOverTimeMetrics method.
-	PipelineOverTimeMetricsFunc func(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.MetricsOverTime, error)
+	PipelineOverTimeMetricsFunc func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTime, error)
 
 	// PipelinePortFunc mocks the PipelinePort method.
-	PipelinePortFunc func(contextMoqParam context.Context, s string) (cloud.PipelinePort, error)
+	PipelinePortFunc func(contextMoqParam context.Context, s string) (types.PipelinePort, error)
 
 	// PipelinePortsFunc mocks the PipelinePorts method.
-	PipelinePortsFunc func(contextMoqParam context.Context, s string, pipelinePortsParams cloud.PipelinePortsParams) (cloud.PipelinePorts, error)
+	PipelinePortsFunc func(contextMoqParam context.Context, s string, pipelinePortsParams types.PipelinePortsParams) (types.PipelinePorts, error)
 
 	// PipelineSecretFunc mocks the PipelineSecret method.
-	PipelineSecretFunc func(contextMoqParam context.Context, s string) (cloud.PipelineSecret, error)
+	PipelineSecretFunc func(contextMoqParam context.Context, s string) (types.PipelineSecret, error)
 
 	// PipelineSecretsFunc mocks the PipelineSecrets method.
-	PipelineSecretsFunc func(contextMoqParam context.Context, s string, pipelineSecretsParams cloud.PipelineSecretsParams) (cloud.PipelineSecrets, error)
+	PipelineSecretsFunc func(contextMoqParam context.Context, s string, pipelineSecretsParams types.PipelineSecretsParams) (types.PipelineSecrets, error)
 
 	// PipelineStatusHistoryFunc mocks the PipelineStatusHistory method.
-	PipelineStatusHistoryFunc func(contextMoqParam context.Context, s string, pipelineStatusHistoryParams cloud.PipelineStatusHistoryParams) (cloud.PipelineStatusHistory, error)
+	PipelineStatusHistoryFunc func(contextMoqParam context.Context, s string, pipelineStatusHistoryParams types.PipelineStatusHistoryParams) (types.PipelineStatusHistory, error)
 
 	// PipelinesFunc mocks the Pipelines method.
-	PipelinesFunc func(contextMoqParam context.Context, s string, pipelinesParams cloud.PipelinesParams) (cloud.Pipelines, error)
+	PipelinesFunc func(contextMoqParam context.Context, pipelinesParams types.PipelinesParams) (types.Pipelines, error)
 
 	// PipelinesMetricsV1Func mocks the PipelinesMetricsV1 method.
-	PipelinesMetricsV1Func func(contextMoqParam context.Context, s string, pipelinesMetricsParams cloud.PipelinesMetricsParams) (cloud.PipelinesMetrics, error)
+	PipelinesMetricsV1Func func(contextMoqParam context.Context, s string, pipelinesMetricsParams types.PipelinesMetricsParams) (types.PipelinesMetrics, error)
 
 	// PreviewProcessingRuleFunc mocks the PreviewProcessingRule method.
-	PreviewProcessingRuleFunc func(contextMoqParam context.Context, previewProcessingRule cloud.PreviewProcessingRule) ([]cloud.FluentBitLog, error)
+	PreviewProcessingRuleFunc func(contextMoqParam context.Context, previewProcessingRule types.PreviewProcessingRule) ([]types.FluentBitLog, error)
 
 	// ProcessingRuleFunc mocks the ProcessingRule method.
-	ProcessingRuleFunc func(contextMoqParam context.Context, s string) (cloud.ProcessingRule, error)
+	ProcessingRuleFunc func(contextMoqParam context.Context, s string) (types.ProcessingRule, error)
+
+	// ProcessingRuleTemplatesFunc mocks the ProcessingRuleTemplates method.
+	ProcessingRuleTemplatesFunc func(contextMoqParam context.Context, listProcessingRuleTemplates types.ListProcessingRuleTemplates) (types.ProcessingRuleTemplates, error)
 
 	// ProcessingRulesFunc mocks the ProcessingRules method.
-	ProcessingRulesFunc func(contextMoqParam context.Context, processingRulesParams cloud.ProcessingRulesParams) (cloud.ProcessingRules, error)
+	ProcessingRulesFunc func(contextMoqParam context.Context, processingRulesParams types.ProcessingRulesParams) (types.ProcessingRules, error)
 
 	// ProjectFunc mocks the Project method.
-	ProjectFunc func(contextMoqParam context.Context, s string) (cloud.Project, error)
+	ProjectFunc func(contextMoqParam context.Context, s string) (types.Project, error)
 
 	// ProjectMetricsV1Func mocks the ProjectMetricsV1 method.
-	ProjectMetricsV1Func func(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.ProjectMetrics, error)
-
-	// ProjectPipelinesFunc mocks the ProjectPipelines method.
-	ProjectPipelinesFunc func(contextMoqParam context.Context, s string, pipelinesParams cloud.PipelinesParams) (cloud.Pipelines, error)
+	ProjectMetricsV1Func func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.ProjectMetrics, error)
 
 	// ProjectsFunc mocks the Projects method.
-	ProjectsFunc func(contextMoqParam context.Context, projectsParams cloud.ProjectsParams) (cloud.Projects, error)
+	ProjectsFunc func(contextMoqParam context.Context, projectsParams types.ProjectsParams) (types.Projects, error)
+
+	// PushAWSMarketplaceSubscriptionNotificationFunc mocks the PushAWSMarketplaceSubscriptionNotification method.
+	PushAWSMarketplaceSubscriptionNotificationFunc func(contextMoqParam context.Context, aWSMarketplaceSubscriptionNotification types.AWSMarketplaceSubscriptionNotification) error
 
 	// RegisterAgentFunc mocks the RegisterAgent method.
-	RegisterAgentFunc func(contextMoqParam context.Context, registerAgent cloud.RegisterAgent) (cloud.RegisteredAgent, error)
+	RegisterAgentFunc func(contextMoqParam context.Context, registerAgent types.RegisterAgent) (types.RegisteredAgent, error)
 
 	// ResourceProfileFunc mocks the ResourceProfile method.
-	ResourceProfileFunc func(contextMoqParam context.Context, s string) (cloud.ResourceProfile, error)
+	ResourceProfileFunc func(contextMoqParam context.Context, s string) (types.ResourceProfile, error)
 
 	// ResourceProfilesFunc mocks the ResourceProfiles method.
-	ResourceProfilesFunc func(contextMoqParam context.Context, s string, resourceProfilesParams cloud.ResourceProfilesParams) (cloud.ResourceProfiles, error)
+	ResourceProfilesFunc func(contextMoqParam context.Context, s string, resourceProfilesParams types.ResourceProfilesParams) (types.ResourceProfiles, error)
+
+	// SearchFunc mocks the Search method.
+	SearchFunc func(contextMoqParam context.Context, searchQuery types.SearchQuery) ([]types.SearchResult, error)
 
 	// SendVerificationEmailFunc mocks the SendVerificationEmail method.
 	SendVerificationEmailFunc func(contextMoqParam context.Context) error
@@ -730,97 +845,116 @@ type ClientMock struct {
 	SetUserAgentFunc func(s string)
 
 	// TerminateActiveTraceSessionFunc mocks the TerminateActiveTraceSession method.
-	TerminateActiveTraceSessionFunc func(contextMoqParam context.Context, s string) (cloud.TerminatedTraceSession, error)
+	TerminateActiveTraceSessionFunc func(contextMoqParam context.Context, s string) (types.TerminatedTraceSession, error)
 
 	// TokenFunc mocks the Token method.
-	TokenFunc func(contextMoqParam context.Context, s string) (cloud.Token, error)
+	TokenFunc func(contextMoqParam context.Context, s string) (types.Token, error)
 
 	// TokensFunc mocks the Tokens method.
-	TokensFunc func(contextMoqParam context.Context, s string, tokensParams cloud.TokensParams) (cloud.Tokens, error)
+	TokensFunc func(contextMoqParam context.Context, s string, tokensParams types.TokensParams) (types.Tokens, error)
 
 	// TraceRecordsFunc mocks the TraceRecords method.
-	TraceRecordsFunc func(contextMoqParam context.Context, s string, traceRecordsParams cloud.TraceRecordsParams) (cloud.TraceRecords, error)
+	TraceRecordsFunc func(contextMoqParam context.Context, s string, traceRecordsParams types.TraceRecordsParams) (types.TraceRecords, error)
 
 	// TraceSessionFunc mocks the TraceSession method.
-	TraceSessionFunc func(contextMoqParam context.Context, s string) (cloud.TraceSession, error)
+	TraceSessionFunc func(contextMoqParam context.Context, s string) (types.TraceSession, error)
 
 	// TraceSessionsFunc mocks the TraceSessions method.
-	TraceSessionsFunc func(contextMoqParam context.Context, s string, traceSessionsParams cloud.TraceSessionsParams) (cloud.TraceSessions, error)
+	TraceSessionsFunc func(contextMoqParam context.Context, s string, traceSessionsParams types.TraceSessionsParams) (types.TraceSessions, error)
 
 	// UpdateAgentFunc mocks the UpdateAgent method.
-	UpdateAgentFunc func(contextMoqParam context.Context, s string, updateAgent cloud.UpdateAgent) error
+	UpdateAgentFunc func(contextMoqParam context.Context, s string, updateAgent types.UpdateAgent) error
 
 	// UpdateClusterObjectFunc mocks the UpdateClusterObject method.
-	UpdateClusterObjectFunc func(contextMoqParam context.Context, s string, updateClusterObject cloud.UpdateClusterObject) error
+	UpdateClusterObjectFunc func(contextMoqParam context.Context, s string, updateClusterObject types.UpdateClusterObject) error
+
+	// UpdateClusterObjectRegexFunc mocks the UpdateClusterObjectRegex method.
+	UpdateClusterObjectRegexFunc func(contextMoqParam context.Context, updateClusterObjectRegex types.UpdateClusterObjectRegex) (types.Updated, error)
 
 	// UpdateConfigSectionFunc mocks the UpdateConfigSection method.
-	UpdateConfigSectionFunc func(contextMoqParam context.Context, s string, updateConfigSection cloud.UpdateConfigSection) (cloud.UpdatedConfigSection, error)
+	UpdateConfigSectionFunc func(contextMoqParam context.Context, s string, updateConfigSection types.UpdateConfigSection) (types.Updated, error)
 
 	// UpdateConfigSectionSetFunc mocks the UpdateConfigSectionSet method.
 	UpdateConfigSectionSetFunc func(contextMoqParam context.Context, s string, strings ...string) error
 
 	// UpdateCoreInstanceFunc mocks the UpdateCoreInstance method.
-	UpdateCoreInstanceFunc func(contextMoqParam context.Context, s string, updateCoreInstance cloud.UpdateCoreInstance) error
+	UpdateCoreInstanceFunc func(contextMoqParam context.Context, s string, updateCoreInstance types.UpdateCoreInstance) error
 
 	// UpdateCoreInstanceCheckFunc mocks the UpdateCoreInstanceCheck method.
-	UpdateCoreInstanceCheckFunc func(contextMoqParam context.Context, s string, updateCoreInstanceCheck cloud.UpdateCoreInstanceCheck) error
+	UpdateCoreInstanceCheckFunc func(contextMoqParam context.Context, s string, updateCoreInstanceCheck types.UpdateCoreInstanceCheck) error
 
 	// UpdateEnvironmentFunc mocks the UpdateEnvironment method.
-	UpdateEnvironmentFunc func(contextMoqParam context.Context, s string, updateEnvironment cloud.UpdateEnvironment) error
+	UpdateEnvironmentFunc func(contextMoqParam context.Context, s string, updateEnvironment types.UpdateEnvironment) error
 
 	// UpdateFleetFunc mocks the UpdateFleet method.
-	UpdateFleetFunc func(contextMoqParam context.Context, updateFleet cloud.UpdateFleet) (cloud.UpdatedFleet, error)
+	UpdateFleetFunc func(contextMoqParam context.Context, updateFleet types.UpdateFleet) (types.Updated, error)
 
 	// UpdateIngestCheckFunc mocks the UpdateIngestCheck method.
-	UpdateIngestCheckFunc func(contextMoqParam context.Context, s string, updateIngestCheck cloud.UpdateIngestCheck) error
+	UpdateIngestCheckFunc func(contextMoqParam context.Context, s string, updateIngestCheck types.UpdateIngestCheck) error
+
+	// UpdateMemberFunc mocks the UpdateMember method.
+	UpdateMemberFunc func(contextMoqParam context.Context, updateMember types.UpdateMember) error
 
 	// UpdatePipelineFunc mocks the UpdatePipeline method.
-	UpdatePipelineFunc func(contextMoqParam context.Context, s string, updatePipeline cloud.UpdatePipeline) (cloud.UpdatedPipeline, error)
+	UpdatePipelineFunc func(contextMoqParam context.Context, s string, updatePipeline types.UpdatePipeline) (types.UpdatedPipeline, error)
 
 	// UpdatePipelineCheckFunc mocks the UpdatePipelineCheck method.
-	UpdatePipelineCheckFunc func(contextMoqParam context.Context, s string, updatePipelineCheck cloud.UpdatePipelineCheck) error
+	UpdatePipelineCheckFunc func(contextMoqParam context.Context, s string, updatePipelineCheck types.UpdatePipelineCheck) error
 
 	// UpdatePipelineClusterObjectsFunc mocks the UpdatePipelineClusterObjects method.
-	UpdatePipelineClusterObjectsFunc func(contextMoqParam context.Context, s string, updatePipelineClusterObjects cloud.UpdatePipelineClusterObjects) error
+	UpdatePipelineClusterObjectsFunc func(contextMoqParam context.Context, s string, updatePipelineClusterObjects types.UpdatePipelineClusterObjects) error
 
 	// UpdatePipelineFileFunc mocks the UpdatePipelineFile method.
-	UpdatePipelineFileFunc func(contextMoqParam context.Context, s string, updatePipelineFile cloud.UpdatePipelineFile) error
+	UpdatePipelineFileFunc func(contextMoqParam context.Context, s string, updatePipelineFile types.UpdatePipelineFile) error
+
+	// UpdatePipelineMetadataFunc mocks the UpdatePipelineMetadata method.
+	UpdatePipelineMetadataFunc func(contextMoqParam context.Context, s string, updatePipelineMetadata types.UpdatePipelineMetadata) error
 
 	// UpdatePipelinePortFunc mocks the UpdatePipelinePort method.
-	UpdatePipelinePortFunc func(contextMoqParam context.Context, s string, updatePipelinePort cloud.UpdatePipelinePort) error
+	UpdatePipelinePortFunc func(contextMoqParam context.Context, s string, updatePipelinePort types.UpdatePipelinePort) error
 
 	// UpdatePipelineSecretFunc mocks the UpdatePipelineSecret method.
-	UpdatePipelineSecretFunc func(contextMoqParam context.Context, s string, updatePipelineSecret cloud.UpdatePipelineSecret) error
+	UpdatePipelineSecretFunc func(contextMoqParam context.Context, s string, updatePipelineSecret types.UpdatePipelineSecret) error
 
 	// UpdateProcessingRuleFunc mocks the UpdateProcessingRule method.
-	UpdateProcessingRuleFunc func(contextMoqParam context.Context, updateProcessingRule cloud.UpdateProcessingRule) (cloud.UpdatedProcessingRule, error)
+	UpdateProcessingRuleFunc func(contextMoqParam context.Context, updateProcessingRule types.UpdateProcessingRule) (types.Updated, error)
+
+	// UpdateProcessingRuleTemplateFunc mocks the UpdateProcessingRuleTemplate method.
+	UpdateProcessingRuleTemplateFunc func(contextMoqParam context.Context, updateProcessingRuleTemplate types.UpdateProcessingRuleTemplate) (types.Updated, error)
 
 	// UpdateProjectFunc mocks the UpdateProject method.
-	UpdateProjectFunc func(contextMoqParam context.Context, s string, updateProject cloud.UpdateProject) error
+	UpdateProjectFunc func(contextMoqParam context.Context, s string, updateProject types.UpdateProject) error
 
 	// UpdateResourceProfileFunc mocks the UpdateResourceProfile method.
-	UpdateResourceProfileFunc func(contextMoqParam context.Context, s string, updateResourceProfile cloud.UpdateResourceProfile) error
+	UpdateResourceProfileFunc func(contextMoqParam context.Context, s string, updateResourceProfile types.UpdateResourceProfile) error
 
 	// UpdateTokenFunc mocks the UpdateToken method.
-	UpdateTokenFunc func(contextMoqParam context.Context, s string, updateToken cloud.UpdateToken) error
+	UpdateTokenFunc func(contextMoqParam context.Context, updateToken types.UpdateToken) error
 
 	// UpdateTraceSessionFunc mocks the UpdateTraceSession method.
-	UpdateTraceSessionFunc func(contextMoqParam context.Context, s string, updateTraceSession cloud.UpdateTraceSession) (cloud.UpdatedTraceSession, error)
+	UpdateTraceSessionFunc func(contextMoqParam context.Context, s string, updateTraceSession types.UpdateTraceSession) (types.Updated, error)
 
 	// ValidateConfigFunc mocks the ValidateConfig method.
-	ValidateConfigFunc func(contextMoqParam context.Context, agentType cloud.AgentType, validatingConfig cloud.ValidatingConfig) (cloud.ValidatedConfig, error)
+	ValidateConfigFunc func(contextMoqParam context.Context, agentType types.AgentType, validatingConfig types.ValidatingConfig) (types.ValidatedConfig, error)
 
 	// ValidateConfigV2Func mocks the ValidateConfigV2 method.
-	ValidateConfigV2Func func(contextMoqParam context.Context, validatingConfig cloud.ValidatingConfig) (cloud.ValidatedConfigV2, error)
+	ValidateConfigV2Func func(contextMoqParam context.Context, validatingConfig types.ValidatingConfig) (types.ValidatedConfigV2, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
+		// AWSCustomerRedirect holds details about calls to the AWSCustomerRedirect method.
+		AWSCustomerRedirect []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// S is the s argument value.
+			S string
+		}
 		// AcceptInvitation holds details about calls to the AcceptInvitation method.
 		AcceptInvitation []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// AcceptInvitation is the acceptInvitation argument value.
-			AcceptInvitation cloud.AcceptInvitation
+			AcceptInvitation types.AcceptInvitation
 		}
 		// ActiveTraceSession holds details about calls to the ActiveTraceSession method.
 		ActiveTraceSession []struct {
@@ -828,6 +962,15 @@ type ClientMock struct {
 			ContextMoqParam context.Context
 			// S is the s argument value.
 			S string
+		}
+		// AddAgentMetricsV1 holds details about calls to the AddAgentMetricsV1 method.
+		AddAgentMetricsV1 []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// S is the s argument value.
+			S string
+			// Metrics is the metrics argument value.
+			Metrics []types.Metric
 		}
 		// Agent holds details about calls to the Agent method.
 		Agent []struct {
@@ -843,7 +986,14 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// AgentConfigHistoryParams is the agentConfigHistoryParams argument value.
-			AgentConfigHistoryParams cloud.AgentConfigHistoryParams
+			AgentConfigHistoryParams types.AgentConfigHistoryParams
+		}
+		// AgentErrors holds details about calls to the AgentErrors method.
+		AgentErrors []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// ListAgentErrors is the listAgentErrors argument value.
+			ListAgentErrors types.ListAgentErrors
 		}
 		// AgentMetrics holds details about calls to the AgentMetrics method.
 		AgentMetrics []struct {
@@ -852,7 +1002,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// MetricsParams is the metricsParams argument value.
-			MetricsParams cloud.MetricsParams
+			MetricsParams types.MetricsParams
 		}
 		// AgentMetricsByPlugin holds details about calls to the AgentMetricsByPlugin method.
 		AgentMetricsByPlugin []struct {
@@ -861,7 +1011,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// MetricsParams is the metricsParams argument value.
-			MetricsParams cloud.MetricsParams
+			MetricsParams types.MetricsParams
 		}
 		// AgentMetricsOverTimeByPlugin holds details about calls to the AgentMetricsOverTimeByPlugin method.
 		AgentMetricsOverTimeByPlugin []struct {
@@ -870,7 +1020,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// MetricsParams is the metricsParams argument value.
-			MetricsParams cloud.MetricsParams
+			MetricsParams types.MetricsParams
 		}
 		// AgentMetricsV1 holds details about calls to the AgentMetricsV1 method.
 		AgentMetricsV1 []struct {
@@ -879,7 +1029,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// MetricsParams is the metricsParams argument value.
-			MetricsParams cloud.MetricsParams
+			MetricsParams types.MetricsParams
 		}
 		// AgentOverTimeMetrics holds details about calls to the AgentOverTimeMetrics method.
 		AgentOverTimeMetrics []struct {
@@ -888,7 +1038,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// MetricsParams is the metricsParams argument value.
-			MetricsParams cloud.MetricsParams
+			MetricsParams types.MetricsParams
 		}
 		// Agents holds details about calls to the Agents method.
 		Agents []struct {
@@ -897,7 +1047,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// AgentsParams is the agentsParams argument value.
-			AgentsParams cloud.AgentsParams
+			AgentsParams types.AgentsParams
 		}
 		// ClusterObject holds details about calls to the ClusterObject method.
 		ClusterObject []struct {
@@ -906,6 +1056,20 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 		}
+		// ClusterObjectRegex holds details about calls to the ClusterObjectRegex method.
+		ClusterObjectRegex []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// S is the s argument value.
+			S string
+		}
+		// ClusterObjectRegexes holds details about calls to the ClusterObjectRegexes method.
+		ClusterObjectRegexes []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// ListClusterObjectRegexes is the listClusterObjectRegexes argument value.
+			ListClusterObjectRegexes types.ListClusterObjectRegexes
+		}
 		// ClusterObjects holds details about calls to the ClusterObjects method.
 		ClusterObjects []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
@@ -913,7 +1077,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// ClusterObjectParams is the clusterObjectParams argument value.
-			ClusterObjectParams cloud.ClusterObjectParams
+			ClusterObjectParams types.ClusterObjectParams
 		}
 		// ConfigSection holds details about calls to the ConfigSection method.
 		ConfigSection []struct {
@@ -929,7 +1093,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// ConfigSectionsParams is the configSectionsParams argument value.
-			ConfigSectionsParams cloud.ConfigSectionsParams
+			ConfigSectionsParams types.ConfigSectionsParams
 		}
 		// CoreInstance holds details about calls to the CoreInstance method.
 		CoreInstance []struct {
@@ -952,7 +1116,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// CoreInstanceChecksParams is the coreInstanceChecksParams argument value.
-			CoreInstanceChecksParams cloud.CoreInstanceChecksParams
+			CoreInstanceChecksParams types.CoreInstanceChecksParams
 		}
 		// CoreInstanceMetrics holds details about calls to the CoreInstanceMetrics method.
 		CoreInstanceMetrics []struct {
@@ -961,7 +1125,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// MetricsParams is the metricsParams argument value.
-			MetricsParams cloud.MetricsParams
+			MetricsParams types.MetricsParams
 		}
 		// CoreInstanceMetricsByPlugin holds details about calls to the CoreInstanceMetricsByPlugin method.
 		CoreInstanceMetricsByPlugin []struct {
@@ -970,7 +1134,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// MetricsParams is the metricsParams argument value.
-			MetricsParams cloud.MetricsParams
+			MetricsParams types.MetricsParams
 		}
 		// CoreInstanceMetricsOverTimeByPlugin holds details about calls to the CoreInstanceMetricsOverTimeByPlugin method.
 		CoreInstanceMetricsOverTimeByPlugin []struct {
@@ -979,7 +1143,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// MetricsParams is the metricsParams argument value.
-			MetricsParams cloud.MetricsParams
+			MetricsParams types.MetricsParams
 		}
 		// CoreInstanceMetricsV1 holds details about calls to the CoreInstanceMetricsV1 method.
 		CoreInstanceMetricsV1 []struct {
@@ -988,7 +1152,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// MetricsParams is the metricsParams argument value.
-			MetricsParams cloud.MetricsParams
+			MetricsParams types.MetricsParams
 		}
 		// CoreInstanceOverTimeMetrics holds details about calls to the CoreInstanceOverTimeMetrics method.
 		CoreInstanceOverTimeMetrics []struct {
@@ -997,7 +1161,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// MetricsParams is the metricsParams argument value.
-			MetricsParams cloud.MetricsParams
+			MetricsParams types.MetricsParams
 		}
 		// CoreInstancePing holds details about calls to the CoreInstancePing method.
 		CoreInstancePing []struct {
@@ -1013,7 +1177,21 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// CoreInstancesParams is the coreInstancesParams argument value.
-			CoreInstancesParams cloud.CoreInstancesParams
+			CoreInstancesParams types.CoreInstancesParams
+		}
+		// CreateAWSContractFromToken holds details about calls to the CreateAWSContractFromToken method.
+		CreateAWSContractFromToken []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// CreateAWSContractFromToken is the createAWSContractFromToken argument value.
+			CreateAWSContractFromToken types.CreateAWSContractFromToken
+		}
+		// CreateAgentError holds details about calls to the CreateAgentError method.
+		CreateAgentError []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// CreateAgentError is the createAgentError argument value.
+			CreateAgentError types.CreateAgentError
 		}
 		// CreateClusterObject holds details about calls to the CreateClusterObject method.
 		CreateClusterObject []struct {
@@ -1022,7 +1200,14 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// CreateClusterObject is the createClusterObject argument value.
-			CreateClusterObject cloud.CreateClusterObject
+			CreateClusterObject types.CreateClusterObject
+		}
+		// CreateClusterObjectRegex holds details about calls to the CreateClusterObjectRegex method.
+		CreateClusterObjectRegex []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// CreateClusterObjectRegex is the createClusterObjectRegex argument value.
+			CreateClusterObjectRegex types.CreateClusterObjectRegex
 		}
 		// CreateConfigSection holds details about calls to the CreateConfigSection method.
 		CreateConfigSection []struct {
@@ -1031,14 +1216,14 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// CreateConfigSection is the createConfigSection argument value.
-			CreateConfigSection cloud.CreateConfigSection
+			CreateConfigSection types.CreateConfigSection
 		}
 		// CreateCoreInstance holds details about calls to the CreateCoreInstance method.
 		CreateCoreInstance []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// CreateCoreInstance is the createCoreInstance argument value.
-			CreateCoreInstance cloud.CreateCoreInstance
+			CreateCoreInstance types.CreateCoreInstance
 		}
 		// CreateCoreInstanceCheck holds details about calls to the CreateCoreInstanceCheck method.
 		CreateCoreInstanceCheck []struct {
@@ -1046,8 +1231,8 @@ type ClientMock struct {
 			ContextMoqParam context.Context
 			// S is the s argument value.
 			S string
-			// CreateCoreInstanceCheck is the createCoreInstanceCheck argument value.
-			CreateCoreInstanceCheck cloud.CreateCoreInstanceCheck
+			// Check is the check argument value.
+			Check types.Check
 		}
 		// CreateEnvironment holds details about calls to the CreateEnvironment method.
 		CreateEnvironment []struct {
@@ -1056,14 +1241,14 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// CreateEnvironment is the createEnvironment argument value.
-			CreateEnvironment cloud.CreateEnvironment
+			CreateEnvironment types.CreateEnvironment
 		}
 		// CreateFleet holds details about calls to the CreateFleet method.
 		CreateFleet []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// CreateFleet is the createFleet argument value.
-			CreateFleet cloud.CreateFleet
+			CreateFleet types.CreateFleet
 		}
 		// CreateIngestCheck holds details about calls to the CreateIngestCheck method.
 		CreateIngestCheck []struct {
@@ -1072,7 +1257,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// CreateIngestCheck is the createIngestCheck argument value.
-			CreateIngestCheck cloud.CreateIngestCheck
+			CreateIngestCheck types.CreateIngestCheck
 		}
 		// CreateInvitation holds details about calls to the CreateInvitation method.
 		CreateInvitation []struct {
@@ -1081,7 +1266,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// CreateInvitation is the createInvitation argument value.
-			CreateInvitation cloud.CreateInvitation
+			CreateInvitation types.CreateInvitation
 		}
 		// CreatePipeline holds details about calls to the CreatePipeline method.
 		CreatePipeline []struct {
@@ -1090,7 +1275,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// CreatePipeline is the createPipeline argument value.
-			CreatePipeline cloud.CreatePipeline
+			CreatePipeline types.CreatePipeline
 		}
 		// CreatePipelineCheck holds details about calls to the CreatePipelineCheck method.
 		CreatePipelineCheck []struct {
@@ -1099,7 +1284,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// CreatePipelineCheck is the createPipelineCheck argument value.
-			CreatePipelineCheck cloud.CreatePipelineCheck
+			CreatePipelineCheck types.CreatePipelineCheck
 		}
 		// CreatePipelineFile holds details about calls to the CreatePipelineFile method.
 		CreatePipelineFile []struct {
@@ -1108,7 +1293,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// CreatePipelineFile is the createPipelineFile argument value.
-			CreatePipelineFile cloud.CreatePipelineFile
+			CreatePipelineFile types.CreatePipelineFile
 		}
 		// CreatePipelinePort holds details about calls to the CreatePipelinePort method.
 		CreatePipelinePort []struct {
@@ -1117,7 +1302,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// CreatePipelinePort is the createPipelinePort argument value.
-			CreatePipelinePort cloud.CreatePipelinePort
+			CreatePipelinePort types.CreatePipelinePort
 		}
 		// CreatePipelineSecret holds details about calls to the CreatePipelineSecret method.
 		CreatePipelineSecret []struct {
@@ -1126,21 +1311,28 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// CreatePipelineSecret is the createPipelineSecret argument value.
-			CreatePipelineSecret cloud.CreatePipelineSecret
+			CreatePipelineSecret types.CreatePipelineSecret
 		}
 		// CreateProcessingRule holds details about calls to the CreateProcessingRule method.
 		CreateProcessingRule []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// CreateProcessingRule is the createProcessingRule argument value.
-			CreateProcessingRule cloud.CreateProcessingRule
+			CreateProcessingRule types.CreateProcessingRule
+		}
+		// CreateProcessingRuleTemplate holds details about calls to the CreateProcessingRuleTemplate method.
+		CreateProcessingRuleTemplate []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// CreateProcessingRuleTemplate is the createProcessingRuleTemplate argument value.
+			CreateProcessingRuleTemplate types.CreateProcessingRuleTemplate
 		}
 		// CreateProject holds details about calls to the CreateProject method.
 		CreateProject []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// CreateProject is the createProject argument value.
-			CreateProject cloud.CreateProject
+			CreateProject types.CreateProject
 		}
 		// CreateResourceProfile holds details about calls to the CreateResourceProfile method.
 		CreateResourceProfile []struct {
@@ -1149,7 +1341,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// CreateResourceProfile is the createResourceProfile argument value.
-			CreateResourceProfile cloud.CreateResourceProfile
+			CreateResourceProfile types.CreateResourceProfile
 		}
 		// CreateToken holds details about calls to the CreateToken method.
 		CreateToken []struct {
@@ -1158,7 +1350,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// CreateToken is the createToken argument value.
-			CreateToken cloud.CreateToken
+			CreateToken types.CreateToken
 		}
 		// CreateTraceRecord holds details about calls to the CreateTraceRecord method.
 		CreateTraceRecord []struct {
@@ -1167,7 +1359,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// CreateTraceRecord is the createTraceRecord argument value.
-			CreateTraceRecord cloud.CreateTraceRecord
+			CreateTraceRecord types.CreateTraceRecord
 		}
 		// CreateTraceSession holds details about calls to the CreateTraceSession method.
 		CreateTraceSession []struct {
@@ -1176,7 +1368,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// CreateTraceSession is the createTraceSession argument value.
-			CreateTraceSession cloud.CreateTraceSession
+			CreateTraceSession types.CreateTraceSession
 		}
 		// DeleteAgent holds details about calls to the DeleteAgent method.
 		DeleteAgent []struct {
@@ -1196,6 +1388,13 @@ type ClientMock struct {
 		}
 		// DeleteClusterObject holds details about calls to the DeleteClusterObject method.
 		DeleteClusterObject []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// S is the s argument value.
+			S string
+		}
+		// DeleteClusterObjectRegex holds details about calls to the DeleteClusterObjectRegex method.
+		DeleteClusterObjectRegex []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// S is the s argument value.
@@ -1312,6 +1511,13 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 		}
+		// DeleteProcessingRuleTemplate holds details about calls to the DeleteProcessingRuleTemplate method.
+		DeleteProcessingRuleTemplate []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// S is the s argument value.
+			S string
+		}
 		// DeleteResourceProfile holds details about calls to the DeleteResourceProfile method.
 		DeleteResourceProfile []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
@@ -1326,6 +1532,13 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 		}
+		// DismissAgentError holds details about calls to the DismissAgentError method.
+		DismissAgentError []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// DismissAgentError is the dismissAgentError argument value.
+			DismissAgentError types.DismissAgentError
+		}
 		// Environments holds details about calls to the Environments method.
 		Environments []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
@@ -1333,21 +1546,35 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// EnvironmentsParams is the environmentsParams argument value.
-			EnvironmentsParams cloud.EnvironmentsParams
+			EnvironmentsParams types.EnvironmentsParams
 		}
 		// Fleet holds details about calls to the Fleet method.
 		Fleet []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
+			// FleetParams is the fleetParams argument value.
+			FleetParams types.FleetParams
+		}
+		// FleetConfig holds details about calls to the FleetConfig method.
+		FleetConfig []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
 			// S is the s argument value.
 			S string
+			// FleetConfigParams is the fleetConfigParams argument value.
+			FleetConfigParams types.FleetConfigParams
 		}
 		// Fleets holds details about calls to the Fleets method.
 		Fleets []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// FleetsParams is the fleetsParams argument value.
-			FleetsParams cloud.FleetsParams
+			FleetsParams types.FleetsParams
+		}
+		// Health holds details about calls to the Health method.
+		Health []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
 		}
 		// IngestCheck holds details about calls to the IngestCheck method.
 		IngestCheck []struct {
@@ -1363,7 +1590,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// IngestChecksParams is the ingestChecksParams argument value.
-			IngestChecksParams cloud.IngestChecksParams
+			IngestChecksParams types.IngestChecksParams
 		}
 		// Members holds details about calls to the Members method.
 		Members []struct {
@@ -1372,7 +1599,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// MembersParams is the membersParams argument value.
-			MembersParams cloud.MembersParams
+			MembersParams types.MembersParams
 		}
 		// Pipeline holds details about calls to the Pipeline method.
 		Pipeline []struct {
@@ -1381,7 +1608,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// PipelineParams is the pipelineParams argument value.
-			PipelineParams cloud.PipelineParams
+			PipelineParams types.PipelineParams
 		}
 		// PipelineCheck holds details about calls to the PipelineCheck method.
 		PipelineCheck []struct {
@@ -1397,7 +1624,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// PipelineChecksParams is the pipelineChecksParams argument value.
-			PipelineChecksParams cloud.PipelineChecksParams
+			PipelineChecksParams types.PipelineChecksParams
 		}
 		// PipelineClusterObjects holds details about calls to the PipelineClusterObjects method.
 		PipelineClusterObjects []struct {
@@ -1406,7 +1633,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// PipelineClusterObjectsParams is the pipelineClusterObjectsParams argument value.
-			PipelineClusterObjectsParams cloud.PipelineClusterObjectsParams
+			PipelineClusterObjectsParams types.PipelineClusterObjectsParams
 		}
 		// PipelineConfigHistory holds details about calls to the PipelineConfigHistory method.
 		PipelineConfigHistory []struct {
@@ -1415,7 +1642,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// PipelineConfigHistoryParams is the pipelineConfigHistoryParams argument value.
-			PipelineConfigHistoryParams cloud.PipelineConfigHistoryParams
+			PipelineConfigHistoryParams types.PipelineConfigHistoryParams
 		}
 		// PipelineFile holds details about calls to the PipelineFile method.
 		PipelineFile []struct {
@@ -1431,7 +1658,16 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// PipelineFilesParams is the pipelineFilesParams argument value.
-			PipelineFilesParams cloud.PipelineFilesParams
+			PipelineFilesParams types.PipelineFilesParams
+		}
+		// PipelineMetadata holds details about calls to the PipelineMetadata method.
+		PipelineMetadata []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// S is the s argument value.
+			S string
+			// Strings is the strings argument value.
+			Strings []string
 		}
 		// PipelineMetrics holds details about calls to the PipelineMetrics method.
 		PipelineMetrics []struct {
@@ -1440,7 +1676,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// MetricsParams is the metricsParams argument value.
-			MetricsParams cloud.MetricsParams
+			MetricsParams types.MetricsParams
 		}
 		// PipelineMetricsByPlugin holds details about calls to the PipelineMetricsByPlugin method.
 		PipelineMetricsByPlugin []struct {
@@ -1449,7 +1685,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// MetricsParams is the metricsParams argument value.
-			MetricsParams cloud.MetricsParams
+			MetricsParams types.MetricsParams
 		}
 		// PipelineMetricsOverTimeByPlugin holds details about calls to the PipelineMetricsOverTimeByPlugin method.
 		PipelineMetricsOverTimeByPlugin []struct {
@@ -1458,7 +1694,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// MetricsParams is the metricsParams argument value.
-			MetricsParams cloud.MetricsParams
+			MetricsParams types.MetricsParams
 		}
 		// PipelineMetricsV1 holds details about calls to the PipelineMetricsV1 method.
 		PipelineMetricsV1 []struct {
@@ -1467,7 +1703,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// MetricsParams is the metricsParams argument value.
-			MetricsParams cloud.MetricsParams
+			MetricsParams types.MetricsParams
 		}
 		// PipelineOverTimeMetrics holds details about calls to the PipelineOverTimeMetrics method.
 		PipelineOverTimeMetrics []struct {
@@ -1476,7 +1712,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// MetricsParams is the metricsParams argument value.
-			MetricsParams cloud.MetricsParams
+			MetricsParams types.MetricsParams
 		}
 		// PipelinePort holds details about calls to the PipelinePort method.
 		PipelinePort []struct {
@@ -1492,7 +1728,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// PipelinePortsParams is the pipelinePortsParams argument value.
-			PipelinePortsParams cloud.PipelinePortsParams
+			PipelinePortsParams types.PipelinePortsParams
 		}
 		// PipelineSecret holds details about calls to the PipelineSecret method.
 		PipelineSecret []struct {
@@ -1508,7 +1744,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// PipelineSecretsParams is the pipelineSecretsParams argument value.
-			PipelineSecretsParams cloud.PipelineSecretsParams
+			PipelineSecretsParams types.PipelineSecretsParams
 		}
 		// PipelineStatusHistory holds details about calls to the PipelineStatusHistory method.
 		PipelineStatusHistory []struct {
@@ -1517,16 +1753,14 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// PipelineStatusHistoryParams is the pipelineStatusHistoryParams argument value.
-			PipelineStatusHistoryParams cloud.PipelineStatusHistoryParams
+			PipelineStatusHistoryParams types.PipelineStatusHistoryParams
 		}
 		// Pipelines holds details about calls to the Pipelines method.
 		Pipelines []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
-			// S is the s argument value.
-			S string
 			// PipelinesParams is the pipelinesParams argument value.
-			PipelinesParams cloud.PipelinesParams
+			PipelinesParams types.PipelinesParams
 		}
 		// PipelinesMetricsV1 holds details about calls to the PipelinesMetricsV1 method.
 		PipelinesMetricsV1 []struct {
@@ -1535,14 +1769,14 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// PipelinesMetricsParams is the pipelinesMetricsParams argument value.
-			PipelinesMetricsParams cloud.PipelinesMetricsParams
+			PipelinesMetricsParams types.PipelinesMetricsParams
 		}
 		// PreviewProcessingRule holds details about calls to the PreviewProcessingRule method.
 		PreviewProcessingRule []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// PreviewProcessingRule is the previewProcessingRule argument value.
-			PreviewProcessingRule cloud.PreviewProcessingRule
+			PreviewProcessingRule types.PreviewProcessingRule
 		}
 		// ProcessingRule holds details about calls to the ProcessingRule method.
 		ProcessingRule []struct {
@@ -1551,12 +1785,19 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 		}
+		// ProcessingRuleTemplates holds details about calls to the ProcessingRuleTemplates method.
+		ProcessingRuleTemplates []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// ListProcessingRuleTemplates is the listProcessingRuleTemplates argument value.
+			ListProcessingRuleTemplates types.ListProcessingRuleTemplates
+		}
 		// ProcessingRules holds details about calls to the ProcessingRules method.
 		ProcessingRules []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// ProcessingRulesParams is the processingRulesParams argument value.
-			ProcessingRulesParams cloud.ProcessingRulesParams
+			ProcessingRulesParams types.ProcessingRulesParams
 		}
 		// Project holds details about calls to the Project method.
 		Project []struct {
@@ -1572,30 +1813,28 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// MetricsParams is the metricsParams argument value.
-			MetricsParams cloud.MetricsParams
-		}
-		// ProjectPipelines holds details about calls to the ProjectPipelines method.
-		ProjectPipelines []struct {
-			// ContextMoqParam is the contextMoqParam argument value.
-			ContextMoqParam context.Context
-			// S is the s argument value.
-			S string
-			// PipelinesParams is the pipelinesParams argument value.
-			PipelinesParams cloud.PipelinesParams
+			MetricsParams types.MetricsParams
 		}
 		// Projects holds details about calls to the Projects method.
 		Projects []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// ProjectsParams is the projectsParams argument value.
-			ProjectsParams cloud.ProjectsParams
+			ProjectsParams types.ProjectsParams
+		}
+		// PushAWSMarketplaceSubscriptionNotification holds details about calls to the PushAWSMarketplaceSubscriptionNotification method.
+		PushAWSMarketplaceSubscriptionNotification []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// AWSMarketplaceSubscriptionNotification is the aWSMarketplaceSubscriptionNotification argument value.
+			AWSMarketplaceSubscriptionNotification types.AWSMarketplaceSubscriptionNotification
 		}
 		// RegisterAgent holds details about calls to the RegisterAgent method.
 		RegisterAgent []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// RegisterAgent is the registerAgent argument value.
-			RegisterAgent cloud.RegisterAgent
+			RegisterAgent types.RegisterAgent
 		}
 		// ResourceProfile holds details about calls to the ResourceProfile method.
 		ResourceProfile []struct {
@@ -1611,7 +1850,14 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// ResourceProfilesParams is the resourceProfilesParams argument value.
-			ResourceProfilesParams cloud.ResourceProfilesParams
+			ResourceProfilesParams types.ResourceProfilesParams
+		}
+		// Search holds details about calls to the Search method.
+		Search []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// SearchQuery is the searchQuery argument value.
+			SearchQuery types.SearchQuery
 		}
 		// SendVerificationEmail holds details about calls to the SendVerificationEmail method.
 		SendVerificationEmail []struct {
@@ -1659,7 +1905,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// TokensParams is the tokensParams argument value.
-			TokensParams cloud.TokensParams
+			TokensParams types.TokensParams
 		}
 		// TraceRecords holds details about calls to the TraceRecords method.
 		TraceRecords []struct {
@@ -1668,7 +1914,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// TraceRecordsParams is the traceRecordsParams argument value.
-			TraceRecordsParams cloud.TraceRecordsParams
+			TraceRecordsParams types.TraceRecordsParams
 		}
 		// TraceSession holds details about calls to the TraceSession method.
 		TraceSession []struct {
@@ -1684,7 +1930,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// TraceSessionsParams is the traceSessionsParams argument value.
-			TraceSessionsParams cloud.TraceSessionsParams
+			TraceSessionsParams types.TraceSessionsParams
 		}
 		// UpdateAgent holds details about calls to the UpdateAgent method.
 		UpdateAgent []struct {
@@ -1693,7 +1939,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// UpdateAgent is the updateAgent argument value.
-			UpdateAgent cloud.UpdateAgent
+			UpdateAgent types.UpdateAgent
 		}
 		// UpdateClusterObject holds details about calls to the UpdateClusterObject method.
 		UpdateClusterObject []struct {
@@ -1702,7 +1948,14 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// UpdateClusterObject is the updateClusterObject argument value.
-			UpdateClusterObject cloud.UpdateClusterObject
+			UpdateClusterObject types.UpdateClusterObject
+		}
+		// UpdateClusterObjectRegex holds details about calls to the UpdateClusterObjectRegex method.
+		UpdateClusterObjectRegex []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// UpdateClusterObjectRegex is the updateClusterObjectRegex argument value.
+			UpdateClusterObjectRegex types.UpdateClusterObjectRegex
 		}
 		// UpdateConfigSection holds details about calls to the UpdateConfigSection method.
 		UpdateConfigSection []struct {
@@ -1711,7 +1964,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// UpdateConfigSection is the updateConfigSection argument value.
-			UpdateConfigSection cloud.UpdateConfigSection
+			UpdateConfigSection types.UpdateConfigSection
 		}
 		// UpdateConfigSectionSet holds details about calls to the UpdateConfigSectionSet method.
 		UpdateConfigSectionSet []struct {
@@ -1729,7 +1982,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// UpdateCoreInstance is the updateCoreInstance argument value.
-			UpdateCoreInstance cloud.UpdateCoreInstance
+			UpdateCoreInstance types.UpdateCoreInstance
 		}
 		// UpdateCoreInstanceCheck holds details about calls to the UpdateCoreInstanceCheck method.
 		UpdateCoreInstanceCheck []struct {
@@ -1738,7 +1991,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// UpdateCoreInstanceCheck is the updateCoreInstanceCheck argument value.
-			UpdateCoreInstanceCheck cloud.UpdateCoreInstanceCheck
+			UpdateCoreInstanceCheck types.UpdateCoreInstanceCheck
 		}
 		// UpdateEnvironment holds details about calls to the UpdateEnvironment method.
 		UpdateEnvironment []struct {
@@ -1747,14 +2000,14 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// UpdateEnvironment is the updateEnvironment argument value.
-			UpdateEnvironment cloud.UpdateEnvironment
+			UpdateEnvironment types.UpdateEnvironment
 		}
 		// UpdateFleet holds details about calls to the UpdateFleet method.
 		UpdateFleet []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// UpdateFleet is the updateFleet argument value.
-			UpdateFleet cloud.UpdateFleet
+			UpdateFleet types.UpdateFleet
 		}
 		// UpdateIngestCheck holds details about calls to the UpdateIngestCheck method.
 		UpdateIngestCheck []struct {
@@ -1763,7 +2016,14 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// UpdateIngestCheck is the updateIngestCheck argument value.
-			UpdateIngestCheck cloud.UpdateIngestCheck
+			UpdateIngestCheck types.UpdateIngestCheck
+		}
+		// UpdateMember holds details about calls to the UpdateMember method.
+		UpdateMember []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// UpdateMember is the updateMember argument value.
+			UpdateMember types.UpdateMember
 		}
 		// UpdatePipeline holds details about calls to the UpdatePipeline method.
 		UpdatePipeline []struct {
@@ -1772,7 +2032,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// UpdatePipeline is the updatePipeline argument value.
-			UpdatePipeline cloud.UpdatePipeline
+			UpdatePipeline types.UpdatePipeline
 		}
 		// UpdatePipelineCheck holds details about calls to the UpdatePipelineCheck method.
 		UpdatePipelineCheck []struct {
@@ -1781,7 +2041,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// UpdatePipelineCheck is the updatePipelineCheck argument value.
-			UpdatePipelineCheck cloud.UpdatePipelineCheck
+			UpdatePipelineCheck types.UpdatePipelineCheck
 		}
 		// UpdatePipelineClusterObjects holds details about calls to the UpdatePipelineClusterObjects method.
 		UpdatePipelineClusterObjects []struct {
@@ -1790,7 +2050,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// UpdatePipelineClusterObjects is the updatePipelineClusterObjects argument value.
-			UpdatePipelineClusterObjects cloud.UpdatePipelineClusterObjects
+			UpdatePipelineClusterObjects types.UpdatePipelineClusterObjects
 		}
 		// UpdatePipelineFile holds details about calls to the UpdatePipelineFile method.
 		UpdatePipelineFile []struct {
@@ -1799,7 +2059,16 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// UpdatePipelineFile is the updatePipelineFile argument value.
-			UpdatePipelineFile cloud.UpdatePipelineFile
+			UpdatePipelineFile types.UpdatePipelineFile
+		}
+		// UpdatePipelineMetadata holds details about calls to the UpdatePipelineMetadata method.
+		UpdatePipelineMetadata []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// S is the s argument value.
+			S string
+			// UpdatePipelineMetadata is the updatePipelineMetadata argument value.
+			UpdatePipelineMetadata types.UpdatePipelineMetadata
 		}
 		// UpdatePipelinePort holds details about calls to the UpdatePipelinePort method.
 		UpdatePipelinePort []struct {
@@ -1808,7 +2077,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// UpdatePipelinePort is the updatePipelinePort argument value.
-			UpdatePipelinePort cloud.UpdatePipelinePort
+			UpdatePipelinePort types.UpdatePipelinePort
 		}
 		// UpdatePipelineSecret holds details about calls to the UpdatePipelineSecret method.
 		UpdatePipelineSecret []struct {
@@ -1817,14 +2086,21 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// UpdatePipelineSecret is the updatePipelineSecret argument value.
-			UpdatePipelineSecret cloud.UpdatePipelineSecret
+			UpdatePipelineSecret types.UpdatePipelineSecret
 		}
 		// UpdateProcessingRule holds details about calls to the UpdateProcessingRule method.
 		UpdateProcessingRule []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// UpdateProcessingRule is the updateProcessingRule argument value.
-			UpdateProcessingRule cloud.UpdateProcessingRule
+			UpdateProcessingRule types.UpdateProcessingRule
+		}
+		// UpdateProcessingRuleTemplate holds details about calls to the UpdateProcessingRuleTemplate method.
+		UpdateProcessingRuleTemplate []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// UpdateProcessingRuleTemplate is the updateProcessingRuleTemplate argument value.
+			UpdateProcessingRuleTemplate types.UpdateProcessingRuleTemplate
 		}
 		// UpdateProject holds details about calls to the UpdateProject method.
 		UpdateProject []struct {
@@ -1833,7 +2109,7 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// UpdateProject is the updateProject argument value.
-			UpdateProject cloud.UpdateProject
+			UpdateProject types.UpdateProject
 		}
 		// UpdateResourceProfile holds details about calls to the UpdateResourceProfile method.
 		UpdateResourceProfile []struct {
@@ -1842,16 +2118,14 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// UpdateResourceProfile is the updateResourceProfile argument value.
-			UpdateResourceProfile cloud.UpdateResourceProfile
+			UpdateResourceProfile types.UpdateResourceProfile
 		}
 		// UpdateToken holds details about calls to the UpdateToken method.
 		UpdateToken []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
-			// S is the s argument value.
-			S string
 			// UpdateToken is the updateToken argument value.
-			UpdateToken cloud.UpdateToken
+			UpdateToken types.UpdateToken
 		}
 		// UpdateTraceSession holds details about calls to the UpdateTraceSession method.
 		UpdateTraceSession []struct {
@@ -1860,163 +2134,224 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 			// UpdateTraceSession is the updateTraceSession argument value.
-			UpdateTraceSession cloud.UpdateTraceSession
+			UpdateTraceSession types.UpdateTraceSession
 		}
 		// ValidateConfig holds details about calls to the ValidateConfig method.
 		ValidateConfig []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// AgentType is the agentType argument value.
-			AgentType cloud.AgentType
+			AgentType types.AgentType
 			// ValidatingConfig is the validatingConfig argument value.
-			ValidatingConfig cloud.ValidatingConfig
+			ValidatingConfig types.ValidatingConfig
 		}
 		// ValidateConfigV2 holds details about calls to the ValidateConfigV2 method.
 		ValidateConfigV2 []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// ValidatingConfig is the validatingConfig argument value.
-			ValidatingConfig cloud.ValidatingConfig
+			ValidatingConfig types.ValidatingConfig
 		}
 	}
-	lockAcceptInvitation                    sync.RWMutex
-	lockActiveTraceSession                  sync.RWMutex
-	lockAgent                               sync.RWMutex
-	lockAgentConfigHistory                  sync.RWMutex
-	lockAgentMetrics                        sync.RWMutex
-	lockAgentMetricsByPlugin                sync.RWMutex
-	lockAgentMetricsOverTimeByPlugin        sync.RWMutex
-	lockAgentMetricsV1                      sync.RWMutex
-	lockAgentOverTimeMetrics                sync.RWMutex
-	lockAgents                              sync.RWMutex
-	lockClusterObject                       sync.RWMutex
-	lockClusterObjects                      sync.RWMutex
-	lockConfigSection                       sync.RWMutex
-	lockConfigSections                      sync.RWMutex
-	lockCoreInstance                        sync.RWMutex
-	lockCoreInstanceCheck                   sync.RWMutex
-	lockCoreInstanceChecks                  sync.RWMutex
-	lockCoreInstanceMetrics                 sync.RWMutex
-	lockCoreInstanceMetricsByPlugin         sync.RWMutex
-	lockCoreInstanceMetricsOverTimeByPlugin sync.RWMutex
-	lockCoreInstanceMetricsV1               sync.RWMutex
-	lockCoreInstanceOverTimeMetrics         sync.RWMutex
-	lockCoreInstancePing                    sync.RWMutex
-	lockCoreInstances                       sync.RWMutex
-	lockCreateClusterObject                 sync.RWMutex
-	lockCreateConfigSection                 sync.RWMutex
-	lockCreateCoreInstance                  sync.RWMutex
-	lockCreateCoreInstanceCheck             sync.RWMutex
-	lockCreateEnvironment                   sync.RWMutex
-	lockCreateFleet                         sync.RWMutex
-	lockCreateIngestCheck                   sync.RWMutex
-	lockCreateInvitation                    sync.RWMutex
-	lockCreatePipeline                      sync.RWMutex
-	lockCreatePipelineCheck                 sync.RWMutex
-	lockCreatePipelineFile                  sync.RWMutex
-	lockCreatePipelinePort                  sync.RWMutex
-	lockCreatePipelineSecret                sync.RWMutex
-	lockCreateProcessingRule                sync.RWMutex
-	lockCreateProject                       sync.RWMutex
-	lockCreateResourceProfile               sync.RWMutex
-	lockCreateToken                         sync.RWMutex
-	lockCreateTraceRecord                   sync.RWMutex
-	lockCreateTraceSession                  sync.RWMutex
-	lockDeleteAgent                         sync.RWMutex
-	lockDeleteAgents                        sync.RWMutex
-	lockDeleteClusterObject                 sync.RWMutex
-	lockDeleteConfigSection                 sync.RWMutex
-	lockDeleteCoreInstance                  sync.RWMutex
-	lockDeleteCoreInstanceCheck             sync.RWMutex
-	lockDeleteCoreInstances                 sync.RWMutex
-	lockDeleteEnvironment                   sync.RWMutex
-	lockDeleteFleet                         sync.RWMutex
-	lockDeleteIngestCheck                   sync.RWMutex
-	lockDeletePipeline                      sync.RWMutex
-	lockDeletePipelineCheck                 sync.RWMutex
-	lockDeletePipelineClusterObjects        sync.RWMutex
-	lockDeletePipelineFile                  sync.RWMutex
-	lockDeletePipelinePort                  sync.RWMutex
-	lockDeletePipelineSecret                sync.RWMutex
-	lockDeletePipelines                     sync.RWMutex
-	lockDeleteProcessingRule                sync.RWMutex
-	lockDeleteResourceProfile               sync.RWMutex
-	lockDeleteToken                         sync.RWMutex
-	lockEnvironments                        sync.RWMutex
-	lockFleet                               sync.RWMutex
-	lockFleets                              sync.RWMutex
-	lockIngestCheck                         sync.RWMutex
-	lockIngestChecks                        sync.RWMutex
-	lockMembers                             sync.RWMutex
-	lockPipeline                            sync.RWMutex
-	lockPipelineCheck                       sync.RWMutex
-	lockPipelineChecks                      sync.RWMutex
-	lockPipelineClusterObjects              sync.RWMutex
-	lockPipelineConfigHistory               sync.RWMutex
-	lockPipelineFile                        sync.RWMutex
-	lockPipelineFiles                       sync.RWMutex
-	lockPipelineMetrics                     sync.RWMutex
-	lockPipelineMetricsByPlugin             sync.RWMutex
-	lockPipelineMetricsOverTimeByPlugin     sync.RWMutex
-	lockPipelineMetricsV1                   sync.RWMutex
-	lockPipelineOverTimeMetrics             sync.RWMutex
-	lockPipelinePort                        sync.RWMutex
-	lockPipelinePorts                       sync.RWMutex
-	lockPipelineSecret                      sync.RWMutex
-	lockPipelineSecrets                     sync.RWMutex
-	lockPipelineStatusHistory               sync.RWMutex
-	lockPipelines                           sync.RWMutex
-	lockPipelinesMetricsV1                  sync.RWMutex
-	lockPreviewProcessingRule               sync.RWMutex
-	lockProcessingRule                      sync.RWMutex
-	lockProcessingRules                     sync.RWMutex
-	lockProject                             sync.RWMutex
-	lockProjectMetricsV1                    sync.RWMutex
-	lockProjectPipelines                    sync.RWMutex
-	lockProjects                            sync.RWMutex
-	lockRegisterAgent                       sync.RWMutex
-	lockResourceProfile                     sync.RWMutex
-	lockResourceProfiles                    sync.RWMutex
-	lockSendVerificationEmail               sync.RWMutex
-	lockSetAgentToken                       sync.RWMutex
-	lockSetCoreInstanceToken                sync.RWMutex
-	lockSetProjectToken                     sync.RWMutex
-	lockSetUserAgent                        sync.RWMutex
-	lockTerminateActiveTraceSession         sync.RWMutex
-	lockToken                               sync.RWMutex
-	lockTokens                              sync.RWMutex
-	lockTraceRecords                        sync.RWMutex
-	lockTraceSession                        sync.RWMutex
-	lockTraceSessions                       sync.RWMutex
-	lockUpdateAgent                         sync.RWMutex
-	lockUpdateClusterObject                 sync.RWMutex
-	lockUpdateConfigSection                 sync.RWMutex
-	lockUpdateConfigSectionSet              sync.RWMutex
-	lockUpdateCoreInstance                  sync.RWMutex
-	lockUpdateCoreInstanceCheck             sync.RWMutex
-	lockUpdateEnvironment                   sync.RWMutex
-	lockUpdateFleet                         sync.RWMutex
-	lockUpdateIngestCheck                   sync.RWMutex
-	lockUpdatePipeline                      sync.RWMutex
-	lockUpdatePipelineCheck                 sync.RWMutex
-	lockUpdatePipelineClusterObjects        sync.RWMutex
-	lockUpdatePipelineFile                  sync.RWMutex
-	lockUpdatePipelinePort                  sync.RWMutex
-	lockUpdatePipelineSecret                sync.RWMutex
-	lockUpdateProcessingRule                sync.RWMutex
-	lockUpdateProject                       sync.RWMutex
-	lockUpdateResourceProfile               sync.RWMutex
-	lockUpdateToken                         sync.RWMutex
-	lockUpdateTraceSession                  sync.RWMutex
-	lockValidateConfig                      sync.RWMutex
-	lockValidateConfigV2                    sync.RWMutex
+	lockAWSCustomerRedirect                        sync.RWMutex
+	lockAcceptInvitation                           sync.RWMutex
+	lockActiveTraceSession                         sync.RWMutex
+	lockAddAgentMetricsV1                          sync.RWMutex
+	lockAgent                                      sync.RWMutex
+	lockAgentConfigHistory                         sync.RWMutex
+	lockAgentErrors                                sync.RWMutex
+	lockAgentMetrics                               sync.RWMutex
+	lockAgentMetricsByPlugin                       sync.RWMutex
+	lockAgentMetricsOverTimeByPlugin               sync.RWMutex
+	lockAgentMetricsV1                             sync.RWMutex
+	lockAgentOverTimeMetrics                       sync.RWMutex
+	lockAgents                                     sync.RWMutex
+	lockClusterObject                              sync.RWMutex
+	lockClusterObjectRegex                         sync.RWMutex
+	lockClusterObjectRegexes                       sync.RWMutex
+	lockClusterObjects                             sync.RWMutex
+	lockConfigSection                              sync.RWMutex
+	lockConfigSections                             sync.RWMutex
+	lockCoreInstance                               sync.RWMutex
+	lockCoreInstanceCheck                          sync.RWMutex
+	lockCoreInstanceChecks                         sync.RWMutex
+	lockCoreInstanceMetrics                        sync.RWMutex
+	lockCoreInstanceMetricsByPlugin                sync.RWMutex
+	lockCoreInstanceMetricsOverTimeByPlugin        sync.RWMutex
+	lockCoreInstanceMetricsV1                      sync.RWMutex
+	lockCoreInstanceOverTimeMetrics                sync.RWMutex
+	lockCoreInstancePing                           sync.RWMutex
+	lockCoreInstances                              sync.RWMutex
+	lockCreateAWSContractFromToken                 sync.RWMutex
+	lockCreateAgentError                           sync.RWMutex
+	lockCreateClusterObject                        sync.RWMutex
+	lockCreateClusterObjectRegex                   sync.RWMutex
+	lockCreateConfigSection                        sync.RWMutex
+	lockCreateCoreInstance                         sync.RWMutex
+	lockCreateCoreInstanceCheck                    sync.RWMutex
+	lockCreateEnvironment                          sync.RWMutex
+	lockCreateFleet                                sync.RWMutex
+	lockCreateIngestCheck                          sync.RWMutex
+	lockCreateInvitation                           sync.RWMutex
+	lockCreatePipeline                             sync.RWMutex
+	lockCreatePipelineCheck                        sync.RWMutex
+	lockCreatePipelineFile                         sync.RWMutex
+	lockCreatePipelinePort                         sync.RWMutex
+	lockCreatePipelineSecret                       sync.RWMutex
+	lockCreateProcessingRule                       sync.RWMutex
+	lockCreateProcessingRuleTemplate               sync.RWMutex
+	lockCreateProject                              sync.RWMutex
+	lockCreateResourceProfile                      sync.RWMutex
+	lockCreateToken                                sync.RWMutex
+	lockCreateTraceRecord                          sync.RWMutex
+	lockCreateTraceSession                         sync.RWMutex
+	lockDeleteAgent                                sync.RWMutex
+	lockDeleteAgents                               sync.RWMutex
+	lockDeleteClusterObject                        sync.RWMutex
+	lockDeleteClusterObjectRegex                   sync.RWMutex
+	lockDeleteConfigSection                        sync.RWMutex
+	lockDeleteCoreInstance                         sync.RWMutex
+	lockDeleteCoreInstanceCheck                    sync.RWMutex
+	lockDeleteCoreInstances                        sync.RWMutex
+	lockDeleteEnvironment                          sync.RWMutex
+	lockDeleteFleet                                sync.RWMutex
+	lockDeleteIngestCheck                          sync.RWMutex
+	lockDeletePipeline                             sync.RWMutex
+	lockDeletePipelineCheck                        sync.RWMutex
+	lockDeletePipelineClusterObjects               sync.RWMutex
+	lockDeletePipelineFile                         sync.RWMutex
+	lockDeletePipelinePort                         sync.RWMutex
+	lockDeletePipelineSecret                       sync.RWMutex
+	lockDeletePipelines                            sync.RWMutex
+	lockDeleteProcessingRule                       sync.RWMutex
+	lockDeleteProcessingRuleTemplate               sync.RWMutex
+	lockDeleteResourceProfile                      sync.RWMutex
+	lockDeleteToken                                sync.RWMutex
+	lockDismissAgentError                          sync.RWMutex
+	lockEnvironments                               sync.RWMutex
+	lockFleet                                      sync.RWMutex
+	lockFleetConfig                                sync.RWMutex
+	lockFleets                                     sync.RWMutex
+	lockHealth                                     sync.RWMutex
+	lockIngestCheck                                sync.RWMutex
+	lockIngestChecks                               sync.RWMutex
+	lockMembers                                    sync.RWMutex
+	lockPipeline                                   sync.RWMutex
+	lockPipelineCheck                              sync.RWMutex
+	lockPipelineChecks                             sync.RWMutex
+	lockPipelineClusterObjects                     sync.RWMutex
+	lockPipelineConfigHistory                      sync.RWMutex
+	lockPipelineFile                               sync.RWMutex
+	lockPipelineFiles                              sync.RWMutex
+	lockPipelineMetadata                           sync.RWMutex
+	lockPipelineMetrics                            sync.RWMutex
+	lockPipelineMetricsByPlugin                    sync.RWMutex
+	lockPipelineMetricsOverTimeByPlugin            sync.RWMutex
+	lockPipelineMetricsV1                          sync.RWMutex
+	lockPipelineOverTimeMetrics                    sync.RWMutex
+	lockPipelinePort                               sync.RWMutex
+	lockPipelinePorts                              sync.RWMutex
+	lockPipelineSecret                             sync.RWMutex
+	lockPipelineSecrets                            sync.RWMutex
+	lockPipelineStatusHistory                      sync.RWMutex
+	lockPipelines                                  sync.RWMutex
+	lockPipelinesMetricsV1                         sync.RWMutex
+	lockPreviewProcessingRule                      sync.RWMutex
+	lockProcessingRule                             sync.RWMutex
+	lockProcessingRuleTemplates                    sync.RWMutex
+	lockProcessingRules                            sync.RWMutex
+	lockProject                                    sync.RWMutex
+	lockProjectMetricsV1                           sync.RWMutex
+	lockProjects                                   sync.RWMutex
+	lockPushAWSMarketplaceSubscriptionNotification sync.RWMutex
+	lockRegisterAgent                              sync.RWMutex
+	lockResourceProfile                            sync.RWMutex
+	lockResourceProfiles                           sync.RWMutex
+	lockSearch                                     sync.RWMutex
+	lockSendVerificationEmail                      sync.RWMutex
+	lockSetAgentToken                              sync.RWMutex
+	lockSetCoreInstanceToken                       sync.RWMutex
+	lockSetProjectToken                            sync.RWMutex
+	lockSetUserAgent                               sync.RWMutex
+	lockTerminateActiveTraceSession                sync.RWMutex
+	lockToken                                      sync.RWMutex
+	lockTokens                                     sync.RWMutex
+	lockTraceRecords                               sync.RWMutex
+	lockTraceSession                               sync.RWMutex
+	lockTraceSessions                              sync.RWMutex
+	lockUpdateAgent                                sync.RWMutex
+	lockUpdateClusterObject                        sync.RWMutex
+	lockUpdateClusterObjectRegex                   sync.RWMutex
+	lockUpdateConfigSection                        sync.RWMutex
+	lockUpdateConfigSectionSet                     sync.RWMutex
+	lockUpdateCoreInstance                         sync.RWMutex
+	lockUpdateCoreInstanceCheck                    sync.RWMutex
+	lockUpdateEnvironment                          sync.RWMutex
+	lockUpdateFleet                                sync.RWMutex
+	lockUpdateIngestCheck                          sync.RWMutex
+	lockUpdateMember                               sync.RWMutex
+	lockUpdatePipeline                             sync.RWMutex
+	lockUpdatePipelineCheck                        sync.RWMutex
+	lockUpdatePipelineClusterObjects               sync.RWMutex
+	lockUpdatePipelineFile                         sync.RWMutex
+	lockUpdatePipelineMetadata                     sync.RWMutex
+	lockUpdatePipelinePort                         sync.RWMutex
+	lockUpdatePipelineSecret                       sync.RWMutex
+	lockUpdateProcessingRule                       sync.RWMutex
+	lockUpdateProcessingRuleTemplate               sync.RWMutex
+	lockUpdateProject                              sync.RWMutex
+	lockUpdateResourceProfile                      sync.RWMutex
+	lockUpdateToken                                sync.RWMutex
+	lockUpdateTraceSession                         sync.RWMutex
+	lockValidateConfig                             sync.RWMutex
+	lockValidateConfigV2                           sync.RWMutex
+}
+
+// AWSCustomerRedirect calls AWSCustomerRedirectFunc.
+func (mock *ClientMock) AWSCustomerRedirect(contextMoqParam context.Context, s string) (*url.URL, error) {
+	callInfo := struct {
+		ContextMoqParam context.Context
+		S               string
+	}{
+		ContextMoqParam: contextMoqParam,
+		S:               s,
+	}
+	mock.lockAWSCustomerRedirect.Lock()
+	mock.calls.AWSCustomerRedirect = append(mock.calls.AWSCustomerRedirect, callInfo)
+	mock.lockAWSCustomerRedirect.Unlock()
+	if mock.AWSCustomerRedirectFunc == nil {
+		var (
+			uRLOut *url.URL
+			errOut error
+		)
+		return uRLOut, errOut
+	}
+	return mock.AWSCustomerRedirectFunc(contextMoqParam, s)
+}
+
+// AWSCustomerRedirectCalls gets all the calls that were made to AWSCustomerRedirect.
+// Check the length with:
+//
+//	len(mockedClient.AWSCustomerRedirectCalls())
+func (mock *ClientMock) AWSCustomerRedirectCalls() []struct {
+	ContextMoqParam context.Context
+	S               string
+} {
+	var calls []struct {
+		ContextMoqParam context.Context
+		S               string
+	}
+	mock.lockAWSCustomerRedirect.RLock()
+	calls = mock.calls.AWSCustomerRedirect
+	mock.lockAWSCustomerRedirect.RUnlock()
+	return calls
 }
 
 // AcceptInvitation calls AcceptInvitationFunc.
-func (mock *ClientMock) AcceptInvitation(contextMoqParam context.Context, acceptInvitation cloud.AcceptInvitation) error {
+func (mock *ClientMock) AcceptInvitation(contextMoqParam context.Context, acceptInvitation types.AcceptInvitation) error {
 	callInfo := struct {
 		ContextMoqParam  context.Context
-		AcceptInvitation cloud.AcceptInvitation
+		AcceptInvitation types.AcceptInvitation
 	}{
 		ContextMoqParam:  contextMoqParam,
 		AcceptInvitation: acceptInvitation,
@@ -2039,11 +2374,11 @@ func (mock *ClientMock) AcceptInvitation(contextMoqParam context.Context, accept
 //	len(mockedClient.AcceptInvitationCalls())
 func (mock *ClientMock) AcceptInvitationCalls() []struct {
 	ContextMoqParam  context.Context
-	AcceptInvitation cloud.AcceptInvitation
+	AcceptInvitation types.AcceptInvitation
 } {
 	var calls []struct {
 		ContextMoqParam  context.Context
-		AcceptInvitation cloud.AcceptInvitation
+		AcceptInvitation types.AcceptInvitation
 	}
 	mock.lockAcceptInvitation.RLock()
 	calls = mock.calls.AcceptInvitation
@@ -2052,7 +2387,7 @@ func (mock *ClientMock) AcceptInvitationCalls() []struct {
 }
 
 // ActiveTraceSession calls ActiveTraceSessionFunc.
-func (mock *ClientMock) ActiveTraceSession(contextMoqParam context.Context, s string) (cloud.TraceSession, error) {
+func (mock *ClientMock) ActiveTraceSession(contextMoqParam context.Context, s string) (types.TraceSession, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
@@ -2065,7 +2400,7 @@ func (mock *ClientMock) ActiveTraceSession(contextMoqParam context.Context, s st
 	mock.lockActiveTraceSession.Unlock()
 	if mock.ActiveTraceSessionFunc == nil {
 		var (
-			traceSessionOut cloud.TraceSession
+			traceSessionOut types.TraceSession
 			errOut          error
 		)
 		return traceSessionOut, errOut
@@ -2091,8 +2426,52 @@ func (mock *ClientMock) ActiveTraceSessionCalls() []struct {
 	return calls
 }
 
+// AddAgentMetricsV1 calls AddAgentMetricsV1Func.
+func (mock *ClientMock) AddAgentMetricsV1(contextMoqParam context.Context, s string, metrics []types.Metric) (types.MetricsOverTimeByPlugin, error) {
+	callInfo := struct {
+		ContextMoqParam context.Context
+		S               string
+		Metrics         []types.Metric
+	}{
+		ContextMoqParam: contextMoqParam,
+		S:               s,
+		Metrics:         metrics,
+	}
+	mock.lockAddAgentMetricsV1.Lock()
+	mock.calls.AddAgentMetricsV1 = append(mock.calls.AddAgentMetricsV1, callInfo)
+	mock.lockAddAgentMetricsV1.Unlock()
+	if mock.AddAgentMetricsV1Func == nil {
+		var (
+			metricsOverTimeByPluginOut types.MetricsOverTimeByPlugin
+			errOut                     error
+		)
+		return metricsOverTimeByPluginOut, errOut
+	}
+	return mock.AddAgentMetricsV1Func(contextMoqParam, s, metrics)
+}
+
+// AddAgentMetricsV1Calls gets all the calls that were made to AddAgentMetricsV1.
+// Check the length with:
+//
+//	len(mockedClient.AddAgentMetricsV1Calls())
+func (mock *ClientMock) AddAgentMetricsV1Calls() []struct {
+	ContextMoqParam context.Context
+	S               string
+	Metrics         []types.Metric
+} {
+	var calls []struct {
+		ContextMoqParam context.Context
+		S               string
+		Metrics         []types.Metric
+	}
+	mock.lockAddAgentMetricsV1.RLock()
+	calls = mock.calls.AddAgentMetricsV1
+	mock.lockAddAgentMetricsV1.RUnlock()
+	return calls
+}
+
 // Agent calls AgentFunc.
-func (mock *ClientMock) Agent(contextMoqParam context.Context, s string) (cloud.Agent, error) {
+func (mock *ClientMock) Agent(contextMoqParam context.Context, s string) (types.Agent, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
@@ -2105,7 +2484,7 @@ func (mock *ClientMock) Agent(contextMoqParam context.Context, s string) (cloud.
 	mock.lockAgent.Unlock()
 	if mock.AgentFunc == nil {
 		var (
-			agentOut cloud.Agent
+			agentOut types.Agent
 			errOut   error
 		)
 		return agentOut, errOut
@@ -2132,11 +2511,11 @@ func (mock *ClientMock) AgentCalls() []struct {
 }
 
 // AgentConfigHistory calls AgentConfigHistoryFunc.
-func (mock *ClientMock) AgentConfigHistory(contextMoqParam context.Context, s string, agentConfigHistoryParams cloud.AgentConfigHistoryParams) (cloud.AgentConfigHistory, error) {
+func (mock *ClientMock) AgentConfigHistory(contextMoqParam context.Context, s string, agentConfigHistoryParams types.AgentConfigHistoryParams) (types.AgentConfigHistory, error) {
 	callInfo := struct {
 		ContextMoqParam          context.Context
 		S                        string
-		AgentConfigHistoryParams cloud.AgentConfigHistoryParams
+		AgentConfigHistoryParams types.AgentConfigHistoryParams
 	}{
 		ContextMoqParam:          contextMoqParam,
 		S:                        s,
@@ -2147,7 +2526,7 @@ func (mock *ClientMock) AgentConfigHistory(contextMoqParam context.Context, s st
 	mock.lockAgentConfigHistory.Unlock()
 	if mock.AgentConfigHistoryFunc == nil {
 		var (
-			agentConfigHistoryOut cloud.AgentConfigHistory
+			agentConfigHistoryOut types.AgentConfigHistory
 			errOut                error
 		)
 		return agentConfigHistoryOut, errOut
@@ -2162,12 +2541,12 @@ func (mock *ClientMock) AgentConfigHistory(contextMoqParam context.Context, s st
 func (mock *ClientMock) AgentConfigHistoryCalls() []struct {
 	ContextMoqParam          context.Context
 	S                        string
-	AgentConfigHistoryParams cloud.AgentConfigHistoryParams
+	AgentConfigHistoryParams types.AgentConfigHistoryParams
 } {
 	var calls []struct {
 		ContextMoqParam          context.Context
 		S                        string
-		AgentConfigHistoryParams cloud.AgentConfigHistoryParams
+		AgentConfigHistoryParams types.AgentConfigHistoryParams
 	}
 	mock.lockAgentConfigHistory.RLock()
 	calls = mock.calls.AgentConfigHistory
@@ -2175,12 +2554,52 @@ func (mock *ClientMock) AgentConfigHistoryCalls() []struct {
 	return calls
 }
 
+// AgentErrors calls AgentErrorsFunc.
+func (mock *ClientMock) AgentErrors(contextMoqParam context.Context, listAgentErrors types.ListAgentErrors) (types.AgentErrors, error) {
+	callInfo := struct {
+		ContextMoqParam context.Context
+		ListAgentErrors types.ListAgentErrors
+	}{
+		ContextMoqParam: contextMoqParam,
+		ListAgentErrors: listAgentErrors,
+	}
+	mock.lockAgentErrors.Lock()
+	mock.calls.AgentErrors = append(mock.calls.AgentErrors, callInfo)
+	mock.lockAgentErrors.Unlock()
+	if mock.AgentErrorsFunc == nil {
+		var (
+			agentErrorsOut types.AgentErrors
+			errOut         error
+		)
+		return agentErrorsOut, errOut
+	}
+	return mock.AgentErrorsFunc(contextMoqParam, listAgentErrors)
+}
+
+// AgentErrorsCalls gets all the calls that were made to AgentErrors.
+// Check the length with:
+//
+//	len(mockedClient.AgentErrorsCalls())
+func (mock *ClientMock) AgentErrorsCalls() []struct {
+	ContextMoqParam context.Context
+	ListAgentErrors types.ListAgentErrors
+} {
+	var calls []struct {
+		ContextMoqParam context.Context
+		ListAgentErrors types.ListAgentErrors
+	}
+	mock.lockAgentErrors.RLock()
+	calls = mock.calls.AgentErrors
+	mock.lockAgentErrors.RUnlock()
+	return calls
+}
+
 // AgentMetrics calls AgentMetricsFunc.
-func (mock *ClientMock) AgentMetrics(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.MetricsSummary, error) {
+func (mock *ClientMock) AgentMetrics(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsSummary, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   cloud.MetricsParams
+		MetricsParams   types.MetricsParams
 	}{
 		ContextMoqParam: contextMoqParam,
 		S:               s,
@@ -2191,7 +2610,7 @@ func (mock *ClientMock) AgentMetrics(contextMoqParam context.Context, s string, 
 	mock.lockAgentMetrics.Unlock()
 	if mock.AgentMetricsFunc == nil {
 		var (
-			metricsSummaryOut cloud.MetricsSummary
+			metricsSummaryOut types.MetricsSummary
 			errOut            error
 		)
 		return metricsSummaryOut, errOut
@@ -2206,12 +2625,12 @@ func (mock *ClientMock) AgentMetrics(contextMoqParam context.Context, s string, 
 func (mock *ClientMock) AgentMetricsCalls() []struct {
 	ContextMoqParam context.Context
 	S               string
-	MetricsParams   cloud.MetricsParams
+	MetricsParams   types.MetricsParams
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   cloud.MetricsParams
+		MetricsParams   types.MetricsParams
 	}
 	mock.lockAgentMetrics.RLock()
 	calls = mock.calls.AgentMetrics
@@ -2220,11 +2639,11 @@ func (mock *ClientMock) AgentMetricsCalls() []struct {
 }
 
 // AgentMetricsByPlugin calls AgentMetricsByPluginFunc.
-func (mock *ClientMock) AgentMetricsByPlugin(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.MetricsSummaryPlugin, error) {
+func (mock *ClientMock) AgentMetricsByPlugin(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsSummaryPlugin, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   cloud.MetricsParams
+		MetricsParams   types.MetricsParams
 	}{
 		ContextMoqParam: contextMoqParam,
 		S:               s,
@@ -2235,7 +2654,7 @@ func (mock *ClientMock) AgentMetricsByPlugin(contextMoqParam context.Context, s 
 	mock.lockAgentMetricsByPlugin.Unlock()
 	if mock.AgentMetricsByPluginFunc == nil {
 		var (
-			metricsSummaryPluginOut cloud.MetricsSummaryPlugin
+			metricsSummaryPluginOut types.MetricsSummaryPlugin
 			errOut                  error
 		)
 		return metricsSummaryPluginOut, errOut
@@ -2250,12 +2669,12 @@ func (mock *ClientMock) AgentMetricsByPlugin(contextMoqParam context.Context, s 
 func (mock *ClientMock) AgentMetricsByPluginCalls() []struct {
 	ContextMoqParam context.Context
 	S               string
-	MetricsParams   cloud.MetricsParams
+	MetricsParams   types.MetricsParams
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   cloud.MetricsParams
+		MetricsParams   types.MetricsParams
 	}
 	mock.lockAgentMetricsByPlugin.RLock()
 	calls = mock.calls.AgentMetricsByPlugin
@@ -2264,11 +2683,11 @@ func (mock *ClientMock) AgentMetricsByPluginCalls() []struct {
 }
 
 // AgentMetricsOverTimeByPlugin calls AgentMetricsOverTimeByPluginFunc.
-func (mock *ClientMock) AgentMetricsOverTimeByPlugin(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.MetricsOverTimeByPlugin, error) {
+func (mock *ClientMock) AgentMetricsOverTimeByPlugin(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTimeByPlugin, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   cloud.MetricsParams
+		MetricsParams   types.MetricsParams
 	}{
 		ContextMoqParam: contextMoqParam,
 		S:               s,
@@ -2279,7 +2698,7 @@ func (mock *ClientMock) AgentMetricsOverTimeByPlugin(contextMoqParam context.Con
 	mock.lockAgentMetricsOverTimeByPlugin.Unlock()
 	if mock.AgentMetricsOverTimeByPluginFunc == nil {
 		var (
-			metricsOverTimeByPluginOut cloud.MetricsOverTimeByPlugin
+			metricsOverTimeByPluginOut types.MetricsOverTimeByPlugin
 			errOut                     error
 		)
 		return metricsOverTimeByPluginOut, errOut
@@ -2294,12 +2713,12 @@ func (mock *ClientMock) AgentMetricsOverTimeByPlugin(contextMoqParam context.Con
 func (mock *ClientMock) AgentMetricsOverTimeByPluginCalls() []struct {
 	ContextMoqParam context.Context
 	S               string
-	MetricsParams   cloud.MetricsParams
+	MetricsParams   types.MetricsParams
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   cloud.MetricsParams
+		MetricsParams   types.MetricsParams
 	}
 	mock.lockAgentMetricsOverTimeByPlugin.RLock()
 	calls = mock.calls.AgentMetricsOverTimeByPlugin
@@ -2308,11 +2727,11 @@ func (mock *ClientMock) AgentMetricsOverTimeByPluginCalls() []struct {
 }
 
 // AgentMetricsV1 calls AgentMetricsV1Func.
-func (mock *ClientMock) AgentMetricsV1(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.AgentMetrics, error) {
+func (mock *ClientMock) AgentMetricsV1(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.AgentMetrics, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   cloud.MetricsParams
+		MetricsParams   types.MetricsParams
 	}{
 		ContextMoqParam: contextMoqParam,
 		S:               s,
@@ -2323,7 +2742,7 @@ func (mock *ClientMock) AgentMetricsV1(contextMoqParam context.Context, s string
 	mock.lockAgentMetricsV1.Unlock()
 	if mock.AgentMetricsV1Func == nil {
 		var (
-			agentMetricsOut cloud.AgentMetrics
+			agentMetricsOut types.AgentMetrics
 			errOut          error
 		)
 		return agentMetricsOut, errOut
@@ -2338,12 +2757,12 @@ func (mock *ClientMock) AgentMetricsV1(contextMoqParam context.Context, s string
 func (mock *ClientMock) AgentMetricsV1Calls() []struct {
 	ContextMoqParam context.Context
 	S               string
-	MetricsParams   cloud.MetricsParams
+	MetricsParams   types.MetricsParams
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   cloud.MetricsParams
+		MetricsParams   types.MetricsParams
 	}
 	mock.lockAgentMetricsV1.RLock()
 	calls = mock.calls.AgentMetricsV1
@@ -2352,11 +2771,11 @@ func (mock *ClientMock) AgentMetricsV1Calls() []struct {
 }
 
 // AgentOverTimeMetrics calls AgentOverTimeMetricsFunc.
-func (mock *ClientMock) AgentOverTimeMetrics(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.MetricsOverTime, error) {
+func (mock *ClientMock) AgentOverTimeMetrics(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTime, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   cloud.MetricsParams
+		MetricsParams   types.MetricsParams
 	}{
 		ContextMoqParam: contextMoqParam,
 		S:               s,
@@ -2367,7 +2786,7 @@ func (mock *ClientMock) AgentOverTimeMetrics(contextMoqParam context.Context, s 
 	mock.lockAgentOverTimeMetrics.Unlock()
 	if mock.AgentOverTimeMetricsFunc == nil {
 		var (
-			metricsOverTimeOut cloud.MetricsOverTime
+			metricsOverTimeOut types.MetricsOverTime
 			errOut             error
 		)
 		return metricsOverTimeOut, errOut
@@ -2382,12 +2801,12 @@ func (mock *ClientMock) AgentOverTimeMetrics(contextMoqParam context.Context, s 
 func (mock *ClientMock) AgentOverTimeMetricsCalls() []struct {
 	ContextMoqParam context.Context
 	S               string
-	MetricsParams   cloud.MetricsParams
+	MetricsParams   types.MetricsParams
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   cloud.MetricsParams
+		MetricsParams   types.MetricsParams
 	}
 	mock.lockAgentOverTimeMetrics.RLock()
 	calls = mock.calls.AgentOverTimeMetrics
@@ -2396,11 +2815,11 @@ func (mock *ClientMock) AgentOverTimeMetricsCalls() []struct {
 }
 
 // Agents calls AgentsFunc.
-func (mock *ClientMock) Agents(contextMoqParam context.Context, s string, agentsParams cloud.AgentsParams) (cloud.Agents, error) {
+func (mock *ClientMock) Agents(contextMoqParam context.Context, s string, agentsParams types.AgentsParams) (types.Agents, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
-		AgentsParams    cloud.AgentsParams
+		AgentsParams    types.AgentsParams
 	}{
 		ContextMoqParam: contextMoqParam,
 		S:               s,
@@ -2411,7 +2830,7 @@ func (mock *ClientMock) Agents(contextMoqParam context.Context, s string, agents
 	mock.lockAgents.Unlock()
 	if mock.AgentsFunc == nil {
 		var (
-			agentsOut cloud.Agents
+			agentsOut types.Agents
 			errOut    error
 		)
 		return agentsOut, errOut
@@ -2426,12 +2845,12 @@ func (mock *ClientMock) Agents(contextMoqParam context.Context, s string, agents
 func (mock *ClientMock) AgentsCalls() []struct {
 	ContextMoqParam context.Context
 	S               string
-	AgentsParams    cloud.AgentsParams
+	AgentsParams    types.AgentsParams
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
 		S               string
-		AgentsParams    cloud.AgentsParams
+		AgentsParams    types.AgentsParams
 	}
 	mock.lockAgents.RLock()
 	calls = mock.calls.Agents
@@ -2440,7 +2859,7 @@ func (mock *ClientMock) AgentsCalls() []struct {
 }
 
 // ClusterObject calls ClusterObjectFunc.
-func (mock *ClientMock) ClusterObject(contextMoqParam context.Context, s string) (cloud.ClusterObject, error) {
+func (mock *ClientMock) ClusterObject(contextMoqParam context.Context, s string) (types.ClusterObject, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
@@ -2453,7 +2872,7 @@ func (mock *ClientMock) ClusterObject(contextMoqParam context.Context, s string)
 	mock.lockClusterObject.Unlock()
 	if mock.ClusterObjectFunc == nil {
 		var (
-			clusterObjectOut cloud.ClusterObject
+			clusterObjectOut types.ClusterObject
 			errOut           error
 		)
 		return clusterObjectOut, errOut
@@ -2479,12 +2898,92 @@ func (mock *ClientMock) ClusterObjectCalls() []struct {
 	return calls
 }
 
+// ClusterObjectRegex calls ClusterObjectRegexFunc.
+func (mock *ClientMock) ClusterObjectRegex(contextMoqParam context.Context, s string) (types.ClusterObjectRegex, error) {
+	callInfo := struct {
+		ContextMoqParam context.Context
+		S               string
+	}{
+		ContextMoqParam: contextMoqParam,
+		S:               s,
+	}
+	mock.lockClusterObjectRegex.Lock()
+	mock.calls.ClusterObjectRegex = append(mock.calls.ClusterObjectRegex, callInfo)
+	mock.lockClusterObjectRegex.Unlock()
+	if mock.ClusterObjectRegexFunc == nil {
+		var (
+			clusterObjectRegexOut types.ClusterObjectRegex
+			errOut                error
+		)
+		return clusterObjectRegexOut, errOut
+	}
+	return mock.ClusterObjectRegexFunc(contextMoqParam, s)
+}
+
+// ClusterObjectRegexCalls gets all the calls that were made to ClusterObjectRegex.
+// Check the length with:
+//
+//	len(mockedClient.ClusterObjectRegexCalls())
+func (mock *ClientMock) ClusterObjectRegexCalls() []struct {
+	ContextMoqParam context.Context
+	S               string
+} {
+	var calls []struct {
+		ContextMoqParam context.Context
+		S               string
+	}
+	mock.lockClusterObjectRegex.RLock()
+	calls = mock.calls.ClusterObjectRegex
+	mock.lockClusterObjectRegex.RUnlock()
+	return calls
+}
+
+// ClusterObjectRegexes calls ClusterObjectRegexesFunc.
+func (mock *ClientMock) ClusterObjectRegexes(contextMoqParam context.Context, listClusterObjectRegexes types.ListClusterObjectRegexes) (types.ClusterObjectRegexes, error) {
+	callInfo := struct {
+		ContextMoqParam          context.Context
+		ListClusterObjectRegexes types.ListClusterObjectRegexes
+	}{
+		ContextMoqParam:          contextMoqParam,
+		ListClusterObjectRegexes: listClusterObjectRegexes,
+	}
+	mock.lockClusterObjectRegexes.Lock()
+	mock.calls.ClusterObjectRegexes = append(mock.calls.ClusterObjectRegexes, callInfo)
+	mock.lockClusterObjectRegexes.Unlock()
+	if mock.ClusterObjectRegexesFunc == nil {
+		var (
+			clusterObjectRegexesOut types.ClusterObjectRegexes
+			errOut                  error
+		)
+		return clusterObjectRegexesOut, errOut
+	}
+	return mock.ClusterObjectRegexesFunc(contextMoqParam, listClusterObjectRegexes)
+}
+
+// ClusterObjectRegexesCalls gets all the calls that were made to ClusterObjectRegexes.
+// Check the length with:
+//
+//	len(mockedClient.ClusterObjectRegexesCalls())
+func (mock *ClientMock) ClusterObjectRegexesCalls() []struct {
+	ContextMoqParam          context.Context
+	ListClusterObjectRegexes types.ListClusterObjectRegexes
+} {
+	var calls []struct {
+		ContextMoqParam          context.Context
+		ListClusterObjectRegexes types.ListClusterObjectRegexes
+	}
+	mock.lockClusterObjectRegexes.RLock()
+	calls = mock.calls.ClusterObjectRegexes
+	mock.lockClusterObjectRegexes.RUnlock()
+	return calls
+}
+
 // ClusterObjects calls ClusterObjectsFunc.
-func (mock *ClientMock) ClusterObjects(contextMoqParam context.Context, s string, clusterObjectParams cloud.ClusterObjectParams) (cloud.ClusterObjects, error) {
+func (mock *ClientMock) ClusterObjects(contextMoqParam context.Context, s string, clusterObjectParams types.ClusterObjectParams) (types.ClusterObjects, error) {
 	callInfo := struct {
 		ContextMoqParam     context.Context
 		S                   string
-		ClusterObjectParams cloud.ClusterObjectParams
+		ClusterObjectParams types.ClusterObjectParams
 	}{
 		ContextMoqParam:     contextMoqParam,
 		S:                   s,
@@ -2495,7 +2994,7 @@ func (mock *ClientMock) ClusterObjects(contextMoqParam context.Context, s string
 	mock.lockClusterObjects.Unlock()
 	if mock.ClusterObjectsFunc == nil {
 		var (
-			clusterObjectsOut cloud.ClusterObjects
+			clusterObjectsOut types.ClusterObjects
 			errOut            error
 		)
 		return clusterObjectsOut, errOut
@@ -2510,12 +3009,12 @@ func (mock *ClientMock) ClusterObjects(contextMoqParam context.Context, s string
 func (mock *ClientMock) ClusterObjectsCalls() []struct {
 	ContextMoqParam     context.Context
 	S                   string
-	ClusterObjectParams cloud.ClusterObjectParams
+	ClusterObjectParams types.ClusterObjectParams
 } {
 	var calls []struct {
 		ContextMoqParam     context.Context
 		S                   string
-		ClusterObjectParams cloud.ClusterObjectParams
+		ClusterObjectParams types.ClusterObjectParams
 	}
 	mock.lockClusterObjects.RLock()
 	calls = mock.calls.ClusterObjects
@@ -2524,7 +3023,7 @@ func (mock *ClientMock) ClusterObjectsCalls() []struct {
 }
 
 // ConfigSection calls ConfigSectionFunc.
-func (mock *ClientMock) ConfigSection(contextMoqParam context.Context, s string) (cloud.ConfigSection, error) {
+func (mock *ClientMock) ConfigSection(contextMoqParam context.Context, s string) (types.ConfigSection, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
@@ -2537,7 +3036,7 @@ func (mock *ClientMock) ConfigSection(contextMoqParam context.Context, s string)
 	mock.lockConfigSection.Unlock()
 	if mock.ConfigSectionFunc == nil {
 		var (
-			configSectionOut cloud.ConfigSection
+			configSectionOut types.ConfigSection
 			errOut           error
 		)
 		return configSectionOut, errOut
@@ -2564,11 +3063,11 @@ func (mock *ClientMock) ConfigSectionCalls() []struct {
 }
 
 // ConfigSections calls ConfigSectionsFunc.
-func (mock *ClientMock) ConfigSections(contextMoqParam context.Context, s string, configSectionsParams cloud.ConfigSectionsParams) (cloud.ConfigSections, error) {
+func (mock *ClientMock) ConfigSections(contextMoqParam context.Context, s string, configSectionsParams types.ConfigSectionsParams) (types.ConfigSections, error) {
 	callInfo := struct {
 		ContextMoqParam      context.Context
 		S                    string
-		ConfigSectionsParams cloud.ConfigSectionsParams
+		ConfigSectionsParams types.ConfigSectionsParams
 	}{
 		ContextMoqParam:      contextMoqParam,
 		S:                    s,
@@ -2579,7 +3078,7 @@ func (mock *ClientMock) ConfigSections(contextMoqParam context.Context, s string
 	mock.lockConfigSections.Unlock()
 	if mock.ConfigSectionsFunc == nil {
 		var (
-			configSectionsOut cloud.ConfigSections
+			configSectionsOut types.ConfigSections
 			errOut            error
 		)
 		return configSectionsOut, errOut
@@ -2594,12 +3093,12 @@ func (mock *ClientMock) ConfigSections(contextMoqParam context.Context, s string
 func (mock *ClientMock) ConfigSectionsCalls() []struct {
 	ContextMoqParam      context.Context
 	S                    string
-	ConfigSectionsParams cloud.ConfigSectionsParams
+	ConfigSectionsParams types.ConfigSectionsParams
 } {
 	var calls []struct {
 		ContextMoqParam      context.Context
 		S                    string
-		ConfigSectionsParams cloud.ConfigSectionsParams
+		ConfigSectionsParams types.ConfigSectionsParams
 	}
 	mock.lockConfigSections.RLock()
 	calls = mock.calls.ConfigSections
@@ -2608,7 +3107,7 @@ func (mock *ClientMock) ConfigSectionsCalls() []struct {
 }
 
 // CoreInstance calls CoreInstanceFunc.
-func (mock *ClientMock) CoreInstance(contextMoqParam context.Context, s string) (cloud.CoreInstance, error) {
+func (mock *ClientMock) CoreInstance(contextMoqParam context.Context, s string) (types.CoreInstance, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
@@ -2621,7 +3120,7 @@ func (mock *ClientMock) CoreInstance(contextMoqParam context.Context, s string) 
 	mock.lockCoreInstance.Unlock()
 	if mock.CoreInstanceFunc == nil {
 		var (
-			coreInstanceOut cloud.CoreInstance
+			coreInstanceOut types.CoreInstance
 			errOut          error
 		)
 		return coreInstanceOut, errOut
@@ -2648,7 +3147,7 @@ func (mock *ClientMock) CoreInstanceCalls() []struct {
 }
 
 // CoreInstanceCheck calls CoreInstanceCheckFunc.
-func (mock *ClientMock) CoreInstanceCheck(contextMoqParam context.Context, s string) (cloud.CoreInstanceCheck, error) {
+func (mock *ClientMock) CoreInstanceCheck(contextMoqParam context.Context, s string) (types.CoreInstanceCheck, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
@@ -2661,7 +3160,7 @@ func (mock *ClientMock) CoreInstanceCheck(contextMoqParam context.Context, s str
 	mock.lockCoreInstanceCheck.Unlock()
 	if mock.CoreInstanceCheckFunc == nil {
 		var (
-			coreInstanceCheckOut cloud.CoreInstanceCheck
+			coreInstanceCheckOut types.CoreInstanceCheck
 			errOut               error
 		)
 		return coreInstanceCheckOut, errOut
@@ -2688,11 +3187,11 @@ func (mock *ClientMock) CoreInstanceCheckCalls() []struct {
 }
 
 // CoreInstanceChecks calls CoreInstanceChecksFunc.
-func (mock *ClientMock) CoreInstanceChecks(contextMoqParam context.Context, s string, coreInstanceChecksParams cloud.CoreInstanceChecksParams) (cloud.CoreInstanceChecks, error) {
+func (mock *ClientMock) CoreInstanceChecks(contextMoqParam context.Context, s string, coreInstanceChecksParams types.CoreInstanceChecksParams) (types.CoreInstanceChecks, error) {
 	callInfo := struct {
 		ContextMoqParam          context.Context
 		S                        string
-		CoreInstanceChecksParams cloud.CoreInstanceChecksParams
+		CoreInstanceChecksParams types.CoreInstanceChecksParams
 	}{
 		ContextMoqParam:          contextMoqParam,
 		S:                        s,
@@ -2703,7 +3202,7 @@ func (mock *ClientMock) CoreInstanceChecks(contextMoqParam context.Context, s st
 	mock.lockCoreInstanceChecks.Unlock()
 	if mock.CoreInstanceChecksFunc == nil {
 		var (
-			coreInstanceChecksOut cloud.CoreInstanceChecks
+			coreInstanceChecksOut types.CoreInstanceChecks
 			errOut                error
 		)
 		return coreInstanceChecksOut, errOut
@@ -2718,12 +3217,12 @@ func (mock *ClientMock) CoreInstanceChecks(contextMoqParam context.Context, s st
 func (mock *ClientMock) CoreInstanceChecksCalls() []struct {
 	ContextMoqParam          context.Context
 	S                        string
-	CoreInstanceChecksParams cloud.CoreInstanceChecksParams
+	CoreInstanceChecksParams types.CoreInstanceChecksParams
 } {
 	var calls []struct {
 		ContextMoqParam          context.Context
 		S                        string
-		CoreInstanceChecksParams cloud.CoreInstanceChecksParams
+		CoreInstanceChecksParams types.CoreInstanceChecksParams
 	}
 	mock.lockCoreInstanceChecks.RLock()
 	calls = mock.calls.CoreInstanceChecks
@@ -2732,11 +3231,11 @@ func (mock *ClientMock) CoreInstanceChecksCalls() []struct {
 }
 
 // CoreInstanceMetrics calls CoreInstanceMetricsFunc.
-func (mock *ClientMock) CoreInstanceMetrics(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.MetricsSummary, error) {
+func (mock *ClientMock) CoreInstanceMetrics(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsSummary, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   cloud.MetricsParams
+		MetricsParams   types.MetricsParams
 	}{
 		ContextMoqParam: contextMoqParam,
 		S:               s,
@@ -2747,7 +3246,7 @@ func (mock *ClientMock) CoreInstanceMetrics(contextMoqParam context.Context, s s
 	mock.lockCoreInstanceMetrics.Unlock()
 	if mock.CoreInstanceMetricsFunc == nil {
 		var (
-			metricsSummaryOut cloud.MetricsSummary
+			metricsSummaryOut types.MetricsSummary
 			errOut            error
 		)
 		return metricsSummaryOut, errOut
@@ -2762,12 +3261,12 @@ func (mock *ClientMock) CoreInstanceMetrics(contextMoqParam context.Context, s s
 func (mock *ClientMock) CoreInstanceMetricsCalls() []struct {
 	ContextMoqParam context.Context
 	S               string
-	MetricsParams   cloud.MetricsParams
+	MetricsParams   types.MetricsParams
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   cloud.MetricsParams
+		MetricsParams   types.MetricsParams
 	}
 	mock.lockCoreInstanceMetrics.RLock()
 	calls = mock.calls.CoreInstanceMetrics
@@ -2776,11 +3275,11 @@ func (mock *ClientMock) CoreInstanceMetricsCalls() []struct {
 }
 
 // CoreInstanceMetricsByPlugin calls CoreInstanceMetricsByPluginFunc.
-func (mock *ClientMock) CoreInstanceMetricsByPlugin(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.MetricsSummaryPlugin, error) {
+func (mock *ClientMock) CoreInstanceMetricsByPlugin(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsSummaryPlugin, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   cloud.MetricsParams
+		MetricsParams   types.MetricsParams
 	}{
 		ContextMoqParam: contextMoqParam,
 		S:               s,
@@ -2791,7 +3290,7 @@ func (mock *ClientMock) CoreInstanceMetricsByPlugin(contextMoqParam context.Cont
 	mock.lockCoreInstanceMetricsByPlugin.Unlock()
 	if mock.CoreInstanceMetricsByPluginFunc == nil {
 		var (
-			metricsSummaryPluginOut cloud.MetricsSummaryPlugin
+			metricsSummaryPluginOut types.MetricsSummaryPlugin
 			errOut                  error
 		)
 		return metricsSummaryPluginOut, errOut
@@ -2806,12 +3305,12 @@ func (mock *ClientMock) CoreInstanceMetricsByPlugin(contextMoqParam context.Cont
 func (mock *ClientMock) CoreInstanceMetricsByPluginCalls() []struct {
 	ContextMoqParam context.Context
 	S               string
-	MetricsParams   cloud.MetricsParams
+	MetricsParams   types.MetricsParams
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   cloud.MetricsParams
+		MetricsParams   types.MetricsParams
 	}
 	mock.lockCoreInstanceMetricsByPlugin.RLock()
 	calls = mock.calls.CoreInstanceMetricsByPlugin
@@ -2820,11 +3319,11 @@ func (mock *ClientMock) CoreInstanceMetricsByPluginCalls() []struct {
 }
 
 // CoreInstanceMetricsOverTimeByPlugin calls CoreInstanceMetricsOverTimeByPluginFunc.
-func (mock *ClientMock) CoreInstanceMetricsOverTimeByPlugin(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.MetricsOverTimeByPlugin, error) {
+func (mock *ClientMock) CoreInstanceMetricsOverTimeByPlugin(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTimeByPlugin, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   cloud.MetricsParams
+		MetricsParams   types.MetricsParams
 	}{
 		ContextMoqParam: contextMoqParam,
 		S:               s,
@@ -2835,7 +3334,7 @@ func (mock *ClientMock) CoreInstanceMetricsOverTimeByPlugin(contextMoqParam cont
 	mock.lockCoreInstanceMetricsOverTimeByPlugin.Unlock()
 	if mock.CoreInstanceMetricsOverTimeByPluginFunc == nil {
 		var (
-			metricsOverTimeByPluginOut cloud.MetricsOverTimeByPlugin
+			metricsOverTimeByPluginOut types.MetricsOverTimeByPlugin
 			errOut                     error
 		)
 		return metricsOverTimeByPluginOut, errOut
@@ -2850,12 +3349,12 @@ func (mock *ClientMock) CoreInstanceMetricsOverTimeByPlugin(contextMoqParam cont
 func (mock *ClientMock) CoreInstanceMetricsOverTimeByPluginCalls() []struct {
 	ContextMoqParam context.Context
 	S               string
-	MetricsParams   cloud.MetricsParams
+	MetricsParams   types.MetricsParams
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   cloud.MetricsParams
+		MetricsParams   types.MetricsParams
 	}
 	mock.lockCoreInstanceMetricsOverTimeByPlugin.RLock()
 	calls = mock.calls.CoreInstanceMetricsOverTimeByPlugin
@@ -2864,11 +3363,11 @@ func (mock *ClientMock) CoreInstanceMetricsOverTimeByPluginCalls() []struct {
 }
 
 // CoreInstanceMetricsV1 calls CoreInstanceMetricsV1Func.
-func (mock *ClientMock) CoreInstanceMetricsV1(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.CoreInstanceMetricsV1, error) {
+func (mock *ClientMock) CoreInstanceMetricsV1(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.CoreInstanceMetricsV1, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   cloud.MetricsParams
+		MetricsParams   types.MetricsParams
 	}{
 		ContextMoqParam: contextMoqParam,
 		S:               s,
@@ -2879,7 +3378,7 @@ func (mock *ClientMock) CoreInstanceMetricsV1(contextMoqParam context.Context, s
 	mock.lockCoreInstanceMetricsV1.Unlock()
 	if mock.CoreInstanceMetricsV1Func == nil {
 		var (
-			coreInstanceMetricsV1Out cloud.CoreInstanceMetricsV1
+			coreInstanceMetricsV1Out types.CoreInstanceMetricsV1
 			errOut                   error
 		)
 		return coreInstanceMetricsV1Out, errOut
@@ -2894,12 +3393,12 @@ func (mock *ClientMock) CoreInstanceMetricsV1(contextMoqParam context.Context, s
 func (mock *ClientMock) CoreInstanceMetricsV1Calls() []struct {
 	ContextMoqParam context.Context
 	S               string
-	MetricsParams   cloud.MetricsParams
+	MetricsParams   types.MetricsParams
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   cloud.MetricsParams
+		MetricsParams   types.MetricsParams
 	}
 	mock.lockCoreInstanceMetricsV1.RLock()
 	calls = mock.calls.CoreInstanceMetricsV1
@@ -2908,11 +3407,11 @@ func (mock *ClientMock) CoreInstanceMetricsV1Calls() []struct {
 }
 
 // CoreInstanceOverTimeMetrics calls CoreInstanceOverTimeMetricsFunc.
-func (mock *ClientMock) CoreInstanceOverTimeMetrics(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.MetricsOverTime, error) {
+func (mock *ClientMock) CoreInstanceOverTimeMetrics(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTime, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   cloud.MetricsParams
+		MetricsParams   types.MetricsParams
 	}{
 		ContextMoqParam: contextMoqParam,
 		S:               s,
@@ -2923,7 +3422,7 @@ func (mock *ClientMock) CoreInstanceOverTimeMetrics(contextMoqParam context.Cont
 	mock.lockCoreInstanceOverTimeMetrics.Unlock()
 	if mock.CoreInstanceOverTimeMetricsFunc == nil {
 		var (
-			metricsOverTimeOut cloud.MetricsOverTime
+			metricsOverTimeOut types.MetricsOverTime
 			errOut             error
 		)
 		return metricsOverTimeOut, errOut
@@ -2938,12 +3437,12 @@ func (mock *ClientMock) CoreInstanceOverTimeMetrics(contextMoqParam context.Cont
 func (mock *ClientMock) CoreInstanceOverTimeMetricsCalls() []struct {
 	ContextMoqParam context.Context
 	S               string
-	MetricsParams   cloud.MetricsParams
+	MetricsParams   types.MetricsParams
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   cloud.MetricsParams
+		MetricsParams   types.MetricsParams
 	}
 	mock.lockCoreInstanceOverTimeMetrics.RLock()
 	calls = mock.calls.CoreInstanceOverTimeMetrics
@@ -2952,7 +3451,7 @@ func (mock *ClientMock) CoreInstanceOverTimeMetricsCalls() []struct {
 }
 
 // CoreInstancePing calls CoreInstancePingFunc.
-func (mock *ClientMock) CoreInstancePing(contextMoqParam context.Context, s string) (cloud.CoreInstancePingResponse, error) {
+func (mock *ClientMock) CoreInstancePing(contextMoqParam context.Context, s string) (types.CoreInstancePingResponse, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
@@ -2965,7 +3464,7 @@ func (mock *ClientMock) CoreInstancePing(contextMoqParam context.Context, s stri
 	mock.lockCoreInstancePing.Unlock()
 	if mock.CoreInstancePingFunc == nil {
 		var (
-			coreInstancePingResponseOut cloud.CoreInstancePingResponse
+			coreInstancePingResponseOut types.CoreInstancePingResponse
 			errOut                      error
 		)
 		return coreInstancePingResponseOut, errOut
@@ -2992,11 +3491,11 @@ func (mock *ClientMock) CoreInstancePingCalls() []struct {
 }
 
 // CoreInstances calls CoreInstancesFunc.
-func (mock *ClientMock) CoreInstances(contextMoqParam context.Context, s string, coreInstancesParams cloud.CoreInstancesParams) (cloud.CoreInstances, error) {
+func (mock *ClientMock) CoreInstances(contextMoqParam context.Context, s string, coreInstancesParams types.CoreInstancesParams) (types.CoreInstances, error) {
 	callInfo := struct {
 		ContextMoqParam     context.Context
 		S                   string
-		CoreInstancesParams cloud.CoreInstancesParams
+		CoreInstancesParams types.CoreInstancesParams
 	}{
 		ContextMoqParam:     contextMoqParam,
 		S:                   s,
@@ -3007,7 +3506,7 @@ func (mock *ClientMock) CoreInstances(contextMoqParam context.Context, s string,
 	mock.lockCoreInstances.Unlock()
 	if mock.CoreInstancesFunc == nil {
 		var (
-			coreInstancesOut cloud.CoreInstances
+			coreInstancesOut types.CoreInstances
 			errOut           error
 		)
 		return coreInstancesOut, errOut
@@ -3022,12 +3521,12 @@ func (mock *ClientMock) CoreInstances(contextMoqParam context.Context, s string,
 func (mock *ClientMock) CoreInstancesCalls() []struct {
 	ContextMoqParam     context.Context
 	S                   string
-	CoreInstancesParams cloud.CoreInstancesParams
+	CoreInstancesParams types.CoreInstancesParams
 } {
 	var calls []struct {
 		ContextMoqParam     context.Context
 		S                   string
-		CoreInstancesParams cloud.CoreInstancesParams
+		CoreInstancesParams types.CoreInstancesParams
 	}
 	mock.lockCoreInstances.RLock()
 	calls = mock.calls.CoreInstances
@@ -3035,12 +3534,91 @@ func (mock *ClientMock) CoreInstancesCalls() []struct {
 	return calls
 }
 
+// CreateAWSContractFromToken calls CreateAWSContractFromTokenFunc.
+func (mock *ClientMock) CreateAWSContractFromToken(contextMoqParam context.Context, createAWSContractFromToken types.CreateAWSContractFromToken) error {
+	callInfo := struct {
+		ContextMoqParam            context.Context
+		CreateAWSContractFromToken types.CreateAWSContractFromToken
+	}{
+		ContextMoqParam:            contextMoqParam,
+		CreateAWSContractFromToken: createAWSContractFromToken,
+	}
+	mock.lockCreateAWSContractFromToken.Lock()
+	mock.calls.CreateAWSContractFromToken = append(mock.calls.CreateAWSContractFromToken, callInfo)
+	mock.lockCreateAWSContractFromToken.Unlock()
+	if mock.CreateAWSContractFromTokenFunc == nil {
+		var (
+			errOut error
+		)
+		return errOut
+	}
+	return mock.CreateAWSContractFromTokenFunc(contextMoqParam, createAWSContractFromToken)
+}
+
+// CreateAWSContractFromTokenCalls gets all the calls that were made to CreateAWSContractFromToken.
+// Check the length with:
+//
+//	len(mockedClient.CreateAWSContractFromTokenCalls())
+func (mock *ClientMock) CreateAWSContractFromTokenCalls() []struct {
+	ContextMoqParam            context.Context
+	CreateAWSContractFromToken types.CreateAWSContractFromToken
+} {
+	var calls []struct {
+		ContextMoqParam            context.Context
+		CreateAWSContractFromToken types.CreateAWSContractFromToken
+	}
+	mock.lockCreateAWSContractFromToken.RLock()
+	calls = mock.calls.CreateAWSContractFromToken
+	mock.lockCreateAWSContractFromToken.RUnlock()
+	return calls
+}
+
+// CreateAgentError calls CreateAgentErrorFunc.
+func (mock *ClientMock) CreateAgentError(contextMoqParam context.Context, createAgentError types.CreateAgentError) (types.Created, error) {
+	callInfo := struct {
+		ContextMoqParam  context.Context
+		CreateAgentError types.CreateAgentError
+	}{
+		ContextMoqParam:  contextMoqParam,
+		CreateAgentError: createAgentError,
+	}
+	mock.lockCreateAgentError.Lock()
+	mock.calls.CreateAgentError = append(mock.calls.CreateAgentError, callInfo)
+	mock.lockCreateAgentError.Unlock()
+	if mock.CreateAgentErrorFunc == nil {
+		var (
+			createdOut types.Created
+			errOut     error
+		)
+		return createdOut, errOut
+	}
+	return mock.CreateAgentErrorFunc(contextMoqParam, createAgentError)
+}
+
+// CreateAgentErrorCalls gets all the calls that were made to CreateAgentError.
+// Check the length with:
+//
+//	len(mockedClient.CreateAgentErrorCalls())
+func (mock *ClientMock) CreateAgentErrorCalls() []struct {
+	ContextMoqParam  context.Context
+	CreateAgentError types.CreateAgentError
+} {
+	var calls []struct {
+		ContextMoqParam  context.Context
+		CreateAgentError types.CreateAgentError
+	}
+	mock.lockCreateAgentError.RLock()
+	calls = mock.calls.CreateAgentError
+	mock.lockCreateAgentError.RUnlock()
+	return calls
+}
+
 // CreateClusterObject calls CreateClusterObjectFunc.
-func (mock *ClientMock) CreateClusterObject(contextMoqParam context.Context, s string, createClusterObject cloud.CreateClusterObject) (cloud.CreatedClusterObject, error) {
+func (mock *ClientMock) CreateClusterObject(contextMoqParam context.Context, s string, createClusterObject types.CreateClusterObject) (types.Created, error) {
 	callInfo := struct {
 		ContextMoqParam     context.Context
 		S                   string
-		CreateClusterObject cloud.CreateClusterObject
+		CreateClusterObject types.CreateClusterObject
 	}{
 		ContextMoqParam:     contextMoqParam,
 		S:                   s,
@@ -3051,10 +3629,10 @@ func (mock *ClientMock) CreateClusterObject(contextMoqParam context.Context, s s
 	mock.lockCreateClusterObject.Unlock()
 	if mock.CreateClusterObjectFunc == nil {
 		var (
-			createdClusterObjectOut cloud.CreatedClusterObject
-			errOut                  error
+			createdOut types.Created
+			errOut     error
 		)
-		return createdClusterObjectOut, errOut
+		return createdOut, errOut
 	}
 	return mock.CreateClusterObjectFunc(contextMoqParam, s, createClusterObject)
 }
@@ -3066,12 +3644,12 @@ func (mock *ClientMock) CreateClusterObject(contextMoqParam context.Context, s s
 func (mock *ClientMock) CreateClusterObjectCalls() []struct {
 	ContextMoqParam     context.Context
 	S                   string
-	CreateClusterObject cloud.CreateClusterObject
+	CreateClusterObject types.CreateClusterObject
 } {
 	var calls []struct {
 		ContextMoqParam     context.Context
 		S                   string
-		CreateClusterObject cloud.CreateClusterObject
+		CreateClusterObject types.CreateClusterObject
 	}
 	mock.lockCreateClusterObject.RLock()
 	calls = mock.calls.CreateClusterObject
@@ -3079,12 +3657,52 @@ func (mock *ClientMock) CreateClusterObjectCalls() []struct {
 	return calls
 }
 
+// CreateClusterObjectRegex calls CreateClusterObjectRegexFunc.
+func (mock *ClientMock) CreateClusterObjectRegex(contextMoqParam context.Context, createClusterObjectRegex types.CreateClusterObjectRegex) (types.Created, error) {
+	callInfo := struct {
+		ContextMoqParam          context.Context
+		CreateClusterObjectRegex types.CreateClusterObjectRegex
+	}{
+		ContextMoqParam:          contextMoqParam,
+		CreateClusterObjectRegex: createClusterObjectRegex,
+	}
+	mock.lockCreateClusterObjectRegex.Lock()
+	mock.calls.CreateClusterObjectRegex = append(mock.calls.CreateClusterObjectRegex, callInfo)
+	mock.lockCreateClusterObjectRegex.Unlock()
+	if mock.CreateClusterObjectRegexFunc == nil {
+		var (
+			createdOut types.Created
+			errOut     error
+		)
+		return createdOut, errOut
+	}
+	return mock.CreateClusterObjectRegexFunc(contextMoqParam, createClusterObjectRegex)
+}
+
+// CreateClusterObjectRegexCalls gets all the calls that were made to CreateClusterObjectRegex.
+// Check the length with:
+//
+//	len(mockedClient.CreateClusterObjectRegexCalls())
+func (mock *ClientMock) CreateClusterObjectRegexCalls() []struct {
+	ContextMoqParam          context.Context
+	CreateClusterObjectRegex types.CreateClusterObjectRegex
+} {
+	var calls []struct {
+		ContextMoqParam          context.Context
+		CreateClusterObjectRegex types.CreateClusterObjectRegex
+	}
+	mock.lockCreateClusterObjectRegex.RLock()
+	calls = mock.calls.CreateClusterObjectRegex
+	mock.lockCreateClusterObjectRegex.RUnlock()
+	return calls
+}
+
 // CreateConfigSection calls CreateConfigSectionFunc.
-func (mock *ClientMock) CreateConfigSection(contextMoqParam context.Context, s string, createConfigSection cloud.CreateConfigSection) (cloud.CreatedConfigSection, error) {
+func (mock *ClientMock) CreateConfigSection(contextMoqParam context.Context, s string, createConfigSection types.CreateConfigSection) (types.Created, error) {
 	callInfo := struct {
 		ContextMoqParam     context.Context
 		S                   string
-		CreateConfigSection cloud.CreateConfigSection
+		CreateConfigSection types.CreateConfigSection
 	}{
 		ContextMoqParam:     contextMoqParam,
 		S:                   s,
@@ -3095,10 +3713,10 @@ func (mock *ClientMock) CreateConfigSection(contextMoqParam context.Context, s s
 	mock.lockCreateConfigSection.Unlock()
 	if mock.CreateConfigSectionFunc == nil {
 		var (
-			createdConfigSectionOut cloud.CreatedConfigSection
-			errOut                  error
+			createdOut types.Created
+			errOut     error
 		)
-		return createdConfigSectionOut, errOut
+		return createdOut, errOut
 	}
 	return mock.CreateConfigSectionFunc(contextMoqParam, s, createConfigSection)
 }
@@ -3110,12 +3728,12 @@ func (mock *ClientMock) CreateConfigSection(contextMoqParam context.Context, s s
 func (mock *ClientMock) CreateConfigSectionCalls() []struct {
 	ContextMoqParam     context.Context
 	S                   string
-	CreateConfigSection cloud.CreateConfigSection
+	CreateConfigSection types.CreateConfigSection
 } {
 	var calls []struct {
 		ContextMoqParam     context.Context
 		S                   string
-		CreateConfigSection cloud.CreateConfigSection
+		CreateConfigSection types.CreateConfigSection
 	}
 	mock.lockCreateConfigSection.RLock()
 	calls = mock.calls.CreateConfigSection
@@ -3124,10 +3742,10 @@ func (mock *ClientMock) CreateConfigSectionCalls() []struct {
 }
 
 // CreateCoreInstance calls CreateCoreInstanceFunc.
-func (mock *ClientMock) CreateCoreInstance(contextMoqParam context.Context, createCoreInstance cloud.CreateCoreInstance) (cloud.CreatedCoreInstance, error) {
+func (mock *ClientMock) CreateCoreInstance(contextMoqParam context.Context, createCoreInstance types.CreateCoreInstance) (types.CreatedCoreInstance, error) {
 	callInfo := struct {
 		ContextMoqParam    context.Context
-		CreateCoreInstance cloud.CreateCoreInstance
+		CreateCoreInstance types.CreateCoreInstance
 	}{
 		ContextMoqParam:    contextMoqParam,
 		CreateCoreInstance: createCoreInstance,
@@ -3137,7 +3755,7 @@ func (mock *ClientMock) CreateCoreInstance(contextMoqParam context.Context, crea
 	mock.lockCreateCoreInstance.Unlock()
 	if mock.CreateCoreInstanceFunc == nil {
 		var (
-			createdCoreInstanceOut cloud.CreatedCoreInstance
+			createdCoreInstanceOut types.CreatedCoreInstance
 			errOut                 error
 		)
 		return createdCoreInstanceOut, errOut
@@ -3151,11 +3769,11 @@ func (mock *ClientMock) CreateCoreInstance(contextMoqParam context.Context, crea
 //	len(mockedClient.CreateCoreInstanceCalls())
 func (mock *ClientMock) CreateCoreInstanceCalls() []struct {
 	ContextMoqParam    context.Context
-	CreateCoreInstance cloud.CreateCoreInstance
+	CreateCoreInstance types.CreateCoreInstance
 } {
 	var calls []struct {
 		ContextMoqParam    context.Context
-		CreateCoreInstance cloud.CreateCoreInstance
+		CreateCoreInstance types.CreateCoreInstance
 	}
 	mock.lockCreateCoreInstance.RLock()
 	calls = mock.calls.CreateCoreInstance
@@ -3164,27 +3782,27 @@ func (mock *ClientMock) CreateCoreInstanceCalls() []struct {
 }
 
 // CreateCoreInstanceCheck calls CreateCoreInstanceCheckFunc.
-func (mock *ClientMock) CreateCoreInstanceCheck(contextMoqParam context.Context, s string, createCoreInstanceCheck cloud.CreateCoreInstanceCheck) (cloud.CreatedCoreInstanceCheck, error) {
+func (mock *ClientMock) CreateCoreInstanceCheck(contextMoqParam context.Context, s string, check types.Check) (types.Created, error) {
 	callInfo := struct {
-		ContextMoqParam         context.Context
-		S                       string
-		CreateCoreInstanceCheck cloud.CreateCoreInstanceCheck
+		ContextMoqParam context.Context
+		S               string
+		Check           types.Check
 	}{
-		ContextMoqParam:         contextMoqParam,
-		S:                       s,
-		CreateCoreInstanceCheck: createCoreInstanceCheck,
+		ContextMoqParam: contextMoqParam,
+		S:               s,
+		Check:           check,
 	}
 	mock.lockCreateCoreInstanceCheck.Lock()
 	mock.calls.CreateCoreInstanceCheck = append(mock.calls.CreateCoreInstanceCheck, callInfo)
 	mock.lockCreateCoreInstanceCheck.Unlock()
 	if mock.CreateCoreInstanceCheckFunc == nil {
 		var (
-			createdCoreInstanceCheckOut cloud.CreatedCoreInstanceCheck
-			errOut                      error
+			createdOut types.Created
+			errOut     error
 		)
-		return createdCoreInstanceCheckOut, errOut
+		return createdOut, errOut
 	}
-	return mock.CreateCoreInstanceCheckFunc(contextMoqParam, s, createCoreInstanceCheck)
+	return mock.CreateCoreInstanceCheckFunc(contextMoqParam, s, check)
 }
 
 // CreateCoreInstanceCheckCalls gets all the calls that were made to CreateCoreInstanceCheck.
@@ -3192,14 +3810,14 @@ func (mock *ClientMock) CreateCoreInstanceCheck(contextMoqParam context.Context,
 //
 //	len(mockedClient.CreateCoreInstanceCheckCalls())
 func (mock *ClientMock) CreateCoreInstanceCheckCalls() []struct {
-	ContextMoqParam         context.Context
-	S                       string
-	CreateCoreInstanceCheck cloud.CreateCoreInstanceCheck
+	ContextMoqParam context.Context
+	S               string
+	Check           types.Check
 } {
 	var calls []struct {
-		ContextMoqParam         context.Context
-		S                       string
-		CreateCoreInstanceCheck cloud.CreateCoreInstanceCheck
+		ContextMoqParam context.Context
+		S               string
+		Check           types.Check
 	}
 	mock.lockCreateCoreInstanceCheck.RLock()
 	calls = mock.calls.CreateCoreInstanceCheck
@@ -3208,11 +3826,11 @@ func (mock *ClientMock) CreateCoreInstanceCheckCalls() []struct {
 }
 
 // CreateEnvironment calls CreateEnvironmentFunc.
-func (mock *ClientMock) CreateEnvironment(contextMoqParam context.Context, s string, createEnvironment cloud.CreateEnvironment) (cloud.CreatedEnvironment, error) {
+func (mock *ClientMock) CreateEnvironment(contextMoqParam context.Context, s string, createEnvironment types.CreateEnvironment) (types.CreatedEnvironment, error) {
 	callInfo := struct {
 		ContextMoqParam   context.Context
 		S                 string
-		CreateEnvironment cloud.CreateEnvironment
+		CreateEnvironment types.CreateEnvironment
 	}{
 		ContextMoqParam:   contextMoqParam,
 		S:                 s,
@@ -3223,7 +3841,7 @@ func (mock *ClientMock) CreateEnvironment(contextMoqParam context.Context, s str
 	mock.lockCreateEnvironment.Unlock()
 	if mock.CreateEnvironmentFunc == nil {
 		var (
-			createdEnvironmentOut cloud.CreatedEnvironment
+			createdEnvironmentOut types.CreatedEnvironment
 			errOut                error
 		)
 		return createdEnvironmentOut, errOut
@@ -3238,12 +3856,12 @@ func (mock *ClientMock) CreateEnvironment(contextMoqParam context.Context, s str
 func (mock *ClientMock) CreateEnvironmentCalls() []struct {
 	ContextMoqParam   context.Context
 	S                 string
-	CreateEnvironment cloud.CreateEnvironment
+	CreateEnvironment types.CreateEnvironment
 } {
 	var calls []struct {
 		ContextMoqParam   context.Context
 		S                 string
-		CreateEnvironment cloud.CreateEnvironment
+		CreateEnvironment types.CreateEnvironment
 	}
 	mock.lockCreateEnvironment.RLock()
 	calls = mock.calls.CreateEnvironment
@@ -3252,10 +3870,10 @@ func (mock *ClientMock) CreateEnvironmentCalls() []struct {
 }
 
 // CreateFleet calls CreateFleetFunc.
-func (mock *ClientMock) CreateFleet(contextMoqParam context.Context, createFleet cloud.CreateFleet) (cloud.CreatedFleet, error) {
+func (mock *ClientMock) CreateFleet(contextMoqParam context.Context, createFleet types.CreateFleet) (types.Created, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
-		CreateFleet     cloud.CreateFleet
+		CreateFleet     types.CreateFleet
 	}{
 		ContextMoqParam: contextMoqParam,
 		CreateFleet:     createFleet,
@@ -3265,10 +3883,10 @@ func (mock *ClientMock) CreateFleet(contextMoqParam context.Context, createFleet
 	mock.lockCreateFleet.Unlock()
 	if mock.CreateFleetFunc == nil {
 		var (
-			createdFleetOut cloud.CreatedFleet
-			errOut          error
+			createdOut types.Created
+			errOut     error
 		)
-		return createdFleetOut, errOut
+		return createdOut, errOut
 	}
 	return mock.CreateFleetFunc(contextMoqParam, createFleet)
 }
@@ -3279,11 +3897,11 @@ func (mock *ClientMock) CreateFleet(contextMoqParam context.Context, createFleet
 //	len(mockedClient.CreateFleetCalls())
 func (mock *ClientMock) CreateFleetCalls() []struct {
 	ContextMoqParam context.Context
-	CreateFleet     cloud.CreateFleet
+	CreateFleet     types.CreateFleet
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
-		CreateFleet     cloud.CreateFleet
+		CreateFleet     types.CreateFleet
 	}
 	mock.lockCreateFleet.RLock()
 	calls = mock.calls.CreateFleet
@@ -3292,11 +3910,11 @@ func (mock *ClientMock) CreateFleetCalls() []struct {
 }
 
 // CreateIngestCheck calls CreateIngestCheckFunc.
-func (mock *ClientMock) CreateIngestCheck(contextMoqParam context.Context, s string, createIngestCheck cloud.CreateIngestCheck) (cloud.CreatedIngestCheck, error) {
+func (mock *ClientMock) CreateIngestCheck(contextMoqParam context.Context, s string, createIngestCheck types.CreateIngestCheck) (types.Created, error) {
 	callInfo := struct {
 		ContextMoqParam   context.Context
 		S                 string
-		CreateIngestCheck cloud.CreateIngestCheck
+		CreateIngestCheck types.CreateIngestCheck
 	}{
 		ContextMoqParam:   contextMoqParam,
 		S:                 s,
@@ -3307,10 +3925,10 @@ func (mock *ClientMock) CreateIngestCheck(contextMoqParam context.Context, s str
 	mock.lockCreateIngestCheck.Unlock()
 	if mock.CreateIngestCheckFunc == nil {
 		var (
-			createdIngestCheckOut cloud.CreatedIngestCheck
-			errOut                error
+			createdOut types.Created
+			errOut     error
 		)
-		return createdIngestCheckOut, errOut
+		return createdOut, errOut
 	}
 	return mock.CreateIngestCheckFunc(contextMoqParam, s, createIngestCheck)
 }
@@ -3322,12 +3940,12 @@ func (mock *ClientMock) CreateIngestCheck(contextMoqParam context.Context, s str
 func (mock *ClientMock) CreateIngestCheckCalls() []struct {
 	ContextMoqParam   context.Context
 	S                 string
-	CreateIngestCheck cloud.CreateIngestCheck
+	CreateIngestCheck types.CreateIngestCheck
 } {
 	var calls []struct {
 		ContextMoqParam   context.Context
 		S                 string
-		CreateIngestCheck cloud.CreateIngestCheck
+		CreateIngestCheck types.CreateIngestCheck
 	}
 	mock.lockCreateIngestCheck.RLock()
 	calls = mock.calls.CreateIngestCheck
@@ -3336,11 +3954,11 @@ func (mock *ClientMock) CreateIngestCheckCalls() []struct {
 }
 
 // CreateInvitation calls CreateInvitationFunc.
-func (mock *ClientMock) CreateInvitation(contextMoqParam context.Context, s string, createInvitation cloud.CreateInvitation) error {
+func (mock *ClientMock) CreateInvitation(contextMoqParam context.Context, s string, createInvitation types.CreateInvitation) error {
 	callInfo := struct {
 		ContextMoqParam  context.Context
 		S                string
-		CreateInvitation cloud.CreateInvitation
+		CreateInvitation types.CreateInvitation
 	}{
 		ContextMoqParam:  contextMoqParam,
 		S:                s,
@@ -3365,12 +3983,12 @@ func (mock *ClientMock) CreateInvitation(contextMoqParam context.Context, s stri
 func (mock *ClientMock) CreateInvitationCalls() []struct {
 	ContextMoqParam  context.Context
 	S                string
-	CreateInvitation cloud.CreateInvitation
+	CreateInvitation types.CreateInvitation
 } {
 	var calls []struct {
 		ContextMoqParam  context.Context
 		S                string
-		CreateInvitation cloud.CreateInvitation
+		CreateInvitation types.CreateInvitation
 	}
 	mock.lockCreateInvitation.RLock()
 	calls = mock.calls.CreateInvitation
@@ -3379,11 +3997,11 @@ func (mock *ClientMock) CreateInvitationCalls() []struct {
 }
 
 // CreatePipeline calls CreatePipelineFunc.
-func (mock *ClientMock) CreatePipeline(contextMoqParam context.Context, s string, createPipeline cloud.CreatePipeline) (cloud.CreatedPipeline, error) {
+func (mock *ClientMock) CreatePipeline(contextMoqParam context.Context, s string, createPipeline types.CreatePipeline) (types.CreatedPipeline, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
-		CreatePipeline  cloud.CreatePipeline
+		CreatePipeline  types.CreatePipeline
 	}{
 		ContextMoqParam: contextMoqParam,
 		S:               s,
@@ -3394,7 +4012,7 @@ func (mock *ClientMock) CreatePipeline(contextMoqParam context.Context, s string
 	mock.lockCreatePipeline.Unlock()
 	if mock.CreatePipelineFunc == nil {
 		var (
-			createdPipelineOut cloud.CreatedPipeline
+			createdPipelineOut types.CreatedPipeline
 			errOut             error
 		)
 		return createdPipelineOut, errOut
@@ -3409,12 +4027,12 @@ func (mock *ClientMock) CreatePipeline(contextMoqParam context.Context, s string
 func (mock *ClientMock) CreatePipelineCalls() []struct {
 	ContextMoqParam context.Context
 	S               string
-	CreatePipeline  cloud.CreatePipeline
+	CreatePipeline  types.CreatePipeline
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
 		S               string
-		CreatePipeline  cloud.CreatePipeline
+		CreatePipeline  types.CreatePipeline
 	}
 	mock.lockCreatePipeline.RLock()
 	calls = mock.calls.CreatePipeline
@@ -3423,11 +4041,11 @@ func (mock *ClientMock) CreatePipelineCalls() []struct {
 }
 
 // CreatePipelineCheck calls CreatePipelineCheckFunc.
-func (mock *ClientMock) CreatePipelineCheck(contextMoqParam context.Context, s string, createPipelineCheck cloud.CreatePipelineCheck) (cloud.CreatedPipelineCheck, error) {
+func (mock *ClientMock) CreatePipelineCheck(contextMoqParam context.Context, s string, createPipelineCheck types.CreatePipelineCheck) (types.Created, error) {
 	callInfo := struct {
 		ContextMoqParam     context.Context
 		S                   string
-		CreatePipelineCheck cloud.CreatePipelineCheck
+		CreatePipelineCheck types.CreatePipelineCheck
 	}{
 		ContextMoqParam:     contextMoqParam,
 		S:                   s,
@@ -3438,10 +4056,10 @@ func (mock *ClientMock) CreatePipelineCheck(contextMoqParam context.Context, s s
 	mock.lockCreatePipelineCheck.Unlock()
 	if mock.CreatePipelineCheckFunc == nil {
 		var (
-			createdPipelineCheckOut cloud.CreatedPipelineCheck
-			errOut                  error
+			createdOut types.Created
+			errOut     error
 		)
-		return createdPipelineCheckOut, errOut
+		return createdOut, errOut
 	}
 	return mock.CreatePipelineCheckFunc(contextMoqParam, s, createPipelineCheck)
 }
@@ -3453,12 +4071,12 @@ func (mock *ClientMock) CreatePipelineCheck(contextMoqParam context.Context, s s
 func (mock *ClientMock) CreatePipelineCheckCalls() []struct {
 	ContextMoqParam     context.Context
 	S                   string
-	CreatePipelineCheck cloud.CreatePipelineCheck
+	CreatePipelineCheck types.CreatePipelineCheck
 } {
 	var calls []struct {
 		ContextMoqParam     context.Context
 		S                   string
-		CreatePipelineCheck cloud.CreatePipelineCheck
+		CreatePipelineCheck types.CreatePipelineCheck
 	}
 	mock.lockCreatePipelineCheck.RLock()
 	calls = mock.calls.CreatePipelineCheck
@@ -3467,11 +4085,11 @@ func (mock *ClientMock) CreatePipelineCheckCalls() []struct {
 }
 
 // CreatePipelineFile calls CreatePipelineFileFunc.
-func (mock *ClientMock) CreatePipelineFile(contextMoqParam context.Context, s string, createPipelineFile cloud.CreatePipelineFile) (cloud.CreatedPipelineFile, error) {
+func (mock *ClientMock) CreatePipelineFile(contextMoqParam context.Context, s string, createPipelineFile types.CreatePipelineFile) (types.Created, error) {
 	callInfo := struct {
 		ContextMoqParam    context.Context
 		S                  string
-		CreatePipelineFile cloud.CreatePipelineFile
+		CreatePipelineFile types.CreatePipelineFile
 	}{
 		ContextMoqParam:    contextMoqParam,
 		S:                  s,
@@ -3482,10 +4100,10 @@ func (mock *ClientMock) CreatePipelineFile(contextMoqParam context.Context, s st
 	mock.lockCreatePipelineFile.Unlock()
 	if mock.CreatePipelineFileFunc == nil {
 		var (
-			createdPipelineFileOut cloud.CreatedPipelineFile
-			errOut                 error
+			createdOut types.Created
+			errOut     error
 		)
-		return createdPipelineFileOut, errOut
+		return createdOut, errOut
 	}
 	return mock.CreatePipelineFileFunc(contextMoqParam, s, createPipelineFile)
 }
@@ -3497,12 +4115,12 @@ func (mock *ClientMock) CreatePipelineFile(contextMoqParam context.Context, s st
 func (mock *ClientMock) CreatePipelineFileCalls() []struct {
 	ContextMoqParam    context.Context
 	S                  string
-	CreatePipelineFile cloud.CreatePipelineFile
+	CreatePipelineFile types.CreatePipelineFile
 } {
 	var calls []struct {
 		ContextMoqParam    context.Context
 		S                  string
-		CreatePipelineFile cloud.CreatePipelineFile
+		CreatePipelineFile types.CreatePipelineFile
 	}
 	mock.lockCreatePipelineFile.RLock()
 	calls = mock.calls.CreatePipelineFile
@@ -3511,11 +4129,11 @@ func (mock *ClientMock) CreatePipelineFileCalls() []struct {
 }
 
 // CreatePipelinePort calls CreatePipelinePortFunc.
-func (mock *ClientMock) CreatePipelinePort(contextMoqParam context.Context, s string, createPipelinePort cloud.CreatePipelinePort) (cloud.CreatedPipelinePort, error) {
+func (mock *ClientMock) CreatePipelinePort(contextMoqParam context.Context, s string, createPipelinePort types.CreatePipelinePort) (types.CreatedPipelinePort, error) {
 	callInfo := struct {
 		ContextMoqParam    context.Context
 		S                  string
-		CreatePipelinePort cloud.CreatePipelinePort
+		CreatePipelinePort types.CreatePipelinePort
 	}{
 		ContextMoqParam:    contextMoqParam,
 		S:                  s,
@@ -3526,7 +4144,7 @@ func (mock *ClientMock) CreatePipelinePort(contextMoqParam context.Context, s st
 	mock.lockCreatePipelinePort.Unlock()
 	if mock.CreatePipelinePortFunc == nil {
 		var (
-			createdPipelinePortOut cloud.CreatedPipelinePort
+			createdPipelinePortOut types.CreatedPipelinePort
 			errOut                 error
 		)
 		return createdPipelinePortOut, errOut
@@ -3541,12 +4159,12 @@ func (mock *ClientMock) CreatePipelinePort(contextMoqParam context.Context, s st
 func (mock *ClientMock) CreatePipelinePortCalls() []struct {
 	ContextMoqParam    context.Context
 	S                  string
-	CreatePipelinePort cloud.CreatePipelinePort
+	CreatePipelinePort types.CreatePipelinePort
 } {
 	var calls []struct {
 		ContextMoqParam    context.Context
 		S                  string
-		CreatePipelinePort cloud.CreatePipelinePort
+		CreatePipelinePort types.CreatePipelinePort
 	}
 	mock.lockCreatePipelinePort.RLock()
 	calls = mock.calls.CreatePipelinePort
@@ -3555,11 +4173,11 @@ func (mock *ClientMock) CreatePipelinePortCalls() []struct {
 }
 
 // CreatePipelineSecret calls CreatePipelineSecretFunc.
-func (mock *ClientMock) CreatePipelineSecret(contextMoqParam context.Context, s string, createPipelineSecret cloud.CreatePipelineSecret) (cloud.CreatedPipelineSecret, error) {
+func (mock *ClientMock) CreatePipelineSecret(contextMoqParam context.Context, s string, createPipelineSecret types.CreatePipelineSecret) (types.Created, error) {
 	callInfo := struct {
 		ContextMoqParam      context.Context
 		S                    string
-		CreatePipelineSecret cloud.CreatePipelineSecret
+		CreatePipelineSecret types.CreatePipelineSecret
 	}{
 		ContextMoqParam:      contextMoqParam,
 		S:                    s,
@@ -3570,10 +4188,10 @@ func (mock *ClientMock) CreatePipelineSecret(contextMoqParam context.Context, s 
 	mock.lockCreatePipelineSecret.Unlock()
 	if mock.CreatePipelineSecretFunc == nil {
 		var (
-			createdPipelineSecretOut cloud.CreatedPipelineSecret
-			errOut                   error
+			createdOut types.Created
+			errOut     error
 		)
-		return createdPipelineSecretOut, errOut
+		return createdOut, errOut
 	}
 	return mock.CreatePipelineSecretFunc(contextMoqParam, s, createPipelineSecret)
 }
@@ -3585,12 +4203,12 @@ func (mock *ClientMock) CreatePipelineSecret(contextMoqParam context.Context, s 
 func (mock *ClientMock) CreatePipelineSecretCalls() []struct {
 	ContextMoqParam      context.Context
 	S                    string
-	CreatePipelineSecret cloud.CreatePipelineSecret
+	CreatePipelineSecret types.CreatePipelineSecret
 } {
 	var calls []struct {
 		ContextMoqParam      context.Context
 		S                    string
-		CreatePipelineSecret cloud.CreatePipelineSecret
+		CreatePipelineSecret types.CreatePipelineSecret
 	}
 	mock.lockCreatePipelineSecret.RLock()
 	calls = mock.calls.CreatePipelineSecret
@@ -3599,10 +4217,10 @@ func (mock *ClientMock) CreatePipelineSecretCalls() []struct {
 }
 
 // CreateProcessingRule calls CreateProcessingRuleFunc.
-func (mock *ClientMock) CreateProcessingRule(contextMoqParam context.Context, createProcessingRule cloud.CreateProcessingRule) (cloud.CreatedProcessingRule, error) {
+func (mock *ClientMock) CreateProcessingRule(contextMoqParam context.Context, createProcessingRule types.CreateProcessingRule) (types.CreatedProcessingRule, error) {
 	callInfo := struct {
 		ContextMoqParam      context.Context
-		CreateProcessingRule cloud.CreateProcessingRule
+		CreateProcessingRule types.CreateProcessingRule
 	}{
 		ContextMoqParam:      contextMoqParam,
 		CreateProcessingRule: createProcessingRule,
@@ -3612,7 +4230,7 @@ func (mock *ClientMock) CreateProcessingRule(contextMoqParam context.Context, cr
 	mock.lockCreateProcessingRule.Unlock()
 	if mock.CreateProcessingRuleFunc == nil {
 		var (
-			createdProcessingRuleOut cloud.CreatedProcessingRule
+			createdProcessingRuleOut types.CreatedProcessingRule
 			errOut                   error
 		)
 		return createdProcessingRuleOut, errOut
@@ -3626,11 +4244,11 @@ func (mock *ClientMock) CreateProcessingRule(contextMoqParam context.Context, cr
 //	len(mockedClient.CreateProcessingRuleCalls())
 func (mock *ClientMock) CreateProcessingRuleCalls() []struct {
 	ContextMoqParam      context.Context
-	CreateProcessingRule cloud.CreateProcessingRule
+	CreateProcessingRule types.CreateProcessingRule
 } {
 	var calls []struct {
 		ContextMoqParam      context.Context
-		CreateProcessingRule cloud.CreateProcessingRule
+		CreateProcessingRule types.CreateProcessingRule
 	}
 	mock.lockCreateProcessingRule.RLock()
 	calls = mock.calls.CreateProcessingRule
@@ -3638,11 +4256,51 @@ func (mock *ClientMock) CreateProcessingRuleCalls() []struct {
 	return calls
 }
 
+// CreateProcessingRuleTemplate calls CreateProcessingRuleTemplateFunc.
+func (mock *ClientMock) CreateProcessingRuleTemplate(contextMoqParam context.Context, createProcessingRuleTemplate types.CreateProcessingRuleTemplate) (types.Created, error) {
+	callInfo := struct {
+		ContextMoqParam              context.Context
+		CreateProcessingRuleTemplate types.CreateProcessingRuleTemplate
+	}{
+		ContextMoqParam:              contextMoqParam,
+		CreateProcessingRuleTemplate: createProcessingRuleTemplate,
+	}
+	mock.lockCreateProcessingRuleTemplate.Lock()
+	mock.calls.CreateProcessingRuleTemplate = append(mock.calls.CreateProcessingRuleTemplate, callInfo)
+	mock.lockCreateProcessingRuleTemplate.Unlock()
+	if mock.CreateProcessingRuleTemplateFunc == nil {
+		var (
+			createdOut types.Created
+			errOut     error
+		)
+		return createdOut, errOut
+	}
+	return mock.CreateProcessingRuleTemplateFunc(contextMoqParam, createProcessingRuleTemplate)
+}
+
+// CreateProcessingRuleTemplateCalls gets all the calls that were made to CreateProcessingRuleTemplate.
+// Check the length with:
+//
+//	len(mockedClient.CreateProcessingRuleTemplateCalls())
+func (mock *ClientMock) CreateProcessingRuleTemplateCalls() []struct {
+	ContextMoqParam              context.Context
+	CreateProcessingRuleTemplate types.CreateProcessingRuleTemplate
+} {
+	var calls []struct {
+		ContextMoqParam              context.Context
+		CreateProcessingRuleTemplate types.CreateProcessingRuleTemplate
+	}
+	mock.lockCreateProcessingRuleTemplate.RLock()
+	calls = mock.calls.CreateProcessingRuleTemplate
+	mock.lockCreateProcessingRuleTemplate.RUnlock()
+	return calls
+}
+
 // CreateProject calls CreateProjectFunc.
-func (mock *ClientMock) CreateProject(contextMoqParam context.Context, createProject cloud.CreateProject) (cloud.CreatedProject, error) {
+func (mock *ClientMock) CreateProject(contextMoqParam context.Context, createProject types.CreateProject) (types.CreatedProject, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
-		CreateProject   cloud.CreateProject
+		CreateProject   types.CreateProject
 	}{
 		ContextMoqParam: contextMoqParam,
 		CreateProject:   createProject,
@@ -3652,7 +4310,7 @@ func (mock *ClientMock) CreateProject(contextMoqParam context.Context, createPro
 	mock.lockCreateProject.Unlock()
 	if mock.CreateProjectFunc == nil {
 		var (
-			createdProjectOut cloud.CreatedProject
+			createdProjectOut types.CreatedProject
 			errOut            error
 		)
 		return createdProjectOut, errOut
@@ -3666,11 +4324,11 @@ func (mock *ClientMock) CreateProject(contextMoqParam context.Context, createPro
 //	len(mockedClient.CreateProjectCalls())
 func (mock *ClientMock) CreateProjectCalls() []struct {
 	ContextMoqParam context.Context
-	CreateProject   cloud.CreateProject
+	CreateProject   types.CreateProject
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
-		CreateProject   cloud.CreateProject
+		CreateProject   types.CreateProject
 	}
 	mock.lockCreateProject.RLock()
 	calls = mock.calls.CreateProject
@@ -3679,11 +4337,11 @@ func (mock *ClientMock) CreateProjectCalls() []struct {
 }
 
 // CreateResourceProfile calls CreateResourceProfileFunc.
-func (mock *ClientMock) CreateResourceProfile(contextMoqParam context.Context, s string, createResourceProfile cloud.CreateResourceProfile) (cloud.CreatedResourceProfile, error) {
+func (mock *ClientMock) CreateResourceProfile(contextMoqParam context.Context, s string, createResourceProfile types.CreateResourceProfile) (types.Created, error) {
 	callInfo := struct {
 		ContextMoqParam       context.Context
 		S                     string
-		CreateResourceProfile cloud.CreateResourceProfile
+		CreateResourceProfile types.CreateResourceProfile
 	}{
 		ContextMoqParam:       contextMoqParam,
 		S:                     s,
@@ -3694,10 +4352,10 @@ func (mock *ClientMock) CreateResourceProfile(contextMoqParam context.Context, s
 	mock.lockCreateResourceProfile.Unlock()
 	if mock.CreateResourceProfileFunc == nil {
 		var (
-			createdResourceProfileOut cloud.CreatedResourceProfile
-			errOut                    error
+			createdOut types.Created
+			errOut     error
 		)
-		return createdResourceProfileOut, errOut
+		return createdOut, errOut
 	}
 	return mock.CreateResourceProfileFunc(contextMoqParam, s, createResourceProfile)
 }
@@ -3709,12 +4367,12 @@ func (mock *ClientMock) CreateResourceProfile(contextMoqParam context.Context, s
 func (mock *ClientMock) CreateResourceProfileCalls() []struct {
 	ContextMoqParam       context.Context
 	S                     string
-	CreateResourceProfile cloud.CreateResourceProfile
+	CreateResourceProfile types.CreateResourceProfile
 } {
 	var calls []struct {
 		ContextMoqParam       context.Context
 		S                     string
-		CreateResourceProfile cloud.CreateResourceProfile
+		CreateResourceProfile types.CreateResourceProfile
 	}
 	mock.lockCreateResourceProfile.RLock()
 	calls = mock.calls.CreateResourceProfile
@@ -3723,11 +4381,11 @@ func (mock *ClientMock) CreateResourceProfileCalls() []struct {
 }
 
 // CreateToken calls CreateTokenFunc.
-func (mock *ClientMock) CreateToken(contextMoqParam context.Context, s string, createToken cloud.CreateToken) (cloud.Token, error) {
+func (mock *ClientMock) CreateToken(contextMoqParam context.Context, s string, createToken types.CreateToken) (types.Token, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
-		CreateToken     cloud.CreateToken
+		CreateToken     types.CreateToken
 	}{
 		ContextMoqParam: contextMoqParam,
 		S:               s,
@@ -3738,7 +4396,7 @@ func (mock *ClientMock) CreateToken(contextMoqParam context.Context, s string, c
 	mock.lockCreateToken.Unlock()
 	if mock.CreateTokenFunc == nil {
 		var (
-			tokenOut cloud.Token
+			tokenOut types.Token
 			errOut   error
 		)
 		return tokenOut, errOut
@@ -3753,12 +4411,12 @@ func (mock *ClientMock) CreateToken(contextMoqParam context.Context, s string, c
 func (mock *ClientMock) CreateTokenCalls() []struct {
 	ContextMoqParam context.Context
 	S               string
-	CreateToken     cloud.CreateToken
+	CreateToken     types.CreateToken
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
 		S               string
-		CreateToken     cloud.CreateToken
+		CreateToken     types.CreateToken
 	}
 	mock.lockCreateToken.RLock()
 	calls = mock.calls.CreateToken
@@ -3767,11 +4425,11 @@ func (mock *ClientMock) CreateTokenCalls() []struct {
 }
 
 // CreateTraceRecord calls CreateTraceRecordFunc.
-func (mock *ClientMock) CreateTraceRecord(contextMoqParam context.Context, s string, createTraceRecord cloud.CreateTraceRecord) (cloud.CreatedTraceRecord, error) {
+func (mock *ClientMock) CreateTraceRecord(contextMoqParam context.Context, s string, createTraceRecord types.CreateTraceRecord) (types.CreatedTraceRecord, error) {
 	callInfo := struct {
 		ContextMoqParam   context.Context
 		S                 string
-		CreateTraceRecord cloud.CreateTraceRecord
+		CreateTraceRecord types.CreateTraceRecord
 	}{
 		ContextMoqParam:   contextMoqParam,
 		S:                 s,
@@ -3782,7 +4440,7 @@ func (mock *ClientMock) CreateTraceRecord(contextMoqParam context.Context, s str
 	mock.lockCreateTraceRecord.Unlock()
 	if mock.CreateTraceRecordFunc == nil {
 		var (
-			createdTraceRecordOut cloud.CreatedTraceRecord
+			createdTraceRecordOut types.CreatedTraceRecord
 			errOut                error
 		)
 		return createdTraceRecordOut, errOut
@@ -3797,12 +4455,12 @@ func (mock *ClientMock) CreateTraceRecord(contextMoqParam context.Context, s str
 func (mock *ClientMock) CreateTraceRecordCalls() []struct {
 	ContextMoqParam   context.Context
 	S                 string
-	CreateTraceRecord cloud.CreateTraceRecord
+	CreateTraceRecord types.CreateTraceRecord
 } {
 	var calls []struct {
 		ContextMoqParam   context.Context
 		S                 string
-		CreateTraceRecord cloud.CreateTraceRecord
+		CreateTraceRecord types.CreateTraceRecord
 	}
 	mock.lockCreateTraceRecord.RLock()
 	calls = mock.calls.CreateTraceRecord
@@ -3811,11 +4469,11 @@ func (mock *ClientMock) CreateTraceRecordCalls() []struct {
 }
 
 // CreateTraceSession calls CreateTraceSessionFunc.
-func (mock *ClientMock) CreateTraceSession(contextMoqParam context.Context, s string, createTraceSession cloud.CreateTraceSession) (cloud.CreatedTraceSession, error) {
+func (mock *ClientMock) CreateTraceSession(contextMoqParam context.Context, s string, createTraceSession types.CreateTraceSession) (types.Created, error) {
 	callInfo := struct {
 		ContextMoqParam    context.Context
 		S                  string
-		CreateTraceSession cloud.CreateTraceSession
+		CreateTraceSession types.CreateTraceSession
 	}{
 		ContextMoqParam:    contextMoqParam,
 		S:                  s,
@@ -3826,10 +4484,10 @@ func (mock *ClientMock) CreateTraceSession(contextMoqParam context.Context, s st
 	mock.lockCreateTraceSession.Unlock()
 	if mock.CreateTraceSessionFunc == nil {
 		var (
-			createdTraceSessionOut cloud.CreatedTraceSession
-			errOut                 error
+			createdOut types.Created
+			errOut     error
 		)
-		return createdTraceSessionOut, errOut
+		return createdOut, errOut
 	}
 	return mock.CreateTraceSessionFunc(contextMoqParam, s, createTraceSession)
 }
@@ -3841,12 +4499,12 @@ func (mock *ClientMock) CreateTraceSession(contextMoqParam context.Context, s st
 func (mock *ClientMock) CreateTraceSessionCalls() []struct {
 	ContextMoqParam    context.Context
 	S                  string
-	CreateTraceSession cloud.CreateTraceSession
+	CreateTraceSession types.CreateTraceSession
 } {
 	var calls []struct {
 		ContextMoqParam    context.Context
 		S                  string
-		CreateTraceSession cloud.CreateTraceSession
+		CreateTraceSession types.CreateTraceSession
 	}
 	mock.lockCreateTraceSession.RLock()
 	calls = mock.calls.CreateTraceSession
@@ -3972,6 +4630,45 @@ func (mock *ClientMock) DeleteClusterObjectCalls() []struct {
 	mock.lockDeleteClusterObject.RLock()
 	calls = mock.calls.DeleteClusterObject
 	mock.lockDeleteClusterObject.RUnlock()
+	return calls
+}
+
+// DeleteClusterObjectRegex calls DeleteClusterObjectRegexFunc.
+func (mock *ClientMock) DeleteClusterObjectRegex(contextMoqParam context.Context, s string) error {
+	callInfo := struct {
+		ContextMoqParam context.Context
+		S               string
+	}{
+		ContextMoqParam: contextMoqParam,
+		S:               s,
+	}
+	mock.lockDeleteClusterObjectRegex.Lock()
+	mock.calls.DeleteClusterObjectRegex = append(mock.calls.DeleteClusterObjectRegex, callInfo)
+	mock.lockDeleteClusterObjectRegex.Unlock()
+	if mock.DeleteClusterObjectRegexFunc == nil {
+		var (
+			errOut error
+		)
+		return errOut
+	}
+	return mock.DeleteClusterObjectRegexFunc(contextMoqParam, s)
+}
+
+// DeleteClusterObjectRegexCalls gets all the calls that were made to DeleteClusterObjectRegex.
+// Check the length with:
+//
+//	len(mockedClient.DeleteClusterObjectRegexCalls())
+func (mock *ClientMock) DeleteClusterObjectRegexCalls() []struct {
+	ContextMoqParam context.Context
+	S               string
+} {
+	var calls []struct {
+		ContextMoqParam context.Context
+		S               string
+	}
+	mock.lockDeleteClusterObjectRegex.RLock()
+	calls = mock.calls.DeleteClusterObjectRegex
+	mock.lockDeleteClusterObjectRegex.RUnlock()
 	return calls
 }
 
@@ -4175,7 +4872,7 @@ func (mock *ClientMock) DeleteEnvironmentCalls() []struct {
 }
 
 // DeleteFleet calls DeleteFleetFunc.
-func (mock *ClientMock) DeleteFleet(contextMoqParam context.Context, s string) (cloud.DeletedFleet, error) {
+func (mock *ClientMock) DeleteFleet(contextMoqParam context.Context, s string) (types.Deleted, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
@@ -4188,10 +4885,10 @@ func (mock *ClientMock) DeleteFleet(contextMoqParam context.Context, s string) (
 	mock.lockDeleteFleet.Unlock()
 	if mock.DeleteFleetFunc == nil {
 		var (
-			deletedFleetOut cloud.DeletedFleet
-			errOut          error
+			deletedOut types.Deleted
+			errOut     error
 		)
-		return deletedFleetOut, errOut
+		return deletedOut, errOut
 	}
 	return mock.DeleteFleetFunc(contextMoqParam, s)
 }
@@ -4573,6 +5270,46 @@ func (mock *ClientMock) DeleteProcessingRuleCalls() []struct {
 	return calls
 }
 
+// DeleteProcessingRuleTemplate calls DeleteProcessingRuleTemplateFunc.
+func (mock *ClientMock) DeleteProcessingRuleTemplate(contextMoqParam context.Context, s string) (types.Deleted, error) {
+	callInfo := struct {
+		ContextMoqParam context.Context
+		S               string
+	}{
+		ContextMoqParam: contextMoqParam,
+		S:               s,
+	}
+	mock.lockDeleteProcessingRuleTemplate.Lock()
+	mock.calls.DeleteProcessingRuleTemplate = append(mock.calls.DeleteProcessingRuleTemplate, callInfo)
+	mock.lockDeleteProcessingRuleTemplate.Unlock()
+	if mock.DeleteProcessingRuleTemplateFunc == nil {
+		var (
+			deletedOut types.Deleted
+			errOut     error
+		)
+		return deletedOut, errOut
+	}
+	return mock.DeleteProcessingRuleTemplateFunc(contextMoqParam, s)
+}
+
+// DeleteProcessingRuleTemplateCalls gets all the calls that were made to DeleteProcessingRuleTemplate.
+// Check the length with:
+//
+//	len(mockedClient.DeleteProcessingRuleTemplateCalls())
+func (mock *ClientMock) DeleteProcessingRuleTemplateCalls() []struct {
+	ContextMoqParam context.Context
+	S               string
+} {
+	var calls []struct {
+		ContextMoqParam context.Context
+		S               string
+	}
+	mock.lockDeleteProcessingRuleTemplate.RLock()
+	calls = mock.calls.DeleteProcessingRuleTemplate
+	mock.lockDeleteProcessingRuleTemplate.RUnlock()
+	return calls
+}
+
 // DeleteResourceProfile calls DeleteResourceProfileFunc.
 func (mock *ClientMock) DeleteResourceProfile(contextMoqParam context.Context, s string) error {
 	callInfo := struct {
@@ -4651,12 +5388,52 @@ func (mock *ClientMock) DeleteTokenCalls() []struct {
 	return calls
 }
 
+// DismissAgentError calls DismissAgentErrorFunc.
+func (mock *ClientMock) DismissAgentError(contextMoqParam context.Context, dismissAgentError types.DismissAgentError) (types.DismissedAgentError, error) {
+	callInfo := struct {
+		ContextMoqParam   context.Context
+		DismissAgentError types.DismissAgentError
+	}{
+		ContextMoqParam:   contextMoqParam,
+		DismissAgentError: dismissAgentError,
+	}
+	mock.lockDismissAgentError.Lock()
+	mock.calls.DismissAgentError = append(mock.calls.DismissAgentError, callInfo)
+	mock.lockDismissAgentError.Unlock()
+	if mock.DismissAgentErrorFunc == nil {
+		var (
+			dismissedAgentErrorOut types.DismissedAgentError
+			errOut                 error
+		)
+		return dismissedAgentErrorOut, errOut
+	}
+	return mock.DismissAgentErrorFunc(contextMoqParam, dismissAgentError)
+}
+
+// DismissAgentErrorCalls gets all the calls that were made to DismissAgentError.
+// Check the length with:
+//
+//	len(mockedClient.DismissAgentErrorCalls())
+func (mock *ClientMock) DismissAgentErrorCalls() []struct {
+	ContextMoqParam   context.Context
+	DismissAgentError types.DismissAgentError
+} {
+	var calls []struct {
+		ContextMoqParam   context.Context
+		DismissAgentError types.DismissAgentError
+	}
+	mock.lockDismissAgentError.RLock()
+	calls = mock.calls.DismissAgentError
+	mock.lockDismissAgentError.RUnlock()
+	return calls
+}
+
 // Environments calls EnvironmentsFunc.
-func (mock *ClientMock) Environments(contextMoqParam context.Context, s string, environmentsParams cloud.EnvironmentsParams) (cloud.Environments, error) {
+func (mock *ClientMock) Environments(contextMoqParam context.Context, s string, environmentsParams types.EnvironmentsParams) (types.Environments, error) {
 	callInfo := struct {
 		ContextMoqParam    context.Context
 		S                  string
-		EnvironmentsParams cloud.EnvironmentsParams
+		EnvironmentsParams types.EnvironmentsParams
 	}{
 		ContextMoqParam:    contextMoqParam,
 		S:                  s,
@@ -4667,7 +5444,7 @@ func (mock *ClientMock) Environments(contextMoqParam context.Context, s string, 
 	mock.lockEnvironments.Unlock()
 	if mock.EnvironmentsFunc == nil {
 		var (
-			environmentsOut cloud.Environments
+			environmentsOut types.Environments
 			errOut          error
 		)
 		return environmentsOut, errOut
@@ -4682,12 +5459,12 @@ func (mock *ClientMock) Environments(contextMoqParam context.Context, s string, 
 func (mock *ClientMock) EnvironmentsCalls() []struct {
 	ContextMoqParam    context.Context
 	S                  string
-	EnvironmentsParams cloud.EnvironmentsParams
+	EnvironmentsParams types.EnvironmentsParams
 } {
 	var calls []struct {
 		ContextMoqParam    context.Context
 		S                  string
-		EnvironmentsParams cloud.EnvironmentsParams
+		EnvironmentsParams types.EnvironmentsParams
 	}
 	mock.lockEnvironments.RLock()
 	calls = mock.calls.Environments
@@ -4696,25 +5473,25 @@ func (mock *ClientMock) EnvironmentsCalls() []struct {
 }
 
 // Fleet calls FleetFunc.
-func (mock *ClientMock) Fleet(contextMoqParam context.Context, s string) (cloud.Fleet, error) {
+func (mock *ClientMock) Fleet(contextMoqParam context.Context, fleetParams types.FleetParams) (types.Fleet, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
-		S               string
+		FleetParams     types.FleetParams
 	}{
 		ContextMoqParam: contextMoqParam,
-		S:               s,
+		FleetParams:     fleetParams,
 	}
 	mock.lockFleet.Lock()
 	mock.calls.Fleet = append(mock.calls.Fleet, callInfo)
 	mock.lockFleet.Unlock()
 	if mock.FleetFunc == nil {
 		var (
-			fleetOut cloud.Fleet
+			fleetOut types.Fleet
 			errOut   error
 		)
 		return fleetOut, errOut
 	}
-	return mock.FleetFunc(contextMoqParam, s)
+	return mock.FleetFunc(contextMoqParam, fleetParams)
 }
 
 // FleetCalls gets all the calls that were made to Fleet.
@@ -4723,11 +5500,11 @@ func (mock *ClientMock) Fleet(contextMoqParam context.Context, s string) (cloud.
 //	len(mockedClient.FleetCalls())
 func (mock *ClientMock) FleetCalls() []struct {
 	ContextMoqParam context.Context
-	S               string
+	FleetParams     types.FleetParams
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
-		S               string
+		FleetParams     types.FleetParams
 	}
 	mock.lockFleet.RLock()
 	calls = mock.calls.Fleet
@@ -4735,11 +5512,55 @@ func (mock *ClientMock) FleetCalls() []struct {
 	return calls
 }
 
+// FleetConfig calls FleetConfigFunc.
+func (mock *ClientMock) FleetConfig(contextMoqParam context.Context, s string, fleetConfigParams types.FleetConfigParams) (*fluentbitconfig.Config, error) {
+	callInfo := struct {
+		ContextMoqParam   context.Context
+		S                 string
+		FleetConfigParams types.FleetConfigParams
+	}{
+		ContextMoqParam:   contextMoqParam,
+		S:                 s,
+		FleetConfigParams: fleetConfigParams,
+	}
+	mock.lockFleetConfig.Lock()
+	mock.calls.FleetConfig = append(mock.calls.FleetConfig, callInfo)
+	mock.lockFleetConfig.Unlock()
+	if mock.FleetConfigFunc == nil {
+		var (
+			configOut *fluentbitconfig.Config
+			errOut    error
+		)
+		return configOut, errOut
+	}
+	return mock.FleetConfigFunc(contextMoqParam, s, fleetConfigParams)
+}
+
+// FleetConfigCalls gets all the calls that were made to FleetConfig.
+// Check the length with:
+//
+//	len(mockedClient.FleetConfigCalls())
+func (mock *ClientMock) FleetConfigCalls() []struct {
+	ContextMoqParam   context.Context
+	S                 string
+	FleetConfigParams types.FleetConfigParams
+} {
+	var calls []struct {
+		ContextMoqParam   context.Context
+		S                 string
+		FleetConfigParams types.FleetConfigParams
+	}
+	mock.lockFleetConfig.RLock()
+	calls = mock.calls.FleetConfig
+	mock.lockFleetConfig.RUnlock()
+	return calls
+}
+
 // Fleets calls FleetsFunc.
-func (mock *ClientMock) Fleets(contextMoqParam context.Context, fleetsParams cloud.FleetsParams) (cloud.Fleets, error) {
+func (mock *ClientMock) Fleets(contextMoqParam context.Context, fleetsParams types.FleetsParams) (types.Fleets, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
-		FleetsParams    cloud.FleetsParams
+		FleetsParams    types.FleetsParams
 	}{
 		ContextMoqParam: contextMoqParam,
 		FleetsParams:    fleetsParams,
@@ -4749,7 +5570,7 @@ func (mock *ClientMock) Fleets(contextMoqParam context.Context, fleetsParams clo
 	mock.lockFleets.Unlock()
 	if mock.FleetsFunc == nil {
 		var (
-			fleetsOut cloud.Fleets
+			fleetsOut types.Fleets
 			errOut    error
 		)
 		return fleetsOut, errOut
@@ -4763,11 +5584,11 @@ func (mock *ClientMock) Fleets(contextMoqParam context.Context, fleetsParams clo
 //	len(mockedClient.FleetsCalls())
 func (mock *ClientMock) FleetsCalls() []struct {
 	ContextMoqParam context.Context
-	FleetsParams    cloud.FleetsParams
+	FleetsParams    types.FleetsParams
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
-		FleetsParams    cloud.FleetsParams
+		FleetsParams    types.FleetsParams
 	}
 	mock.lockFleets.RLock()
 	calls = mock.calls.Fleets
@@ -4775,8 +5596,44 @@ func (mock *ClientMock) FleetsCalls() []struct {
 	return calls
 }
 
+// Health calls HealthFunc.
+func (mock *ClientMock) Health(contextMoqParam context.Context) (types.Health, error) {
+	callInfo := struct {
+		ContextMoqParam context.Context
+	}{
+		ContextMoqParam: contextMoqParam,
+	}
+	mock.lockHealth.Lock()
+	mock.calls.Health = append(mock.calls.Health, callInfo)
+	mock.lockHealth.Unlock()
+	if mock.HealthFunc == nil {
+		var (
+			healthOut types.Health
+			errOut    error
+		)
+		return healthOut, errOut
+	}
+	return mock.HealthFunc(contextMoqParam)
+}
+
+// HealthCalls gets all the calls that were made to Health.
+// Check the length with:
+//
+//	len(mockedClient.HealthCalls())
+func (mock *ClientMock) HealthCalls() []struct {
+	ContextMoqParam context.Context
+} {
+	var calls []struct {
+		ContextMoqParam context.Context
+	}
+	mock.lockHealth.RLock()
+	calls = mock.calls.Health
+	mock.lockHealth.RUnlock()
+	return calls
+}
+
 // IngestCheck calls IngestCheckFunc.
-func (mock *ClientMock) IngestCheck(contextMoqParam context.Context, s string) (cloud.IngestCheck, error) {
+func (mock *ClientMock) IngestCheck(contextMoqParam context.Context, s string) (types.IngestCheck, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
@@ -4789,7 +5646,7 @@ func (mock *ClientMock) IngestCheck(contextMoqParam context.Context, s string) (
 	mock.lockIngestCheck.Unlock()
 	if mock.IngestCheckFunc == nil {
 		var (
-			ingestCheckOut cloud.IngestCheck
+			ingestCheckOut types.IngestCheck
 			errOut         error
 		)
 		return ingestCheckOut, errOut
@@ -4816,11 +5673,11 @@ func (mock *ClientMock) IngestCheckCalls() []struct {
 }
 
 // IngestChecks calls IngestChecksFunc.
-func (mock *ClientMock) IngestChecks(contextMoqParam context.Context, s string, ingestChecksParams cloud.IngestChecksParams) (cloud.IngestChecks, error) {
+func (mock *ClientMock) IngestChecks(contextMoqParam context.Context, s string, ingestChecksParams types.IngestChecksParams) (types.IngestChecks, error) {
 	callInfo := struct {
 		ContextMoqParam    context.Context
 		S                  string
-		IngestChecksParams cloud.IngestChecksParams
+		IngestChecksParams types.IngestChecksParams
 	}{
 		ContextMoqParam:    contextMoqParam,
 		S:                  s,
@@ -4831,7 +5688,7 @@ func (mock *ClientMock) IngestChecks(contextMoqParam context.Context, s string, 
 	mock.lockIngestChecks.Unlock()
 	if mock.IngestChecksFunc == nil {
 		var (
-			ingestChecksOut cloud.IngestChecks
+			ingestChecksOut types.IngestChecks
 			errOut          error
 		)
 		return ingestChecksOut, errOut
@@ -4846,12 +5703,12 @@ func (mock *ClientMock) IngestChecks(contextMoqParam context.Context, s string, 
 func (mock *ClientMock) IngestChecksCalls() []struct {
 	ContextMoqParam    context.Context
 	S                  string
-	IngestChecksParams cloud.IngestChecksParams
+	IngestChecksParams types.IngestChecksParams
 } {
 	var calls []struct {
 		ContextMoqParam    context.Context
 		S                  string
-		IngestChecksParams cloud.IngestChecksParams
+		IngestChecksParams types.IngestChecksParams
 	}
 	mock.lockIngestChecks.RLock()
 	calls = mock.calls.IngestChecks
@@ -4860,11 +5717,11 @@ func (mock *ClientMock) IngestChecksCalls() []struct {
 }
 
 // Members calls MembersFunc.
-func (mock *ClientMock) Members(contextMoqParam context.Context, s string, membersParams cloud.MembersParams) (cloud.Memberships, error) {
+func (mock *ClientMock) Members(contextMoqParam context.Context, s string, membersParams types.MembersParams) (types.Memberships, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
-		MembersParams   cloud.MembersParams
+		MembersParams   types.MembersParams
 	}{
 		ContextMoqParam: contextMoqParam,
 		S:               s,
@@ -4875,7 +5732,7 @@ func (mock *ClientMock) Members(contextMoqParam context.Context, s string, membe
 	mock.lockMembers.Unlock()
 	if mock.MembersFunc == nil {
 		var (
-			membershipsOut cloud.Memberships
+			membershipsOut types.Memberships
 			errOut         error
 		)
 		return membershipsOut, errOut
@@ -4890,12 +5747,12 @@ func (mock *ClientMock) Members(contextMoqParam context.Context, s string, membe
 func (mock *ClientMock) MembersCalls() []struct {
 	ContextMoqParam context.Context
 	S               string
-	MembersParams   cloud.MembersParams
+	MembersParams   types.MembersParams
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
 		S               string
-		MembersParams   cloud.MembersParams
+		MembersParams   types.MembersParams
 	}
 	mock.lockMembers.RLock()
 	calls = mock.calls.Members
@@ -4904,11 +5761,11 @@ func (mock *ClientMock) MembersCalls() []struct {
 }
 
 // Pipeline calls PipelineFunc.
-func (mock *ClientMock) Pipeline(contextMoqParam context.Context, s string, pipelineParams cloud.PipelineParams) (cloud.Pipeline, error) {
+func (mock *ClientMock) Pipeline(contextMoqParam context.Context, s string, pipelineParams types.PipelineParams) (types.Pipeline, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
-		PipelineParams  cloud.PipelineParams
+		PipelineParams  types.PipelineParams
 	}{
 		ContextMoqParam: contextMoqParam,
 		S:               s,
@@ -4919,7 +5776,7 @@ func (mock *ClientMock) Pipeline(contextMoqParam context.Context, s string, pipe
 	mock.lockPipeline.Unlock()
 	if mock.PipelineFunc == nil {
 		var (
-			pipelineOut cloud.Pipeline
+			pipelineOut types.Pipeline
 			errOut      error
 		)
 		return pipelineOut, errOut
@@ -4934,12 +5791,12 @@ func (mock *ClientMock) Pipeline(contextMoqParam context.Context, s string, pipe
 func (mock *ClientMock) PipelineCalls() []struct {
 	ContextMoqParam context.Context
 	S               string
-	PipelineParams  cloud.PipelineParams
+	PipelineParams  types.PipelineParams
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
 		S               string
-		PipelineParams  cloud.PipelineParams
+		PipelineParams  types.PipelineParams
 	}
 	mock.lockPipeline.RLock()
 	calls = mock.calls.Pipeline
@@ -4948,7 +5805,7 @@ func (mock *ClientMock) PipelineCalls() []struct {
 }
 
 // PipelineCheck calls PipelineCheckFunc.
-func (mock *ClientMock) PipelineCheck(contextMoqParam context.Context, s string) (cloud.PipelineCheck, error) {
+func (mock *ClientMock) PipelineCheck(contextMoqParam context.Context, s string) (types.PipelineCheck, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
@@ -4961,7 +5818,7 @@ func (mock *ClientMock) PipelineCheck(contextMoqParam context.Context, s string)
 	mock.lockPipelineCheck.Unlock()
 	if mock.PipelineCheckFunc == nil {
 		var (
-			pipelineCheckOut cloud.PipelineCheck
+			pipelineCheckOut types.PipelineCheck
 			errOut           error
 		)
 		return pipelineCheckOut, errOut
@@ -4988,11 +5845,11 @@ func (mock *ClientMock) PipelineCheckCalls() []struct {
 }
 
 // PipelineChecks calls PipelineChecksFunc.
-func (mock *ClientMock) PipelineChecks(contextMoqParam context.Context, s string, pipelineChecksParams cloud.PipelineChecksParams) (cloud.PipelineChecks, error) {
+func (mock *ClientMock) PipelineChecks(contextMoqParam context.Context, s string, pipelineChecksParams types.PipelineChecksParams) (types.PipelineChecks, error) {
 	callInfo := struct {
 		ContextMoqParam      context.Context
 		S                    string
-		PipelineChecksParams cloud.PipelineChecksParams
+		PipelineChecksParams types.PipelineChecksParams
 	}{
 		ContextMoqParam:      contextMoqParam,
 		S:                    s,
@@ -5003,7 +5860,7 @@ func (mock *ClientMock) PipelineChecks(contextMoqParam context.Context, s string
 	mock.lockPipelineChecks.Unlock()
 	if mock.PipelineChecksFunc == nil {
 		var (
-			pipelineChecksOut cloud.PipelineChecks
+			pipelineChecksOut types.PipelineChecks
 			errOut            error
 		)
 		return pipelineChecksOut, errOut
@@ -5018,12 +5875,12 @@ func (mock *ClientMock) PipelineChecks(contextMoqParam context.Context, s string
 func (mock *ClientMock) PipelineChecksCalls() []struct {
 	ContextMoqParam      context.Context
 	S                    string
-	PipelineChecksParams cloud.PipelineChecksParams
+	PipelineChecksParams types.PipelineChecksParams
 } {
 	var calls []struct {
 		ContextMoqParam      context.Context
 		S                    string
-		PipelineChecksParams cloud.PipelineChecksParams
+		PipelineChecksParams types.PipelineChecksParams
 	}
 	mock.lockPipelineChecks.RLock()
 	calls = mock.calls.PipelineChecks
@@ -5032,11 +5889,11 @@ func (mock *ClientMock) PipelineChecksCalls() []struct {
 }
 
 // PipelineClusterObjects calls PipelineClusterObjectsFunc.
-func (mock *ClientMock) PipelineClusterObjects(contextMoqParam context.Context, s string, pipelineClusterObjectsParams cloud.PipelineClusterObjectsParams) (cloud.ClusterObjects, error) {
+func (mock *ClientMock) PipelineClusterObjects(contextMoqParam context.Context, s string, pipelineClusterObjectsParams types.PipelineClusterObjectsParams) (types.ClusterObjects, error) {
 	callInfo := struct {
 		ContextMoqParam              context.Context
 		S                            string
-		PipelineClusterObjectsParams cloud.PipelineClusterObjectsParams
+		PipelineClusterObjectsParams types.PipelineClusterObjectsParams
 	}{
 		ContextMoqParam:              contextMoqParam,
 		S:                            s,
@@ -5047,7 +5904,7 @@ func (mock *ClientMock) PipelineClusterObjects(contextMoqParam context.Context, 
 	mock.lockPipelineClusterObjects.Unlock()
 	if mock.PipelineClusterObjectsFunc == nil {
 		var (
-			clusterObjectsOut cloud.ClusterObjects
+			clusterObjectsOut types.ClusterObjects
 			errOut            error
 		)
 		return clusterObjectsOut, errOut
@@ -5062,12 +5919,12 @@ func (mock *ClientMock) PipelineClusterObjects(contextMoqParam context.Context, 
 func (mock *ClientMock) PipelineClusterObjectsCalls() []struct {
 	ContextMoqParam              context.Context
 	S                            string
-	PipelineClusterObjectsParams cloud.PipelineClusterObjectsParams
+	PipelineClusterObjectsParams types.PipelineClusterObjectsParams
 } {
 	var calls []struct {
 		ContextMoqParam              context.Context
 		S                            string
-		PipelineClusterObjectsParams cloud.PipelineClusterObjectsParams
+		PipelineClusterObjectsParams types.PipelineClusterObjectsParams
 	}
 	mock.lockPipelineClusterObjects.RLock()
 	calls = mock.calls.PipelineClusterObjects
@@ -5076,11 +5933,11 @@ func (mock *ClientMock) PipelineClusterObjectsCalls() []struct {
 }
 
 // PipelineConfigHistory calls PipelineConfigHistoryFunc.
-func (mock *ClientMock) PipelineConfigHistory(contextMoqParam context.Context, s string, pipelineConfigHistoryParams cloud.PipelineConfigHistoryParams) (cloud.PipelineConfigHistory, error) {
+func (mock *ClientMock) PipelineConfigHistory(contextMoqParam context.Context, s string, pipelineConfigHistoryParams types.PipelineConfigHistoryParams) (types.PipelineConfigHistory, error) {
 	callInfo := struct {
 		ContextMoqParam             context.Context
 		S                           string
-		PipelineConfigHistoryParams cloud.PipelineConfigHistoryParams
+		PipelineConfigHistoryParams types.PipelineConfigHistoryParams
 	}{
 		ContextMoqParam:             contextMoqParam,
 		S:                           s,
@@ -5091,7 +5948,7 @@ func (mock *ClientMock) PipelineConfigHistory(contextMoqParam context.Context, s
 	mock.lockPipelineConfigHistory.Unlock()
 	if mock.PipelineConfigHistoryFunc == nil {
 		var (
-			pipelineConfigHistoryOut cloud.PipelineConfigHistory
+			pipelineConfigHistoryOut types.PipelineConfigHistory
 			errOut                   error
 		)
 		return pipelineConfigHistoryOut, errOut
@@ -5106,12 +5963,12 @@ func (mock *ClientMock) PipelineConfigHistory(contextMoqParam context.Context, s
 func (mock *ClientMock) PipelineConfigHistoryCalls() []struct {
 	ContextMoqParam             context.Context
 	S                           string
-	PipelineConfigHistoryParams cloud.PipelineConfigHistoryParams
+	PipelineConfigHistoryParams types.PipelineConfigHistoryParams
 } {
 	var calls []struct {
 		ContextMoqParam             context.Context
 		S                           string
-		PipelineConfigHistoryParams cloud.PipelineConfigHistoryParams
+		PipelineConfigHistoryParams types.PipelineConfigHistoryParams
 	}
 	mock.lockPipelineConfigHistory.RLock()
 	calls = mock.calls.PipelineConfigHistory
@@ -5120,7 +5977,7 @@ func (mock *ClientMock) PipelineConfigHistoryCalls() []struct {
 }
 
 // PipelineFile calls PipelineFileFunc.
-func (mock *ClientMock) PipelineFile(contextMoqParam context.Context, s string) (cloud.PipelineFile, error) {
+func (mock *ClientMock) PipelineFile(contextMoqParam context.Context, s string) (types.PipelineFile, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
@@ -5133,7 +5990,7 @@ func (mock *ClientMock) PipelineFile(contextMoqParam context.Context, s string) 
 	mock.lockPipelineFile.Unlock()
 	if mock.PipelineFileFunc == nil {
 		var (
-			pipelineFileOut cloud.PipelineFile
+			pipelineFileOut types.PipelineFile
 			errOut          error
 		)
 		return pipelineFileOut, errOut
@@ -5160,11 +6017,11 @@ func (mock *ClientMock) PipelineFileCalls() []struct {
 }
 
 // PipelineFiles calls PipelineFilesFunc.
-func (mock *ClientMock) PipelineFiles(contextMoqParam context.Context, s string, pipelineFilesParams cloud.PipelineFilesParams) (cloud.PipelineFiles, error) {
+func (mock *ClientMock) PipelineFiles(contextMoqParam context.Context, s string, pipelineFilesParams types.PipelineFilesParams) (types.PipelineFiles, error) {
 	callInfo := struct {
 		ContextMoqParam     context.Context
 		S                   string
-		PipelineFilesParams cloud.PipelineFilesParams
+		PipelineFilesParams types.PipelineFilesParams
 	}{
 		ContextMoqParam:     contextMoqParam,
 		S:                   s,
@@ -5175,7 +6032,7 @@ func (mock *ClientMock) PipelineFiles(contextMoqParam context.Context, s string,
 	mock.lockPipelineFiles.Unlock()
 	if mock.PipelineFilesFunc == nil {
 		var (
-			pipelineFilesOut cloud.PipelineFiles
+			pipelineFilesOut types.PipelineFiles
 			errOut           error
 		)
 		return pipelineFilesOut, errOut
@@ -5190,12 +6047,12 @@ func (mock *ClientMock) PipelineFiles(contextMoqParam context.Context, s string,
 func (mock *ClientMock) PipelineFilesCalls() []struct {
 	ContextMoqParam     context.Context
 	S                   string
-	PipelineFilesParams cloud.PipelineFilesParams
+	PipelineFilesParams types.PipelineFilesParams
 } {
 	var calls []struct {
 		ContextMoqParam     context.Context
 		S                   string
-		PipelineFilesParams cloud.PipelineFilesParams
+		PipelineFilesParams types.PipelineFilesParams
 	}
 	mock.lockPipelineFiles.RLock()
 	calls = mock.calls.PipelineFiles
@@ -5203,12 +6060,56 @@ func (mock *ClientMock) PipelineFilesCalls() []struct {
 	return calls
 }
 
-// PipelineMetrics calls PipelineMetricsFunc.
-func (mock *ClientMock) PipelineMetrics(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.MetricsSummary, error) {
+// PipelineMetadata calls PipelineMetadataFunc.
+func (mock *ClientMock) PipelineMetadata(contextMoqParam context.Context, s string, strings ...string) (types.PipelineMetadata, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   cloud.MetricsParams
+		Strings         []string
+	}{
+		ContextMoqParam: contextMoqParam,
+		S:               s,
+		Strings:         strings,
+	}
+	mock.lockPipelineMetadata.Lock()
+	mock.calls.PipelineMetadata = append(mock.calls.PipelineMetadata, callInfo)
+	mock.lockPipelineMetadata.Unlock()
+	if mock.PipelineMetadataFunc == nil {
+		var (
+			pipelineMetadataOut types.PipelineMetadata
+			errOut              error
+		)
+		return pipelineMetadataOut, errOut
+	}
+	return mock.PipelineMetadataFunc(contextMoqParam, s, strings...)
+}
+
+// PipelineMetadataCalls gets all the calls that were made to PipelineMetadata.
+// Check the length with:
+//
+//	len(mockedClient.PipelineMetadataCalls())
+func (mock *ClientMock) PipelineMetadataCalls() []struct {
+	ContextMoqParam context.Context
+	S               string
+	Strings         []string
+} {
+	var calls []struct {
+		ContextMoqParam context.Context
+		S               string
+		Strings         []string
+	}
+	mock.lockPipelineMetadata.RLock()
+	calls = mock.calls.PipelineMetadata
+	mock.lockPipelineMetadata.RUnlock()
+	return calls
+}
+
+// PipelineMetrics calls PipelineMetricsFunc.
+func (mock *ClientMock) PipelineMetrics(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsSummary, error) {
+	callInfo := struct {
+		ContextMoqParam context.Context
+		S               string
+		MetricsParams   types.MetricsParams
 	}{
 		ContextMoqParam: contextMoqParam,
 		S:               s,
@@ -5219,7 +6120,7 @@ func (mock *ClientMock) PipelineMetrics(contextMoqParam context.Context, s strin
 	mock.lockPipelineMetrics.Unlock()
 	if mock.PipelineMetricsFunc == nil {
 		var (
-			metricsSummaryOut cloud.MetricsSummary
+			metricsSummaryOut types.MetricsSummary
 			errOut            error
 		)
 		return metricsSummaryOut, errOut
@@ -5234,12 +6135,12 @@ func (mock *ClientMock) PipelineMetrics(contextMoqParam context.Context, s strin
 func (mock *ClientMock) PipelineMetricsCalls() []struct {
 	ContextMoqParam context.Context
 	S               string
-	MetricsParams   cloud.MetricsParams
+	MetricsParams   types.MetricsParams
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   cloud.MetricsParams
+		MetricsParams   types.MetricsParams
 	}
 	mock.lockPipelineMetrics.RLock()
 	calls = mock.calls.PipelineMetrics
@@ -5248,11 +6149,11 @@ func (mock *ClientMock) PipelineMetricsCalls() []struct {
 }
 
 // PipelineMetricsByPlugin calls PipelineMetricsByPluginFunc.
-func (mock *ClientMock) PipelineMetricsByPlugin(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.MetricsSummaryPlugin, error) {
+func (mock *ClientMock) PipelineMetricsByPlugin(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsSummaryPlugin, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   cloud.MetricsParams
+		MetricsParams   types.MetricsParams
 	}{
 		ContextMoqParam: contextMoqParam,
 		S:               s,
@@ -5263,7 +6164,7 @@ func (mock *ClientMock) PipelineMetricsByPlugin(contextMoqParam context.Context,
 	mock.lockPipelineMetricsByPlugin.Unlock()
 	if mock.PipelineMetricsByPluginFunc == nil {
 		var (
-			metricsSummaryPluginOut cloud.MetricsSummaryPlugin
+			metricsSummaryPluginOut types.MetricsSummaryPlugin
 			errOut                  error
 		)
 		return metricsSummaryPluginOut, errOut
@@ -5278,12 +6179,12 @@ func (mock *ClientMock) PipelineMetricsByPlugin(contextMoqParam context.Context,
 func (mock *ClientMock) PipelineMetricsByPluginCalls() []struct {
 	ContextMoqParam context.Context
 	S               string
-	MetricsParams   cloud.MetricsParams
+	MetricsParams   types.MetricsParams
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   cloud.MetricsParams
+		MetricsParams   types.MetricsParams
 	}
 	mock.lockPipelineMetricsByPlugin.RLock()
 	calls = mock.calls.PipelineMetricsByPlugin
@@ -5292,11 +6193,11 @@ func (mock *ClientMock) PipelineMetricsByPluginCalls() []struct {
 }
 
 // PipelineMetricsOverTimeByPlugin calls PipelineMetricsOverTimeByPluginFunc.
-func (mock *ClientMock) PipelineMetricsOverTimeByPlugin(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.MetricsOverTimeByPlugin, error) {
+func (mock *ClientMock) PipelineMetricsOverTimeByPlugin(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTimeByPlugin, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   cloud.MetricsParams
+		MetricsParams   types.MetricsParams
 	}{
 		ContextMoqParam: contextMoqParam,
 		S:               s,
@@ -5307,7 +6208,7 @@ func (mock *ClientMock) PipelineMetricsOverTimeByPlugin(contextMoqParam context.
 	mock.lockPipelineMetricsOverTimeByPlugin.Unlock()
 	if mock.PipelineMetricsOverTimeByPluginFunc == nil {
 		var (
-			metricsOverTimeByPluginOut cloud.MetricsOverTimeByPlugin
+			metricsOverTimeByPluginOut types.MetricsOverTimeByPlugin
 			errOut                     error
 		)
 		return metricsOverTimeByPluginOut, errOut
@@ -5322,12 +6223,12 @@ func (mock *ClientMock) PipelineMetricsOverTimeByPlugin(contextMoqParam context.
 func (mock *ClientMock) PipelineMetricsOverTimeByPluginCalls() []struct {
 	ContextMoqParam context.Context
 	S               string
-	MetricsParams   cloud.MetricsParams
+	MetricsParams   types.MetricsParams
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   cloud.MetricsParams
+		MetricsParams   types.MetricsParams
 	}
 	mock.lockPipelineMetricsOverTimeByPlugin.RLock()
 	calls = mock.calls.PipelineMetricsOverTimeByPlugin
@@ -5336,11 +6237,11 @@ func (mock *ClientMock) PipelineMetricsOverTimeByPluginCalls() []struct {
 }
 
 // PipelineMetricsV1 calls PipelineMetricsV1Func.
-func (mock *ClientMock) PipelineMetricsV1(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.AgentMetrics, error) {
+func (mock *ClientMock) PipelineMetricsV1(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.AgentMetrics, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   cloud.MetricsParams
+		MetricsParams   types.MetricsParams
 	}{
 		ContextMoqParam: contextMoqParam,
 		S:               s,
@@ -5351,7 +6252,7 @@ func (mock *ClientMock) PipelineMetricsV1(contextMoqParam context.Context, s str
 	mock.lockPipelineMetricsV1.Unlock()
 	if mock.PipelineMetricsV1Func == nil {
 		var (
-			agentMetricsOut cloud.AgentMetrics
+			agentMetricsOut types.AgentMetrics
 			errOut          error
 		)
 		return agentMetricsOut, errOut
@@ -5366,12 +6267,12 @@ func (mock *ClientMock) PipelineMetricsV1(contextMoqParam context.Context, s str
 func (mock *ClientMock) PipelineMetricsV1Calls() []struct {
 	ContextMoqParam context.Context
 	S               string
-	MetricsParams   cloud.MetricsParams
+	MetricsParams   types.MetricsParams
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   cloud.MetricsParams
+		MetricsParams   types.MetricsParams
 	}
 	mock.lockPipelineMetricsV1.RLock()
 	calls = mock.calls.PipelineMetricsV1
@@ -5380,11 +6281,11 @@ func (mock *ClientMock) PipelineMetricsV1Calls() []struct {
 }
 
 // PipelineOverTimeMetrics calls PipelineOverTimeMetricsFunc.
-func (mock *ClientMock) PipelineOverTimeMetrics(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.MetricsOverTime, error) {
+func (mock *ClientMock) PipelineOverTimeMetrics(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTime, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   cloud.MetricsParams
+		MetricsParams   types.MetricsParams
 	}{
 		ContextMoqParam: contextMoqParam,
 		S:               s,
@@ -5395,7 +6296,7 @@ func (mock *ClientMock) PipelineOverTimeMetrics(contextMoqParam context.Context,
 	mock.lockPipelineOverTimeMetrics.Unlock()
 	if mock.PipelineOverTimeMetricsFunc == nil {
 		var (
-			metricsOverTimeOut cloud.MetricsOverTime
+			metricsOverTimeOut types.MetricsOverTime
 			errOut             error
 		)
 		return metricsOverTimeOut, errOut
@@ -5410,12 +6311,12 @@ func (mock *ClientMock) PipelineOverTimeMetrics(contextMoqParam context.Context,
 func (mock *ClientMock) PipelineOverTimeMetricsCalls() []struct {
 	ContextMoqParam context.Context
 	S               string
-	MetricsParams   cloud.MetricsParams
+	MetricsParams   types.MetricsParams
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   cloud.MetricsParams
+		MetricsParams   types.MetricsParams
 	}
 	mock.lockPipelineOverTimeMetrics.RLock()
 	calls = mock.calls.PipelineOverTimeMetrics
@@ -5424,7 +6325,7 @@ func (mock *ClientMock) PipelineOverTimeMetricsCalls() []struct {
 }
 
 // PipelinePort calls PipelinePortFunc.
-func (mock *ClientMock) PipelinePort(contextMoqParam context.Context, s string) (cloud.PipelinePort, error) {
+func (mock *ClientMock) PipelinePort(contextMoqParam context.Context, s string) (types.PipelinePort, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
@@ -5437,7 +6338,7 @@ func (mock *ClientMock) PipelinePort(contextMoqParam context.Context, s string) 
 	mock.lockPipelinePort.Unlock()
 	if mock.PipelinePortFunc == nil {
 		var (
-			pipelinePortOut cloud.PipelinePort
+			pipelinePortOut types.PipelinePort
 			errOut          error
 		)
 		return pipelinePortOut, errOut
@@ -5464,11 +6365,11 @@ func (mock *ClientMock) PipelinePortCalls() []struct {
 }
 
 // PipelinePorts calls PipelinePortsFunc.
-func (mock *ClientMock) PipelinePorts(contextMoqParam context.Context, s string, pipelinePortsParams cloud.PipelinePortsParams) (cloud.PipelinePorts, error) {
+func (mock *ClientMock) PipelinePorts(contextMoqParam context.Context, s string, pipelinePortsParams types.PipelinePortsParams) (types.PipelinePorts, error) {
 	callInfo := struct {
 		ContextMoqParam     context.Context
 		S                   string
-		PipelinePortsParams cloud.PipelinePortsParams
+		PipelinePortsParams types.PipelinePortsParams
 	}{
 		ContextMoqParam:     contextMoqParam,
 		S:                   s,
@@ -5479,7 +6380,7 @@ func (mock *ClientMock) PipelinePorts(contextMoqParam context.Context, s string,
 	mock.lockPipelinePorts.Unlock()
 	if mock.PipelinePortsFunc == nil {
 		var (
-			pipelinePortsOut cloud.PipelinePorts
+			pipelinePortsOut types.PipelinePorts
 			errOut           error
 		)
 		return pipelinePortsOut, errOut
@@ -5494,12 +6395,12 @@ func (mock *ClientMock) PipelinePorts(contextMoqParam context.Context, s string,
 func (mock *ClientMock) PipelinePortsCalls() []struct {
 	ContextMoqParam     context.Context
 	S                   string
-	PipelinePortsParams cloud.PipelinePortsParams
+	PipelinePortsParams types.PipelinePortsParams
 } {
 	var calls []struct {
 		ContextMoqParam     context.Context
 		S                   string
-		PipelinePortsParams cloud.PipelinePortsParams
+		PipelinePortsParams types.PipelinePortsParams
 	}
 	mock.lockPipelinePorts.RLock()
 	calls = mock.calls.PipelinePorts
@@ -5508,7 +6409,7 @@ func (mock *ClientMock) PipelinePortsCalls() []struct {
 }
 
 // PipelineSecret calls PipelineSecretFunc.
-func (mock *ClientMock) PipelineSecret(contextMoqParam context.Context, s string) (cloud.PipelineSecret, error) {
+func (mock *ClientMock) PipelineSecret(contextMoqParam context.Context, s string) (types.PipelineSecret, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
@@ -5521,7 +6422,7 @@ func (mock *ClientMock) PipelineSecret(contextMoqParam context.Context, s string
 	mock.lockPipelineSecret.Unlock()
 	if mock.PipelineSecretFunc == nil {
 		var (
-			pipelineSecretOut cloud.PipelineSecret
+			pipelineSecretOut types.PipelineSecret
 			errOut            error
 		)
 		return pipelineSecretOut, errOut
@@ -5548,11 +6449,11 @@ func (mock *ClientMock) PipelineSecretCalls() []struct {
 }
 
 // PipelineSecrets calls PipelineSecretsFunc.
-func (mock *ClientMock) PipelineSecrets(contextMoqParam context.Context, s string, pipelineSecretsParams cloud.PipelineSecretsParams) (cloud.PipelineSecrets, error) {
+func (mock *ClientMock) PipelineSecrets(contextMoqParam context.Context, s string, pipelineSecretsParams types.PipelineSecretsParams) (types.PipelineSecrets, error) {
 	callInfo := struct {
 		ContextMoqParam       context.Context
 		S                     string
-		PipelineSecretsParams cloud.PipelineSecretsParams
+		PipelineSecretsParams types.PipelineSecretsParams
 	}{
 		ContextMoqParam:       contextMoqParam,
 		S:                     s,
@@ -5563,7 +6464,7 @@ func (mock *ClientMock) PipelineSecrets(contextMoqParam context.Context, s strin
 	mock.lockPipelineSecrets.Unlock()
 	if mock.PipelineSecretsFunc == nil {
 		var (
-			pipelineSecretsOut cloud.PipelineSecrets
+			pipelineSecretsOut types.PipelineSecrets
 			errOut             error
 		)
 		return pipelineSecretsOut, errOut
@@ -5578,12 +6479,12 @@ func (mock *ClientMock) PipelineSecrets(contextMoqParam context.Context, s strin
 func (mock *ClientMock) PipelineSecretsCalls() []struct {
 	ContextMoqParam       context.Context
 	S                     string
-	PipelineSecretsParams cloud.PipelineSecretsParams
+	PipelineSecretsParams types.PipelineSecretsParams
 } {
 	var calls []struct {
 		ContextMoqParam       context.Context
 		S                     string
-		PipelineSecretsParams cloud.PipelineSecretsParams
+		PipelineSecretsParams types.PipelineSecretsParams
 	}
 	mock.lockPipelineSecrets.RLock()
 	calls = mock.calls.PipelineSecrets
@@ -5592,11 +6493,11 @@ func (mock *ClientMock) PipelineSecretsCalls() []struct {
 }
 
 // PipelineStatusHistory calls PipelineStatusHistoryFunc.
-func (mock *ClientMock) PipelineStatusHistory(contextMoqParam context.Context, s string, pipelineStatusHistoryParams cloud.PipelineStatusHistoryParams) (cloud.PipelineStatusHistory, error) {
+func (mock *ClientMock) PipelineStatusHistory(contextMoqParam context.Context, s string, pipelineStatusHistoryParams types.PipelineStatusHistoryParams) (types.PipelineStatusHistory, error) {
 	callInfo := struct {
 		ContextMoqParam             context.Context
 		S                           string
-		PipelineStatusHistoryParams cloud.PipelineStatusHistoryParams
+		PipelineStatusHistoryParams types.PipelineStatusHistoryParams
 	}{
 		ContextMoqParam:             contextMoqParam,
 		S:                           s,
@@ -5607,7 +6508,7 @@ func (mock *ClientMock) PipelineStatusHistory(contextMoqParam context.Context, s
 	mock.lockPipelineStatusHistory.Unlock()
 	if mock.PipelineStatusHistoryFunc == nil {
 		var (
-			pipelineStatusHistoryOut cloud.PipelineStatusHistory
+			pipelineStatusHistoryOut types.PipelineStatusHistory
 			errOut                   error
 		)
 		return pipelineStatusHistoryOut, errOut
@@ -5622,12 +6523,12 @@ func (mock *ClientMock) PipelineStatusHistory(contextMoqParam context.Context, s
 func (mock *ClientMock) PipelineStatusHistoryCalls() []struct {
 	ContextMoqParam             context.Context
 	S                           string
-	PipelineStatusHistoryParams cloud.PipelineStatusHistoryParams
+	PipelineStatusHistoryParams types.PipelineStatusHistoryParams
 } {
 	var calls []struct {
 		ContextMoqParam             context.Context
 		S                           string
-		PipelineStatusHistoryParams cloud.PipelineStatusHistoryParams
+		PipelineStatusHistoryParams types.PipelineStatusHistoryParams
 	}
 	mock.lockPipelineStatusHistory.RLock()
 	calls = mock.calls.PipelineStatusHistory
@@ -5636,14 +6537,12 @@ func (mock *ClientMock) PipelineStatusHistoryCalls() []struct {
 }
 
 // Pipelines calls PipelinesFunc.
-func (mock *ClientMock) Pipelines(contextMoqParam context.Context, s string, pipelinesParams cloud.PipelinesParams) (cloud.Pipelines, error) {
+func (mock *ClientMock) Pipelines(contextMoqParam context.Context, pipelinesParams types.PipelinesParams) (types.Pipelines, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
-		S               string
-		PipelinesParams cloud.PipelinesParams
+		PipelinesParams types.PipelinesParams
 	}{
 		ContextMoqParam: contextMoqParam,
-		S:               s,
 		PipelinesParams: pipelinesParams,
 	}
 	mock.lockPipelines.Lock()
@@ -5651,12 +6550,12 @@ func (mock *ClientMock) Pipelines(contextMoqParam context.Context, s string, pip
 	mock.lockPipelines.Unlock()
 	if mock.PipelinesFunc == nil {
 		var (
-			pipelinesOut cloud.Pipelines
+			pipelinesOut types.Pipelines
 			errOut       error
 		)
 		return pipelinesOut, errOut
 	}
-	return mock.PipelinesFunc(contextMoqParam, s, pipelinesParams)
+	return mock.PipelinesFunc(contextMoqParam, pipelinesParams)
 }
 
 // PipelinesCalls gets all the calls that were made to Pipelines.
@@ -5665,13 +6564,11 @@ func (mock *ClientMock) Pipelines(contextMoqParam context.Context, s string, pip
 //	len(mockedClient.PipelinesCalls())
 func (mock *ClientMock) PipelinesCalls() []struct {
 	ContextMoqParam context.Context
-	S               string
-	PipelinesParams cloud.PipelinesParams
+	PipelinesParams types.PipelinesParams
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
-		S               string
-		PipelinesParams cloud.PipelinesParams
+		PipelinesParams types.PipelinesParams
 	}
 	mock.lockPipelines.RLock()
 	calls = mock.calls.Pipelines
@@ -5680,11 +6577,11 @@ func (mock *ClientMock) PipelinesCalls() []struct {
 }
 
 // PipelinesMetricsV1 calls PipelinesMetricsV1Func.
-func (mock *ClientMock) PipelinesMetricsV1(contextMoqParam context.Context, s string, pipelinesMetricsParams cloud.PipelinesMetricsParams) (cloud.PipelinesMetrics, error) {
+func (mock *ClientMock) PipelinesMetricsV1(contextMoqParam context.Context, s string, pipelinesMetricsParams types.PipelinesMetricsParams) (types.PipelinesMetrics, error) {
 	callInfo := struct {
 		ContextMoqParam        context.Context
 		S                      string
-		PipelinesMetricsParams cloud.PipelinesMetricsParams
+		PipelinesMetricsParams types.PipelinesMetricsParams
 	}{
 		ContextMoqParam:        contextMoqParam,
 		S:                      s,
@@ -5695,7 +6592,7 @@ func (mock *ClientMock) PipelinesMetricsV1(contextMoqParam context.Context, s st
 	mock.lockPipelinesMetricsV1.Unlock()
 	if mock.PipelinesMetricsV1Func == nil {
 		var (
-			pipelinesMetricsOut cloud.PipelinesMetrics
+			pipelinesMetricsOut types.PipelinesMetrics
 			errOut              error
 		)
 		return pipelinesMetricsOut, errOut
@@ -5710,12 +6607,12 @@ func (mock *ClientMock) PipelinesMetricsV1(contextMoqParam context.Context, s st
 func (mock *ClientMock) PipelinesMetricsV1Calls() []struct {
 	ContextMoqParam        context.Context
 	S                      string
-	PipelinesMetricsParams cloud.PipelinesMetricsParams
+	PipelinesMetricsParams types.PipelinesMetricsParams
 } {
 	var calls []struct {
 		ContextMoqParam        context.Context
 		S                      string
-		PipelinesMetricsParams cloud.PipelinesMetricsParams
+		PipelinesMetricsParams types.PipelinesMetricsParams
 	}
 	mock.lockPipelinesMetricsV1.RLock()
 	calls = mock.calls.PipelinesMetricsV1
@@ -5724,10 +6621,10 @@ func (mock *ClientMock) PipelinesMetricsV1Calls() []struct {
 }
 
 // PreviewProcessingRule calls PreviewProcessingRuleFunc.
-func (mock *ClientMock) PreviewProcessingRule(contextMoqParam context.Context, previewProcessingRule cloud.PreviewProcessingRule) ([]cloud.FluentBitLog, error) {
+func (mock *ClientMock) PreviewProcessingRule(contextMoqParam context.Context, previewProcessingRule types.PreviewProcessingRule) ([]types.FluentBitLog, error) {
 	callInfo := struct {
 		ContextMoqParam       context.Context
-		PreviewProcessingRule cloud.PreviewProcessingRule
+		PreviewProcessingRule types.PreviewProcessingRule
 	}{
 		ContextMoqParam:       contextMoqParam,
 		PreviewProcessingRule: previewProcessingRule,
@@ -5737,7 +6634,7 @@ func (mock *ClientMock) PreviewProcessingRule(contextMoqParam context.Context, p
 	mock.lockPreviewProcessingRule.Unlock()
 	if mock.PreviewProcessingRuleFunc == nil {
 		var (
-			fluentBitLogsOut []cloud.FluentBitLog
+			fluentBitLogsOut []types.FluentBitLog
 			errOut           error
 		)
 		return fluentBitLogsOut, errOut
@@ -5751,11 +6648,11 @@ func (mock *ClientMock) PreviewProcessingRule(contextMoqParam context.Context, p
 //	len(mockedClient.PreviewProcessingRuleCalls())
 func (mock *ClientMock) PreviewProcessingRuleCalls() []struct {
 	ContextMoqParam       context.Context
-	PreviewProcessingRule cloud.PreviewProcessingRule
+	PreviewProcessingRule types.PreviewProcessingRule
 } {
 	var calls []struct {
 		ContextMoqParam       context.Context
-		PreviewProcessingRule cloud.PreviewProcessingRule
+		PreviewProcessingRule types.PreviewProcessingRule
 	}
 	mock.lockPreviewProcessingRule.RLock()
 	calls = mock.calls.PreviewProcessingRule
@@ -5764,7 +6661,7 @@ func (mock *ClientMock) PreviewProcessingRuleCalls() []struct {
 }
 
 // ProcessingRule calls ProcessingRuleFunc.
-func (mock *ClientMock) ProcessingRule(contextMoqParam context.Context, s string) (cloud.ProcessingRule, error) {
+func (mock *ClientMock) ProcessingRule(contextMoqParam context.Context, s string) (types.ProcessingRule, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
@@ -5777,7 +6674,7 @@ func (mock *ClientMock) ProcessingRule(contextMoqParam context.Context, s string
 	mock.lockProcessingRule.Unlock()
 	if mock.ProcessingRuleFunc == nil {
 		var (
-			processingRuleOut cloud.ProcessingRule
+			processingRuleOut types.ProcessingRule
 			errOut            error
 		)
 		return processingRuleOut, errOut
@@ -5803,11 +6700,51 @@ func (mock *ClientMock) ProcessingRuleCalls() []struct {
 	return calls
 }
 
+// ProcessingRuleTemplates calls ProcessingRuleTemplatesFunc.
+func (mock *ClientMock) ProcessingRuleTemplates(contextMoqParam context.Context, listProcessingRuleTemplates types.ListProcessingRuleTemplates) (types.ProcessingRuleTemplates, error) {
+	callInfo := struct {
+		ContextMoqParam             context.Context
+		ListProcessingRuleTemplates types.ListProcessingRuleTemplates
+	}{
+		ContextMoqParam:             contextMoqParam,
+		ListProcessingRuleTemplates: listProcessingRuleTemplates,
+	}
+	mock.lockProcessingRuleTemplates.Lock()
+	mock.calls.ProcessingRuleTemplates = append(mock.calls.ProcessingRuleTemplates, callInfo)
+	mock.lockProcessingRuleTemplates.Unlock()
+	if mock.ProcessingRuleTemplatesFunc == nil {
+		var (
+			processingRuleTemplatesOut types.ProcessingRuleTemplates
+			errOut                     error
+		)
+		return processingRuleTemplatesOut, errOut
+	}
+	return mock.ProcessingRuleTemplatesFunc(contextMoqParam, listProcessingRuleTemplates)
+}
+
+// ProcessingRuleTemplatesCalls gets all the calls that were made to ProcessingRuleTemplates.
+// Check the length with:
+//
+//	len(mockedClient.ProcessingRuleTemplatesCalls())
+func (mock *ClientMock) ProcessingRuleTemplatesCalls() []struct {
+	ContextMoqParam             context.Context
+	ListProcessingRuleTemplates types.ListProcessingRuleTemplates
+} {
+	var calls []struct {
+		ContextMoqParam             context.Context
+		ListProcessingRuleTemplates types.ListProcessingRuleTemplates
+	}
+	mock.lockProcessingRuleTemplates.RLock()
+	calls = mock.calls.ProcessingRuleTemplates
+	mock.lockProcessingRuleTemplates.RUnlock()
+	return calls
+}
+
 // ProcessingRules calls ProcessingRulesFunc.
-func (mock *ClientMock) ProcessingRules(contextMoqParam context.Context, processingRulesParams cloud.ProcessingRulesParams) (cloud.ProcessingRules, error) {
+func (mock *ClientMock) ProcessingRules(contextMoqParam context.Context, processingRulesParams types.ProcessingRulesParams) (types.ProcessingRules, error) {
 	callInfo := struct {
 		ContextMoqParam       context.Context
-		ProcessingRulesParams cloud.ProcessingRulesParams
+		ProcessingRulesParams types.ProcessingRulesParams
 	}{
 		ContextMoqParam:       contextMoqParam,
 		ProcessingRulesParams: processingRulesParams,
@@ -5817,7 +6754,7 @@ func (mock *ClientMock) ProcessingRules(contextMoqParam context.Context, process
 	mock.lockProcessingRules.Unlock()
 	if mock.ProcessingRulesFunc == nil {
 		var (
-			processingRulesOut cloud.ProcessingRules
+			processingRulesOut types.ProcessingRules
 			errOut             error
 		)
 		return processingRulesOut, errOut
@@ -5831,11 +6768,11 @@ func (mock *ClientMock) ProcessingRules(contextMoqParam context.Context, process
 //	len(mockedClient.ProcessingRulesCalls())
 func (mock *ClientMock) ProcessingRulesCalls() []struct {
 	ContextMoqParam       context.Context
-	ProcessingRulesParams cloud.ProcessingRulesParams
+	ProcessingRulesParams types.ProcessingRulesParams
 } {
 	var calls []struct {
 		ContextMoqParam       context.Context
-		ProcessingRulesParams cloud.ProcessingRulesParams
+		ProcessingRulesParams types.ProcessingRulesParams
 	}
 	mock.lockProcessingRules.RLock()
 	calls = mock.calls.ProcessingRules
@@ -5844,7 +6781,7 @@ func (mock *ClientMock) ProcessingRulesCalls() []struct {
 }
 
 // Project calls ProjectFunc.
-func (mock *ClientMock) Project(contextMoqParam context.Context, s string) (cloud.Project, error) {
+func (mock *ClientMock) Project(contextMoqParam context.Context, s string) (types.Project, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
@@ -5857,7 +6794,7 @@ func (mock *ClientMock) Project(contextMoqParam context.Context, s string) (clou
 	mock.lockProject.Unlock()
 	if mock.ProjectFunc == nil {
 		var (
-			projectOut cloud.Project
+			projectOut types.Project
 			errOut     error
 		)
 		return projectOut, errOut
@@ -5884,11 +6821,11 @@ func (mock *ClientMock) ProjectCalls() []struct {
 }
 
 // ProjectMetricsV1 calls ProjectMetricsV1Func.
-func (mock *ClientMock) ProjectMetricsV1(contextMoqParam context.Context, s string, metricsParams cloud.MetricsParams) (cloud.ProjectMetrics, error) {
+func (mock *ClientMock) ProjectMetricsV1(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.ProjectMetrics, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   cloud.MetricsParams
+		MetricsParams   types.MetricsParams
 	}{
 		ContextMoqParam: contextMoqParam,
 		S:               s,
@@ -5899,7 +6836,7 @@ func (mock *ClientMock) ProjectMetricsV1(contextMoqParam context.Context, s stri
 	mock.lockProjectMetricsV1.Unlock()
 	if mock.ProjectMetricsV1Func == nil {
 		var (
-			projectMetricsOut cloud.ProjectMetrics
+			projectMetricsOut types.ProjectMetrics
 			errOut            error
 		)
 		return projectMetricsOut, errOut
@@ -5914,12 +6851,12 @@ func (mock *ClientMock) ProjectMetricsV1(contextMoqParam context.Context, s stri
 func (mock *ClientMock) ProjectMetricsV1Calls() []struct {
 	ContextMoqParam context.Context
 	S               string
-	MetricsParams   cloud.MetricsParams
+	MetricsParams   types.MetricsParams
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   cloud.MetricsParams
+		MetricsParams   types.MetricsParams
 	}
 	mock.lockProjectMetricsV1.RLock()
 	calls = mock.calls.ProjectMetricsV1
@@ -5927,55 +6864,11 @@ func (mock *ClientMock) ProjectMetricsV1Calls() []struct {
 	return calls
 }
 
-// ProjectPipelines calls ProjectPipelinesFunc.
-func (mock *ClientMock) ProjectPipelines(contextMoqParam context.Context, s string, pipelinesParams cloud.PipelinesParams) (cloud.Pipelines, error) {
-	callInfo := struct {
-		ContextMoqParam context.Context
-		S               string
-		PipelinesParams cloud.PipelinesParams
-	}{
-		ContextMoqParam: contextMoqParam,
-		S:               s,
-		PipelinesParams: pipelinesParams,
-	}
-	mock.lockProjectPipelines.Lock()
-	mock.calls.ProjectPipelines = append(mock.calls.ProjectPipelines, callInfo)
-	mock.lockProjectPipelines.Unlock()
-	if mock.ProjectPipelinesFunc == nil {
-		var (
-			pipelinesOut cloud.Pipelines
-			errOut       error
-		)
-		return pipelinesOut, errOut
-	}
-	return mock.ProjectPipelinesFunc(contextMoqParam, s, pipelinesParams)
-}
-
-// ProjectPipelinesCalls gets all the calls that were made to ProjectPipelines.
-// Check the length with:
-//
-//	len(mockedClient.ProjectPipelinesCalls())
-func (mock *ClientMock) ProjectPipelinesCalls() []struct {
-	ContextMoqParam context.Context
-	S               string
-	PipelinesParams cloud.PipelinesParams
-} {
-	var calls []struct {
-		ContextMoqParam context.Context
-		S               string
-		PipelinesParams cloud.PipelinesParams
-	}
-	mock.lockProjectPipelines.RLock()
-	calls = mock.calls.ProjectPipelines
-	mock.lockProjectPipelines.RUnlock()
-	return calls
-}
-
 // Projects calls ProjectsFunc.
-func (mock *ClientMock) Projects(contextMoqParam context.Context, projectsParams cloud.ProjectsParams) (cloud.Projects, error) {
+func (mock *ClientMock) Projects(contextMoqParam context.Context, projectsParams types.ProjectsParams) (types.Projects, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
-		ProjectsParams  cloud.ProjectsParams
+		ProjectsParams  types.ProjectsParams
 	}{
 		ContextMoqParam: contextMoqParam,
 		ProjectsParams:  projectsParams,
@@ -5985,7 +6878,7 @@ func (mock *ClientMock) Projects(contextMoqParam context.Context, projectsParams
 	mock.lockProjects.Unlock()
 	if mock.ProjectsFunc == nil {
 		var (
-			projectsOut cloud.Projects
+			projectsOut types.Projects
 			errOut      error
 		)
 		return projectsOut, errOut
@@ -5999,11 +6892,11 @@ func (mock *ClientMock) Projects(contextMoqParam context.Context, projectsParams
 //	len(mockedClient.ProjectsCalls())
 func (mock *ClientMock) ProjectsCalls() []struct {
 	ContextMoqParam context.Context
-	ProjectsParams  cloud.ProjectsParams
+	ProjectsParams  types.ProjectsParams
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
-		ProjectsParams  cloud.ProjectsParams
+		ProjectsParams  types.ProjectsParams
 	}
 	mock.lockProjects.RLock()
 	calls = mock.calls.Projects
@@ -6011,11 +6904,50 @@ func (mock *ClientMock) ProjectsCalls() []struct {
 	return calls
 }
 
+// PushAWSMarketplaceSubscriptionNotification calls PushAWSMarketplaceSubscriptionNotificationFunc.
+func (mock *ClientMock) PushAWSMarketplaceSubscriptionNotification(contextMoqParam context.Context, aWSMarketplaceSubscriptionNotification types.AWSMarketplaceSubscriptionNotification) error {
+	callInfo := struct {
+		ContextMoqParam                        context.Context
+		AWSMarketplaceSubscriptionNotification types.AWSMarketplaceSubscriptionNotification
+	}{
+		ContextMoqParam:                        contextMoqParam,
+		AWSMarketplaceSubscriptionNotification: aWSMarketplaceSubscriptionNotification,
+	}
+	mock.lockPushAWSMarketplaceSubscriptionNotification.Lock()
+	mock.calls.PushAWSMarketplaceSubscriptionNotification = append(mock.calls.PushAWSMarketplaceSubscriptionNotification, callInfo)
+	mock.lockPushAWSMarketplaceSubscriptionNotification.Unlock()
+	if mock.PushAWSMarketplaceSubscriptionNotificationFunc == nil {
+		var (
+			errOut error
+		)
+		return errOut
+	}
+	return mock.PushAWSMarketplaceSubscriptionNotificationFunc(contextMoqParam, aWSMarketplaceSubscriptionNotification)
+}
+
+// PushAWSMarketplaceSubscriptionNotificationCalls gets all the calls that were made to PushAWSMarketplaceSubscriptionNotification.
+// Check the length with:
+//
+//	len(mockedClient.PushAWSMarketplaceSubscriptionNotificationCalls())
+func (mock *ClientMock) PushAWSMarketplaceSubscriptionNotificationCalls() []struct {
+	ContextMoqParam                        context.Context
+	AWSMarketplaceSubscriptionNotification types.AWSMarketplaceSubscriptionNotification
+} {
+	var calls []struct {
+		ContextMoqParam                        context.Context
+		AWSMarketplaceSubscriptionNotification types.AWSMarketplaceSubscriptionNotification
+	}
+	mock.lockPushAWSMarketplaceSubscriptionNotification.RLock()
+	calls = mock.calls.PushAWSMarketplaceSubscriptionNotification
+	mock.lockPushAWSMarketplaceSubscriptionNotification.RUnlock()
+	return calls
+}
+
 // RegisterAgent calls RegisterAgentFunc.
-func (mock *ClientMock) RegisterAgent(contextMoqParam context.Context, registerAgent cloud.RegisterAgent) (cloud.RegisteredAgent, error) {
+func (mock *ClientMock) RegisterAgent(contextMoqParam context.Context, registerAgent types.RegisterAgent) (types.RegisteredAgent, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
-		RegisterAgent   cloud.RegisterAgent
+		RegisterAgent   types.RegisterAgent
 	}{
 		ContextMoqParam: contextMoqParam,
 		RegisterAgent:   registerAgent,
@@ -6025,7 +6957,7 @@ func (mock *ClientMock) RegisterAgent(contextMoqParam context.Context, registerA
 	mock.lockRegisterAgent.Unlock()
 	if mock.RegisterAgentFunc == nil {
 		var (
-			registeredAgentOut cloud.RegisteredAgent
+			registeredAgentOut types.RegisteredAgent
 			errOut             error
 		)
 		return registeredAgentOut, errOut
@@ -6039,11 +6971,11 @@ func (mock *ClientMock) RegisterAgent(contextMoqParam context.Context, registerA
 //	len(mockedClient.RegisterAgentCalls())
 func (mock *ClientMock) RegisterAgentCalls() []struct {
 	ContextMoqParam context.Context
-	RegisterAgent   cloud.RegisterAgent
+	RegisterAgent   types.RegisterAgent
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
-		RegisterAgent   cloud.RegisterAgent
+		RegisterAgent   types.RegisterAgent
 	}
 	mock.lockRegisterAgent.RLock()
 	calls = mock.calls.RegisterAgent
@@ -6052,7 +6984,7 @@ func (mock *ClientMock) RegisterAgentCalls() []struct {
 }
 
 // ResourceProfile calls ResourceProfileFunc.
-func (mock *ClientMock) ResourceProfile(contextMoqParam context.Context, s string) (cloud.ResourceProfile, error) {
+func (mock *ClientMock) ResourceProfile(contextMoqParam context.Context, s string) (types.ResourceProfile, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
@@ -6065,7 +6997,7 @@ func (mock *ClientMock) ResourceProfile(contextMoqParam context.Context, s strin
 	mock.lockResourceProfile.Unlock()
 	if mock.ResourceProfileFunc == nil {
 		var (
-			resourceProfileOut cloud.ResourceProfile
+			resourceProfileOut types.ResourceProfile
 			errOut             error
 		)
 		return resourceProfileOut, errOut
@@ -6092,11 +7024,11 @@ func (mock *ClientMock) ResourceProfileCalls() []struct {
 }
 
 // ResourceProfiles calls ResourceProfilesFunc.
-func (mock *ClientMock) ResourceProfiles(contextMoqParam context.Context, s string, resourceProfilesParams cloud.ResourceProfilesParams) (cloud.ResourceProfiles, error) {
+func (mock *ClientMock) ResourceProfiles(contextMoqParam context.Context, s string, resourceProfilesParams types.ResourceProfilesParams) (types.ResourceProfiles, error) {
 	callInfo := struct {
 		ContextMoqParam        context.Context
 		S                      string
-		ResourceProfilesParams cloud.ResourceProfilesParams
+		ResourceProfilesParams types.ResourceProfilesParams
 	}{
 		ContextMoqParam:        contextMoqParam,
 		S:                      s,
@@ -6107,7 +7039,7 @@ func (mock *ClientMock) ResourceProfiles(contextMoqParam context.Context, s stri
 	mock.lockResourceProfiles.Unlock()
 	if mock.ResourceProfilesFunc == nil {
 		var (
-			resourceProfilesOut cloud.ResourceProfiles
+			resourceProfilesOut types.ResourceProfiles
 			errOut              error
 		)
 		return resourceProfilesOut, errOut
@@ -6122,16 +7054,56 @@ func (mock *ClientMock) ResourceProfiles(contextMoqParam context.Context, s stri
 func (mock *ClientMock) ResourceProfilesCalls() []struct {
 	ContextMoqParam        context.Context
 	S                      string
-	ResourceProfilesParams cloud.ResourceProfilesParams
+	ResourceProfilesParams types.ResourceProfilesParams
 } {
 	var calls []struct {
 		ContextMoqParam        context.Context
 		S                      string
-		ResourceProfilesParams cloud.ResourceProfilesParams
+		ResourceProfilesParams types.ResourceProfilesParams
 	}
 	mock.lockResourceProfiles.RLock()
 	calls = mock.calls.ResourceProfiles
 	mock.lockResourceProfiles.RUnlock()
+	return calls
+}
+
+// Search calls SearchFunc.
+func (mock *ClientMock) Search(contextMoqParam context.Context, searchQuery types.SearchQuery) ([]types.SearchResult, error) {
+	callInfo := struct {
+		ContextMoqParam context.Context
+		SearchQuery     types.SearchQuery
+	}{
+		ContextMoqParam: contextMoqParam,
+		SearchQuery:     searchQuery,
+	}
+	mock.lockSearch.Lock()
+	mock.calls.Search = append(mock.calls.Search, callInfo)
+	mock.lockSearch.Unlock()
+	if mock.SearchFunc == nil {
+		var (
+			searchResultsOut []types.SearchResult
+			errOut           error
+		)
+		return searchResultsOut, errOut
+	}
+	return mock.SearchFunc(contextMoqParam, searchQuery)
+}
+
+// SearchCalls gets all the calls that were made to Search.
+// Check the length with:
+//
+//	len(mockedClient.SearchCalls())
+func (mock *ClientMock) SearchCalls() []struct {
+	ContextMoqParam context.Context
+	SearchQuery     types.SearchQuery
+} {
+	var calls []struct {
+		ContextMoqParam context.Context
+		SearchQuery     types.SearchQuery
+	}
+	mock.lockSearch.RLock()
+	calls = mock.calls.Search
+	mock.lockSearch.RUnlock()
 	return calls
 }
 
@@ -6299,7 +7271,7 @@ func (mock *ClientMock) SetUserAgentCalls() []struct {
 }
 
 // TerminateActiveTraceSession calls TerminateActiveTraceSessionFunc.
-func (mock *ClientMock) TerminateActiveTraceSession(contextMoqParam context.Context, s string) (cloud.TerminatedTraceSession, error) {
+func (mock *ClientMock) TerminateActiveTraceSession(contextMoqParam context.Context, s string) (types.TerminatedTraceSession, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
@@ -6312,7 +7284,7 @@ func (mock *ClientMock) TerminateActiveTraceSession(contextMoqParam context.Cont
 	mock.lockTerminateActiveTraceSession.Unlock()
 	if mock.TerminateActiveTraceSessionFunc == nil {
 		var (
-			terminatedTraceSessionOut cloud.TerminatedTraceSession
+			terminatedTraceSessionOut types.TerminatedTraceSession
 			errOut                    error
 		)
 		return terminatedTraceSessionOut, errOut
@@ -6339,7 +7311,7 @@ func (mock *ClientMock) TerminateActiveTraceSessionCalls() []struct {
 }
 
 // Token calls TokenFunc.
-func (mock *ClientMock) Token(contextMoqParam context.Context, s string) (cloud.Token, error) {
+func (mock *ClientMock) Token(contextMoqParam context.Context, s string) (types.Token, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
@@ -6352,7 +7324,7 @@ func (mock *ClientMock) Token(contextMoqParam context.Context, s string) (cloud.
 	mock.lockToken.Unlock()
 	if mock.TokenFunc == nil {
 		var (
-			tokenOut cloud.Token
+			tokenOut types.Token
 			errOut   error
 		)
 		return tokenOut, errOut
@@ -6379,11 +7351,11 @@ func (mock *ClientMock) TokenCalls() []struct {
 }
 
 // Tokens calls TokensFunc.
-func (mock *ClientMock) Tokens(contextMoqParam context.Context, s string, tokensParams cloud.TokensParams) (cloud.Tokens, error) {
+func (mock *ClientMock) Tokens(contextMoqParam context.Context, s string, tokensParams types.TokensParams) (types.Tokens, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
-		TokensParams    cloud.TokensParams
+		TokensParams    types.TokensParams
 	}{
 		ContextMoqParam: contextMoqParam,
 		S:               s,
@@ -6394,7 +7366,7 @@ func (mock *ClientMock) Tokens(contextMoqParam context.Context, s string, tokens
 	mock.lockTokens.Unlock()
 	if mock.TokensFunc == nil {
 		var (
-			tokensOut cloud.Tokens
+			tokensOut types.Tokens
 			errOut    error
 		)
 		return tokensOut, errOut
@@ -6409,12 +7381,12 @@ func (mock *ClientMock) Tokens(contextMoqParam context.Context, s string, tokens
 func (mock *ClientMock) TokensCalls() []struct {
 	ContextMoqParam context.Context
 	S               string
-	TokensParams    cloud.TokensParams
+	TokensParams    types.TokensParams
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
 		S               string
-		TokensParams    cloud.TokensParams
+		TokensParams    types.TokensParams
 	}
 	mock.lockTokens.RLock()
 	calls = mock.calls.Tokens
@@ -6423,11 +7395,11 @@ func (mock *ClientMock) TokensCalls() []struct {
 }
 
 // TraceRecords calls TraceRecordsFunc.
-func (mock *ClientMock) TraceRecords(contextMoqParam context.Context, s string, traceRecordsParams cloud.TraceRecordsParams) (cloud.TraceRecords, error) {
+func (mock *ClientMock) TraceRecords(contextMoqParam context.Context, s string, traceRecordsParams types.TraceRecordsParams) (types.TraceRecords, error) {
 	callInfo := struct {
 		ContextMoqParam    context.Context
 		S                  string
-		TraceRecordsParams cloud.TraceRecordsParams
+		TraceRecordsParams types.TraceRecordsParams
 	}{
 		ContextMoqParam:    contextMoqParam,
 		S:                  s,
@@ -6438,7 +7410,7 @@ func (mock *ClientMock) TraceRecords(contextMoqParam context.Context, s string, 
 	mock.lockTraceRecords.Unlock()
 	if mock.TraceRecordsFunc == nil {
 		var (
-			traceRecordsOut cloud.TraceRecords
+			traceRecordsOut types.TraceRecords
 			errOut          error
 		)
 		return traceRecordsOut, errOut
@@ -6453,12 +7425,12 @@ func (mock *ClientMock) TraceRecords(contextMoqParam context.Context, s string, 
 func (mock *ClientMock) TraceRecordsCalls() []struct {
 	ContextMoqParam    context.Context
 	S                  string
-	TraceRecordsParams cloud.TraceRecordsParams
+	TraceRecordsParams types.TraceRecordsParams
 } {
 	var calls []struct {
 		ContextMoqParam    context.Context
 		S                  string
-		TraceRecordsParams cloud.TraceRecordsParams
+		TraceRecordsParams types.TraceRecordsParams
 	}
 	mock.lockTraceRecords.RLock()
 	calls = mock.calls.TraceRecords
@@ -6467,7 +7439,7 @@ func (mock *ClientMock) TraceRecordsCalls() []struct {
 }
 
 // TraceSession calls TraceSessionFunc.
-func (mock *ClientMock) TraceSession(contextMoqParam context.Context, s string) (cloud.TraceSession, error) {
+func (mock *ClientMock) TraceSession(contextMoqParam context.Context, s string) (types.TraceSession, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
@@ -6480,7 +7452,7 @@ func (mock *ClientMock) TraceSession(contextMoqParam context.Context, s string) 
 	mock.lockTraceSession.Unlock()
 	if mock.TraceSessionFunc == nil {
 		var (
-			traceSessionOut cloud.TraceSession
+			traceSessionOut types.TraceSession
 			errOut          error
 		)
 		return traceSessionOut, errOut
@@ -6507,11 +7479,11 @@ func (mock *ClientMock) TraceSessionCalls() []struct {
 }
 
 // TraceSessions calls TraceSessionsFunc.
-func (mock *ClientMock) TraceSessions(contextMoqParam context.Context, s string, traceSessionsParams cloud.TraceSessionsParams) (cloud.TraceSessions, error) {
+func (mock *ClientMock) TraceSessions(contextMoqParam context.Context, s string, traceSessionsParams types.TraceSessionsParams) (types.TraceSessions, error) {
 	callInfo := struct {
 		ContextMoqParam     context.Context
 		S                   string
-		TraceSessionsParams cloud.TraceSessionsParams
+		TraceSessionsParams types.TraceSessionsParams
 	}{
 		ContextMoqParam:     contextMoqParam,
 		S:                   s,
@@ -6522,7 +7494,7 @@ func (mock *ClientMock) TraceSessions(contextMoqParam context.Context, s string,
 	mock.lockTraceSessions.Unlock()
 	if mock.TraceSessionsFunc == nil {
 		var (
-			traceSessionsOut cloud.TraceSessions
+			traceSessionsOut types.TraceSessions
 			errOut           error
 		)
 		return traceSessionsOut, errOut
@@ -6537,12 +7509,12 @@ func (mock *ClientMock) TraceSessions(contextMoqParam context.Context, s string,
 func (mock *ClientMock) TraceSessionsCalls() []struct {
 	ContextMoqParam     context.Context
 	S                   string
-	TraceSessionsParams cloud.TraceSessionsParams
+	TraceSessionsParams types.TraceSessionsParams
 } {
 	var calls []struct {
 		ContextMoqParam     context.Context
 		S                   string
-		TraceSessionsParams cloud.TraceSessionsParams
+		TraceSessionsParams types.TraceSessionsParams
 	}
 	mock.lockTraceSessions.RLock()
 	calls = mock.calls.TraceSessions
@@ -6551,11 +7523,11 @@ func (mock *ClientMock) TraceSessionsCalls() []struct {
 }
 
 // UpdateAgent calls UpdateAgentFunc.
-func (mock *ClientMock) UpdateAgent(contextMoqParam context.Context, s string, updateAgent cloud.UpdateAgent) error {
+func (mock *ClientMock) UpdateAgent(contextMoqParam context.Context, s string, updateAgent types.UpdateAgent) error {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
-		UpdateAgent     cloud.UpdateAgent
+		UpdateAgent     types.UpdateAgent
 	}{
 		ContextMoqParam: contextMoqParam,
 		S:               s,
@@ -6580,12 +7552,12 @@ func (mock *ClientMock) UpdateAgent(contextMoqParam context.Context, s string, u
 func (mock *ClientMock) UpdateAgentCalls() []struct {
 	ContextMoqParam context.Context
 	S               string
-	UpdateAgent     cloud.UpdateAgent
+	UpdateAgent     types.UpdateAgent
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
 		S               string
-		UpdateAgent     cloud.UpdateAgent
+		UpdateAgent     types.UpdateAgent
 	}
 	mock.lockUpdateAgent.RLock()
 	calls = mock.calls.UpdateAgent
@@ -6594,11 +7566,11 @@ func (mock *ClientMock) UpdateAgentCalls() []struct {
 }
 
 // UpdateClusterObject calls UpdateClusterObjectFunc.
-func (mock *ClientMock) UpdateClusterObject(contextMoqParam context.Context, s string, updateClusterObject cloud.UpdateClusterObject) error {
+func (mock *ClientMock) UpdateClusterObject(contextMoqParam context.Context, s string, updateClusterObject types.UpdateClusterObject) error {
 	callInfo := struct {
 		ContextMoqParam     context.Context
 		S                   string
-		UpdateClusterObject cloud.UpdateClusterObject
+		UpdateClusterObject types.UpdateClusterObject
 	}{
 		ContextMoqParam:     contextMoqParam,
 		S:                   s,
@@ -6623,12 +7595,12 @@ func (mock *ClientMock) UpdateClusterObject(contextMoqParam context.Context, s s
 func (mock *ClientMock) UpdateClusterObjectCalls() []struct {
 	ContextMoqParam     context.Context
 	S                   string
-	UpdateClusterObject cloud.UpdateClusterObject
+	UpdateClusterObject types.UpdateClusterObject
 } {
 	var calls []struct {
 		ContextMoqParam     context.Context
 		S                   string
-		UpdateClusterObject cloud.UpdateClusterObject
+		UpdateClusterObject types.UpdateClusterObject
 	}
 	mock.lockUpdateClusterObject.RLock()
 	calls = mock.calls.UpdateClusterObject
@@ -6636,12 +7608,52 @@ func (mock *ClientMock) UpdateClusterObjectCalls() []struct {
 	return calls
 }
 
+// UpdateClusterObjectRegex calls UpdateClusterObjectRegexFunc.
+func (mock *ClientMock) UpdateClusterObjectRegex(contextMoqParam context.Context, updateClusterObjectRegex types.UpdateClusterObjectRegex) (types.Updated, error) {
+	callInfo := struct {
+		ContextMoqParam          context.Context
+		UpdateClusterObjectRegex types.UpdateClusterObjectRegex
+	}{
+		ContextMoqParam:          contextMoqParam,
+		UpdateClusterObjectRegex: updateClusterObjectRegex,
+	}
+	mock.lockUpdateClusterObjectRegex.Lock()
+	mock.calls.UpdateClusterObjectRegex = append(mock.calls.UpdateClusterObjectRegex, callInfo)
+	mock.lockUpdateClusterObjectRegex.Unlock()
+	if mock.UpdateClusterObjectRegexFunc == nil {
+		var (
+			updatedOut types.Updated
+			errOut     error
+		)
+		return updatedOut, errOut
+	}
+	return mock.UpdateClusterObjectRegexFunc(contextMoqParam, updateClusterObjectRegex)
+}
+
+// UpdateClusterObjectRegexCalls gets all the calls that were made to UpdateClusterObjectRegex.
+// Check the length with:
+//
+//	len(mockedClient.UpdateClusterObjectRegexCalls())
+func (mock *ClientMock) UpdateClusterObjectRegexCalls() []struct {
+	ContextMoqParam          context.Context
+	UpdateClusterObjectRegex types.UpdateClusterObjectRegex
+} {
+	var calls []struct {
+		ContextMoqParam          context.Context
+		UpdateClusterObjectRegex types.UpdateClusterObjectRegex
+	}
+	mock.lockUpdateClusterObjectRegex.RLock()
+	calls = mock.calls.UpdateClusterObjectRegex
+	mock.lockUpdateClusterObjectRegex.RUnlock()
+	return calls
+}
+
 // UpdateConfigSection calls UpdateConfigSectionFunc.
-func (mock *ClientMock) UpdateConfigSection(contextMoqParam context.Context, s string, updateConfigSection cloud.UpdateConfigSection) (cloud.UpdatedConfigSection, error) {
+func (mock *ClientMock) UpdateConfigSection(contextMoqParam context.Context, s string, updateConfigSection types.UpdateConfigSection) (types.Updated, error) {
 	callInfo := struct {
 		ContextMoqParam     context.Context
 		S                   string
-		UpdateConfigSection cloud.UpdateConfigSection
+		UpdateConfigSection types.UpdateConfigSection
 	}{
 		ContextMoqParam:     contextMoqParam,
 		S:                   s,
@@ -6652,10 +7664,10 @@ func (mock *ClientMock) UpdateConfigSection(contextMoqParam context.Context, s s
 	mock.lockUpdateConfigSection.Unlock()
 	if mock.UpdateConfigSectionFunc == nil {
 		var (
-			updatedConfigSectionOut cloud.UpdatedConfigSection
-			errOut                  error
+			updatedOut types.Updated
+			errOut     error
 		)
-		return updatedConfigSectionOut, errOut
+		return updatedOut, errOut
 	}
 	return mock.UpdateConfigSectionFunc(contextMoqParam, s, updateConfigSection)
 }
@@ -6667,12 +7679,12 @@ func (mock *ClientMock) UpdateConfigSection(contextMoqParam context.Context, s s
 func (mock *ClientMock) UpdateConfigSectionCalls() []struct {
 	ContextMoqParam     context.Context
 	S                   string
-	UpdateConfigSection cloud.UpdateConfigSection
+	UpdateConfigSection types.UpdateConfigSection
 } {
 	var calls []struct {
 		ContextMoqParam     context.Context
 		S                   string
-		UpdateConfigSection cloud.UpdateConfigSection
+		UpdateConfigSection types.UpdateConfigSection
 	}
 	mock.lockUpdateConfigSection.RLock()
 	calls = mock.calls.UpdateConfigSection
@@ -6724,11 +7736,11 @@ func (mock *ClientMock) UpdateConfigSectionSetCalls() []struct {
 }
 
 // UpdateCoreInstance calls UpdateCoreInstanceFunc.
-func (mock *ClientMock) UpdateCoreInstance(contextMoqParam context.Context, s string, updateCoreInstance cloud.UpdateCoreInstance) error {
+func (mock *ClientMock) UpdateCoreInstance(contextMoqParam context.Context, s string, updateCoreInstance types.UpdateCoreInstance) error {
 	callInfo := struct {
 		ContextMoqParam    context.Context
 		S                  string
-		UpdateCoreInstance cloud.UpdateCoreInstance
+		UpdateCoreInstance types.UpdateCoreInstance
 	}{
 		ContextMoqParam:    contextMoqParam,
 		S:                  s,
@@ -6753,12 +7765,12 @@ func (mock *ClientMock) UpdateCoreInstance(contextMoqParam context.Context, s st
 func (mock *ClientMock) UpdateCoreInstanceCalls() []struct {
 	ContextMoqParam    context.Context
 	S                  string
-	UpdateCoreInstance cloud.UpdateCoreInstance
+	UpdateCoreInstance types.UpdateCoreInstance
 } {
 	var calls []struct {
 		ContextMoqParam    context.Context
 		S                  string
-		UpdateCoreInstance cloud.UpdateCoreInstance
+		UpdateCoreInstance types.UpdateCoreInstance
 	}
 	mock.lockUpdateCoreInstance.RLock()
 	calls = mock.calls.UpdateCoreInstance
@@ -6767,11 +7779,11 @@ func (mock *ClientMock) UpdateCoreInstanceCalls() []struct {
 }
 
 // UpdateCoreInstanceCheck calls UpdateCoreInstanceCheckFunc.
-func (mock *ClientMock) UpdateCoreInstanceCheck(contextMoqParam context.Context, s string, updateCoreInstanceCheck cloud.UpdateCoreInstanceCheck) error {
+func (mock *ClientMock) UpdateCoreInstanceCheck(contextMoqParam context.Context, s string, updateCoreInstanceCheck types.UpdateCoreInstanceCheck) error {
 	callInfo := struct {
 		ContextMoqParam         context.Context
 		S                       string
-		UpdateCoreInstanceCheck cloud.UpdateCoreInstanceCheck
+		UpdateCoreInstanceCheck types.UpdateCoreInstanceCheck
 	}{
 		ContextMoqParam:         contextMoqParam,
 		S:                       s,
@@ -6796,12 +7808,12 @@ func (mock *ClientMock) UpdateCoreInstanceCheck(contextMoqParam context.Context,
 func (mock *ClientMock) UpdateCoreInstanceCheckCalls() []struct {
 	ContextMoqParam         context.Context
 	S                       string
-	UpdateCoreInstanceCheck cloud.UpdateCoreInstanceCheck
+	UpdateCoreInstanceCheck types.UpdateCoreInstanceCheck
 } {
 	var calls []struct {
 		ContextMoqParam         context.Context
 		S                       string
-		UpdateCoreInstanceCheck cloud.UpdateCoreInstanceCheck
+		UpdateCoreInstanceCheck types.UpdateCoreInstanceCheck
 	}
 	mock.lockUpdateCoreInstanceCheck.RLock()
 	calls = mock.calls.UpdateCoreInstanceCheck
@@ -6810,11 +7822,11 @@ func (mock *ClientMock) UpdateCoreInstanceCheckCalls() []struct {
 }
 
 // UpdateEnvironment calls UpdateEnvironmentFunc.
-func (mock *ClientMock) UpdateEnvironment(contextMoqParam context.Context, s string, updateEnvironment cloud.UpdateEnvironment) error {
+func (mock *ClientMock) UpdateEnvironment(contextMoqParam context.Context, s string, updateEnvironment types.UpdateEnvironment) error {
 	callInfo := struct {
 		ContextMoqParam   context.Context
 		S                 string
-		UpdateEnvironment cloud.UpdateEnvironment
+		UpdateEnvironment types.UpdateEnvironment
 	}{
 		ContextMoqParam:   contextMoqParam,
 		S:                 s,
@@ -6839,12 +7851,12 @@ func (mock *ClientMock) UpdateEnvironment(contextMoqParam context.Context, s str
 func (mock *ClientMock) UpdateEnvironmentCalls() []struct {
 	ContextMoqParam   context.Context
 	S                 string
-	UpdateEnvironment cloud.UpdateEnvironment
+	UpdateEnvironment types.UpdateEnvironment
 } {
 	var calls []struct {
 		ContextMoqParam   context.Context
 		S                 string
-		UpdateEnvironment cloud.UpdateEnvironment
+		UpdateEnvironment types.UpdateEnvironment
 	}
 	mock.lockUpdateEnvironment.RLock()
 	calls = mock.calls.UpdateEnvironment
@@ -6853,10 +7865,10 @@ func (mock *ClientMock) UpdateEnvironmentCalls() []struct {
 }
 
 // UpdateFleet calls UpdateFleetFunc.
-func (mock *ClientMock) UpdateFleet(contextMoqParam context.Context, updateFleet cloud.UpdateFleet) (cloud.UpdatedFleet, error) {
+func (mock *ClientMock) UpdateFleet(contextMoqParam context.Context, updateFleet types.UpdateFleet) (types.Updated, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
-		UpdateFleet     cloud.UpdateFleet
+		UpdateFleet     types.UpdateFleet
 	}{
 		ContextMoqParam: contextMoqParam,
 		UpdateFleet:     updateFleet,
@@ -6866,10 +7878,10 @@ func (mock *ClientMock) UpdateFleet(contextMoqParam context.Context, updateFleet
 	mock.lockUpdateFleet.Unlock()
 	if mock.UpdateFleetFunc == nil {
 		var (
-			updatedFleetOut cloud.UpdatedFleet
-			errOut          error
+			updatedOut types.Updated
+			errOut     error
 		)
-		return updatedFleetOut, errOut
+		return updatedOut, errOut
 	}
 	return mock.UpdateFleetFunc(contextMoqParam, updateFleet)
 }
@@ -6880,11 +7892,11 @@ func (mock *ClientMock) UpdateFleet(contextMoqParam context.Context, updateFleet
 //	len(mockedClient.UpdateFleetCalls())
 func (mock *ClientMock) UpdateFleetCalls() []struct {
 	ContextMoqParam context.Context
-	UpdateFleet     cloud.UpdateFleet
+	UpdateFleet     types.UpdateFleet
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
-		UpdateFleet     cloud.UpdateFleet
+		UpdateFleet     types.UpdateFleet
 	}
 	mock.lockUpdateFleet.RLock()
 	calls = mock.calls.UpdateFleet
@@ -6893,11 +7905,11 @@ func (mock *ClientMock) UpdateFleetCalls() []struct {
 }
 
 // UpdateIngestCheck calls UpdateIngestCheckFunc.
-func (mock *ClientMock) UpdateIngestCheck(contextMoqParam context.Context, s string, updateIngestCheck cloud.UpdateIngestCheck) error {
+func (mock *ClientMock) UpdateIngestCheck(contextMoqParam context.Context, s string, updateIngestCheck types.UpdateIngestCheck) error {
 	callInfo := struct {
 		ContextMoqParam   context.Context
 		S                 string
-		UpdateIngestCheck cloud.UpdateIngestCheck
+		UpdateIngestCheck types.UpdateIngestCheck
 	}{
 		ContextMoqParam:   contextMoqParam,
 		S:                 s,
@@ -6922,12 +7934,12 @@ func (mock *ClientMock) UpdateIngestCheck(contextMoqParam context.Context, s str
 func (mock *ClientMock) UpdateIngestCheckCalls() []struct {
 	ContextMoqParam   context.Context
 	S                 string
-	UpdateIngestCheck cloud.UpdateIngestCheck
+	UpdateIngestCheck types.UpdateIngestCheck
 } {
 	var calls []struct {
 		ContextMoqParam   context.Context
 		S                 string
-		UpdateIngestCheck cloud.UpdateIngestCheck
+		UpdateIngestCheck types.UpdateIngestCheck
 	}
 	mock.lockUpdateIngestCheck.RLock()
 	calls = mock.calls.UpdateIngestCheck
@@ -6935,12 +7947,51 @@ func (mock *ClientMock) UpdateIngestCheckCalls() []struct {
 	return calls
 }
 
+// UpdateMember calls UpdateMemberFunc.
+func (mock *ClientMock) UpdateMember(contextMoqParam context.Context, updateMember types.UpdateMember) error {
+	callInfo := struct {
+		ContextMoqParam context.Context
+		UpdateMember    types.UpdateMember
+	}{
+		ContextMoqParam: contextMoqParam,
+		UpdateMember:    updateMember,
+	}
+	mock.lockUpdateMember.Lock()
+	mock.calls.UpdateMember = append(mock.calls.UpdateMember, callInfo)
+	mock.lockUpdateMember.Unlock()
+	if mock.UpdateMemberFunc == nil {
+		var (
+			errOut error
+		)
+		return errOut
+	}
+	return mock.UpdateMemberFunc(contextMoqParam, updateMember)
+}
+
+// UpdateMemberCalls gets all the calls that were made to UpdateMember.
+// Check the length with:
+//
+//	len(mockedClient.UpdateMemberCalls())
+func (mock *ClientMock) UpdateMemberCalls() []struct {
+	ContextMoqParam context.Context
+	UpdateMember    types.UpdateMember
+} {
+	var calls []struct {
+		ContextMoqParam context.Context
+		UpdateMember    types.UpdateMember
+	}
+	mock.lockUpdateMember.RLock()
+	calls = mock.calls.UpdateMember
+	mock.lockUpdateMember.RUnlock()
+	return calls
+}
+
 // UpdatePipeline calls UpdatePipelineFunc.
-func (mock *ClientMock) UpdatePipeline(contextMoqParam context.Context, s string, updatePipeline cloud.UpdatePipeline) (cloud.UpdatedPipeline, error) {
+func (mock *ClientMock) UpdatePipeline(contextMoqParam context.Context, s string, updatePipeline types.UpdatePipeline) (types.UpdatedPipeline, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
-		UpdatePipeline  cloud.UpdatePipeline
+		UpdatePipeline  types.UpdatePipeline
 	}{
 		ContextMoqParam: contextMoqParam,
 		S:               s,
@@ -6951,7 +8002,7 @@ func (mock *ClientMock) UpdatePipeline(contextMoqParam context.Context, s string
 	mock.lockUpdatePipeline.Unlock()
 	if mock.UpdatePipelineFunc == nil {
 		var (
-			updatedPipelineOut cloud.UpdatedPipeline
+			updatedPipelineOut types.UpdatedPipeline
 			errOut             error
 		)
 		return updatedPipelineOut, errOut
@@ -6966,12 +8017,12 @@ func (mock *ClientMock) UpdatePipeline(contextMoqParam context.Context, s string
 func (mock *ClientMock) UpdatePipelineCalls() []struct {
 	ContextMoqParam context.Context
 	S               string
-	UpdatePipeline  cloud.UpdatePipeline
+	UpdatePipeline  types.UpdatePipeline
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
 		S               string
-		UpdatePipeline  cloud.UpdatePipeline
+		UpdatePipeline  types.UpdatePipeline
 	}
 	mock.lockUpdatePipeline.RLock()
 	calls = mock.calls.UpdatePipeline
@@ -6980,11 +8031,11 @@ func (mock *ClientMock) UpdatePipelineCalls() []struct {
 }
 
 // UpdatePipelineCheck calls UpdatePipelineCheckFunc.
-func (mock *ClientMock) UpdatePipelineCheck(contextMoqParam context.Context, s string, updatePipelineCheck cloud.UpdatePipelineCheck) error {
+func (mock *ClientMock) UpdatePipelineCheck(contextMoqParam context.Context, s string, updatePipelineCheck types.UpdatePipelineCheck) error {
 	callInfo := struct {
 		ContextMoqParam     context.Context
 		S                   string
-		UpdatePipelineCheck cloud.UpdatePipelineCheck
+		UpdatePipelineCheck types.UpdatePipelineCheck
 	}{
 		ContextMoqParam:     contextMoqParam,
 		S:                   s,
@@ -7009,12 +8060,12 @@ func (mock *ClientMock) UpdatePipelineCheck(contextMoqParam context.Context, s s
 func (mock *ClientMock) UpdatePipelineCheckCalls() []struct {
 	ContextMoqParam     context.Context
 	S                   string
-	UpdatePipelineCheck cloud.UpdatePipelineCheck
+	UpdatePipelineCheck types.UpdatePipelineCheck
 } {
 	var calls []struct {
 		ContextMoqParam     context.Context
 		S                   string
-		UpdatePipelineCheck cloud.UpdatePipelineCheck
+		UpdatePipelineCheck types.UpdatePipelineCheck
 	}
 	mock.lockUpdatePipelineCheck.RLock()
 	calls = mock.calls.UpdatePipelineCheck
@@ -7023,11 +8074,11 @@ func (mock *ClientMock) UpdatePipelineCheckCalls() []struct {
 }
 
 // UpdatePipelineClusterObjects calls UpdatePipelineClusterObjectsFunc.
-func (mock *ClientMock) UpdatePipelineClusterObjects(contextMoqParam context.Context, s string, updatePipelineClusterObjects cloud.UpdatePipelineClusterObjects) error {
+func (mock *ClientMock) UpdatePipelineClusterObjects(contextMoqParam context.Context, s string, updatePipelineClusterObjects types.UpdatePipelineClusterObjects) error {
 	callInfo := struct {
 		ContextMoqParam              context.Context
 		S                            string
-		UpdatePipelineClusterObjects cloud.UpdatePipelineClusterObjects
+		UpdatePipelineClusterObjects types.UpdatePipelineClusterObjects
 	}{
 		ContextMoqParam:              contextMoqParam,
 		S:                            s,
@@ -7052,12 +8103,12 @@ func (mock *ClientMock) UpdatePipelineClusterObjects(contextMoqParam context.Con
 func (mock *ClientMock) UpdatePipelineClusterObjectsCalls() []struct {
 	ContextMoqParam              context.Context
 	S                            string
-	UpdatePipelineClusterObjects cloud.UpdatePipelineClusterObjects
+	UpdatePipelineClusterObjects types.UpdatePipelineClusterObjects
 } {
 	var calls []struct {
 		ContextMoqParam              context.Context
 		S                            string
-		UpdatePipelineClusterObjects cloud.UpdatePipelineClusterObjects
+		UpdatePipelineClusterObjects types.UpdatePipelineClusterObjects
 	}
 	mock.lockUpdatePipelineClusterObjects.RLock()
 	calls = mock.calls.UpdatePipelineClusterObjects
@@ -7066,11 +8117,11 @@ func (mock *ClientMock) UpdatePipelineClusterObjectsCalls() []struct {
 }
 
 // UpdatePipelineFile calls UpdatePipelineFileFunc.
-func (mock *ClientMock) UpdatePipelineFile(contextMoqParam context.Context, s string, updatePipelineFile cloud.UpdatePipelineFile) error {
+func (mock *ClientMock) UpdatePipelineFile(contextMoqParam context.Context, s string, updatePipelineFile types.UpdatePipelineFile) error {
 	callInfo := struct {
 		ContextMoqParam    context.Context
 		S                  string
-		UpdatePipelineFile cloud.UpdatePipelineFile
+		UpdatePipelineFile types.UpdatePipelineFile
 	}{
 		ContextMoqParam:    contextMoqParam,
 		S:                  s,
@@ -7095,12 +8146,12 @@ func (mock *ClientMock) UpdatePipelineFile(contextMoqParam context.Context, s st
 func (mock *ClientMock) UpdatePipelineFileCalls() []struct {
 	ContextMoqParam    context.Context
 	S                  string
-	UpdatePipelineFile cloud.UpdatePipelineFile
+	UpdatePipelineFile types.UpdatePipelineFile
 } {
 	var calls []struct {
 		ContextMoqParam    context.Context
 		S                  string
-		UpdatePipelineFile cloud.UpdatePipelineFile
+		UpdatePipelineFile types.UpdatePipelineFile
 	}
 	mock.lockUpdatePipelineFile.RLock()
 	calls = mock.calls.UpdatePipelineFile
@@ -7108,12 +8159,55 @@ func (mock *ClientMock) UpdatePipelineFileCalls() []struct {
 	return calls
 }
 
+// UpdatePipelineMetadata calls UpdatePipelineMetadataFunc.
+func (mock *ClientMock) UpdatePipelineMetadata(contextMoqParam context.Context, s string, updatePipelineMetadata types.UpdatePipelineMetadata) error {
+	callInfo := struct {
+		ContextMoqParam        context.Context
+		S                      string
+		UpdatePipelineMetadata types.UpdatePipelineMetadata
+	}{
+		ContextMoqParam:        contextMoqParam,
+		S:                      s,
+		UpdatePipelineMetadata: updatePipelineMetadata,
+	}
+	mock.lockUpdatePipelineMetadata.Lock()
+	mock.calls.UpdatePipelineMetadata = append(mock.calls.UpdatePipelineMetadata, callInfo)
+	mock.lockUpdatePipelineMetadata.Unlock()
+	if mock.UpdatePipelineMetadataFunc == nil {
+		var (
+			errOut error
+		)
+		return errOut
+	}
+	return mock.UpdatePipelineMetadataFunc(contextMoqParam, s, updatePipelineMetadata)
+}
+
+// UpdatePipelineMetadataCalls gets all the calls that were made to UpdatePipelineMetadata.
+// Check the length with:
+//
+//	len(mockedClient.UpdatePipelineMetadataCalls())
+func (mock *ClientMock) UpdatePipelineMetadataCalls() []struct {
+	ContextMoqParam        context.Context
+	S                      string
+	UpdatePipelineMetadata types.UpdatePipelineMetadata
+} {
+	var calls []struct {
+		ContextMoqParam        context.Context
+		S                      string
+		UpdatePipelineMetadata types.UpdatePipelineMetadata
+	}
+	mock.lockUpdatePipelineMetadata.RLock()
+	calls = mock.calls.UpdatePipelineMetadata
+	mock.lockUpdatePipelineMetadata.RUnlock()
+	return calls
+}
+
 // UpdatePipelinePort calls UpdatePipelinePortFunc.
-func (mock *ClientMock) UpdatePipelinePort(contextMoqParam context.Context, s string, updatePipelinePort cloud.UpdatePipelinePort) error {
+func (mock *ClientMock) UpdatePipelinePort(contextMoqParam context.Context, s string, updatePipelinePort types.UpdatePipelinePort) error {
 	callInfo := struct {
 		ContextMoqParam    context.Context
 		S                  string
-		UpdatePipelinePort cloud.UpdatePipelinePort
+		UpdatePipelinePort types.UpdatePipelinePort
 	}{
 		ContextMoqParam:    contextMoqParam,
 		S:                  s,
@@ -7138,12 +8232,12 @@ func (mock *ClientMock) UpdatePipelinePort(contextMoqParam context.Context, s st
 func (mock *ClientMock) UpdatePipelinePortCalls() []struct {
 	ContextMoqParam    context.Context
 	S                  string
-	UpdatePipelinePort cloud.UpdatePipelinePort
+	UpdatePipelinePort types.UpdatePipelinePort
 } {
 	var calls []struct {
 		ContextMoqParam    context.Context
 		S                  string
-		UpdatePipelinePort cloud.UpdatePipelinePort
+		UpdatePipelinePort types.UpdatePipelinePort
 	}
 	mock.lockUpdatePipelinePort.RLock()
 	calls = mock.calls.UpdatePipelinePort
@@ -7152,11 +8246,11 @@ func (mock *ClientMock) UpdatePipelinePortCalls() []struct {
 }
 
 // UpdatePipelineSecret calls UpdatePipelineSecretFunc.
-func (mock *ClientMock) UpdatePipelineSecret(contextMoqParam context.Context, s string, updatePipelineSecret cloud.UpdatePipelineSecret) error {
+func (mock *ClientMock) UpdatePipelineSecret(contextMoqParam context.Context, s string, updatePipelineSecret types.UpdatePipelineSecret) error {
 	callInfo := struct {
 		ContextMoqParam      context.Context
 		S                    string
-		UpdatePipelineSecret cloud.UpdatePipelineSecret
+		UpdatePipelineSecret types.UpdatePipelineSecret
 	}{
 		ContextMoqParam:      contextMoqParam,
 		S:                    s,
@@ -7181,12 +8275,12 @@ func (mock *ClientMock) UpdatePipelineSecret(contextMoqParam context.Context, s 
 func (mock *ClientMock) UpdatePipelineSecretCalls() []struct {
 	ContextMoqParam      context.Context
 	S                    string
-	UpdatePipelineSecret cloud.UpdatePipelineSecret
+	UpdatePipelineSecret types.UpdatePipelineSecret
 } {
 	var calls []struct {
 		ContextMoqParam      context.Context
 		S                    string
-		UpdatePipelineSecret cloud.UpdatePipelineSecret
+		UpdatePipelineSecret types.UpdatePipelineSecret
 	}
 	mock.lockUpdatePipelineSecret.RLock()
 	calls = mock.calls.UpdatePipelineSecret
@@ -7195,10 +8289,10 @@ func (mock *ClientMock) UpdatePipelineSecretCalls() []struct {
 }
 
 // UpdateProcessingRule calls UpdateProcessingRuleFunc.
-func (mock *ClientMock) UpdateProcessingRule(contextMoqParam context.Context, updateProcessingRule cloud.UpdateProcessingRule) (cloud.UpdatedProcessingRule, error) {
+func (mock *ClientMock) UpdateProcessingRule(contextMoqParam context.Context, updateProcessingRule types.UpdateProcessingRule) (types.Updated, error) {
 	callInfo := struct {
 		ContextMoqParam      context.Context
-		UpdateProcessingRule cloud.UpdateProcessingRule
+		UpdateProcessingRule types.UpdateProcessingRule
 	}{
 		ContextMoqParam:      contextMoqParam,
 		UpdateProcessingRule: updateProcessingRule,
@@ -7208,10 +8302,10 @@ func (mock *ClientMock) UpdateProcessingRule(contextMoqParam context.Context, up
 	mock.lockUpdateProcessingRule.Unlock()
 	if mock.UpdateProcessingRuleFunc == nil {
 		var (
-			updatedProcessingRuleOut cloud.UpdatedProcessingRule
-			errOut                   error
+			updatedOut types.Updated
+			errOut     error
 		)
-		return updatedProcessingRuleOut, errOut
+		return updatedOut, errOut
 	}
 	return mock.UpdateProcessingRuleFunc(contextMoqParam, updateProcessingRule)
 }
@@ -7222,11 +8316,11 @@ func (mock *ClientMock) UpdateProcessingRule(contextMoqParam context.Context, up
 //	len(mockedClient.UpdateProcessingRuleCalls())
 func (mock *ClientMock) UpdateProcessingRuleCalls() []struct {
 	ContextMoqParam      context.Context
-	UpdateProcessingRule cloud.UpdateProcessingRule
+	UpdateProcessingRule types.UpdateProcessingRule
 } {
 	var calls []struct {
 		ContextMoqParam      context.Context
-		UpdateProcessingRule cloud.UpdateProcessingRule
+		UpdateProcessingRule types.UpdateProcessingRule
 	}
 	mock.lockUpdateProcessingRule.RLock()
 	calls = mock.calls.UpdateProcessingRule
@@ -7234,12 +8328,52 @@ func (mock *ClientMock) UpdateProcessingRuleCalls() []struct {
 	return calls
 }
 
+// UpdateProcessingRuleTemplate calls UpdateProcessingRuleTemplateFunc.
+func (mock *ClientMock) UpdateProcessingRuleTemplate(contextMoqParam context.Context, updateProcessingRuleTemplate types.UpdateProcessingRuleTemplate) (types.Updated, error) {
+	callInfo := struct {
+		ContextMoqParam              context.Context
+		UpdateProcessingRuleTemplate types.UpdateProcessingRuleTemplate
+	}{
+		ContextMoqParam:              contextMoqParam,
+		UpdateProcessingRuleTemplate: updateProcessingRuleTemplate,
+	}
+	mock.lockUpdateProcessingRuleTemplate.Lock()
+	mock.calls.UpdateProcessingRuleTemplate = append(mock.calls.UpdateProcessingRuleTemplate, callInfo)
+	mock.lockUpdateProcessingRuleTemplate.Unlock()
+	if mock.UpdateProcessingRuleTemplateFunc == nil {
+		var (
+			updatedOut types.Updated
+			errOut     error
+		)
+		return updatedOut, errOut
+	}
+	return mock.UpdateProcessingRuleTemplateFunc(contextMoqParam, updateProcessingRuleTemplate)
+}
+
+// UpdateProcessingRuleTemplateCalls gets all the calls that were made to UpdateProcessingRuleTemplate.
+// Check the length with:
+//
+//	len(mockedClient.UpdateProcessingRuleTemplateCalls())
+func (mock *ClientMock) UpdateProcessingRuleTemplateCalls() []struct {
+	ContextMoqParam              context.Context
+	UpdateProcessingRuleTemplate types.UpdateProcessingRuleTemplate
+} {
+	var calls []struct {
+		ContextMoqParam              context.Context
+		UpdateProcessingRuleTemplate types.UpdateProcessingRuleTemplate
+	}
+	mock.lockUpdateProcessingRuleTemplate.RLock()
+	calls = mock.calls.UpdateProcessingRuleTemplate
+	mock.lockUpdateProcessingRuleTemplate.RUnlock()
+	return calls
+}
+
 // UpdateProject calls UpdateProjectFunc.
-func (mock *ClientMock) UpdateProject(contextMoqParam context.Context, s string, updateProject cloud.UpdateProject) error {
+func (mock *ClientMock) UpdateProject(contextMoqParam context.Context, s string, updateProject types.UpdateProject) error {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
-		UpdateProject   cloud.UpdateProject
+		UpdateProject   types.UpdateProject
 	}{
 		ContextMoqParam: contextMoqParam,
 		S:               s,
@@ -7264,12 +8398,12 @@ func (mock *ClientMock) UpdateProject(contextMoqParam context.Context, s string,
 func (mock *ClientMock) UpdateProjectCalls() []struct {
 	ContextMoqParam context.Context
 	S               string
-	UpdateProject   cloud.UpdateProject
+	UpdateProject   types.UpdateProject
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
 		S               string
-		UpdateProject   cloud.UpdateProject
+		UpdateProject   types.UpdateProject
 	}
 	mock.lockUpdateProject.RLock()
 	calls = mock.calls.UpdateProject
@@ -7278,11 +8412,11 @@ func (mock *ClientMock) UpdateProjectCalls() []struct {
 }
 
 // UpdateResourceProfile calls UpdateResourceProfileFunc.
-func (mock *ClientMock) UpdateResourceProfile(contextMoqParam context.Context, s string, updateResourceProfile cloud.UpdateResourceProfile) error {
+func (mock *ClientMock) UpdateResourceProfile(contextMoqParam context.Context, s string, updateResourceProfile types.UpdateResourceProfile) error {
 	callInfo := struct {
 		ContextMoqParam       context.Context
 		S                     string
-		UpdateResourceProfile cloud.UpdateResourceProfile
+		UpdateResourceProfile types.UpdateResourceProfile
 	}{
 		ContextMoqParam:       contextMoqParam,
 		S:                     s,
@@ -7307,12 +8441,12 @@ func (mock *ClientMock) UpdateResourceProfile(contextMoqParam context.Context, s
 func (mock *ClientMock) UpdateResourceProfileCalls() []struct {
 	ContextMoqParam       context.Context
 	S                     string
-	UpdateResourceProfile cloud.UpdateResourceProfile
+	UpdateResourceProfile types.UpdateResourceProfile
 } {
 	var calls []struct {
 		ContextMoqParam       context.Context
 		S                     string
-		UpdateResourceProfile cloud.UpdateResourceProfile
+		UpdateResourceProfile types.UpdateResourceProfile
 	}
 	mock.lockUpdateResourceProfile.RLock()
 	calls = mock.calls.UpdateResourceProfile
@@ -7321,14 +8455,12 @@ func (mock *ClientMock) UpdateResourceProfileCalls() []struct {
 }
 
 // UpdateToken calls UpdateTokenFunc.
-func (mock *ClientMock) UpdateToken(contextMoqParam context.Context, s string, updateToken cloud.UpdateToken) error {
+func (mock *ClientMock) UpdateToken(contextMoqParam context.Context, updateToken types.UpdateToken) error {
 	callInfo := struct {
 		ContextMoqParam context.Context
-		S               string
-		UpdateToken     cloud.UpdateToken
+		UpdateToken     types.UpdateToken
 	}{
 		ContextMoqParam: contextMoqParam,
-		S:               s,
 		UpdateToken:     updateToken,
 	}
 	mock.lockUpdateToken.Lock()
@@ -7340,7 +8472,7 @@ func (mock *ClientMock) UpdateToken(contextMoqParam context.Context, s string, u
 		)
 		return errOut
 	}
-	return mock.UpdateTokenFunc(contextMoqParam, s, updateToken)
+	return mock.UpdateTokenFunc(contextMoqParam, updateToken)
 }
 
 // UpdateTokenCalls gets all the calls that were made to UpdateToken.
@@ -7349,13 +8481,11 @@ func (mock *ClientMock) UpdateToken(contextMoqParam context.Context, s string, u
 //	len(mockedClient.UpdateTokenCalls())
 func (mock *ClientMock) UpdateTokenCalls() []struct {
 	ContextMoqParam context.Context
-	S               string
-	UpdateToken     cloud.UpdateToken
+	UpdateToken     types.UpdateToken
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
-		S               string
-		UpdateToken     cloud.UpdateToken
+		UpdateToken     types.UpdateToken
 	}
 	mock.lockUpdateToken.RLock()
 	calls = mock.calls.UpdateToken
@@ -7364,11 +8494,11 @@ func (mock *ClientMock) UpdateTokenCalls() []struct {
 }
 
 // UpdateTraceSession calls UpdateTraceSessionFunc.
-func (mock *ClientMock) UpdateTraceSession(contextMoqParam context.Context, s string, updateTraceSession cloud.UpdateTraceSession) (cloud.UpdatedTraceSession, error) {
+func (mock *ClientMock) UpdateTraceSession(contextMoqParam context.Context, s string, updateTraceSession types.UpdateTraceSession) (types.Updated, error) {
 	callInfo := struct {
 		ContextMoqParam    context.Context
 		S                  string
-		UpdateTraceSession cloud.UpdateTraceSession
+		UpdateTraceSession types.UpdateTraceSession
 	}{
 		ContextMoqParam:    contextMoqParam,
 		S:                  s,
@@ -7379,10 +8509,10 @@ func (mock *ClientMock) UpdateTraceSession(contextMoqParam context.Context, s st
 	mock.lockUpdateTraceSession.Unlock()
 	if mock.UpdateTraceSessionFunc == nil {
 		var (
-			updatedTraceSessionOut cloud.UpdatedTraceSession
-			errOut                 error
+			updatedOut types.Updated
+			errOut     error
 		)
-		return updatedTraceSessionOut, errOut
+		return updatedOut, errOut
 	}
 	return mock.UpdateTraceSessionFunc(contextMoqParam, s, updateTraceSession)
 }
@@ -7394,12 +8524,12 @@ func (mock *ClientMock) UpdateTraceSession(contextMoqParam context.Context, s st
 func (mock *ClientMock) UpdateTraceSessionCalls() []struct {
 	ContextMoqParam    context.Context
 	S                  string
-	UpdateTraceSession cloud.UpdateTraceSession
+	UpdateTraceSession types.UpdateTraceSession
 } {
 	var calls []struct {
 		ContextMoqParam    context.Context
 		S                  string
-		UpdateTraceSession cloud.UpdateTraceSession
+		UpdateTraceSession types.UpdateTraceSession
 	}
 	mock.lockUpdateTraceSession.RLock()
 	calls = mock.calls.UpdateTraceSession
@@ -7408,11 +8538,11 @@ func (mock *ClientMock) UpdateTraceSessionCalls() []struct {
 }
 
 // ValidateConfig calls ValidateConfigFunc.
-func (mock *ClientMock) ValidateConfig(contextMoqParam context.Context, agentType cloud.AgentType, validatingConfig cloud.ValidatingConfig) (cloud.ValidatedConfig, error) {
+func (mock *ClientMock) ValidateConfig(contextMoqParam context.Context, agentType types.AgentType, validatingConfig types.ValidatingConfig) (types.ValidatedConfig, error) {
 	callInfo := struct {
 		ContextMoqParam  context.Context
-		AgentType        cloud.AgentType
-		ValidatingConfig cloud.ValidatingConfig
+		AgentType        types.AgentType
+		ValidatingConfig types.ValidatingConfig
 	}{
 		ContextMoqParam:  contextMoqParam,
 		AgentType:        agentType,
@@ -7423,7 +8553,7 @@ func (mock *ClientMock) ValidateConfig(contextMoqParam context.Context, agentTyp
 	mock.lockValidateConfig.Unlock()
 	if mock.ValidateConfigFunc == nil {
 		var (
-			validatedConfigOut cloud.ValidatedConfig
+			validatedConfigOut types.ValidatedConfig
 			errOut             error
 		)
 		return validatedConfigOut, errOut
@@ -7437,13 +8567,13 @@ func (mock *ClientMock) ValidateConfig(contextMoqParam context.Context, agentTyp
 //	len(mockedClient.ValidateConfigCalls())
 func (mock *ClientMock) ValidateConfigCalls() []struct {
 	ContextMoqParam  context.Context
-	AgentType        cloud.AgentType
-	ValidatingConfig cloud.ValidatingConfig
+	AgentType        types.AgentType
+	ValidatingConfig types.ValidatingConfig
 } {
 	var calls []struct {
 		ContextMoqParam  context.Context
-		AgentType        cloud.AgentType
-		ValidatingConfig cloud.ValidatingConfig
+		AgentType        types.AgentType
+		ValidatingConfig types.ValidatingConfig
 	}
 	mock.lockValidateConfig.RLock()
 	calls = mock.calls.ValidateConfig
@@ -7452,10 +8582,10 @@ func (mock *ClientMock) ValidateConfigCalls() []struct {
 }
 
 // ValidateConfigV2 calls ValidateConfigV2Func.
-func (mock *ClientMock) ValidateConfigV2(contextMoqParam context.Context, validatingConfig cloud.ValidatingConfig) (cloud.ValidatedConfigV2, error) {
+func (mock *ClientMock) ValidateConfigV2(contextMoqParam context.Context, validatingConfig types.ValidatingConfig) (types.ValidatedConfigV2, error) {
 	callInfo := struct {
 		ContextMoqParam  context.Context
-		ValidatingConfig cloud.ValidatingConfig
+		ValidatingConfig types.ValidatingConfig
 	}{
 		ContextMoqParam:  contextMoqParam,
 		ValidatingConfig: validatingConfig,
@@ -7465,7 +8595,7 @@ func (mock *ClientMock) ValidateConfigV2(contextMoqParam context.Context, valida
 	mock.lockValidateConfigV2.Unlock()
 	if mock.ValidateConfigV2Func == nil {
 		var (
-			validatedConfigV2Out cloud.ValidatedConfigV2
+			validatedConfigV2Out types.ValidatedConfigV2
 			errOut               error
 		)
 		return validatedConfigV2Out, errOut
@@ -7479,11 +8609,11 @@ func (mock *ClientMock) ValidateConfigV2(contextMoqParam context.Context, valida
 //	len(mockedClient.ValidateConfigV2Calls())
 func (mock *ClientMock) ValidateConfigV2Calls() []struct {
 	ContextMoqParam  context.Context
-	ValidatingConfig cloud.ValidatingConfig
+	ValidatingConfig types.ValidatingConfig
 } {
 	var calls []struct {
 		ContextMoqParam  context.Context
-		ValidatingConfig cloud.ValidatingConfig
+		ValidatingConfig types.ValidatingConfig
 	}
 	mock.lockValidateConfigV2.RLock()
 	calls = mock.calls.ValidateConfigV2
