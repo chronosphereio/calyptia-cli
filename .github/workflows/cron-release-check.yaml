@@ -19,14 +19,9 @@ jobs:
 
       - id: get-core-operator-release
         run: |
-          curl -sSfl -H "Authorization: Bearer $GITHUB_TOKEN"  https://api.github.com/repos/calyptia/core-operator/releases/latest
-          LATEST_RELEASE_TAG=$(curl -sSfl -H "Authorization: Bearer $GITHUB_TOKEN"  https://api.github.com/repos/calyptia/core-operator/releases/latest|jq -r .tag_name)
+          curl -sSfl -H "Authorization: Bearer $GITHUB_TOKEN"  https://api.github.com/repos/calyptia/core-operator-releases/releases/latest
+          LATEST_RELEASE_TAG=$(curl -sSfl -H "Authorization: Bearer $GITHUB_TOKEN"  https://api.github.com/repos/calyptia/core-operator-releases/releases/latest|jq -r .tag_name)
           echo "Found tag for latest Core Operator release: $LATEST_RELEASE_TAG"
-          # Strip the v's
-          if [[ "$LATEST_RELEASE_TAG" =~ ^v?([0-9]+\.[0-9]+\.[0-9])+$ ]] ; then
-              LATEST_RELEASE_TAG=${BASH_REMATCH[1]}
-              echo "Updated to: $LATEST_RELEASE_TAG"
-          fi
           echo "tag=$LATEST_RELEASE_TAG" >> $GITHUB_OUTPUT
         shell: bash
         env:
