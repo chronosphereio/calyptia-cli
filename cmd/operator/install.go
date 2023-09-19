@@ -31,6 +31,8 @@ import (
 //go:embed manifest.yaml
 var f embed.FS
 
+const manifestFile = "manifest.yaml"
+
 func NewCmdInstall() *cobra.Command {
 	var coreInstanceVersion string
 	var coreDockerImage string
@@ -153,7 +155,7 @@ func extractDeployment(yml string) (string, error) {
 }
 
 func prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace string, createNamespace bool) (string, error) {
-	file, err := f.ReadFile("manifest.yaml")
+	file, err := f.ReadFile(manifestFile)
 	if err != nil {
 		return "", err
 	}
