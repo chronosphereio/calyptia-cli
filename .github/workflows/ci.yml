@@ -193,9 +193,8 @@ jobs:
 
       - name: Get the manifest
         run: |
-          version=$(curl -s https://api.github.com/repos/calyptia/core-operator-releases/releases | jq .[0].tag_name)
-          gh release download -p manifest.yaml -R calyptia/core-operator $version
-          mv manifest.yaml cmd/operator
+          version=$(curl -s https://api.github.com/repos/calyptia/core-operator-releases/releases | jq .[0].tag_name | sed -E 's/.*"([^"]+)".*/\1/')
+          curl -sSfL https://github.com/calyptia/core-operator-releases/releases/download/${version}/manifest.yaml -o ./cmd/operator/manifest.yaml
         env:
           GITHUB_TOKEN: ${{ secrets.CI_PAT }}
 
