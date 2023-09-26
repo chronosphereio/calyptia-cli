@@ -94,6 +94,7 @@ func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				opts.SkipServiceCreation = &skipServiceCreation
 			}
 
+			opts.Version = &newVersion
 			err = config.Cloud.UpdateCoreInstance(config.Ctx, coreInstanceID, opts)
 			if err != nil {
 				return fmt.Errorf("could not update core instance at calyptia cloud: %w", err)
