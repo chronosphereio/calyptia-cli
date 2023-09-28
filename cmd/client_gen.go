@@ -4,9 +4,10 @@ package cmd
 
 import (
 	"context"
-	"github.com/calyptia/api/types"
-	"github.com/calyptia/go-fluentbit-config/v2"
 	"net/url"
+
+	"github.com/calyptia/api/types"
+	fluentbitconfig "github.com/calyptia/go-fluentbit-config/v2"
 )
 
 // Client is an interface generated for "github.com/calyptia/api/client.Client".
@@ -24,6 +25,8 @@ type Client interface {
 	AgentMetricsV1(context.Context, string, types.MetricsParams) (types.AgentMetrics, error)
 	AgentOverTimeMetrics(context.Context, string, types.MetricsParams) (types.MetricsOverTime, error)
 	Agents(context.Context, string, types.AgentsParams) (types.Agents, error)
+	AllCoreInstanceFiles(context.Context, string) ([]types.CoreInstanceFile, error)
+	AllCoreInstanceSecrets(context.Context, string) ([]types.CoreInstanceSecret, error)
 	ClusterObject(context.Context, string) (types.ClusterObject, error)
 	ClusterObjectRegex(context.Context, string) (types.ClusterObjectRegex, error)
 	ClusterObjectRegexes(context.Context, types.ListClusterObjectRegexes) (types.ClusterObjectRegexes, error)
@@ -33,12 +36,14 @@ type Client interface {
 	CoreInstance(context.Context, string) (types.CoreInstance, error)
 	CoreInstanceCheck(context.Context, string) (types.CoreInstanceCheck, error)
 	CoreInstanceChecks(context.Context, string, types.CoreInstanceChecksParams) (types.CoreInstanceChecks, error)
+	CoreInstanceFiles(context.Context, types.ListCoreInstanceFiles) (types.CoreInstanceFiles, error)
 	CoreInstanceMetrics(context.Context, string, types.MetricsParams) (types.MetricsSummary, error)
 	CoreInstanceMetricsByPlugin(context.Context, string, types.MetricsParams) (types.MetricsSummaryPlugin, error)
 	CoreInstanceMetricsOverTimeByPlugin(context.Context, string, types.MetricsParams) (types.MetricsOverTimeByPlugin, error)
 	CoreInstanceMetricsV1(context.Context, string, types.MetricsParams) (types.CoreInstanceMetricsV1, error)
 	CoreInstanceOverTimeMetrics(context.Context, string, types.MetricsParams) (types.MetricsOverTime, error)
 	CoreInstancePing(context.Context, string) (types.CoreInstancePingResponse, error)
+	CoreInstanceSecrets(context.Context, types.ListCoreInstanceSecrets) (types.CoreInstanceSecrets, error)
 	CoreInstances(context.Context, string, types.CoreInstancesParams) (types.CoreInstances, error)
 	CreateAWSContractFromToken(context.Context, types.CreateAWSContractFromToken) error
 	CreateAgentError(context.Context, types.CreateAgentError) (types.Created, error)
@@ -47,6 +52,8 @@ type Client interface {
 	CreateConfigSection(context.Context, string, types.CreateConfigSection) (types.Created, error)
 	CreateCoreInstance(context.Context, types.CreateCoreInstance) (types.CreatedCoreInstance, error)
 	CreateCoreInstanceCheck(context.Context, string, types.Check) (types.Created, error)
+	CreateCoreInstanceFile(context.Context, types.CreateCoreInstanceFile) (types.Created, error)
+	CreateCoreInstanceSecret(context.Context, types.CreateCoreInstanceSecret) (types.Created, error)
 	CreateEnvironment(context.Context, string, types.CreateEnvironment) (types.CreatedEnvironment, error)
 	CreateFleet(context.Context, types.CreateFleet) (types.Created, error)
 	CreateIngestCheck(context.Context, string, types.CreateIngestCheck) (types.Created, error)
@@ -70,6 +77,8 @@ type Client interface {
 	DeleteConfigSection(context.Context, string) error
 	DeleteCoreInstance(context.Context, string) error
 	DeleteCoreInstanceCheck(context.Context, string) error
+	DeleteCoreInstanceFile(context.Context, string) (types.Deleted, error)
+	DeleteCoreInstanceSecret(context.Context, string) (types.Deleted, error)
 	DeleteCoreInstances(context.Context, string, ...string) error
 	DeleteEnvironment(context.Context, string) error
 	DeleteFleet(context.Context, string) (types.Deleted, error)
@@ -144,6 +153,8 @@ type Client interface {
 	UpdateConfigSectionSet(context.Context, string, ...string) error
 	UpdateCoreInstance(context.Context, string, types.UpdateCoreInstance) error
 	UpdateCoreInstanceCheck(context.Context, string, types.UpdateCoreInstanceCheck) error
+	UpdateCoreInstanceFile(context.Context, types.UpdateCoreInstanceFile) (types.Updated, error)
+	UpdateCoreInstanceSecret(context.Context, types.UpdateCoreInstanceSecret) (types.Updated, error)
 	UpdateEnvironment(context.Context, string, types.UpdateEnvironment) error
 	UpdateFleet(context.Context, types.UpdateFleet) (types.Updated, error)
 	UpdateIngestCheck(context.Context, string, types.UpdateIngestCheck) error
