@@ -33,6 +33,8 @@ func newCmdUpdate(config *cfg.Config) *cobra.Command {
 		pipeline.NewCmdUpdatePipelineClusterObject(config),
 		endpoint.NewCmdUpdateEndpoint(config),
 		coreinstance.NewCmdUpdateCoreInstance(config),
+		coreinstance.NewCmdUpdateCoreInstanceFile(config),
+		coreinstance.NewCmdUpdateCoreInstanceSecret(config),
 		environment.NewCmdUpdateEnvironment(config),
 		cnfg.NewCmdUpdateConfigSection(config),
 		cnfg.NewCmdUpdateConfigSectionSet(config),

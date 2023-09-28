@@ -30,6 +30,8 @@ func newCmdGet(config *cfg.Config) *cobra.Command {
 		agent.NewCmdGetAgents(config),
 		agent.NewCmdGetAgent(config),
 		coreinstance.NewCmdGetCoreInstances(config),
+		coreinstance.NewCmdGetCoreInstanceFiles(config),
+		coreinstance.NewCmdGetCoreInstanceSecrets(config),
 		pipeline.NewCmdGetPipelines(config),
 		pipeline.NewCmdGetPipeline(config),
 		endpoint.NewCmdGetEndpoints(config),
