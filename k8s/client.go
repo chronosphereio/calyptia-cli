@@ -3,7 +3,6 @@ package k8s
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -25,6 +24,7 @@ import (
 
 	appsv1 "k8s.io/api/apps/v1"
 	apiv1 "k8s.io/api/core/v1"
+	corev1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -61,11 +61,11 @@ var (
 
 type Client struct {
 	kubernetes.Interface
-	Namespace     string
-	ProjectToken  string
-	CloudBaseURL  string
-	LabelsFunc    func() map[string]string
-	Config        *restclient.Config
+	Namespace    string
+	ProjectToken string
+	CloudBaseURL string
+	LabelsFunc   func() map[string]string
+	Config       *restclient.Config
 }
 
 func (client *Client) getObjectMeta(agg cloud.CreatedCoreInstance, objectType objectType) metav1.ObjectMeta {
@@ -997,27 +997,69 @@ func (client *Client) IsOperatorInstalled(ctx context.Context) (bool, error) {
 
 	gkv := schema.GroupVersionResource{Group: "core.calyptia.com", Version: "v1", Resource: "pipelines"}
 	_, err = dynClient.Resource(gkv).List(context.TODO(), metav1.ListOptions{})
-	if err != nil {
-		if status, ok := err.(*apiErrors.StatusError); ok || errors.As(err, &status) {
-			fmt.Println(status.Status().Reason, status.Status().Code)
-			operatorIncomplete.Errors = append(operatorIncomplete.Errors, fmt.Errorf("CustomResourceDefinition Pipeline not installed"))
-		}
+	if err == nil {
+		operatorIncomplete.Errors = append(operatorIncomplete.Errors, fmt.Errorf("CustomResourceDefinition Pipeline installed"))
 	}
 
 	scheme := runtime.NewScheme()
 	appsv1.AddToScheme(scheme)
+	rbacv1.AddToScheme(scheme)
+	corev1.AddToScheme(scheme)
 	k8sc, err := k8sclient.New(client.Config, k8sclient.Options{Scheme: scheme})
 	if err != nil {
 		panic(err)
 	}
-	list := &appsv1.DeploymentList{}
-	if err := k8sc.List(context.Background(), list, &k8sclient.ListOptions{}); err != nil {
+	deploymentList := &appsv1.DeploymentList{}
+	if err := k8sc.List(context.Background(), deploymentList, &k8sclient.ListOptions{}); err != nil {
 		panic(err)
 	}
-	fmt.Println(len(list.Items))
-	for _, i := range list.Items {
+	for _, i := range deploymentList.Items {
 		if i.Name == operatorDeploymentName {
-			operatorIncomplete.Errors = append(operatorIncomplete.Errors, fmt.Errorf("found operator pod in namespace: %s", i.Namespace))
+			operatorIncomplete.Errors = append(operatorIncomplete.Errors, fmt.Errorf("Operator pod: %s/%s", i.Namespace, i.Name))
+		}
+	}
+
+	clusterRoles := &rbacv1.ClusterRoleList{}
+	if err := k8sc.List(context.Background(), clusterRoles, &k8sclient.ListOptions{}); err != nil {
+		panic(err)
+	}
+	for _, i := range clusterRoles.Items {
+		if i.Name == "calyptia-core-manager-role" {
+			operatorIncomplete.Errors = append(operatorIncomplete.Errors, fmt.Errorf("ClusterRole: %s", i.Name))
+		}
+		if i.Name == "calyptia-core-metrics-reader" {
+			operatorIncomplete.Errors = append(operatorIncomplete.Errors, fmt.Errorf("ClusterRole: %s", i.Name))
+		}
+		if i.Name == "calyptia-core-pod-role" {
+			operatorIncomplete.Errors = append(operatorIncomplete.Errors, fmt.Errorf("ClusterRole: %s", i.Name))
+		}
+		if i.Name == "calyptia-core-proxy-role" {
+			operatorIncomplete.Errors = append(operatorIncomplete.Errors, fmt.Errorf("ClusterRole: %s", i.Name))
+		}
+	}
+
+	crbList := &rbacv1.ClusterRoleBindingList{}
+	if err := k8sc.List(context.Background(), crbList, &k8sclient.ListOptions{}); err != nil {
+		panic(err)
+	}
+
+	for _, i := range crbList.Items {
+		if i.Name == "calyptia-core-manager-rolebinding" {
+			operatorIncomplete.Errors = append(operatorIncomplete.Errors, fmt.Errorf("ClusterRoleBinding: %s", i.Name))
+		}
+		if i.Name == "calyptia-core-proxy-rolebinding" {
+			operatorIncomplete.Errors = append(operatorIncomplete.Errors, fmt.Errorf("ClusterRoleBinding: %s", i.Name))
+		}
+	}
+
+	saList := &corev1.ServiceAccountList{}
+	if err := k8sc.List(context.Background(), saList, &k8sclient.ListOptions{}); err != nil {
+		panic(err)
+	}
+
+	for _, i := range saList.Items {
+		if i.Name == operatorDeploymentName {
+			operatorIncomplete.Errors = append(operatorIncomplete.Errors, fmt.Errorf("ServiceAccount: %s/%s", i.Namespace, i.Name))
 		}
 	}
 
@@ -1038,5 +1080,5 @@ func (o *OperatorIncompleteError) Error() string {
 	for _, err := range o.Errors {
 		errs = append(errs, err.Error())
 	}
-	return strings.Join(errs, ", ")
+	return strings.Join(errs, "\n")
 }
