@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        k8s-release: ["v1.23.5", "v1.22.7", "v1.21.10"]
+        k8s-release: ["v1.23.17", "v1.25.11", "v1.27.3"]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
