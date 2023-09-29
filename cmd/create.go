@@ -24,6 +24,8 @@ func newCmdCreate(config *cfg.Config) *cobra.Command {
 	cmd.AddCommand(
 		invitation.NewCmdSendInvitation(config),
 		coreinstance.NewCmdCreateCoreInstance(config),
+		coreinstance.NewCmdCreateCoreInstanceFile(config),
+		coreinstance.NewCmdCreateCoreInstanceSecret(config),
 		pipeline.NewCmdCreatePipeline(config),
 		resourceprofile.NewCmdCreateResourceProfile(config),
 		pipeline.NewCmdCreatePipelineFile(config),

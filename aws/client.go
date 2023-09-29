@@ -68,7 +68,7 @@ var (
 type TagSpec map[string]string
 
 type (
-	//go:generate moq -out client_mock.go . Client
+	//go:generate moq -rm -stub -out client_mock.go . Client
 	Client interface {
 		FindMatchingAMI(ctx context.Context, useTestImages bool, region, version string) (string, error)
 		EnsureKeyPair(ctx context.Context, keyPairName, environment string) (string, error)

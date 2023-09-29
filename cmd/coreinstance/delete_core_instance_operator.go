@@ -3,16 +3,18 @@ package coreinstance
 import (
 	"errors"
 	"fmt"
-	"github.com/calyptia/cli/completer"
-	cfg "github.com/calyptia/cli/config"
-	"github.com/calyptia/cli/k8s"
+	"os"
+
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
 	apiv1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes"
 	restclient "k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
-	"os"
+
+	"github.com/calyptia/cli/completer"
+	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/k8s"
 )
 
 func NewCmdDeleteCoreInstanceOperator(config *cfg.Config, testClientSet kubernetes.Interface) *cobra.Command {

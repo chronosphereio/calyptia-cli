@@ -34,7 +34,7 @@ var (
 )
 
 type (
-	//go:generate moq -out core_instance_poller_mock.go . CoreInstancePoller
+	//go:generate moq -rm -stub -out core_instance_poller_mock.go . CoreInstancePoller
 	CoreInstancePoller interface {
 		Ready(ctx context.Context, environment, name string) (string, error)
 	}

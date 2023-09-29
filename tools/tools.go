@@ -2,4 +2,7 @@
 
 package tools
 
-import _ "github.com/matryer/moq"
+import (
+	_ "github.com/matryer/moq"
+	_ "github.com/rjeczalik/interfaces/cmd/interfacer"
+)

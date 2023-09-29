@@ -6,12 +6,6 @@ import (
 	"fmt"
 	"time"
 
-	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/cmd/utils"
-	"github.com/calyptia/cli/cmd/version"
-	"github.com/calyptia/cli/completer"
-	cfg "github.com/calyptia/cli/config"
-	"github.com/calyptia/cli/k8s"
 	"github.com/spf13/cobra"
 	apiv1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -19,6 +13,13 @@ import (
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp" // register GCP auth provider
 	restclient "k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
+
+	cloud "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/cmd/utils"
+	"github.com/calyptia/cli/cmd/version"
+	"github.com/calyptia/cli/completer"
+	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/k8s"
 )
 
 func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernetes.Interface) *cobra.Command {
@@ -177,7 +178,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				}
 				fmt.Printf("Rollback successful. Deleted %d resources.\n", len(resources))
 			}
-			err = addToRollBack(err, secret.Name, secret, resourcesCreated)
+			err = addToRollBack(err, secret.Name, secret, &resourcesCreated)
 			if err != nil {
 				return err
 			}
@@ -193,7 +194,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				fmt.Printf("Rollback successful. Deleted %d resources.\n", len(resources))
 			}
 
-			err = addToRollBack(err, clusterRole.Name, clusterRole, resourcesCreated)
+			err = addToRollBack(err, clusterRole.Name, clusterRole, &resourcesCreated)
 			if err != nil {
 				return err
 			}
@@ -208,7 +209,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				fmt.Printf("Rollback successful. Deleted %d resources.\n", len(resources))
 			}
 
-			err = addToRollBack(err, serviceAccount.Name, serviceAccount, resourcesCreated)
+			err = addToRollBack(err, serviceAccount.Name, serviceAccount, &resourcesCreated)
 			if err != nil {
 				return err
 			}
@@ -223,7 +224,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				fmt.Printf("Rollback successful. Deleted %d resources.\n", len(resources))
 			}
 
-			err = addToRollBack(err, serviceAccount.Name, binding, resourcesCreated)
+			err = addToRollBack(err, serviceAccount.Name, binding, &resourcesCreated)
 			if err != nil {
 				return err
 			}
@@ -264,7 +265,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				fmt.Printf("Core instance is ready. Took %s\n", time.Since(start))
 			}
 
-			err = addToRollBack(err, serviceAccount.Name, syncDeployment, resourcesCreated)
+			err = addToRollBack(err, serviceAccount.Name, syncDeployment, &resourcesCreated)
 			if err != nil {
 				return err
 			}
@@ -318,12 +319,18 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 	return cmd
 }
 
-func addToRollBack(err error, name string, obj runtime.Object, resourcesCreated []k8s.ResourceRollBack) error {
+func addToRollBack(err error, name string, obj runtime.Object, resourcesCreated *[]k8s.ResourceRollBack) error {
+	if err != nil {
+		return err
+	}
+
 	r, err := extractRollBack(name, obj)
 	if err != nil {
 		return err
 	}
-	resourcesCreated = append(resourcesCreated, r)
+
+	*resourcesCreated = append(*resourcesCreated, r)
+
 	return nil
 }
 
