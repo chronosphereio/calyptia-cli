@@ -7,7 +7,7 @@ const (
 	LabelManagedBy = "app.kubernetes.io/managed-by"
 	LabelCreatedBy = "app.kubernetes.io/created-by"
 	LabelComponent = "app.kubernetes.io/component"
-	LabelInstance = "app.kubernetes.io/instance"
+	LabelInstance  = "app.kubernetes.io/instance"
 )
 
 const (

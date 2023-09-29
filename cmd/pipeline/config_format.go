@@ -2,8 +2,9 @@ package pipeline
 
 import (
 	"fmt"
-	cloud "github.com/calyptia/api/types"
 	"path/filepath"
+
+	cloud "github.com/calyptia/api/types"
 )
 
 func InferConfigFormat(configFile string) (cloud.ConfigFormat, error) {

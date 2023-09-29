@@ -1,8 +1,9 @@
 package cmd
 
 import (
-	"github.com/calyptia/cli/cmd/operator"
 	"github.com/spf13/cobra"
+
+	"github.com/calyptia/cli/cmd/operator"
 )
 
 func newCmdInstall() *cobra.Command {

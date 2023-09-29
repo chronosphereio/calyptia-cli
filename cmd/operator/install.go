@@ -7,23 +7,25 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/calyptia/cli/cmd/utils"
 	"gopkg.in/yaml.v3"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 
+	"github.com/calyptia/cli/cmd/utils"
+
 	"os"
 	"regexp"
 	"strings"
 
-	"github.com/calyptia/cli/k8s"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	apiv1 "k8s.io/api/core/v1"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
 	"k8s.io/component-base/logs"
 	kubectl "k8s.io/kubectl/pkg/cmd"
+
+	"github.com/calyptia/cli/k8s"
 )
 
 func NewCmdInstall() *cobra.Command {
@@ -200,6 +202,9 @@ func prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace stri
 	}
 
 	temp, err := os.CreateTemp(dir, "operator_*.yaml")
+	if err != nil {
+		return "", err
+	}
 
 	_, err = temp.WriteString(withImage)
 	if err != nil {
