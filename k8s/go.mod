@@ -6,11 +6,12 @@ toolchain go1.21.1
 
 require (
 	github.com/calyptia/api v1.5.2
-	github.com/calyptia/cli v1.7.5
+	github.com/calyptia/cli v1.7.6
 	github.com/hashicorp/go-version v1.6.0
 	k8s.io/api v0.28.2
 	k8s.io/apimachinery v0.28.2
 	k8s.io/client-go v0.28.2
+	sigs.k8s.io/controller-runtime v0.16.2
 )
 
 require (
@@ -31,6 +32,7 @@ require (
 	github.com/deepmap/oapi-codegen v1.15.0 // indirect
 	github.com/emicklei/go-restful/v3 v3.11.0 // indirect
 	github.com/evanphx/json-patch v5.7.0+incompatible // indirect
+	github.com/evanphx/json-patch/v5 v5.6.0 // indirect
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/flosch/pongo2/v4 v4.0.2 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
