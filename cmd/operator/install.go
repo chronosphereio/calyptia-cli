@@ -154,7 +154,7 @@ func NewCmdInstall() *cobra.Command {
 
 	fs.BoolVarP(&confirmed, "yes", "y", isNonInteractive, "Confirm install")
 	fs.BoolVar(&waitReady, "wait", false, "Wait for the core instance to be ready before returning")
-	fs.StringVar(&coreInstanceVersion, "version", utils.DefaultCoreOperatorDockerImageTag, "Core instance version")
+	fs.StringVar(&coreInstanceVersion, "version", "", "Core instance version")
 	fs.StringVar(&coreDockerImage, "image", utils.DefaultCoreOperatorDockerImage, "Calyptia core manager docker image to use (fully composed docker image).")
 	_ = cmd.Flags().MarkHidden("image")
 	clientcmd.BindOverrideFlags(configOverrides, fs, clientcmd.RecommendedConfigOverrideFlags("kube-"))
@@ -231,14 +231,17 @@ func solveNamespaceCreation(createNamespace bool, fullFile string, namespace str
 }
 
 func addImage(coreDockerImage, coreInstanceVersion, file string) (string, error) {
-	const pattern string = `image:\s*ghcr.io/calyptia/core-operator:[^\n\r]*`
-	reImagePattern := regexp.MustCompile(pattern)
-	match := reImagePattern.FindString(file)
-	if match == "" {
-		return "", errors.New("could not find image in manifest")
+	if coreInstanceVersion != "" {
+		const pattern string = `image:\s*ghcr.io/calyptia/core-operator:[^\n\r]*`
+		reImagePattern := regexp.MustCompile(pattern)
+		match := reImagePattern.FindString(file)
+		if match == "" {
+			return "", errors.New("could not find image in manifest")
+		}
+		updatedMatch := fmt.Sprintf("image: %s:%s", coreDockerImage, coreInstanceVersion) // Remove '\n' at the end
+		return reImagePattern.ReplaceAllString(file, updatedMatch), nil
 	}
-	updatedMatch := fmt.Sprintf("image: %s:%s", coreDockerImage, coreInstanceVersion) // Remove '\n' at the end
-	return reImagePattern.ReplaceAllString(file, updatedMatch), nil
+	return file, nil
 }
 
 func injectNamespace(s string, namespace string) string {
