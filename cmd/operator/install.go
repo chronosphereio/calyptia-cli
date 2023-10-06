@@ -152,7 +152,7 @@ func NewCmdInstall() *cobra.Command {
 
 	fs := cmd.Flags()
 
-	fs.BoolVarP(&confirmed, "yes", "y", isNonInteractive, "Confirm deletion")
+	fs.BoolVarP(&confirmed, "yes", "y", isNonInteractive, "Confirm install")
 	fs.BoolVar(&waitReady, "wait", false, "Wait for the core instance to be ready before returning")
 	fs.StringVar(&coreInstanceVersion, "version", utils.DefaultCoreOperatorDockerImageTag, "Core instance version")
 	fs.StringVar(&coreDockerImage, "image", utils.DefaultCoreOperatorDockerImage, "Calyptia core manager docker image to use (fully composed docker image).")
