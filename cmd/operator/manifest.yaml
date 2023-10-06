@@ -195,7 +195,7 @@ spec:
               hotReload:
                 type: boolean
               image:
-                default: ghcr.io/calyptia/core/calyptia-fluent-bit:23.9.7
+                default: ghcr.io/calyptia/core/calyptia-fluent-bit:23.9.9
                 type: string
               kind:
                 description: Enums
@@ -827,7 +827,7 @@ spec:
       containers:
       - command:
         - /manager
-        image: ghcr.io/calyptia/core-operator:v2.0.0
+        image: ghcr.io/calyptia/core-operator:v2.0.7
         livenessProbe:
           httpGet:
             path: /healthz
