@@ -133,7 +133,7 @@ func NewCmdDeletePipelines(config *cfg.Config) *cobra.Command {
 	isNonInteractive := os.Stdin == nil || !term.IsTerminal(int(os.Stdin.Fd()))
 
 	fs := cmd.Flags()
-	fs.BoolVarP(&confirmed, "yes", "y", isNonInteractive, "Confirm deletion")
+	fs.BoolVarP(&confirmed, "yes", "y", isNonInteractive, "Confirm installation if previous installation found")
 	fs.StringVar(&coreInstanceKey, "core-instance", "", "Parent core-instance ID or name")
 	fs.StringVar(&environmentKey, "environment", "", "Calyptia environment ID or name")
 

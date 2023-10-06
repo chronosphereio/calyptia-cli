@@ -11,6 +11,7 @@ import (
 	"time"
 
 	goversion "github.com/hashicorp/go-version"
+	apiErrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/types"
@@ -23,10 +24,11 @@ import (
 
 	appsv1 "k8s.io/api/apps/v1"
 	apiv1 "k8s.io/api/core/v1"
+	corev1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
-	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
+	k8sclient "sigs.k8s.io/controller-runtime/pkg/client"
 
 	cloud "github.com/calyptia/api/types"
 	"github.com/calyptia/cli/cmd/utils"
@@ -97,7 +99,7 @@ func (client *Client) EnsureOwnNamespace(ctx context.Context) error {
 
 func (client *Client) ownNamespaceExists(ctx context.Context) (bool, error) {
 	_, err := client.CoreV1().Namespaces().Get(ctx, client.Namespace, metav1.GetOptions{})
-	if k8serrors.IsNotFound(err) {
+	if apiErrors.IsNotFound(err) {
 		return false, nil
 	}
 
@@ -368,7 +370,7 @@ func (client *Client) DeleteDeploymentByLabel(ctx context.Context, label, ns str
 	err := client.AppsV1().Deployments(ns).DeleteCollection(ctx, metav1.DeleteOptions{
 		PropagationPolicy: &foreground,
 	}, metav1.ListOptions{LabelSelector: label})
-	if k8serrors.IsNotFound(err) {
+	if apiErrors.IsNotFound(err) {
 		return nil
 	}
 	return err
@@ -379,7 +381,7 @@ func (client *Client) DeleteDaemonSetByLabel(ctx context.Context, label, ns stri
 	err := client.AppsV1().DaemonSets(ns).DeleteCollection(ctx, metav1.DeleteOptions{
 		PropagationPolicy: &foreground,
 	}, metav1.ListOptions{LabelSelector: label})
-	if k8serrors.IsNotFound(err) {
+	if apiErrors.IsNotFound(err) {
 		return nil
 	}
 	return err
@@ -387,7 +389,7 @@ func (client *Client) DeleteDaemonSetByLabel(ctx context.Context, label, ns stri
 
 func (client *Client) DeleteClusterRoleByLabel(ctx context.Context, label string) error {
 	err := client.RbacV1().ClusterRoles().DeleteCollection(ctx, metav1.DeleteOptions{}, metav1.ListOptions{LabelSelector: label})
-	if k8serrors.IsNotFound(err) {
+	if apiErrors.IsNotFound(err) {
 		return nil
 	}
 	return err
@@ -395,7 +397,7 @@ func (client *Client) DeleteClusterRoleByLabel(ctx context.Context, label string
 
 func (client *Client) DeleteServiceAccountByLabel(ctx context.Context, label, ns string) error {
 	err := client.CoreV1().ServiceAccounts(ns).DeleteCollection(ctx, metav1.DeleteOptions{}, metav1.ListOptions{LabelSelector: label})
-	if k8serrors.IsNotFound(err) {
+	if apiErrors.IsNotFound(err) {
 		return nil
 	}
 	return err
@@ -403,7 +405,7 @@ func (client *Client) DeleteServiceAccountByLabel(ctx context.Context, label, ns
 
 func (client *Client) DeleteRoleBindingByLabel(ctx context.Context, label string) error {
 	err := client.RbacV1().ClusterRoleBindings().DeleteCollection(ctx, metav1.DeleteOptions{}, metav1.ListOptions{LabelSelector: label})
-	if k8serrors.IsNotFound(err) {
+	if apiErrors.IsNotFound(err) {
 		return nil
 	}
 	return err
@@ -411,7 +413,7 @@ func (client *Client) DeleteRoleBindingByLabel(ctx context.Context, label string
 
 func (client *Client) DeleteServiceByName(ctx context.Context, name, ns string) error {
 	err := client.CoreV1().Services(ns).Delete(ctx, name, metav1.DeleteOptions{})
-	if k8serrors.IsNotFound(err) {
+	if apiErrors.IsNotFound(err) {
 		return nil
 	}
 	return err
@@ -419,7 +421,7 @@ func (client *Client) DeleteServiceByName(ctx context.Context, name, ns string) 
 
 func (client *Client) DeleteSecretByLabel(ctx context.Context, label, ns string) error {
 	err := client.CoreV1().Secrets(ns).DeleteCollection(ctx, metav1.DeleteOptions{}, metav1.ListOptions{LabelSelector: label})
-	if k8serrors.IsNotFound(err) {
+	if apiErrors.IsNotFound(err) {
 		return nil
 	}
 	return err
@@ -427,7 +429,7 @@ func (client *Client) DeleteSecretByLabel(ctx context.Context, label, ns string)
 
 func (client *Client) DeleteConfigMapsByLabel(ctx context.Context, label, ns string) error {
 	err := client.CoreV1().ConfigMaps(ns).DeleteCollection(ctx, metav1.DeleteOptions{}, metav1.ListOptions{LabelSelector: label})
-	if k8serrors.IsNotFound(err) {
+	if apiErrors.IsNotFound(err) {
 		return nil
 	}
 	return err
@@ -891,31 +893,31 @@ func (client *Client) DeleteCoreInstance(ctx context.Context, name, environment 
 
 		// Delete Deployment
 		err = client.AppsV1().Deployments(namespaceName).Delete(ctx, core.Deployment, metav1.DeleteOptions{})
-		if err != nil && !k8serrors.IsNotFound(err) {
+		if err != nil && !apiErrors.IsNotFound(err) {
 			return err
 		}
 
 		// Delete Secret
 		err = client.CoreV1().Secrets(namespaceName).Delete(ctx, core.Secret, metav1.DeleteOptions{})
-		if err != nil && !k8serrors.IsNotFound(err) {
+		if err != nil && !apiErrors.IsNotFound(err) {
 			return err
 		}
 
 		// Delete ClusterRole
 		err = client.RbacV1().ClusterRoles().Delete(ctx, core.ClusterRole, metav1.DeleteOptions{})
-		if err != nil && !k8serrors.IsNotFound(err) {
+		if err != nil && !apiErrors.IsNotFound(err) {
 			return err
 		}
 
 		// Delete ClusterRoleBinding
 		err = client.RbacV1().ClusterRoleBindings().Delete(ctx, core.ClusterRoleBinding, metav1.DeleteOptions{})
-		if err != nil && !k8serrors.IsNotFound(err) {
+		if err != nil && !apiErrors.IsNotFound(err) {
 			return err
 		}
 
 		// Delete ServiceAccount
 		err = client.CoreV1().ServiceAccounts(namespaceName).Delete(ctx, core.ServiceAccount, metav1.DeleteOptions{})
-		if err != nil && !k8serrors.IsNotFound(err) {
+		if err != nil && !apiErrors.IsNotFound(err) {
 			return err
 		}
 		if shouldWait {
@@ -965,7 +967,7 @@ func (client *Client) SearchManagerAcrossAllNamespaces(ctx context.Context) (*ap
 	var manager *appsv1.Deployment
 	for _, namespace := range namespaces.Items {
 		manager, err = client.AppsV1().Deployments(namespace.Name).Get(ctx, "calyptia-core-controller-manager", metav1.GetOptions{})
-		if err != nil && !k8serrors.IsNotFound(err) {
+		if err != nil && !apiErrors.IsNotFound(err) {
 			return nil, err
 		}
 		if manager.Name != "" {
@@ -981,4 +983,102 @@ func (client *Client) SearchManagerAcrossAllNamespaces(ctx context.Context) (*ap
 // GetNamespace returns the namespace if it exists.
 func (client *Client) GetNamespace(ctx context.Context, name string) (*apiv1.Namespace, error) {
 	return client.CoreV1().Namespaces().Get(ctx, name, metav1.GetOptions{})
+}
+
+func (client *Client) IsOperatorInstalled(ctx context.Context) (bool, error) {
+	operatorIncomplete := OperatorIncompleteError{
+		Errors: []error{},
+	}
+
+	dynClient, err := dynamic.NewForConfig(client.Config)
+	if err != nil {
+		return false, err
+	}
+
+	gkv := schema.GroupVersionResource{Group: "core.calyptia.com", Version: "v1", Resource: "pipelines"}
+	_, err = dynClient.Resource(gkv).List(context.TODO(), metav1.ListOptions{})
+	if err == nil {
+		operatorIncomplete.Errors = append(operatorIncomplete.Errors, fmt.Errorf("CustomResourceDefinition Pipeline installed"))
+	}
+
+	scheme := runtime.NewScheme()
+	appsv1.AddToScheme(scheme)
+	rbacv1.AddToScheme(scheme)
+	corev1.AddToScheme(scheme)
+	k8sc, err := k8sclient.New(client.Config, k8sclient.Options{Scheme: scheme})
+	if err != nil {
+		panic(err)
+	}
+	deploymentList := &appsv1.DeploymentList{}
+	if err := k8sc.List(context.Background(), deploymentList, &k8sclient.ListOptions{}); err != nil {
+		panic(err)
+	}
+	for _, i := range deploymentList.Items {
+		if i.Name == operatorDeploymentName {
+			operatorIncomplete.Errors = append(operatorIncomplete.Errors, fmt.Errorf("Operator pod: %s/%s", i.Namespace, i.Name))
+		}
+	}
+
+	clusterRoles := &rbacv1.ClusterRoleList{}
+	if err := k8sc.List(context.Background(), clusterRoles, &k8sclient.ListOptions{}); err != nil {
+		panic(err)
+	}
+	for _, i := range clusterRoles.Items {
+		if i.Name == "calyptia-core-manager-role" {
+			operatorIncomplete.Errors = append(operatorIncomplete.Errors, fmt.Errorf("ClusterRole: %s", i.Name))
+		}
+		if i.Name == "calyptia-core-metrics-reader" {
+			operatorIncomplete.Errors = append(operatorIncomplete.Errors, fmt.Errorf("ClusterRole: %s", i.Name))
+		}
+		if i.Name == "calyptia-core-pod-role" {
+			operatorIncomplete.Errors = append(operatorIncomplete.Errors, fmt.Errorf("ClusterRole: %s", i.Name))
+		}
+		if i.Name == "calyptia-core-proxy-role" {
+			operatorIncomplete.Errors = append(operatorIncomplete.Errors, fmt.Errorf("ClusterRole: %s", i.Name))
+		}
+	}
+
+	crbList := &rbacv1.ClusterRoleBindingList{}
+	if err := k8sc.List(context.Background(), crbList, &k8sclient.ListOptions{}); err != nil {
+		panic(err)
+	}
+
+	for _, i := range crbList.Items {
+		if i.Name == "calyptia-core-manager-rolebinding" {
+			operatorIncomplete.Errors = append(operatorIncomplete.Errors, fmt.Errorf("ClusterRoleBinding: %s", i.Name))
+		}
+		if i.Name == "calyptia-core-proxy-rolebinding" {
+			operatorIncomplete.Errors = append(operatorIncomplete.Errors, fmt.Errorf("ClusterRoleBinding: %s", i.Name))
+		}
+	}
+
+	saList := &corev1.ServiceAccountList{}
+	if err := k8sc.List(context.Background(), saList, &k8sclient.ListOptions{}); err != nil {
+		panic(err)
+	}
+
+	for _, i := range saList.Items {
+		if i.Name == operatorDeploymentName {
+			operatorIncomplete.Errors = append(operatorIncomplete.Errors, fmt.Errorf("ServiceAccount: %s/%s", i.Namespace, i.Name))
+		}
+	}
+
+	if len(operatorIncomplete.Errors) > 0 {
+		return true, &operatorIncomplete
+	}
+	return false, nil
+}
+
+const operatorDeploymentName = "calyptia-core-controller-manager"
+
+type OperatorIncompleteError struct {
+	Errors []error
+}
+
+func (o *OperatorIncompleteError) Error() string {
+	errs := []string{}
+	for _, err := range o.Errors {
+		errs = append(errs, err.Error())
+	}
+	return strings.Join(errs, "\n")
 }

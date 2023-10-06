@@ -1,9 +1,10 @@
 package invitation
 
 import (
+	"github.com/spf13/cobra"
+
 	"github.com/calyptia/api/types"
 	"github.com/calyptia/cli/config"
-	"github.com/spf13/cobra"
 )
 
 func NewCmdSendInvitation(config *config.Config) *cobra.Command {

@@ -5,10 +5,11 @@ package cmd
 
 import (
 	"context"
-	"github.com/calyptia/api/types"
-	"github.com/calyptia/go-fluentbit-config/v2"
 	"net/url"
 	"sync"
+
+	"github.com/calyptia/api/types"
+	fluentbitconfig "github.com/calyptia/go-fluentbit-config/v2"
 )
 
 // Ensure, that ClientMock does implement Client.
@@ -60,6 +61,12 @@ var _ Client = &ClientMock{}
 //			AgentsFunc: func(contextMoqParam context.Context, s string, agentsParams types.AgentsParams) (types.Agents, error) {
 //				panic("mock out the Agents method")
 //			},
+//			AllCoreInstanceFilesFunc: func(contextMoqParam context.Context, s string) ([]types.CoreInstanceFile, error) {
+//				panic("mock out the AllCoreInstanceFiles method")
+//			},
+//			AllCoreInstanceSecretsFunc: func(contextMoqParam context.Context, s string) ([]types.CoreInstanceSecret, error) {
+//				panic("mock out the AllCoreInstanceSecrets method")
+//			},
 //			ClusterObjectFunc: func(contextMoqParam context.Context, s string) (types.ClusterObject, error) {
 //				panic("mock out the ClusterObject method")
 //			},
@@ -87,6 +94,9 @@ var _ Client = &ClientMock{}
 //			CoreInstanceChecksFunc: func(contextMoqParam context.Context, s string, coreInstanceChecksParams types.CoreInstanceChecksParams) (types.CoreInstanceChecks, error) {
 //				panic("mock out the CoreInstanceChecks method")
 //			},
+//			CoreInstanceFilesFunc: func(contextMoqParam context.Context, listCoreInstanceFiles types.ListCoreInstanceFiles) (types.CoreInstanceFiles, error) {
+//				panic("mock out the CoreInstanceFiles method")
+//			},
 //			CoreInstanceMetricsFunc: func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsSummary, error) {
 //				panic("mock out the CoreInstanceMetrics method")
 //			},
@@ -104,6 +114,9 @@ var _ Client = &ClientMock{}
 //			},
 //			CoreInstancePingFunc: func(contextMoqParam context.Context, s string) (types.CoreInstancePingResponse, error) {
 //				panic("mock out the CoreInstancePing method")
+//			},
+//			CoreInstanceSecretsFunc: func(contextMoqParam context.Context, listCoreInstanceSecrets types.ListCoreInstanceSecrets) (types.CoreInstanceSecrets, error) {
+//				panic("mock out the CoreInstanceSecrets method")
 //			},
 //			CoreInstancesFunc: func(contextMoqParam context.Context, s string, coreInstancesParams types.CoreInstancesParams) (types.CoreInstances, error) {
 //				panic("mock out the CoreInstances method")
@@ -128,6 +141,12 @@ var _ Client = &ClientMock{}
 //			},
 //			CreateCoreInstanceCheckFunc: func(contextMoqParam context.Context, s string, check types.Check) (types.Created, error) {
 //				panic("mock out the CreateCoreInstanceCheck method")
+//			},
+//			CreateCoreInstanceFileFunc: func(contextMoqParam context.Context, createCoreInstanceFile types.CreateCoreInstanceFile) (types.Created, error) {
+//				panic("mock out the CreateCoreInstanceFile method")
+//			},
+//			CreateCoreInstanceSecretFunc: func(contextMoqParam context.Context, createCoreInstanceSecret types.CreateCoreInstanceSecret) (types.Created, error) {
+//				panic("mock out the CreateCoreInstanceSecret method")
 //			},
 //			CreateEnvironmentFunc: func(contextMoqParam context.Context, s string, createEnvironment types.CreateEnvironment) (types.CreatedEnvironment, error) {
 //				panic("mock out the CreateEnvironment method")
@@ -197,6 +216,12 @@ var _ Client = &ClientMock{}
 //			},
 //			DeleteCoreInstanceCheckFunc: func(contextMoqParam context.Context, s string) error {
 //				panic("mock out the DeleteCoreInstanceCheck method")
+//			},
+//			DeleteCoreInstanceFileFunc: func(contextMoqParam context.Context, s string) (types.Deleted, error) {
+//				panic("mock out the DeleteCoreInstanceFile method")
+//			},
+//			DeleteCoreInstanceSecretFunc: func(contextMoqParam context.Context, s string) (types.Deleted, error) {
+//				panic("mock out the DeleteCoreInstanceSecret method")
 //			},
 //			DeleteCoreInstancesFunc: func(contextMoqParam context.Context, s string, strings ...string) error {
 //				panic("mock out the DeleteCoreInstances method")
@@ -420,6 +445,12 @@ var _ Client = &ClientMock{}
 //			UpdateCoreInstanceCheckFunc: func(contextMoqParam context.Context, s string, updateCoreInstanceCheck types.UpdateCoreInstanceCheck) error {
 //				panic("mock out the UpdateCoreInstanceCheck method")
 //			},
+//			UpdateCoreInstanceFileFunc: func(contextMoqParam context.Context, updateCoreInstanceFile types.UpdateCoreInstanceFile) (types.Updated, error) {
+//				panic("mock out the UpdateCoreInstanceFile method")
+//			},
+//			UpdateCoreInstanceSecretFunc: func(contextMoqParam context.Context, updateCoreInstanceSecret types.UpdateCoreInstanceSecret) (types.Updated, error) {
+//				panic("mock out the UpdateCoreInstanceSecret method")
+//			},
 //			UpdateEnvironmentFunc: func(contextMoqParam context.Context, s string, updateEnvironment types.UpdateEnvironment) error {
 //				panic("mock out the UpdateEnvironment method")
 //			},
@@ -523,6 +554,12 @@ type ClientMock struct {
 	// AgentsFunc mocks the Agents method.
 	AgentsFunc func(contextMoqParam context.Context, s string, agentsParams types.AgentsParams) (types.Agents, error)
 
+	// AllCoreInstanceFilesFunc mocks the AllCoreInstanceFiles method.
+	AllCoreInstanceFilesFunc func(contextMoqParam context.Context, s string) ([]types.CoreInstanceFile, error)
+
+	// AllCoreInstanceSecretsFunc mocks the AllCoreInstanceSecrets method.
+	AllCoreInstanceSecretsFunc func(contextMoqParam context.Context, s string) ([]types.CoreInstanceSecret, error)
+
 	// ClusterObjectFunc mocks the ClusterObject method.
 	ClusterObjectFunc func(contextMoqParam context.Context, s string) (types.ClusterObject, error)
 
@@ -550,6 +587,9 @@ type ClientMock struct {
 	// CoreInstanceChecksFunc mocks the CoreInstanceChecks method.
 	CoreInstanceChecksFunc func(contextMoqParam context.Context, s string, coreInstanceChecksParams types.CoreInstanceChecksParams) (types.CoreInstanceChecks, error)
 
+	// CoreInstanceFilesFunc mocks the CoreInstanceFiles method.
+	CoreInstanceFilesFunc func(contextMoqParam context.Context, listCoreInstanceFiles types.ListCoreInstanceFiles) (types.CoreInstanceFiles, error)
+
 	// CoreInstanceMetricsFunc mocks the CoreInstanceMetrics method.
 	CoreInstanceMetricsFunc func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsSummary, error)
 
@@ -567,6 +607,9 @@ type ClientMock struct {
 
 	// CoreInstancePingFunc mocks the CoreInstancePing method.
 	CoreInstancePingFunc func(contextMoqParam context.Context, s string) (types.CoreInstancePingResponse, error)
+
+	// CoreInstanceSecretsFunc mocks the CoreInstanceSecrets method.
+	CoreInstanceSecretsFunc func(contextMoqParam context.Context, listCoreInstanceSecrets types.ListCoreInstanceSecrets) (types.CoreInstanceSecrets, error)
 
 	// CoreInstancesFunc mocks the CoreInstances method.
 	CoreInstancesFunc func(contextMoqParam context.Context, s string, coreInstancesParams types.CoreInstancesParams) (types.CoreInstances, error)
@@ -591,6 +634,12 @@ type ClientMock struct {
 
 	// CreateCoreInstanceCheckFunc mocks the CreateCoreInstanceCheck method.
 	CreateCoreInstanceCheckFunc func(contextMoqParam context.Context, s string, check types.Check) (types.Created, error)
+
+	// CreateCoreInstanceFileFunc mocks the CreateCoreInstanceFile method.
+	CreateCoreInstanceFileFunc func(contextMoqParam context.Context, createCoreInstanceFile types.CreateCoreInstanceFile) (types.Created, error)
+
+	// CreateCoreInstanceSecretFunc mocks the CreateCoreInstanceSecret method.
+	CreateCoreInstanceSecretFunc func(contextMoqParam context.Context, createCoreInstanceSecret types.CreateCoreInstanceSecret) (types.Created, error)
 
 	// CreateEnvironmentFunc mocks the CreateEnvironment method.
 	CreateEnvironmentFunc func(contextMoqParam context.Context, s string, createEnvironment types.CreateEnvironment) (types.CreatedEnvironment, error)
@@ -660,6 +709,12 @@ type ClientMock struct {
 
 	// DeleteCoreInstanceCheckFunc mocks the DeleteCoreInstanceCheck method.
 	DeleteCoreInstanceCheckFunc func(contextMoqParam context.Context, s string) error
+
+	// DeleteCoreInstanceFileFunc mocks the DeleteCoreInstanceFile method.
+	DeleteCoreInstanceFileFunc func(contextMoqParam context.Context, s string) (types.Deleted, error)
+
+	// DeleteCoreInstanceSecretFunc mocks the DeleteCoreInstanceSecret method.
+	DeleteCoreInstanceSecretFunc func(contextMoqParam context.Context, s string) (types.Deleted, error)
 
 	// DeleteCoreInstancesFunc mocks the DeleteCoreInstances method.
 	DeleteCoreInstancesFunc func(contextMoqParam context.Context, s string, strings ...string) error
@@ -883,6 +938,12 @@ type ClientMock struct {
 	// UpdateCoreInstanceCheckFunc mocks the UpdateCoreInstanceCheck method.
 	UpdateCoreInstanceCheckFunc func(contextMoqParam context.Context, s string, updateCoreInstanceCheck types.UpdateCoreInstanceCheck) error
 
+	// UpdateCoreInstanceFileFunc mocks the UpdateCoreInstanceFile method.
+	UpdateCoreInstanceFileFunc func(contextMoqParam context.Context, updateCoreInstanceFile types.UpdateCoreInstanceFile) (types.Updated, error)
+
+	// UpdateCoreInstanceSecretFunc mocks the UpdateCoreInstanceSecret method.
+	UpdateCoreInstanceSecretFunc func(contextMoqParam context.Context, updateCoreInstanceSecret types.UpdateCoreInstanceSecret) (types.Updated, error)
+
 	// UpdateEnvironmentFunc mocks the UpdateEnvironment method.
 	UpdateEnvironmentFunc func(contextMoqParam context.Context, s string, updateEnvironment types.UpdateEnvironment) error
 
@@ -1049,6 +1110,20 @@ type ClientMock struct {
 			// AgentsParams is the agentsParams argument value.
 			AgentsParams types.AgentsParams
 		}
+		// AllCoreInstanceFiles holds details about calls to the AllCoreInstanceFiles method.
+		AllCoreInstanceFiles []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// S is the s argument value.
+			S string
+		}
+		// AllCoreInstanceSecrets holds details about calls to the AllCoreInstanceSecrets method.
+		AllCoreInstanceSecrets []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// S is the s argument value.
+			S string
+		}
 		// ClusterObject holds details about calls to the ClusterObject method.
 		ClusterObject []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
@@ -1118,6 +1193,13 @@ type ClientMock struct {
 			// CoreInstanceChecksParams is the coreInstanceChecksParams argument value.
 			CoreInstanceChecksParams types.CoreInstanceChecksParams
 		}
+		// CoreInstanceFiles holds details about calls to the CoreInstanceFiles method.
+		CoreInstanceFiles []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// ListCoreInstanceFiles is the listCoreInstanceFiles argument value.
+			ListCoreInstanceFiles types.ListCoreInstanceFiles
+		}
 		// CoreInstanceMetrics holds details about calls to the CoreInstanceMetrics method.
 		CoreInstanceMetrics []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
@@ -1169,6 +1251,13 @@ type ClientMock struct {
 			ContextMoqParam context.Context
 			// S is the s argument value.
 			S string
+		}
+		// CoreInstanceSecrets holds details about calls to the CoreInstanceSecrets method.
+		CoreInstanceSecrets []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// ListCoreInstanceSecrets is the listCoreInstanceSecrets argument value.
+			ListCoreInstanceSecrets types.ListCoreInstanceSecrets
 		}
 		// CoreInstances holds details about calls to the CoreInstances method.
 		CoreInstances []struct {
@@ -1233,6 +1322,20 @@ type ClientMock struct {
 			S string
 			// Check is the check argument value.
 			Check types.Check
+		}
+		// CreateCoreInstanceFile holds details about calls to the CreateCoreInstanceFile method.
+		CreateCoreInstanceFile []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// CreateCoreInstanceFile is the createCoreInstanceFile argument value.
+			CreateCoreInstanceFile types.CreateCoreInstanceFile
+		}
+		// CreateCoreInstanceSecret holds details about calls to the CreateCoreInstanceSecret method.
+		CreateCoreInstanceSecret []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// CreateCoreInstanceSecret is the createCoreInstanceSecret argument value.
+			CreateCoreInstanceSecret types.CreateCoreInstanceSecret
 		}
 		// CreateEnvironment holds details about calls to the CreateEnvironment method.
 		CreateEnvironment []struct {
@@ -1416,6 +1519,20 @@ type ClientMock struct {
 		}
 		// DeleteCoreInstanceCheck holds details about calls to the DeleteCoreInstanceCheck method.
 		DeleteCoreInstanceCheck []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// S is the s argument value.
+			S string
+		}
+		// DeleteCoreInstanceFile holds details about calls to the DeleteCoreInstanceFile method.
+		DeleteCoreInstanceFile []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// S is the s argument value.
+			S string
+		}
+		// DeleteCoreInstanceSecret holds details about calls to the DeleteCoreInstanceSecret method.
+		DeleteCoreInstanceSecret []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// S is the s argument value.
@@ -1993,6 +2110,20 @@ type ClientMock struct {
 			// UpdateCoreInstanceCheck is the updateCoreInstanceCheck argument value.
 			UpdateCoreInstanceCheck types.UpdateCoreInstanceCheck
 		}
+		// UpdateCoreInstanceFile holds details about calls to the UpdateCoreInstanceFile method.
+		UpdateCoreInstanceFile []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// UpdateCoreInstanceFile is the updateCoreInstanceFile argument value.
+			UpdateCoreInstanceFile types.UpdateCoreInstanceFile
+		}
+		// UpdateCoreInstanceSecret holds details about calls to the UpdateCoreInstanceSecret method.
+		UpdateCoreInstanceSecret []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// UpdateCoreInstanceSecret is the updateCoreInstanceSecret argument value.
+			UpdateCoreInstanceSecret types.UpdateCoreInstanceSecret
+		}
 		// UpdateEnvironment holds details about calls to the UpdateEnvironment method.
 		UpdateEnvironment []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
@@ -2166,6 +2297,8 @@ type ClientMock struct {
 	lockAgentMetricsV1                             sync.RWMutex
 	lockAgentOverTimeMetrics                       sync.RWMutex
 	lockAgents                                     sync.RWMutex
+	lockAllCoreInstanceFiles                       sync.RWMutex
+	lockAllCoreInstanceSecrets                     sync.RWMutex
 	lockClusterObject                              sync.RWMutex
 	lockClusterObjectRegex                         sync.RWMutex
 	lockClusterObjectRegexes                       sync.RWMutex
@@ -2175,12 +2308,14 @@ type ClientMock struct {
 	lockCoreInstance                               sync.RWMutex
 	lockCoreInstanceCheck                          sync.RWMutex
 	lockCoreInstanceChecks                         sync.RWMutex
+	lockCoreInstanceFiles                          sync.RWMutex
 	lockCoreInstanceMetrics                        sync.RWMutex
 	lockCoreInstanceMetricsByPlugin                sync.RWMutex
 	lockCoreInstanceMetricsOverTimeByPlugin        sync.RWMutex
 	lockCoreInstanceMetricsV1                      sync.RWMutex
 	lockCoreInstanceOverTimeMetrics                sync.RWMutex
 	lockCoreInstancePing                           sync.RWMutex
+	lockCoreInstanceSecrets                        sync.RWMutex
 	lockCoreInstances                              sync.RWMutex
 	lockCreateAWSContractFromToken                 sync.RWMutex
 	lockCreateAgentError                           sync.RWMutex
@@ -2189,6 +2324,8 @@ type ClientMock struct {
 	lockCreateConfigSection                        sync.RWMutex
 	lockCreateCoreInstance                         sync.RWMutex
 	lockCreateCoreInstanceCheck                    sync.RWMutex
+	lockCreateCoreInstanceFile                     sync.RWMutex
+	lockCreateCoreInstanceSecret                   sync.RWMutex
 	lockCreateEnvironment                          sync.RWMutex
 	lockCreateFleet                                sync.RWMutex
 	lockCreateIngestCheck                          sync.RWMutex
@@ -2212,6 +2349,8 @@ type ClientMock struct {
 	lockDeleteConfigSection                        sync.RWMutex
 	lockDeleteCoreInstance                         sync.RWMutex
 	lockDeleteCoreInstanceCheck                    sync.RWMutex
+	lockDeleteCoreInstanceFile                     sync.RWMutex
+	lockDeleteCoreInstanceSecret                   sync.RWMutex
 	lockDeleteCoreInstances                        sync.RWMutex
 	lockDeleteEnvironment                          sync.RWMutex
 	lockDeleteFleet                                sync.RWMutex
@@ -2286,6 +2425,8 @@ type ClientMock struct {
 	lockUpdateConfigSectionSet                     sync.RWMutex
 	lockUpdateCoreInstance                         sync.RWMutex
 	lockUpdateCoreInstanceCheck                    sync.RWMutex
+	lockUpdateCoreInstanceFile                     sync.RWMutex
+	lockUpdateCoreInstanceSecret                   sync.RWMutex
 	lockUpdateEnvironment                          sync.RWMutex
 	lockUpdateFleet                                sync.RWMutex
 	lockUpdateIngestCheck                          sync.RWMutex
@@ -2858,6 +2999,86 @@ func (mock *ClientMock) AgentsCalls() []struct {
 	return calls
 }
 
+// AllCoreInstanceFiles calls AllCoreInstanceFilesFunc.
+func (mock *ClientMock) AllCoreInstanceFiles(contextMoqParam context.Context, s string) ([]types.CoreInstanceFile, error) {
+	callInfo := struct {
+		ContextMoqParam context.Context
+		S               string
+	}{
+		ContextMoqParam: contextMoqParam,
+		S:               s,
+	}
+	mock.lockAllCoreInstanceFiles.Lock()
+	mock.calls.AllCoreInstanceFiles = append(mock.calls.AllCoreInstanceFiles, callInfo)
+	mock.lockAllCoreInstanceFiles.Unlock()
+	if mock.AllCoreInstanceFilesFunc == nil {
+		var (
+			coreInstanceFilesOut []types.CoreInstanceFile
+			errOut               error
+		)
+		return coreInstanceFilesOut, errOut
+	}
+	return mock.AllCoreInstanceFilesFunc(contextMoqParam, s)
+}
+
+// AllCoreInstanceFilesCalls gets all the calls that were made to AllCoreInstanceFiles.
+// Check the length with:
+//
+//	len(mockedClient.AllCoreInstanceFilesCalls())
+func (mock *ClientMock) AllCoreInstanceFilesCalls() []struct {
+	ContextMoqParam context.Context
+	S               string
+} {
+	var calls []struct {
+		ContextMoqParam context.Context
+		S               string
+	}
+	mock.lockAllCoreInstanceFiles.RLock()
+	calls = mock.calls.AllCoreInstanceFiles
+	mock.lockAllCoreInstanceFiles.RUnlock()
+	return calls
+}
+
+// AllCoreInstanceSecrets calls AllCoreInstanceSecretsFunc.
+func (mock *ClientMock) AllCoreInstanceSecrets(contextMoqParam context.Context, s string) ([]types.CoreInstanceSecret, error) {
+	callInfo := struct {
+		ContextMoqParam context.Context
+		S               string
+	}{
+		ContextMoqParam: contextMoqParam,
+		S:               s,
+	}
+	mock.lockAllCoreInstanceSecrets.Lock()
+	mock.calls.AllCoreInstanceSecrets = append(mock.calls.AllCoreInstanceSecrets, callInfo)
+	mock.lockAllCoreInstanceSecrets.Unlock()
+	if mock.AllCoreInstanceSecretsFunc == nil {
+		var (
+			coreInstanceSecretsOut []types.CoreInstanceSecret
+			errOut                 error
+		)
+		return coreInstanceSecretsOut, errOut
+	}
+	return mock.AllCoreInstanceSecretsFunc(contextMoqParam, s)
+}
+
+// AllCoreInstanceSecretsCalls gets all the calls that were made to AllCoreInstanceSecrets.
+// Check the length with:
+//
+//	len(mockedClient.AllCoreInstanceSecretsCalls())
+func (mock *ClientMock) AllCoreInstanceSecretsCalls() []struct {
+	ContextMoqParam context.Context
+	S               string
+} {
+	var calls []struct {
+		ContextMoqParam context.Context
+		S               string
+	}
+	mock.lockAllCoreInstanceSecrets.RLock()
+	calls = mock.calls.AllCoreInstanceSecrets
+	mock.lockAllCoreInstanceSecrets.RUnlock()
+	return calls
+}
+
 // ClusterObject calls ClusterObjectFunc.
 func (mock *ClientMock) ClusterObject(contextMoqParam context.Context, s string) (types.ClusterObject, error) {
 	callInfo := struct {
@@ -3230,6 +3451,46 @@ func (mock *ClientMock) CoreInstanceChecksCalls() []struct {
 	return calls
 }
 
+// CoreInstanceFiles calls CoreInstanceFilesFunc.
+func (mock *ClientMock) CoreInstanceFiles(contextMoqParam context.Context, listCoreInstanceFiles types.ListCoreInstanceFiles) (types.CoreInstanceFiles, error) {
+	callInfo := struct {
+		ContextMoqParam       context.Context
+		ListCoreInstanceFiles types.ListCoreInstanceFiles
+	}{
+		ContextMoqParam:       contextMoqParam,
+		ListCoreInstanceFiles: listCoreInstanceFiles,
+	}
+	mock.lockCoreInstanceFiles.Lock()
+	mock.calls.CoreInstanceFiles = append(mock.calls.CoreInstanceFiles, callInfo)
+	mock.lockCoreInstanceFiles.Unlock()
+	if mock.CoreInstanceFilesFunc == nil {
+		var (
+			coreInstanceFilesOut types.CoreInstanceFiles
+			errOut               error
+		)
+		return coreInstanceFilesOut, errOut
+	}
+	return mock.CoreInstanceFilesFunc(contextMoqParam, listCoreInstanceFiles)
+}
+
+// CoreInstanceFilesCalls gets all the calls that were made to CoreInstanceFiles.
+// Check the length with:
+//
+//	len(mockedClient.CoreInstanceFilesCalls())
+func (mock *ClientMock) CoreInstanceFilesCalls() []struct {
+	ContextMoqParam       context.Context
+	ListCoreInstanceFiles types.ListCoreInstanceFiles
+} {
+	var calls []struct {
+		ContextMoqParam       context.Context
+		ListCoreInstanceFiles types.ListCoreInstanceFiles
+	}
+	mock.lockCoreInstanceFiles.RLock()
+	calls = mock.calls.CoreInstanceFiles
+	mock.lockCoreInstanceFiles.RUnlock()
+	return calls
+}
+
 // CoreInstanceMetrics calls CoreInstanceMetricsFunc.
 func (mock *ClientMock) CoreInstanceMetrics(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsSummary, error) {
 	callInfo := struct {
@@ -3487,6 +3748,46 @@ func (mock *ClientMock) CoreInstancePingCalls() []struct {
 	mock.lockCoreInstancePing.RLock()
 	calls = mock.calls.CoreInstancePing
 	mock.lockCoreInstancePing.RUnlock()
+	return calls
+}
+
+// CoreInstanceSecrets calls CoreInstanceSecretsFunc.
+func (mock *ClientMock) CoreInstanceSecrets(contextMoqParam context.Context, listCoreInstanceSecrets types.ListCoreInstanceSecrets) (types.CoreInstanceSecrets, error) {
+	callInfo := struct {
+		ContextMoqParam         context.Context
+		ListCoreInstanceSecrets types.ListCoreInstanceSecrets
+	}{
+		ContextMoqParam:         contextMoqParam,
+		ListCoreInstanceSecrets: listCoreInstanceSecrets,
+	}
+	mock.lockCoreInstanceSecrets.Lock()
+	mock.calls.CoreInstanceSecrets = append(mock.calls.CoreInstanceSecrets, callInfo)
+	mock.lockCoreInstanceSecrets.Unlock()
+	if mock.CoreInstanceSecretsFunc == nil {
+		var (
+			coreInstanceSecretsOut types.CoreInstanceSecrets
+			errOut                 error
+		)
+		return coreInstanceSecretsOut, errOut
+	}
+	return mock.CoreInstanceSecretsFunc(contextMoqParam, listCoreInstanceSecrets)
+}
+
+// CoreInstanceSecretsCalls gets all the calls that were made to CoreInstanceSecrets.
+// Check the length with:
+//
+//	len(mockedClient.CoreInstanceSecretsCalls())
+func (mock *ClientMock) CoreInstanceSecretsCalls() []struct {
+	ContextMoqParam         context.Context
+	ListCoreInstanceSecrets types.ListCoreInstanceSecrets
+} {
+	var calls []struct {
+		ContextMoqParam         context.Context
+		ListCoreInstanceSecrets types.ListCoreInstanceSecrets
+	}
+	mock.lockCoreInstanceSecrets.RLock()
+	calls = mock.calls.CoreInstanceSecrets
+	mock.lockCoreInstanceSecrets.RUnlock()
 	return calls
 }
 
@@ -3822,6 +4123,86 @@ func (mock *ClientMock) CreateCoreInstanceCheckCalls() []struct {
 	mock.lockCreateCoreInstanceCheck.RLock()
 	calls = mock.calls.CreateCoreInstanceCheck
 	mock.lockCreateCoreInstanceCheck.RUnlock()
+	return calls
+}
+
+// CreateCoreInstanceFile calls CreateCoreInstanceFileFunc.
+func (mock *ClientMock) CreateCoreInstanceFile(contextMoqParam context.Context, createCoreInstanceFile types.CreateCoreInstanceFile) (types.Created, error) {
+	callInfo := struct {
+		ContextMoqParam        context.Context
+		CreateCoreInstanceFile types.CreateCoreInstanceFile
+	}{
+		ContextMoqParam:        contextMoqParam,
+		CreateCoreInstanceFile: createCoreInstanceFile,
+	}
+	mock.lockCreateCoreInstanceFile.Lock()
+	mock.calls.CreateCoreInstanceFile = append(mock.calls.CreateCoreInstanceFile, callInfo)
+	mock.lockCreateCoreInstanceFile.Unlock()
+	if mock.CreateCoreInstanceFileFunc == nil {
+		var (
+			createdOut types.Created
+			errOut     error
+		)
+		return createdOut, errOut
+	}
+	return mock.CreateCoreInstanceFileFunc(contextMoqParam, createCoreInstanceFile)
+}
+
+// CreateCoreInstanceFileCalls gets all the calls that were made to CreateCoreInstanceFile.
+// Check the length with:
+//
+//	len(mockedClient.CreateCoreInstanceFileCalls())
+func (mock *ClientMock) CreateCoreInstanceFileCalls() []struct {
+	ContextMoqParam        context.Context
+	CreateCoreInstanceFile types.CreateCoreInstanceFile
+} {
+	var calls []struct {
+		ContextMoqParam        context.Context
+		CreateCoreInstanceFile types.CreateCoreInstanceFile
+	}
+	mock.lockCreateCoreInstanceFile.RLock()
+	calls = mock.calls.CreateCoreInstanceFile
+	mock.lockCreateCoreInstanceFile.RUnlock()
+	return calls
+}
+
+// CreateCoreInstanceSecret calls CreateCoreInstanceSecretFunc.
+func (mock *ClientMock) CreateCoreInstanceSecret(contextMoqParam context.Context, createCoreInstanceSecret types.CreateCoreInstanceSecret) (types.Created, error) {
+	callInfo := struct {
+		ContextMoqParam          context.Context
+		CreateCoreInstanceSecret types.CreateCoreInstanceSecret
+	}{
+		ContextMoqParam:          contextMoqParam,
+		CreateCoreInstanceSecret: createCoreInstanceSecret,
+	}
+	mock.lockCreateCoreInstanceSecret.Lock()
+	mock.calls.CreateCoreInstanceSecret = append(mock.calls.CreateCoreInstanceSecret, callInfo)
+	mock.lockCreateCoreInstanceSecret.Unlock()
+	if mock.CreateCoreInstanceSecretFunc == nil {
+		var (
+			createdOut types.Created
+			errOut     error
+		)
+		return createdOut, errOut
+	}
+	return mock.CreateCoreInstanceSecretFunc(contextMoqParam, createCoreInstanceSecret)
+}
+
+// CreateCoreInstanceSecretCalls gets all the calls that were made to CreateCoreInstanceSecret.
+// Check the length with:
+//
+//	len(mockedClient.CreateCoreInstanceSecretCalls())
+func (mock *ClientMock) CreateCoreInstanceSecretCalls() []struct {
+	ContextMoqParam          context.Context
+	CreateCoreInstanceSecret types.CreateCoreInstanceSecret
+} {
+	var calls []struct {
+		ContextMoqParam          context.Context
+		CreateCoreInstanceSecret types.CreateCoreInstanceSecret
+	}
+	mock.lockCreateCoreInstanceSecret.RLock()
+	calls = mock.calls.CreateCoreInstanceSecret
+	mock.lockCreateCoreInstanceSecret.RUnlock()
 	return calls
 }
 
@@ -4786,6 +5167,86 @@ func (mock *ClientMock) DeleteCoreInstanceCheckCalls() []struct {
 	mock.lockDeleteCoreInstanceCheck.RLock()
 	calls = mock.calls.DeleteCoreInstanceCheck
 	mock.lockDeleteCoreInstanceCheck.RUnlock()
+	return calls
+}
+
+// DeleteCoreInstanceFile calls DeleteCoreInstanceFileFunc.
+func (mock *ClientMock) DeleteCoreInstanceFile(contextMoqParam context.Context, s string) (types.Deleted, error) {
+	callInfo := struct {
+		ContextMoqParam context.Context
+		S               string
+	}{
+		ContextMoqParam: contextMoqParam,
+		S:               s,
+	}
+	mock.lockDeleteCoreInstanceFile.Lock()
+	mock.calls.DeleteCoreInstanceFile = append(mock.calls.DeleteCoreInstanceFile, callInfo)
+	mock.lockDeleteCoreInstanceFile.Unlock()
+	if mock.DeleteCoreInstanceFileFunc == nil {
+		var (
+			deletedOut types.Deleted
+			errOut     error
+		)
+		return deletedOut, errOut
+	}
+	return mock.DeleteCoreInstanceFileFunc(contextMoqParam, s)
+}
+
+// DeleteCoreInstanceFileCalls gets all the calls that were made to DeleteCoreInstanceFile.
+// Check the length with:
+//
+//	len(mockedClient.DeleteCoreInstanceFileCalls())
+func (mock *ClientMock) DeleteCoreInstanceFileCalls() []struct {
+	ContextMoqParam context.Context
+	S               string
+} {
+	var calls []struct {
+		ContextMoqParam context.Context
+		S               string
+	}
+	mock.lockDeleteCoreInstanceFile.RLock()
+	calls = mock.calls.DeleteCoreInstanceFile
+	mock.lockDeleteCoreInstanceFile.RUnlock()
+	return calls
+}
+
+// DeleteCoreInstanceSecret calls DeleteCoreInstanceSecretFunc.
+func (mock *ClientMock) DeleteCoreInstanceSecret(contextMoqParam context.Context, s string) (types.Deleted, error) {
+	callInfo := struct {
+		ContextMoqParam context.Context
+		S               string
+	}{
+		ContextMoqParam: contextMoqParam,
+		S:               s,
+	}
+	mock.lockDeleteCoreInstanceSecret.Lock()
+	mock.calls.DeleteCoreInstanceSecret = append(mock.calls.DeleteCoreInstanceSecret, callInfo)
+	mock.lockDeleteCoreInstanceSecret.Unlock()
+	if mock.DeleteCoreInstanceSecretFunc == nil {
+		var (
+			deletedOut types.Deleted
+			errOut     error
+		)
+		return deletedOut, errOut
+	}
+	return mock.DeleteCoreInstanceSecretFunc(contextMoqParam, s)
+}
+
+// DeleteCoreInstanceSecretCalls gets all the calls that were made to DeleteCoreInstanceSecret.
+// Check the length with:
+//
+//	len(mockedClient.DeleteCoreInstanceSecretCalls())
+func (mock *ClientMock) DeleteCoreInstanceSecretCalls() []struct {
+	ContextMoqParam context.Context
+	S               string
+} {
+	var calls []struct {
+		ContextMoqParam context.Context
+		S               string
+	}
+	mock.lockDeleteCoreInstanceSecret.RLock()
+	calls = mock.calls.DeleteCoreInstanceSecret
+	mock.lockDeleteCoreInstanceSecret.RUnlock()
 	return calls
 }
 
@@ -7818,6 +8279,86 @@ func (mock *ClientMock) UpdateCoreInstanceCheckCalls() []struct {
 	mock.lockUpdateCoreInstanceCheck.RLock()
 	calls = mock.calls.UpdateCoreInstanceCheck
 	mock.lockUpdateCoreInstanceCheck.RUnlock()
+	return calls
+}
+
+// UpdateCoreInstanceFile calls UpdateCoreInstanceFileFunc.
+func (mock *ClientMock) UpdateCoreInstanceFile(contextMoqParam context.Context, updateCoreInstanceFile types.UpdateCoreInstanceFile) (types.Updated, error) {
+	callInfo := struct {
+		ContextMoqParam        context.Context
+		UpdateCoreInstanceFile types.UpdateCoreInstanceFile
+	}{
+		ContextMoqParam:        contextMoqParam,
+		UpdateCoreInstanceFile: updateCoreInstanceFile,
+	}
+	mock.lockUpdateCoreInstanceFile.Lock()
+	mock.calls.UpdateCoreInstanceFile = append(mock.calls.UpdateCoreInstanceFile, callInfo)
+	mock.lockUpdateCoreInstanceFile.Unlock()
+	if mock.UpdateCoreInstanceFileFunc == nil {
+		var (
+			updatedOut types.Updated
+			errOut     error
+		)
+		return updatedOut, errOut
+	}
+	return mock.UpdateCoreInstanceFileFunc(contextMoqParam, updateCoreInstanceFile)
+}
+
+// UpdateCoreInstanceFileCalls gets all the calls that were made to UpdateCoreInstanceFile.
+// Check the length with:
+//
+//	len(mockedClient.UpdateCoreInstanceFileCalls())
+func (mock *ClientMock) UpdateCoreInstanceFileCalls() []struct {
+	ContextMoqParam        context.Context
+	UpdateCoreInstanceFile types.UpdateCoreInstanceFile
+} {
+	var calls []struct {
+		ContextMoqParam        context.Context
+		UpdateCoreInstanceFile types.UpdateCoreInstanceFile
+	}
+	mock.lockUpdateCoreInstanceFile.RLock()
+	calls = mock.calls.UpdateCoreInstanceFile
+	mock.lockUpdateCoreInstanceFile.RUnlock()
+	return calls
+}
+
+// UpdateCoreInstanceSecret calls UpdateCoreInstanceSecretFunc.
+func (mock *ClientMock) UpdateCoreInstanceSecret(contextMoqParam context.Context, updateCoreInstanceSecret types.UpdateCoreInstanceSecret) (types.Updated, error) {
+	callInfo := struct {
+		ContextMoqParam          context.Context
+		UpdateCoreInstanceSecret types.UpdateCoreInstanceSecret
+	}{
+		ContextMoqParam:          contextMoqParam,
+		UpdateCoreInstanceSecret: updateCoreInstanceSecret,
+	}
+	mock.lockUpdateCoreInstanceSecret.Lock()
+	mock.calls.UpdateCoreInstanceSecret = append(mock.calls.UpdateCoreInstanceSecret, callInfo)
+	mock.lockUpdateCoreInstanceSecret.Unlock()
+	if mock.UpdateCoreInstanceSecretFunc == nil {
+		var (
+			updatedOut types.Updated
+			errOut     error
+		)
+		return updatedOut, errOut
+	}
+	return mock.UpdateCoreInstanceSecretFunc(contextMoqParam, updateCoreInstanceSecret)
+}
+
+// UpdateCoreInstanceSecretCalls gets all the calls that were made to UpdateCoreInstanceSecret.
+// Check the length with:
+//
+//	len(mockedClient.UpdateCoreInstanceSecretCalls())
+func (mock *ClientMock) UpdateCoreInstanceSecretCalls() []struct {
+	ContextMoqParam          context.Context
+	UpdateCoreInstanceSecret types.UpdateCoreInstanceSecret
+} {
+	var calls []struct {
+		ContextMoqParam          context.Context
+		UpdateCoreInstanceSecret types.UpdateCoreInstanceSecret
+	}
+	mock.lockUpdateCoreInstanceSecret.RLock()
+	calls = mock.calls.UpdateCoreInstanceSecret
+	mock.lockUpdateCoreInstanceSecret.RUnlock()
 	return calls
 }
 
