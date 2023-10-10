@@ -205,7 +205,6 @@ spec:
                   type: object
                 type: array
               replicasCount:
-                default: 1
                 format: int32
                 type: integer
               resources:
@@ -242,6 +241,7 @@ spec:
                 type: object
             required:
             - kind
+            - replicasCount
             type: object
           status:
             description: PipelineStatus defines the observed state of Pipeline

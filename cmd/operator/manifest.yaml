@@ -219,7 +219,6 @@ spec:
                   type: object
                 type: array
               replicasCount:
-                default: 1
                 format: int32
                 type: integer
               resources:
@@ -256,6 +255,7 @@ spec:
                 type: object
             required:
             - kind
+            - replicasCount
             type: object
           status:
             description: PipelineStatus defines the observed state of Pipeline
@@ -827,7 +827,7 @@ spec:
       containers:
       - command:
         - /manager
-        image: ghcr.io/calyptia/core-operator:v2.0.8
+        image: ghcr.io/calyptia/core-operator:v2.0.9
         livenessProbe:
           httpGet:
             path: /healthz
