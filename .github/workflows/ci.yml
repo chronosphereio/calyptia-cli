@@ -191,6 +191,14 @@ jobs:
           gpg_private_key: ${{ secrets.CALYPTIA_GPG_KEY }}
           passphrase: ${{ secrets.CALYPTIA_GPG_KEY_PASSPHRASE }}
 
+      - name: Update the upx version
+        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+        run: |
+          curl --silent -L https://github.com/upx/upx/releases/download/v4.1.0/upx-4.1.0-arm64_linux.tar.xz | tar -xJf - upx-4.1.0-arm64_linux/upx -O > upx 
+          sudo mv upx /bin/
+          sudo chmod a+x /bin/upx
+        shell: bash
+
       - name: Run GoReleaser
         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         uses: goreleaser/goreleaser-action@v4
