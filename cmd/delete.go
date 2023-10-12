@@ -25,6 +25,7 @@ func newCmdDelete(config *cfg.Config) *cobra.Command {
 		agent.NewCmdDeleteAgents(config),
 		agent.NewCmdDeleteAgent(config),
 		fleet.NewCmdDeleteFleet(config),
+		fleet.NewCmdDeleteFleetFile(config),
 		pipeline.NewCmdDeletePipeline(config),
 		pipeline.NewCmdDeletePipelines(config),
 		endpoint.NewCmdDeleteEndpoint(config),
