@@ -13,6 +13,10 @@ on:
         description: The new version to specify.
         required: true
         type: string
+      manifest-artefact:
+        description: The artefact to download with the manifest in it.
+        required: true
+        type: string
     secrets:
       token:
         description: The Github token or similar to authenticate with for the code.
@@ -41,6 +45,11 @@ jobs:
         env:
           NEW_VERSION: ${{ inputs.core-operator-version }}
         shell: bash
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: ${{ inputs.manifest-artefact }}
+          path: cmd/operator
 
       - name: Generate PR
         id: cpr
