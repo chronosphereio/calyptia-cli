@@ -23,7 +23,7 @@ import (
 func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 	var newName string
 	var newConfigFile string
-	var newReplicasCount uint
+	var newReplicasCount int
 	var autoCreatePortsFromConfig bool
 	var skipConfigValidation bool
 	var secretsFile string
@@ -35,6 +35,7 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 	var metadataPairs []string
 	var metadataFile string
 	var providedConfigFormat string
+	var deploymentStrategy string
 
 	completer := completer.Completer{Config: config}
 
@@ -124,12 +125,27 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 				Files:                     updatePipelineFiles,
 				Metadata:                  metadata,
 			}
+
+			var strategy *cloud.DeploymentStrategy
+			if deploymentStrategy != "" {
+				if !isValidDeploymentStrategy(deploymentStrategy) {
+					return fmt.Errorf("invalid provided deployment strategy: %s", deploymentStrategy)
+				}
+				s := cloud.DeploymentStrategy(deploymentStrategy)
+				strategy = &s
+			}
+
+			if strategy != nil {
+				update.DeploymentStrategy = strategy
+			}
+
 			if newName != "" {
 				update.Name = &newName
 			}
-			if newReplicasCount != 0 {
-				update.ReplicasCount = &newReplicasCount
+			if newReplicasCount >= 0 {
+				update.ReplicasCount = cfg.Ptr(uint(newReplicasCount))
 			}
+
 			if rawConfig != "" {
 				update.RawConfig = &rawConfig
 			}
@@ -172,11 +188,12 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 	fs.StringVar(&newName, "new-name", "", "New pipeline name")
 	fs.StringVar(&newConfigFile, "config-file", "", "New Fluent Bit config file used by pipeline")
 	fs.StringVar(&providedConfigFormat, "config-format", "", "Default configuration format to use (yaml, ini(deprecated))")
-	fs.UintVar(&newReplicasCount, "replicas", 0, "New pipeline replica size")
+	fs.IntVar(&newReplicasCount, "replicas", -1, "New pipeline replica size")
 	fs.BoolVar(&autoCreatePortsFromConfig, "auto-create-ports", true, "Automatically create pipeline ports from config if updated")
 	fs.BoolVar(&skipConfigValidation, "skip-config-validation", false, "Opt-in to skip config validation (Use with caution as this option might be removed soon)")
 	fs.StringVar(&secretsFile, "secrets-file", "", "Optional file containing a full definition of all secrets.\nThe format is derived either from the extension or the --secrets-format argument.\nThese can be referenced in pipeline files as such:\n{{ secrets.name }}\nThe prefix is the same for all secrets, the name is defined in the secrets file.")
 	fs.StringVar(&secretsFormat, "secrets-format", "auto", "Secrets file format. Allowed: auto, env, json, yaml. If not set it is derived from secrets file extension")
+	fs.StringVar(&deploymentStrategy, "deployment-strategy", "", "The deployment strategy to use when deploying this pipeline in cluster (hotReload or recreate (default)).")
 	fs.StringArrayVar(&files, "file", nil, "Optional file. You can reference this file contents from your config like so:\n{{ files.myfile }}\nPass as many as you want; bear in mind the file name can only contain alphanumeric characters.")
 	fs.BoolVar(&encryptFiles, "encrypt-files", false, "Encrypt file contents")
 	fs.StringVar(&image, "image", "", "Fluent-bit docker image")

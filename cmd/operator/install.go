@@ -2,34 +2,47 @@ package operator
 
 import (
 	"context"
+	"embed"
+	_ "embed"
 	"errors"
 	"fmt"
 	"strconv"
 	"time"
 
-	"github.com/calyptia/cli/cmd/utils"
 	"gopkg.in/yaml.v3"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 
+	"github.com/calyptia/cli/cmd/utils"
+
 	"os"
 	"regexp"
 	"strings"
 
-	"github.com/calyptia/cli/k8s"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	apiv1 "k8s.io/api/core/v1"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
 	"k8s.io/component-base/logs"
 	kubectl "k8s.io/kubectl/pkg/cmd"
+
+	"github.com/calyptia/cli/k8s"
 )
 
+//go:embed manifest.yaml
+var f embed.FS
+
+const manifestFile = "manifest.yaml"
+
 func NewCmdInstall() *cobra.Command {
-	var coreInstanceVersion string
-	var coreDockerImage string
-	var waitReady bool
+	var (
+		coreInstanceVersion string
+		coreDockerImage     string
+		isNonInteractive    bool
+		waitReady           bool
+		confirmed           bool
+	)
 
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	configOverrides := &clientcmd.ConfigOverrides{}
@@ -40,10 +53,17 @@ func NewCmdInstall() *cobra.Command {
 		Short:   "Setup a new core operator instance",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			kctl := newKubectlCmd()
-			namespace := cmd.Flag("kube-namespace").Value.String()
+			var namespace string
+
+			kubeNamespaceFlag := cmd.Flag("kube-namespace")
+			if kubeNamespaceFlag != nil {
+				namespace = kubeNamespaceFlag.Value.String()
+			}
+
 			if namespace == "" {
 				namespace = apiv1.NamespaceDefault
 			}
+
 			n, err := k8s.GetCurrentContextNamespace()
 			if err != nil {
 				if errors.Is(err, k8s.ErrNoContext) {
@@ -68,11 +88,37 @@ func NewCmdInstall() *cobra.Command {
 			}
 			k := &k8s.Client{
 				Interface: clientSet,
+				Config:    kubeClientConfig,
 			}
+			if !confirmed {
+				isInstalled, err := k.IsOperatorInstalled(cmd.Context())
+				if isInstalled {
+					if e, ok := err.(*k8s.OperatorIncompleteError); ok {
+						cmd.Printf("Previous operator installation components found:\n%s\n", e.Error())
+						cmd.Printf("Are you sure you want to proceed? (y/N) ")
+						var answer string
+						_, err := fmt.Scanln(&answer)
+						if err != nil && err.Error() == "unexpected newline" {
+							err = nil
+						}
+
+						if err != nil {
+							return fmt.Errorf("could not to read answer: %v", err)
+						}
+
+						answer = strings.TrimSpace(strings.ToLower(answer))
+						if answer != "y" && answer != "yes" {
+							return nil
+						}
+					}
+				}
+			}
+
 			_, err = k.GetNamespace(context.Background(), namespace)
 			if err != nil && !k8serrors.IsNotFound(err) {
 				return err
 			}
+
 			yaml, err := prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace, k8serrors.IsNotFound(err))
 			defer os.RemoveAll(yaml)
 			if err != nil {
@@ -92,7 +138,7 @@ func NewCmdInstall() *cobra.Command {
 				}
 				start := time.Now()
 				fmt.Printf("Waiting for core operator manager to be ready...\n")
-				err = k.WaitReady(context.Background(), namespace, deployment)
+				err = k.WaitReady(context.Background(), namespace, deployment, false)
 				if err != nil {
 					return err
 				}
@@ -106,8 +152,9 @@ func NewCmdInstall() *cobra.Command {
 
 	fs := cmd.Flags()
 
+	fs.BoolVarP(&confirmed, "yes", "y", isNonInteractive, "Confirm install")
 	fs.BoolVar(&waitReady, "wait", false, "Wait for the core instance to be ready before returning")
-	fs.StringVar(&coreInstanceVersion, "version", utils.DefaultCoreOperatorDockerImageTag, "Core instance version")
+	fs.StringVar(&coreInstanceVersion, "version", "", "Core instance version")
 	fs.StringVar(&coreDockerImage, "image", utils.DefaultCoreOperatorDockerImage, "Calyptia core manager docker image to use (fully composed docker image).")
 	_ = cmd.Flags().MarkHidden("image")
 	clientcmd.BindOverrideFlags(configOverrides, fs, clientcmd.RecommendedConfigOverrideFlags("kube-"))
@@ -141,14 +188,12 @@ func extractDeployment(yml string) (string, error) {
 }
 
 func prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace string, createNamespace bool) (string, error) {
-	file, err := k8s.GetOperatorManifest(coreInstanceVersion)
+	file, err := f.ReadFile(manifestFile)
 	if err != nil {
 		return "", err
 	}
-
 	fullFile := string(file)
 	solveNamespace := solveNamespaceCreation(createNamespace, fullFile, namespace)
-
 	withNamespace := injectNamespace(solveNamespace, namespace)
 
 	withImage, err := addImage(coreDockerImage, coreInstanceVersion, withNamespace)
@@ -162,6 +207,9 @@ func prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace stri
 	}
 
 	temp, err := os.CreateTemp(dir, "operator_*.yaml")
+	if err != nil {
+		return "", err
+	}
 
 	_, err = temp.WriteString(withImage)
 	if err != nil {
@@ -183,14 +231,17 @@ func solveNamespaceCreation(createNamespace bool, fullFile string, namespace str
 }
 
 func addImage(coreDockerImage, coreInstanceVersion, file string) (string, error) {
-	const pattern string = `image:\s*ghcr.io/calyptia/core-operator:[^\n\r]*`
-	reImagePattern := regexp.MustCompile(pattern)
-	match := reImagePattern.FindString(file)
-	if match == "" {
-		return "", errors.New("could not find image in manifest")
+	if coreInstanceVersion != "" {
+		const pattern string = `image:\s*ghcr.io/calyptia/core-operator:[^\n\r]*`
+		reImagePattern := regexp.MustCompile(pattern)
+		match := reImagePattern.FindString(file)
+		if match == "" {
+			return "", errors.New("could not find image in manifest")
+		}
+		updatedMatch := fmt.Sprintf("image: %s:%s", coreDockerImage, coreInstanceVersion) // Remove '\n' at the end
+		return reImagePattern.ReplaceAllString(file, updatedMatch), nil
 	}
-	updatedMatch := fmt.Sprintf("image: %s:%s", coreDockerImage, coreInstanceVersion) // Remove '\n' at the end
-	return reImagePattern.ReplaceAllString(file, updatedMatch), nil
+	return file, nil
 }
 
 func injectNamespace(s string, namespace string) string {

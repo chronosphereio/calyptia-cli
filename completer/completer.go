@@ -178,6 +178,20 @@ func (c *Completer) CompleteCoreContainerVersion(cmd *cobra.Command, args []stri
 	return vv, cobra.ShellCompDirectiveNoFileComp
 }
 
+func (c *Completer) CompleteCoreOperatorVersion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	operatorIndex, err := index.NewOperator()
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveError
+	}
+
+	vv, err := operatorIndex.All(c.Config.Ctx)
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveError
+	}
+
+	return vv, cobra.ShellCompDirectiveNoFileComp
+}
+
 func (c *Completer) CompletePipelines(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	pp, err := c.FetchAllPipelines()
 	if err != nil {

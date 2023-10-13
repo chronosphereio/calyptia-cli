@@ -2,11 +2,11 @@ package operator
 
 import (
 	"fmt"
-	"github.com/calyptia/cli/k8s"
-	"io/ioutil"
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/calyptia/cli/k8s"
 )
 
 func TestAddImage(t *testing.T) {
@@ -137,7 +137,7 @@ spec:
 			t.Errorf("Expected no error, but got: %v", err)
 		}
 
-		actualFileContents, _ := ioutil.ReadFile(resultFile)
+		actualFileContents, _ := os.ReadFile(resultFile)
 
 		result := string(actualFileContents)
 		if strings.Contains(result, fmt.Sprintf("image: %s:%s", coreDockerImage, coreInstanceVersion)) == false {

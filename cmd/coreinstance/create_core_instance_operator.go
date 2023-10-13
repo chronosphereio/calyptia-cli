@@ -6,12 +6,6 @@ import (
 	"fmt"
 	"time"
 
-	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/cmd/utils"
-	"github.com/calyptia/cli/cmd/version"
-	"github.com/calyptia/cli/completer"
-	cfg "github.com/calyptia/cli/config"
-	"github.com/calyptia/cli/k8s"
 	"github.com/spf13/cobra"
 	apiv1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -19,6 +13,13 @@ import (
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp" // register GCP auth provider
 	restclient "k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
+
+	cloud "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/cmd/utils"
+	"github.com/calyptia/cli/cmd/version"
+	"github.com/calyptia/cli/completer"
+	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/k8s"
 )
 
 func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernetes.Interface) *cobra.Command {
@@ -157,25 +158,27 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				return map[string]string{
 					k8s.LabelVersion:      version.Version,
 					k8s.LabelPartOf:       "calyptia",
+					k8s.LabelComponent:    "operator",
 					k8s.LabelManagedBy:    "calyptia-cli",
 					k8s.LabelCreatedBy:    "calyptia-cli",
 					k8s.LabelProjectID:    config.ProjectID,
 					k8s.LabelAggregatorID: created.ID,
 				}
 			}
+
 			k8sClient.LabelsFunc = labelsFunc
 
 			var resourcesCreated []k8s.ResourceRollBack
 			secret, err := k8sClient.CreateSecretOperatorRSAKey(ctx, created, dryRun)
 			if err != nil {
-				fmt.Printf("An error occurred while creating the core operator instance. %w Rolling back created resources.\n", err)
+				fmt.Printf("An error occurred while creating the core operator instance. %s Rolling back created resources.\n", err)
 				resources, err := k8sClient.DeleteResources(ctx, resourcesCreated)
 				if err != nil {
 					return fmt.Errorf("could not delete resources: %w", err)
 				}
 				fmt.Printf("Rollback successful. Deleted %d resources.\n", len(resources))
 			}
-			err = addToRollBack(err, secret.Name, secret, resourcesCreated)
+			err = addToRollBack(err, secret.Name, secret, &resourcesCreated)
 			if err != nil {
 				return err
 			}
@@ -183,7 +186,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 			var clusterRoleOpts k8s.ClusterRoleOpt
 			clusterRole, err := k8sClient.CreateClusterRole(ctx, created, dryRun, clusterRoleOpts)
 			if err != nil {
-				fmt.Printf("An error occurred while creating the core operator instance. %w Rolling back created resources.\n", err)
+				fmt.Printf("An error occurred while creating the core operator instance. %s Rolling back created resources.\n", err)
 				resources, err := k8sClient.DeleteResources(ctx, resourcesCreated)
 				if err != nil {
 					return fmt.Errorf("could not delete resources: %w", err)
@@ -191,14 +194,14 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				fmt.Printf("Rollback successful. Deleted %d resources.\n", len(resources))
 			}
 
-			err = addToRollBack(err, clusterRole.Name, clusterRole, resourcesCreated)
+			err = addToRollBack(err, clusterRole.Name, clusterRole, &resourcesCreated)
 			if err != nil {
 				return err
 			}
 
 			serviceAccount, err := k8sClient.CreateServiceAccount(ctx, created, dryRun)
 			if err != nil {
-				fmt.Printf("An error occurred while creating the core operator instance. %w Rolling back created resources.\n", err)
+				fmt.Printf("An error occurred while creating the core operator instance. %s Rolling back created resources.\n", err)
 				resources, err := k8sClient.DeleteResources(ctx, resourcesCreated)
 				if err != nil {
 					return fmt.Errorf("could not delete resources: %w", err)
@@ -206,14 +209,14 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				fmt.Printf("Rollback successful. Deleted %d resources.\n", len(resources))
 			}
 
-			err = addToRollBack(err, serviceAccount.Name, serviceAccount, resourcesCreated)
+			err = addToRollBack(err, serviceAccount.Name, serviceAccount, &resourcesCreated)
 			if err != nil {
 				return err
 			}
 
 			binding, err := k8sClient.CreateClusterRoleBinding(ctx, created, clusterRole, serviceAccount, dryRun)
 			if err != nil {
-				fmt.Printf("An error occurred while creating the core operator instance. %w Rolling back created resources.\n", err)
+				fmt.Printf("An error occurred while creating the core operator instance. %s Rolling back created resources.\n", err)
 				resources, err := k8sClient.DeleteResources(ctx, resourcesCreated)
 				if err != nil {
 					return fmt.Errorf("could not delete resources: %w", err)
@@ -221,7 +224,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				fmt.Printf("Rollback successful. Deleted %d resources.\n", len(resources))
 			}
 
-			err = addToRollBack(err, serviceAccount.Name, binding, resourcesCreated)
+			err = addToRollBack(err, serviceAccount.Name, binding, &resourcesCreated)
 			if err != nil {
 				return err
 			}
@@ -244,7 +247,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 
 			syncDeployment, err := k8sClient.DeployCoreOperatorSync(ctx, coreCloudURL, coreDockerFromCloudImage, coreDockerToCloudImage, metricsPort, !noTLSVerify, created, serviceAccount.Name)
 			if err != nil {
-				fmt.Printf("An error occurred while creating the core operator instance. %w Rolling back created resources.\n", err)
+				fmt.Printf("An error occurred while creating the core operator instance. %s Rolling back created resources.\n", err)
 				resources, err := k8sClient.DeleteResources(ctx, resourcesCreated)
 				if err != nil {
 					return fmt.Errorf("could not delete resources: %w", err)
@@ -255,14 +258,14 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 			if waitReady {
 				start := time.Now()
 				fmt.Printf("Waiting for core instance to be ready...\n")
-				err := k8sClient.WaitReady(ctx, syncDeployment.Namespace, syncDeployment.Name)
+				err := k8sClient.WaitReady(ctx, syncDeployment.Namespace, syncDeployment.Name, false)
 				if err != nil {
 					return err
 				}
 				fmt.Printf("Core instance is ready. Took %s\n", time.Since(start))
 			}
 
-			err = addToRollBack(err, serviceAccount.Name, syncDeployment, resourcesCreated)
+			err = addToRollBack(err, serviceAccount.Name, syncDeployment, &resourcesCreated)
 			if err != nil {
 				return err
 			}
@@ -316,12 +319,18 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 	return cmd
 }
 
-func addToRollBack(err error, name string, obj runtime.Object, resourcesCreated []k8s.ResourceRollBack) error {
+func addToRollBack(err error, name string, obj runtime.Object, resourcesCreated *[]k8s.ResourceRollBack) error {
+	if err != nil {
+		return err
+	}
+
 	r, err := extractRollBack(name, obj)
 	if err != nil {
 		return err
 	}
-	resourcesCreated = append(resourcesCreated, r)
+
+	*resourcesCreated = append(*resourcesCreated, r)
+
 	return nil
 }
 

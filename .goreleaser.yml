@@ -3,6 +3,13 @@ blobs:
     bucket: calyptia_cli_bucket
     folder: "releases/{{.Version}}"
 
+upx:
+  -
+    ids: [ calyptia ]
+    enabled: true
+    goos: [ linux, windows ] # skip darwin (macOS 13.x Ventura is not support now)
+    goarch: [ amd64, arm64 ]
+
 builds:
   - main: .
     id: calyptia
@@ -11,6 +18,8 @@ builds:
     binary: calyptia
     ldflags:
       - -s -w -X github.com/calyptia/cli/cmd/version.Version={{.Version}}
+    gcflags:
+      - all=-C -l -B
     targets:
       - darwin_amd64
       - darwin_arm64
@@ -25,7 +34,7 @@ brews:
   - name: calyptia
     description: Calyptia Cloud CLI
     homepage: https://github.com/calyptia/cli
-    tap:
+    repository:
       owner: calyptia
       name: homebrew-tap
     folder: Formula

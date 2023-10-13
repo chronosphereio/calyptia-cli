@@ -15,13 +15,112 @@ import (
 	"github.com/Masterminds/sprig/v3"
 	"github.com/hako/durafmt"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 
 	"github.com/calyptia/api/types"
 	"github.com/calyptia/cli/helpers"
 )
 
+type OutputFormat string
+
+const (
+	OutputFormatTable      OutputFormat = "table"
+	OutputFormatJSON       OutputFormat = "json"
+	OutputFormatYAML       OutputFormat = "yaml"
+	OutputFormatGoTmpl     OutputFormat = "go-template"
+	OutputFormatGoTmplFile OutputFormat = "go-template-file"
+)
+
+func (o OutputFormat) String() string {
+	return string(o)
+}
+
+func ShouldApplyTemplating(fmt OutputFormat) (func(w io.Writer, tmpl string, data any) error, bool) {
+	return func(w io.Writer, tmpl string, data any) error {
+		return ApplyGoTemplate(w, fmt.String(), tmpl, data)
+	}, fmt == OutputFormatGoTmpl || fmt == OutputFormatGoTmplFile
+}
+
+func RenderWithTemplating(w io.Writer, format OutputFormat, tmpl string, data any) error {
+	return ApplyGoTemplate(w, format.String(), tmpl, data)
+}
+
+func OutputFormatFromFlags(fs *pflag.FlagSet) OutputFormat {
+	if !fs.Changed("output-format") {
+		return OutputFormatTable
+	}
+
+	outputFormat, err := fs.GetString("output-format")
+	if err != nil {
+		return OutputFormatTable
+	}
+
+	switch outputFormat {
+	case "json":
+		return OutputFormatJSON
+	case "yaml", "yml":
+		return OutputFormatYAML
+	case "go-template":
+		return OutputFormatGoTmpl
+	case "go-template-file":
+		return OutputFormatGoTmplFile
+	default:
+		return OutputFormatTable
+	}
+}
+
+func TemplateFromFlags(fs *pflag.FlagSet) string {
+	if !fs.Changed("template") {
+		return ""
+	}
+
+	template, err := fs.GetString("template")
+	if err != nil {
+		return ""
+	}
+
+	return template
+}
+
 func CompleteOutputFormat(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
-	return []string{"table", "json", "yaml", "go-template"}, cobra.ShellCompDirectiveNoFileComp
+	return []string{"table", "json", "yaml", "go-template", "go-template-file"}, cobra.ShellCompDirectiveNoFileComp
+}
+
+func RenderCreated(w io.Writer, created types.Created) error {
+	tw := tabwriter.NewWriter(w, 0, 4, 1, ' ', 0)
+	fmt.Fprintln(tw, "ID\tCREATED-AT")
+	fmt.Fprintf(tw, "%s\t%s\n", created.ID, created.CreatedAt.Format(time.RFC3339))
+	return tw.Flush()
+}
+
+func RenderUpdated(w io.Writer, updated types.Updated) error {
+	tw := tabwriter.NewWriter(w, 0, 4, 1, ' ', 0)
+	fmt.Fprintln(tw, "UPDATED-AT")
+	fmt.Fprintf(tw, "%s\n", updated.UpdatedAt.Format(time.RFC3339))
+	return tw.Flush()
+}
+
+func RenderDeleted(w io.Writer, deleted types.Deleted) error {
+	tw := tabwriter.NewWriter(w, 0, 4, 1, ' ', 0)
+	fmt.Fprint(tw, "DELETED")
+	if deleted.DeletedAt != nil {
+		fmt.Fprintf(tw, "\tDELETED-AT")
+	}
+	fmt.Fprint(tw, "\n")
+
+	fmt.Fprintf(tw, "%v", deleted.Deleted)
+	if deleted.DeletedAt != nil {
+		fmt.Fprintf(tw, "\t%s", deleted.DeletedAt.Format(time.RFC3339))
+	}
+	fmt.Fprint(tw, "\n")
+	return tw.Flush()
+}
+
+func BindFormatFlags(cmd *cobra.Command) {
+	fs := cmd.Flags()
+	fs.StringP("output-format", "o", "table", "Output format. One of: table|json|yaml|go-template|go-template-file")
+	fs.String("template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
+	_ = cmd.RegisterFlagCompletionFunc("output-format", CompleteOutputFormat)
 }
 
 func ConfigSectionKindName(cs types.ConfigSection) string {

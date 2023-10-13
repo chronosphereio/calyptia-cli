@@ -211,7 +211,7 @@ jobs:
     runs-on: actuated-4cpu-16gb
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -241,7 +241,7 @@ jobs:
 
       - name: Extract image metadata
         id: meta-github-image
-        uses: docker/metadata-action@v4
+        uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ github.repository }}
           tags: |
@@ -273,14 +273,49 @@ jobs:
           gpg_private_key: ${{ secrets.CALYPTIA_GPG_KEY }}
           passphrase: ${{ secrets.CALYPTIA_GPG_KEY_PASSPHRASE }}
 
+      - name: Update the upx version
+        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+        run: |
+          curl --silent -L https://github.com/upx/upx/releases/download/v4.1.0/upx-4.1.0-arm64_linux.tar.xz | tar -xJf - upx-4.1.0-arm64_linux/upx -O > upx
+          sudo mv upx /bin/
+          sudo chmod a+x /bin/upx
+        shell: bash
+
       - name: Run GoReleaser
         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         uses: goreleaser/goreleaser-action@v4
         with:
           version: latest
           distribution: goreleaser-pro
-          args: release --skip-validate --rm-dist
+          args: release --skip-validate --clean
         env:
           GITHUB_TOKEN: ${{ secrets.CI_PAT }}
           GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
           GORELEASER_KEY: ${{ secrets.GORELEASER_PRO_KEY }}
+
+      - name: Get numeric release version
+        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+        id: version
+        run: |
+          VERSION=${{ github.ref_name }}
+          echo "Handle version string with or without a v prefix"
+          if [[ "$VERSION" =~ ^v?([0-9]+\.[0-9]+\.[0-9]+)$ ]] ; then
+            VERSION=${BASH_REMATCH[1]}
+            echo "Valid version string: $VERSION"
+          else
+            echo "ERROR: Invalid semver string: $VERSION"
+          fi
+          export "version=$VERSION" >> $GITHUB_OUTPUT
+        shell: bash
+
+  update-core-product-release:
+    name: Push new version to core-product-release
+    if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+    needs:
+      - release
+    uses: calyptia/core-product-release/.github/workflows/update-product-version.yaml@main
+    with:
+      product: cli
+      version: ${{ needs.release.outputs.version }}
+    secrets:
+      token: ${{ secrets.CI_PAT }}

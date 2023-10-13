@@ -11,8 +11,10 @@ import (
 	"time"
 
 	goversion "github.com/hashicorp/go-version"
+	apiErrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/client-go/dynamic"
 	restclient "k8s.io/client-go/rest"
@@ -22,12 +24,14 @@ import (
 
 	appsv1 "k8s.io/api/apps/v1"
 	apiv1 "k8s.io/api/core/v1"
+	corev1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
-	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
+	k8sclient "sigs.k8s.io/controller-runtime/pkg/client"
 
 	cloud "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/cmd/utils"
 )
 
 type objectType string
@@ -39,8 +43,10 @@ const (
 	secretObjectType              objectType = "secret"
 	serviceAccountObjectType      objectType = "service-account"
 	coreTLSVerifyEnvVar           string     = "CORE_TLS_VERIFY"
+	syncTLSVerifyEnvVar           string     = "NO_TLS_VERIFY"
 	coreSkipServiceCreationEnvVar string     = "CORE_INSTANCE_SKIP_SERVICE_CREATION"
 	defaultOperatorNamespace                 = "calyptia-core"
+	noContainersErrString                    = "no containers found in deployment %s"
 )
 
 var (
@@ -93,7 +99,7 @@ func (client *Client) EnsureOwnNamespace(ctx context.Context) error {
 
 func (client *Client) ownNamespaceExists(ctx context.Context) (bool, error) {
 	_, err := client.CoreV1().Namespaces().Get(ctx, client.Namespace, metav1.GetOptions{})
-	if k8serrors.IsNotFound(err) {
+	if apiErrors.IsNotFound(err) {
 		return false, nil
 	}
 
@@ -364,7 +370,7 @@ func (client *Client) DeleteDeploymentByLabel(ctx context.Context, label, ns str
 	err := client.AppsV1().Deployments(ns).DeleteCollection(ctx, metav1.DeleteOptions{
 		PropagationPolicy: &foreground,
 	}, metav1.ListOptions{LabelSelector: label})
-	if k8serrors.IsNotFound(err) {
+	if apiErrors.IsNotFound(err) {
 		return nil
 	}
 	return err
@@ -375,7 +381,7 @@ func (client *Client) DeleteDaemonSetByLabel(ctx context.Context, label, ns stri
 	err := client.AppsV1().DaemonSets(ns).DeleteCollection(ctx, metav1.DeleteOptions{
 		PropagationPolicy: &foreground,
 	}, metav1.ListOptions{LabelSelector: label})
-	if k8serrors.IsNotFound(err) {
+	if apiErrors.IsNotFound(err) {
 		return nil
 	}
 	return err
@@ -383,7 +389,7 @@ func (client *Client) DeleteDaemonSetByLabel(ctx context.Context, label, ns stri
 
 func (client *Client) DeleteClusterRoleByLabel(ctx context.Context, label string) error {
 	err := client.RbacV1().ClusterRoles().DeleteCollection(ctx, metav1.DeleteOptions{}, metav1.ListOptions{LabelSelector: label})
-	if k8serrors.IsNotFound(err) {
+	if apiErrors.IsNotFound(err) {
 		return nil
 	}
 	return err
@@ -391,7 +397,7 @@ func (client *Client) DeleteClusterRoleByLabel(ctx context.Context, label string
 
 func (client *Client) DeleteServiceAccountByLabel(ctx context.Context, label, ns string) error {
 	err := client.CoreV1().ServiceAccounts(ns).DeleteCollection(ctx, metav1.DeleteOptions{}, metav1.ListOptions{LabelSelector: label})
-	if k8serrors.IsNotFound(err) {
+	if apiErrors.IsNotFound(err) {
 		return nil
 	}
 	return err
@@ -399,7 +405,7 @@ func (client *Client) DeleteServiceAccountByLabel(ctx context.Context, label, ns
 
 func (client *Client) DeleteRoleBindingByLabel(ctx context.Context, label string) error {
 	err := client.RbacV1().ClusterRoleBindings().DeleteCollection(ctx, metav1.DeleteOptions{}, metav1.ListOptions{LabelSelector: label})
-	if k8serrors.IsNotFound(err) {
+	if apiErrors.IsNotFound(err) {
 		return nil
 	}
 	return err
@@ -407,7 +413,7 @@ func (client *Client) DeleteRoleBindingByLabel(ctx context.Context, label string
 
 func (client *Client) DeleteServiceByName(ctx context.Context, name, ns string) error {
 	err := client.CoreV1().Services(ns).Delete(ctx, name, metav1.DeleteOptions{})
-	if k8serrors.IsNotFound(err) {
+	if apiErrors.IsNotFound(err) {
 		return nil
 	}
 	return err
@@ -415,7 +421,7 @@ func (client *Client) DeleteServiceByName(ctx context.Context, name, ns string) 
 
 func (client *Client) DeleteSecretByLabel(ctx context.Context, label, ns string) error {
 	err := client.CoreV1().Secrets(ns).DeleteCollection(ctx, metav1.DeleteOptions{}, metav1.ListOptions{LabelSelector: label})
-	if k8serrors.IsNotFound(err) {
+	if apiErrors.IsNotFound(err) {
 		return nil
 	}
 	return err
@@ -423,7 +429,7 @@ func (client *Client) DeleteSecretByLabel(ctx context.Context, label, ns string)
 
 func (client *Client) DeleteConfigMapsByLabel(ctx context.Context, label, ns string) error {
 	err := client.CoreV1().ConfigMaps(ns).DeleteCollection(ctx, metav1.DeleteOptions{}, metav1.ListOptions{LabelSelector: label})
-	if k8serrors.IsNotFound(err) {
+	if apiErrors.IsNotFound(err) {
 		return nil
 	}
 	return err
@@ -443,7 +449,7 @@ func (client *Client) UpdateDeploymentByLabel(ctx context.Context, label, newIma
 	}
 	deployment := deploymentList.Items[0]
 	if len(deployment.Spec.Template.Spec.Containers) == 0 {
-		return fmt.Errorf("no container found in deployment %s", deployment.Name)
+		return fmt.Errorf(noContainersErrString, deployment.Name)
 	}
 
 	deployment.Spec.Template.Spec.Containers[0].Image = newImage
@@ -452,7 +458,81 @@ func (client *Client) UpdateDeploymentByLabel(ctx context.Context, label, newIma
 
 	found := false
 	for idx, envVar := range envVars {
-		if envVar.Name == coreTLSVerifyEnvVar {
+		if envVar.Name == coreTLSVerifyEnvVar || envVar.Name == syncTLSVerifyEnvVar {
+			if envVar.Value != tlsVerify {
+				envVars[idx].Value = tlsVerify
+			}
+			found = true
+		}
+	}
+
+	if !found {
+		envVars = append(envVars, apiv1.EnvVar{
+			Name:  syncTLSVerifyEnvVar,
+			Value: tlsVerify,
+		})
+	}
+
+	deployment.Spec.Template.Spec.Containers[0].Env = envVars
+
+	_, err = client.AppsV1().Deployments(client.Namespace).Update(ctx, &deployment, metav1.UpdateOptions{})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (client *Client) UpdateSyncDeploymentByLabel(ctx context.Context, label, newImage, tlsVerify string, verbose bool) error {
+	deploymentList, err := client.FindDeploymentByLabel(ctx, label)
+	if err != nil {
+		return err
+	}
+	if len(deploymentList.Items) == 0 {
+		return fmt.Errorf("no deployment found with label %s", label)
+	}
+	deployment := deploymentList.Items[0]
+	if len(deployment.Spec.Template.Spec.Containers) == 0 {
+		return fmt.Errorf(noContainersErrString, deployment.Name)
+	}
+
+	for i, container := range deployment.Spec.Template.Spec.Containers {
+		if strings.Contains(container.Name, "to-cloud") {
+			deployment.Spec.Template.Spec.Containers[i].Image = fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorToCloudDockerImage, newImage)
+			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, tlsVerify)
+		}
+		if strings.Contains(container.Name, "from-cloud") {
+			deployment.Spec.Template.Spec.Containers[i].Image = fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorFromCloudDockerImage, newImage)
+			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, tlsVerify)
+		}
+	}
+
+	_, err = client.AppsV1().Deployments(client.Namespace).Update(ctx, &deployment, metav1.UpdateOptions{})
+	if err != nil {
+		return err
+	}
+
+	if err := client.rolloutDeployment(ctx, deployment.Namespace, deployment.Name); err != nil {
+		return err
+	}
+
+	if err := client.WaitReady(ctx, deployment.Namespace, deployment.Name, verbose); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (client *Client) rolloutDeployment(ctx context.Context, namespace, deployment string) error {
+	data := fmt.Sprintf(`{"spec": {"template": {"metadata": {"annotations": {"kubectl.kubernetes.io/restartedAt": "%s"}}}}}`, time.Now().Format("20060102150405"))
+	_, err := client.AppsV1().Deployments(namespace).Patch(ctx, deployment, types.StrategicMergePatchType, []byte(data), metav1.PatchOptions{})
+
+	return err
+}
+
+func (client *Client) updateEnvVars(envVars []apiv1.EnvVar, tlsVerify string) []apiv1.EnvVar {
+	found := false
+	for idx, envVar := range envVars {
+		if envVar.Name == syncTLSVerifyEnvVar {
 			if envVar.Value != tlsVerify {
 				envVars[idx].Value = tlsVerify
 			}
@@ -467,13 +547,35 @@ func (client *Client) UpdateDeploymentByLabel(ctx context.Context, label, newIma
 		})
 	}
 
-	deployment.Spec.Template.Spec.Containers[0].Env = envVars
+	return envVars
+}
 
+func (client *Client) UpdateOperatorDeploymentByLabel(ctx context.Context, label string, newImage string, verbose bool) error {
+	deploymentList, err := client.FindDeploymentByLabel(ctx, label)
+	if err != nil {
+		return err
+	}
+	if len(deploymentList.Items) == 0 {
+		return fmt.Errorf("no deployment found with label %s", label)
+	}
+	deployment := deploymentList.Items[0]
+	if len(deployment.Spec.Template.Spec.Containers) == 0 {
+		return fmt.Errorf(noContainersErrString, deployment.Name)
+	}
+
+	deployment.Spec.Template.Spec.Containers[0].Image = newImage
 	_, err = client.AppsV1().Deployments(client.Namespace).Update(ctx, &deployment, metav1.UpdateOptions{})
 	if err != nil {
 		return err
 	}
 
+	if err := client.rolloutDeployment(ctx, deployment.Namespace, deployment.Name); err != nil {
+		return err
+	}
+
+	if err := client.WaitReady(ctx, deployment.Namespace, deployment.Name, verbose); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -542,6 +644,7 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, 
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      FormatResourceName(coreInstance.Name, coreInstance.EnvironmentName, "sync"),
 			Namespace: client.Namespace,
+			Labels:    labels,
 		},
 		Spec: appsv1.DeploymentSpec{
 			Replicas: &deploymentReplicas,
@@ -688,24 +791,64 @@ func ExtractGroupVersionResource(obj runtime.Object) (schema.GroupVersionResourc
 	return gvr, nil
 }
 
-func (client *Client) WaitReady(ctx context.Context, namespace, name string) error {
-	if err := wait.PollImmediate(1*time.Second, 1*time.Minute, client.isDeploymentReady(ctx, namespace, name)); err != nil {
+func (client *Client) WaitReady(ctx context.Context, namespace, name string, verbose bool) error {
+	if err := wait.PollUntilContextTimeout(ctx, 3*time.Second, 30*time.Second, false, client.isDeploymentReady(ctx, namespace, name)); err != nil {
+		if verbose {
+			get, err := client.AppsV1().Deployments(namespace).Get(ctx, name, metav1.GetOptions{})
+			if err != nil {
+				return err
+			}
+
+			pods, err := client.CoreV1().Pods(namespace).List(ctx, metav1.ListOptions{LabelSelector: metav1.FormatLabelSelector(get.Spec.Selector)})
+			if err != nil {
+				return err
+			}
+
+			podMessages := map[string]string{}
+			for _, pod := range pods.Items {
+				var containerStatus []string
+				for _, status := range pod.Status.ContainerStatuses {
+					if status.State.Waiting != nil {
+						containerStatus = append(containerStatus, status.State.Waiting.Message)
+					}
+				}
+				if len(containerStatus) != 0 {
+					podMessages[pod.Name] = strings.Join(containerStatus, "\n")
+				}
+			}
+			if len(podMessages) != 0 {
+				var message string
+				for k, v := range podMessages {
+					message += fmt.Sprintf("* pod %s, Message: %s'\n", k, v)
+				}
+				return fmt.Errorf("failed while waiting for deployment to start:\n%s", message)
+			}
+		}
 		return err
 	}
 	return nil
 }
 
-func (client *Client) isDeploymentReady(ctx context.Context, namespace, name string) wait.ConditionFunc {
-	return func() (bool, error) {
+func (client *Client) isDeploymentReady(ctx context.Context, namespace, name string) wait.ConditionWithContextFunc {
+	return func(ctx context.Context) (done bool, err error) {
 		get, err := client.AppsV1().Deployments(namespace).Get(ctx, name, metav1.GetOptions{})
 		if err != nil {
 			return false, err
 		}
 
-		if get.Status.ReadyReplicas >= 1 {
-			return true, nil
+		pods, err := client.CoreV1().Pods(namespace).List(ctx, metav1.ListOptions{LabelSelector: metav1.FormatLabelSelector(get.Spec.Selector)})
+		if err != nil {
+			return false, err
 		}
-		return false, nil
+
+		var running bool
+		for _, pod := range pods.Items {
+			running = pod.Status.Phase == apiv1.PodRunning
+			if !running {
+				break
+			}
+		}
+		return running, nil
 	}
 }
 
@@ -750,31 +893,31 @@ func (client *Client) DeleteCoreInstance(ctx context.Context, name, environment 
 
 		// Delete Deployment
 		err = client.AppsV1().Deployments(namespaceName).Delete(ctx, core.Deployment, metav1.DeleteOptions{})
-		if err != nil && !k8serrors.IsNotFound(err) {
+		if err != nil && !apiErrors.IsNotFound(err) {
 			return err
 		}
 
 		// Delete Secret
 		err = client.CoreV1().Secrets(namespaceName).Delete(ctx, core.Secret, metav1.DeleteOptions{})
-		if err != nil && !k8serrors.IsNotFound(err) {
+		if err != nil && !apiErrors.IsNotFound(err) {
 			return err
 		}
 
 		// Delete ClusterRole
 		err = client.RbacV1().ClusterRoles().Delete(ctx, core.ClusterRole, metav1.DeleteOptions{})
-		if err != nil && !k8serrors.IsNotFound(err) {
+		if err != nil && !apiErrors.IsNotFound(err) {
 			return err
 		}
 
 		// Delete ClusterRoleBinding
 		err = client.RbacV1().ClusterRoleBindings().Delete(ctx, core.ClusterRoleBinding, metav1.DeleteOptions{})
-		if err != nil && !k8serrors.IsNotFound(err) {
+		if err != nil && !apiErrors.IsNotFound(err) {
 			return err
 		}
 
 		// Delete ServiceAccount
 		err = client.CoreV1().ServiceAccounts(namespaceName).Delete(ctx, core.ServiceAccount, metav1.DeleteOptions{})
-		if err != nil && !k8serrors.IsNotFound(err) {
+		if err != nil && !apiErrors.IsNotFound(err) {
 			return err
 		}
 		if shouldWait {
@@ -824,7 +967,7 @@ func (client *Client) SearchManagerAcrossAllNamespaces(ctx context.Context) (*ap
 	var manager *appsv1.Deployment
 	for _, namespace := range namespaces.Items {
 		manager, err = client.AppsV1().Deployments(namespace.Name).Get(ctx, "calyptia-core-controller-manager", metav1.GetOptions{})
-		if err != nil && !k8serrors.IsNotFound(err) {
+		if err != nil && !apiErrors.IsNotFound(err) {
 			return nil, err
 		}
 		if manager.Name != "" {
@@ -840,4 +983,102 @@ func (client *Client) SearchManagerAcrossAllNamespaces(ctx context.Context) (*ap
 // GetNamespace returns the namespace if it exists.
 func (client *Client) GetNamespace(ctx context.Context, name string) (*apiv1.Namespace, error) {
 	return client.CoreV1().Namespaces().Get(ctx, name, metav1.GetOptions{})
+}
+
+func (client *Client) IsOperatorInstalled(ctx context.Context) (bool, error) {
+	operatorIncomplete := OperatorIncompleteError{
+		Errors: []error{},
+	}
+
+	dynClient, err := dynamic.NewForConfig(client.Config)
+	if err != nil {
+		return false, err
+	}
+
+	gkv := schema.GroupVersionResource{Group: "core.calyptia.com", Version: "v1", Resource: "pipelines"}
+	_, err = dynClient.Resource(gkv).List(context.TODO(), metav1.ListOptions{})
+	if err == nil {
+		operatorIncomplete.Errors = append(operatorIncomplete.Errors, fmt.Errorf("CustomResourceDefinition Pipeline installed"))
+	}
+
+	scheme := runtime.NewScheme()
+	appsv1.AddToScheme(scheme)
+	rbacv1.AddToScheme(scheme)
+	corev1.AddToScheme(scheme)
+	k8sc, err := k8sclient.New(client.Config, k8sclient.Options{Scheme: scheme})
+	if err != nil {
+		panic(err)
+	}
+	deploymentList := &appsv1.DeploymentList{}
+	if err := k8sc.List(context.Background(), deploymentList, &k8sclient.ListOptions{}); err != nil {
+		panic(err)
+	}
+	for _, i := range deploymentList.Items {
+		if i.Name == operatorDeploymentName {
+			operatorIncomplete.Errors = append(operatorIncomplete.Errors, fmt.Errorf("Operator pod: %s/%s", i.Namespace, i.Name))
+		}
+	}
+
+	clusterRoles := &rbacv1.ClusterRoleList{}
+	if err := k8sc.List(context.Background(), clusterRoles, &k8sclient.ListOptions{}); err != nil {
+		panic(err)
+	}
+	for _, i := range clusterRoles.Items {
+		if i.Name == "calyptia-core-manager-role" {
+			operatorIncomplete.Errors = append(operatorIncomplete.Errors, fmt.Errorf("ClusterRole: %s", i.Name))
+		}
+		if i.Name == "calyptia-core-metrics-reader" {
+			operatorIncomplete.Errors = append(operatorIncomplete.Errors, fmt.Errorf("ClusterRole: %s", i.Name))
+		}
+		if i.Name == "calyptia-core-pod-role" {
+			operatorIncomplete.Errors = append(operatorIncomplete.Errors, fmt.Errorf("ClusterRole: %s", i.Name))
+		}
+		if i.Name == "calyptia-core-proxy-role" {
+			operatorIncomplete.Errors = append(operatorIncomplete.Errors, fmt.Errorf("ClusterRole: %s", i.Name))
+		}
+	}
+
+	crbList := &rbacv1.ClusterRoleBindingList{}
+	if err := k8sc.List(context.Background(), crbList, &k8sclient.ListOptions{}); err != nil {
+		panic(err)
+	}
+
+	for _, i := range crbList.Items {
+		if i.Name == "calyptia-core-manager-rolebinding" {
+			operatorIncomplete.Errors = append(operatorIncomplete.Errors, fmt.Errorf("ClusterRoleBinding: %s", i.Name))
+		}
+		if i.Name == "calyptia-core-proxy-rolebinding" {
+			operatorIncomplete.Errors = append(operatorIncomplete.Errors, fmt.Errorf("ClusterRoleBinding: %s", i.Name))
+		}
+	}
+
+	saList := &corev1.ServiceAccountList{}
+	if err := k8sc.List(context.Background(), saList, &k8sclient.ListOptions{}); err != nil {
+		panic(err)
+	}
+
+	for _, i := range saList.Items {
+		if i.Name == operatorDeploymentName {
+			operatorIncomplete.Errors = append(operatorIncomplete.Errors, fmt.Errorf("ServiceAccount: %s/%s", i.Namespace, i.Name))
+		}
+	}
+
+	if len(operatorIncomplete.Errors) > 0 {
+		return true, &operatorIncomplete
+	}
+	return false, nil
+}
+
+const operatorDeploymentName = "calyptia-core-controller-manager"
+
+type OperatorIncompleteError struct {
+	Errors []error
+}
+
+func (o *OperatorIncompleteError) Error() string {
+	errs := []string{}
+	for _, err := range o.Errors {
+		errs = append(errs, err.Error())
+	}
+	return strings.Join(errs, "\n")
 }

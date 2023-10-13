@@ -19,10 +19,11 @@ import (
 func NewCmdGetPipelines(config *cfg.Config) *cobra.Command {
 	var coreInstanceKey string
 	var last uint
-	var outputFormat, goTemplate string
+	var outputFormat, goTemplate, configFormat string
 	var showIDs bool
 	var environment string
 	var renderWithConfigSections bool
+
 	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
@@ -42,10 +43,16 @@ func NewCmdGetPipelines(config *cfg.Config) *cobra.Command {
 				return err
 			}
 
+			if configFormat != "" {
+				if !isValidConfigFormat(configFormat) {
+					return fmt.Errorf("not a valid config format: %s", configFormat)
+				}
+			}
 			pp, err := config.Cloud.Pipelines(config.Ctx, cloud.PipelinesParams{
 				Last:                     &last,
 				RenderWithConfigSections: renderWithConfigSections,
 				CoreInstanceID:           &coreInstanceID,
+				ConfigFormat:             (*cloud.ConfigFormat)(&configFormat),
 			})
 			if err != nil {
 				return fmt.Errorf("could not fetch your pipelines: %w", err)
@@ -61,12 +68,12 @@ func NewCmdGetPipelines(config *cfg.Config) *cobra.Command {
 				if showIDs {
 					fmt.Fprintf(tw, "ID\t")
 				}
-				fmt.Fprintln(tw, "NAME\tREPLICAS\tSTATUS\tAGE")
+				fmt.Fprintln(tw, "NAME\tREPLICAS\tSTATUS\tSTRATEGY\tAGE")
 				for _, p := range pp.Items {
 					if showIDs {
 						fmt.Fprintf(tw, "%s\t", p.ID)
 					}
-					fmt.Fprintf(tw, "%s\t%d\t%s\t%s\n", p.Name, p.ReplicasCount, p.Status.Status, formatters.FmtTime(p.CreatedAt))
+					fmt.Fprintf(tw, "%s\t%d\t%s\t%s\t%s\n", p.Name, p.ReplicasCount, p.Status.Status, string(p.DeploymentStrategy), formatters.FmtTime(p.CreatedAt))
 				}
 				tw.Flush()
 			case "json":
@@ -88,6 +95,7 @@ func NewCmdGetPipelines(config *cfg.Config) *cobra.Command {
 	fs.BoolVar(&renderWithConfigSections, "render-with-config-sections", false, "Render the pipeline config with the attached config sections; if any")
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
+	fs.StringVar(&configFormat, "config-format", string(cloud.ConfigFormatYAML), "Format to get the configuration file from the API (yaml/json/ini).")
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", completer.CompleteEnvironments)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
@@ -104,7 +112,7 @@ func NewCmdGetPipeline(config *cfg.Config) *cobra.Command {
 	var includeEndpoints, includeConfigHistory, includeSecrets bool
 	var showIDs bool
 	var renderWithConfigSections bool
-	var outputFormat, goTemplate string
+	var outputFormat, goTemplate, configFormat string
 	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
@@ -123,12 +131,20 @@ func NewCmdGetPipeline(config *cfg.Config) *cobra.Command {
 			var ports []cloud.PipelinePort
 			var configHistory []cloud.PipelineConfig
 			var secrets []cloud.PipelineSecret
+
+			if configFormat != "" {
+				if !isValidConfigFormat(configFormat) {
+					return fmt.Errorf("not a valid config format: %s", configFormat)
+				}
+			}
+
 			if outputFormat == "table" && (includeEndpoints || includeConfigHistory || includeSecrets) && !onlyConfig {
 				g, gctx := errgroup.WithContext(config.Ctx)
 				g.Go(func() error {
 					var err error
 					pip, err = config.Cloud.Pipeline(config.Ctx, pipelineID, cloud.PipelineParams{
 						RenderWithConfigSections: renderWithConfigSections,
+						ConfigFormat:             (*cloud.ConfigFormat)(&configFormat),
 					})
 					if err != nil {
 						return fmt.Errorf("could not fetch your pipeline: %w", err)
@@ -181,6 +197,7 @@ func NewCmdGetPipeline(config *cfg.Config) *cobra.Command {
 				var err error
 				pip, err = config.Cloud.Pipeline(config.Ctx, pipelineID, cloud.PipelineParams{
 					RenderWithConfigSections: renderWithConfigSections,
+					ConfigFormat:             (*cloud.ConfigFormat)(&configFormat),
 				})
 				if err != nil {
 					return fmt.Errorf("could not fetch your pipeline: %w", err)
@@ -203,11 +220,11 @@ func NewCmdGetPipeline(config *cfg.Config) *cobra.Command {
 					if showIDs {
 						fmt.Fprint(tw, "ID\t")
 					}
-					fmt.Fprintln(tw, "NAME\tREPLICAS\tSTATUS\tAGE")
+					fmt.Fprintln(tw, "NAME\tREPLICAS\tSTATUS\tSTRATEGY\tAGE")
 					if showIDs {
 						fmt.Fprintf(tw, "%s\t", pip.ID)
 					}
-					fmt.Fprintf(tw, "%s\t%d\t%s\t%s\n", pip.Name, pip.ReplicasCount, pip.Status.Status, formatters.FmtTime(pip.CreatedAt))
+					fmt.Fprintf(tw, "%s\t%d\t%s\t%s\t%s\n", pip.Name, pip.ReplicasCount, pip.Status.Status, string(pip.DeploymentStrategy), formatters.FmtTime(pip.CreatedAt))
 					tw.Flush()
 				}
 				if includeEndpoints {
@@ -244,10 +261,25 @@ func NewCmdGetPipeline(config *cfg.Config) *cobra.Command {
 	fs.BoolVar(&renderWithConfigSections, "render-with-config-sections", false, "Render the pipeline config with the attached config sections; if any")
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
-
+	fs.StringVar(&configFormat, "config-format", string(cloud.ConfigFormatYAML), "Format to get the configuration file from the API (yaml/json/ini).")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include IDs in table output")
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
 	return cmd
+}
+
+var allValidConfigFormats = []cloud.ConfigFormat{
+	cloud.ConfigFormatYAML,
+	cloud.ConfigFormatJSON,
+	cloud.ConfigFormatINI,
+}
+
+func isValidConfigFormat(s string) bool {
+	for _, val := range allValidConfigFormats {
+		if val == cloud.ConfigFormat(s) {
+			return true
+		}
+	}
+	return false
 }
