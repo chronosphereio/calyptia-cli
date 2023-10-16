@@ -32,6 +32,9 @@ func NewCmdUpdate() *cobra.Command {
 		Aliases: []string{"opr"},
 		Short:   "Update core operator",
 		PreRunE: func(cmd *cobra.Command, args []string) error {
+			if coreOperatorVersion == "" {
+				return nil
+			}
 			if !strings.HasPrefix(coreOperatorVersion, "v") {
 				coreOperatorVersion = fmt.Sprintf("v%s", coreOperatorVersion)
 			}
@@ -112,7 +115,7 @@ func NewCmdUpdate() *cobra.Command {
 
 	fs.BoolVar(&waitReady, "wait", false, "Wait for the core instance to be ready before returning")
 	fs.BoolVar(&verbose, "verbose", false, "Print verbose command output")
-	fs.StringVar(&coreOperatorVersion, "version", utils.DefaultCoreOperatorDockerImageTag, "Core instance version")
+	fs.StringVar(&coreOperatorVersion, "version", "", "Core instance version")
 	_ = cmd.Flags().MarkHidden("image")
 	clientcmd.BindOverrideFlags(configOverrides, fs, clientcmd.RecommendedConfigOverrideFlags("kube-"))
 
