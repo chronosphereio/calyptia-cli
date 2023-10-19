@@ -36,6 +36,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 		tags                     []string
 		dryRun                   bool
 		waitReady                bool
+		waitTimeout              string
 		noTLSVerify              bool
 		metricsPort              string
 	)
@@ -258,7 +259,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 			if waitReady {
 				start := time.Now()
 				fmt.Printf("Waiting for core instance to be ready...\n")
-				err := k8sClient.WaitReady(ctx, syncDeployment.Namespace, syncDeployment.Name, false)
+				err := k8sClient.WaitReady(ctx, syncDeployment.Namespace, syncDeployment.Name, false, waitTimeout)
 				if err != nil {
 					return err
 				}
@@ -302,6 +303,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 	}
 
 	fs.BoolVar(&waitReady, "wait", false, "Wait for the core instance to be ready before returning")
+	fs.StringVar(&waitTimeout, "timeout", "30s", "Wait timeout")
 	fs.BoolVar(&noHealthCheckPipeline, "no-health-check-pipeline", false, "Disable health check pipeline creation alongside the core instance")
 	fs.BoolVar(&enableClusterLogging, "enable-cluster-logging", false, "Enable cluster logging pipeline creation.")
 	fs.BoolVar(&skipServiceCreation, "skip-service-creation", false, "Skip the creation of kubernetes services for any pipeline under this core instance.")
