@@ -184,7 +184,7 @@ spec:
                 default: ghcr.io/calyptia/configmap-reload:v0.11.1
                 type: string
               image:
-                default: ghcr.io/calyptia/core/calyptia-fluent-bit:23.10.2
+                default: ghcr.io/calyptia/core/calyptia-fluent-bit:23.10.3
                 type: string
               kind:
                 description: Enums
