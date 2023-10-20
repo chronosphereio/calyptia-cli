@@ -9,9 +9,10 @@ WORKDIR /go/src/github.com/calyptia/cli
 # Now do the rest of the source code - this way we can speed up local iteration
 COPY . .
 
-RUN go build -a -gcflags=all="-C -l -B" -ldflags="-w -s" -tags netgo,osusergo -o /calyptia
+RUN CGO_ENABLED=0 go build -a -gcflags=all="-C -l -B" -ldflags="-w -s" -tags netgo,osusergo -o /calyptia
 
 FROM scratch as production
+
 LABEL org.opencontainers.image.title="calyptia/cli" \
       org.opencontainers.image.description="Calyptia CLI" \
       org.opencontainers.image.maintainer="Jorge Niedbalski <j@calyptia.com>" \
