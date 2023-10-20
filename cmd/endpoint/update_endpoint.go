@@ -2,6 +2,7 @@ package endpoint
 
 import (
 	"fmt"
+	"github.com/calyptia/cli/cmd/coreinstance"
 	"strconv"
 	"strings"
 
@@ -14,6 +15,7 @@ import (
 func NewCmdUpdateEndpoint(config *cfg.Config) *cobra.Command {
 	var protocol string
 	var ports string
+	var serviceType string
 
 	cmd := &cobra.Command{
 		Use:   "endpoint ENDPOINT",
@@ -52,11 +54,28 @@ func NewCmdUpdateEndpoint(config *cfg.Config) *cobra.Command {
 				bpport = &bport
 			}
 
-			opts := cloud.UpdatePipelinePort{
-				BackendPort:  bpport,
-				FrontendPort: fpport,
-				Protocol:     &protocol,
+			var opts cloud.UpdatePipelinePort
+
+			if bpport != nil {
+				opts.BackendPort = bpport
 			}
+
+			if fpport != nil {
+				opts.FrontendPort = fpport
+			}
+
+			if protocol != "" {
+				opts.Protocol = &protocol
+			}
+
+			if serviceType != "" {
+				if !coreinstance.ValidPipelinePortKind(serviceType) {
+					return fmt.Errorf("invalid provided service type %s, options are: %s", serviceType, coreinstance.AllValidPortKinds())
+				}
+				k := cloud.PipelinePortKind(serviceType)
+				opts.Kind = &k
+			}
+
 			err := config.Cloud.UpdatePipelinePort(config.Ctx, portID, opts)
 			if err != nil {
 				return fmt.Errorf("could not update your pipeline endpoint: %w", err)
@@ -68,6 +87,7 @@ func NewCmdUpdateEndpoint(config *cfg.Config) *cobra.Command {
 	fs := cmd.Flags()
 	fs.StringVar(&protocol, "protocol", "", "Endpoint protocol, tcp or tcps")
 	fs.StringVar(&ports, "ports", "", "define frontend and backend port, either: [port] or [frotend]:[backend]")
+	fs.StringVar(&serviceType, "service-type", "", fmt.Sprintf("Service type to use for the ports, options: %s", coreinstance.AllValidPortKinds()))
 
 	// _ = cmd.RegisterFlagCompletionFunc("output-format", completeOutputFormat)
 	// _ = cmd.RegisterFlagCompletionFunc("pipeline", config.completePipelines)
