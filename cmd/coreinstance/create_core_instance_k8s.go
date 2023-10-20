@@ -29,6 +29,8 @@ func newCmdCreateCoreInstanceOnK8s(config *cfg.Config, testClientSet kubernetes.
 	var coreFluentBitDockerImage string
 	var coreCloudURL string
 	var noHealthCheckPipeline bool
+	var healthCheckPipelinePort string
+	var healthCheckPipelineServiceType string
 	var noTLSVerify bool
 	var enableClusterLogging bool
 	var enableOpenShift bool
@@ -189,6 +191,9 @@ func newCmdCreateCoreInstanceOnK8s(config *cfg.Config, testClientSet kubernetes.
 	fs.StringVar(&coreCloudURL, "core-cloud-url", "", "Override the cloud URL for the core instance")
 
 	fs.BoolVar(&noHealthCheckPipeline, "no-health-check-pipeline", false, "Disable health check pipeline creation alongside the core instance")
+	fs.StringVar(&healthCheckPipelinePort, "health-check-pipeline-port-number", "", "Port number to expose the health-check pipeline")
+	fs.StringVar(&healthCheckPipelineServiceType, "health-check-pipeline-service-type", "", fmt.Sprintf("Service type to use for health-check pipeline, options: %s", AllValidPortKinds()))
+
 	fs.BoolVar(&enableClusterLogging, "enable-cluster-logging", false, "Enable cluster logging pipeline creation.")
 	fs.BoolVar(&enableOpenShift, "enable-openshift", false, "Enable Open-Shift specific permissions and settings.")
 	fs.BoolVar(&noTLSVerify, "no-tls-verify", false, "Disable TLS verification when connecting to Calyptia Cloud API.")

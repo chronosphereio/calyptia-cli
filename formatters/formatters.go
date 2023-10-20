@@ -132,7 +132,7 @@ func RenderEndpointsTable(w io.Writer, pp []types.PipelinePort, showIDs bool) {
 	if showIDs {
 		fmt.Fprint(tw, "ID\t")
 	}
-	fmt.Fprintln(tw, "PROTOCOL\tFRONTEND-PORT\tBACKEND-PORT\tENDPOINT\tAGE")
+	fmt.Fprintln(tw, "PROTOCOL\tSERVICE-TYPE\tFRONTEND-PORT\tBACKEND-PORT\tENDPOINT\tAGE")
 	for _, p := range pp {
 		endpoint := p.Endpoint
 		if endpoint == "" {
@@ -141,7 +141,7 @@ func RenderEndpointsTable(w io.Writer, pp []types.PipelinePort, showIDs bool) {
 		if showIDs {
 			fmt.Fprintf(tw, "%s\t", p.ID)
 		}
-		fmt.Fprintf(tw, "%s\t%d\t%d\t%s\t%s\n", p.Protocol, p.FrontendPort, p.BackendPort, endpoint, FmtTime(p.CreatedAt))
+		fmt.Fprintf(tw, "%s\t%s\t%d\t%d\t%s\t%s\n", p.Protocol, p.Kind, p.FrontendPort, p.BackendPort, endpoint, FmtTime(p.CreatedAt))
 	}
 	tw.Flush()
 }

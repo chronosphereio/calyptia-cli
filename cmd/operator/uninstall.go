@@ -66,7 +66,7 @@ func NewCmdUninstall() *cobra.Command {
 }
 
 func prepareUninstallManifest(version string, namespace string) (string, error) {
-	file, err := k8s.GetOperatorManifest(version)
+	file, err := f.ReadFile(manifestFile)
 	if err != nil {
 		return "", err
 	}

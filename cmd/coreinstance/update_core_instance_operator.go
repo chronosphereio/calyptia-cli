@@ -38,6 +38,10 @@ func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 		Args:              cobra.ExactArgs(1),
 		ValidArgsFunction: completer.CompleteCoreInstances,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
+			if newVersion == "" {
+				return nil
+			}
+
 			if !strings.HasPrefix(newVersion, "v") {
 				newVersion = fmt.Sprintf("v%s", newVersion)
 			}

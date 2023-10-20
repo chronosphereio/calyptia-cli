@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/calyptia/cli/cmd/coreinstance"
 	"io"
 	"os"
 	"path/filepath"
@@ -41,6 +42,7 @@ func NewCmdCreatePipeline(config *cfg.Config) *cobra.Command {
 	var deploymentStrategy string
 	var hotReload bool
 	var rawConfig []byte
+	var portsServiceType string
 
 	completer := completer.Completer{Config: config}
 
@@ -153,6 +155,13 @@ func NewCmdCreatePipeline(config *cfg.Config) *cobra.Command {
 				DeploymentStrategy:        strategy,
 			}
 
+			if portsServiceType != "" {
+				if !coreinstance.ValidPipelinePortKind(portsServiceType) {
+					return fmt.Errorf("invalid provided service type %s, options are: %s", portsServiceType, coreinstance.AllValidPortKinds())
+				}
+				in.PortKind = cloud.PipelinePortKind(portsServiceType)
+			}
+
 			if image != "" {
 				in.Image = &image
 			}
@@ -201,6 +210,7 @@ func NewCmdCreatePipeline(config *cfg.Config) *cobra.Command {
 	fs.BoolVar(&hotReload, "hot-reload", false, "Use the hotReload deployment strategy when deploying the pipeline to the cluster, (mutually exclusive with deployment-strategy)")
 	fs.StringVar(&image, "image", "", "Fluent-bit docker image")
 	fs.BoolVar(&autoCreatePortsFromConfig, "auto-create-ports", true, "Automatically create pipeline ports from config")
+	fs.StringVar(&portsServiceType, "service-type", "", fmt.Sprintf("Service type to use for all ports that are auto-created on this pipeline, options are: %s", coreinstance.AllValidPortKinds()))
 	fs.BoolVar(&skipConfigValidation, "skip-config-validation", false, "Opt-in to skip config validation (Use with caution as this option might be removed soon)")
 	fs.StringVar(&resourceProfileName, "resource-profile", cloud.DefaultResourceProfileName, "Resource profile name")
 	fs.StringSliceVar(&metadataPairs, "metadata", nil, "Metadata to attach to the pipeline in the form of key:value. You could instead use a file with the --metadata-file option")
