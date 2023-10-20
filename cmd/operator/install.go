@@ -41,7 +41,7 @@ func NewCmdInstall() *cobra.Command {
 		coreDockerImage     string
 		isNonInteractive    bool
 		waitReady           bool
-		waitTimeout         string
+		waitTimeout         time.Duration
 		confirmed           bool
 	)
 
@@ -155,7 +155,7 @@ func NewCmdInstall() *cobra.Command {
 
 	fs.BoolVarP(&confirmed, "yes", "y", isNonInteractive, "Confirm install")
 	fs.BoolVar(&waitReady, "wait", false, "Wait for the core instance to be ready before returning")
-	fs.StringVar(&waitTimeout, "timeout", "30s", "Wait timeout")
+	fs.DurationVar(&waitTimeout, "timeout", time.Second*30, "Wait timeout")
 	fs.StringVar(&coreInstanceVersion, "version", "", "Core instance version")
 	fs.StringVar(&coreDockerImage, "image", utils.DefaultCoreOperatorDockerImage, "Calyptia core manager docker image to use (fully composed docker image).")
 	_ = cmd.Flags().MarkHidden("image")

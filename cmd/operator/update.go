@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"time"
 
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/client-go/kubernetes"
@@ -23,7 +24,7 @@ func NewCmdUpdate() *cobra.Command {
 	var (
 		coreOperatorVersion string
 		waitReady           bool
-		waitTimeout         string
+		waitTimeout         time.Duration
 		verbose             bool
 	)
 
@@ -117,7 +118,7 @@ func NewCmdUpdate() *cobra.Command {
 	fs := cmd.Flags()
 
 	fs.BoolVar(&waitReady, "wait", false, "Wait for the core instance to be ready before returning")
-	fs.StringVar(&waitTimeout, "timeout", "30s", "Wait timeout")
+	fs.DurationVar(&waitTimeout, "timeout", time.Second*30, "Wait timeout")
 	fs.BoolVar(&verbose, "verbose", false, "Print verbose command output")
 	fs.StringVar(&coreOperatorVersion, "version", "", "Core instance version")
 	_ = cmd.Flags().MarkHidden("image")

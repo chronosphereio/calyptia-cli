@@ -483,7 +483,7 @@ func (client *Client) UpdateDeploymentByLabel(ctx context.Context, label, newIma
 	return nil
 }
 
-func (client *Client) UpdateSyncDeploymentByLabel(ctx context.Context, label, newImage, tlsVerify string, verbose bool, waitTimeout string) error {
+func (client *Client) UpdateSyncDeploymentByLabel(ctx context.Context, label, newImage, tlsVerify string, verbose bool, waitTimeout time.Duration) error {
 	deploymentList, err := client.FindDeploymentByLabel(ctx, label)
 	if err != nil {
 		return err
@@ -550,7 +550,7 @@ func (client *Client) updateEnvVars(envVars []apiv1.EnvVar, tlsVerify string) []
 	return envVars
 }
 
-func (client *Client) UpdateOperatorDeploymentByLabel(ctx context.Context, label string, newImage string, verbose bool, waitTimeout string) error {
+func (client *Client) UpdateOperatorDeploymentByLabel(ctx context.Context, label string, newImage string, verbose bool, waitTimeout time.Duration) error {
 	deploymentList, err := client.FindDeploymentByLabel(ctx, label)
 	if err != nil {
 		return err
@@ -791,12 +791,8 @@ func ExtractGroupVersionResource(obj runtime.Object) (schema.GroupVersionResourc
 	return gvr, nil
 }
 
-func (client *Client) WaitReady(ctx context.Context, namespace, name string, verbose bool, waitTimeout string) error {
-	timeout, err := time.ParseDuration(waitTimeout)
-	if err != nil {
-		return err
-	}
-	if err := wait.PollUntilContextTimeout(ctx, 3*time.Second, timeout, true, client.isDeploymentReady(ctx, namespace, name)); err != nil {
+func (client *Client) WaitReady(ctx context.Context, namespace, name string, verbose bool, waitTimeout time.Duration) error {
+	if err := wait.PollUntilContextTimeout(ctx, 3*time.Second, waitTimeout, true, client.isDeploymentReady(ctx, namespace, name)); err != nil {
 		if verbose {
 			get, err := client.AppsV1().Deployments(namespace).Get(ctx, name, metav1.GetOptions{})
 			if err != nil {
