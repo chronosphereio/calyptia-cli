@@ -27,6 +27,7 @@ func newCmdUpdate(config *cfg.Config) *cobra.Command {
 		members.NewCmdUpdateMember(config),
 		agent.NewCmdUpdateAgent(config),
 		fleet.NewCmdUpdateFleet(config),
+		fleet.NewCmdUpdateFleetFile(config),
 		pipeline.NewCmdUpdatePipeline(config),
 		pipeline.NewCmdUpdatePipelineSecret(config),
 		pipeline.NewCmdUpdatePipelineFile(config),

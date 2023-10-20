@@ -34,6 +34,7 @@ func newCmdCreate(config *cfg.Config) *cobra.Command {
 		cnfg.NewCmdCreateConfigSection(config),
 		ingestcheck.NewCmdCreateIngestCheck(config),
 		fleet.NewCmdCreateFleet(config),
+		fleet.NewCmdCreateFleetFile(config),
 	)
 
 	return cmd
