@@ -1,0 +1,8 @@
+self-hosted-runner:
+  labels:
+    - actuated
+    - actuated-arm64
+    - actuated-aarch64
+    - actuated-4cpu-16gb
+    - actuated-8cpu-16gb
+    - actuated-8cpu-32gb
