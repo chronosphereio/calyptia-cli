@@ -40,6 +40,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 		tags                           []string
 		dryRun                         bool
 		waitReady                      bool
+		waitTimeout                    time.Duration
 		noTLSVerify                    bool
 		metricsPort                    string
 	)
@@ -282,7 +283,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 			if waitReady {
 				start := time.Now()
 				fmt.Printf("Waiting for core instance to be ready...\n")
-				err := k8sClient.WaitReady(ctx, syncDeployment.Namespace, syncDeployment.Name, false)
+				err := k8sClient.WaitReady(ctx, syncDeployment.Namespace, syncDeployment.Name, false, waitTimeout)
 				if err != nil {
 					return err
 				}
@@ -326,6 +327,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 	}
 
 	fs.BoolVar(&waitReady, "wait", false, "Wait for the core instance to be ready before returning")
+	fs.DurationVar(&waitTimeout, "timeout", time.Second*30, "Wait timeout")
 	fs.BoolVar(&noHealthCheckPipeline, "no-health-check-pipeline", false, "Disable health check pipeline creation alongside the core instance")
 	fs.StringVar(&healthCheckPipelinePort, "health-check-pipeline-port-number", "", "Port number to expose the health-check pipeline")
 	fs.StringVar(&healthCheckPipelineServiceType, "health-check-pipeline-service-type", "", fmt.Sprintf("Service type to use for health-check pipeline, options: %s", AllValidPortKinds()))
