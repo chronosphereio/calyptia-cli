@@ -27,7 +27,6 @@ func NewCmdCreateFleetFile(config *cfg.Config) *cobra.Command {
 		Short: "Create a new file within a fleet",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			name := filepath.Base(file)
-			name = strings.TrimSuffix(name, filepath.Ext(name))
 
 			contents, err := cfg.ReadFile(file)
 			if err != nil {
