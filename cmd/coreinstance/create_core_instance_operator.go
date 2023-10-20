@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -24,20 +26,22 @@ import (
 
 func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernetes.Interface) *cobra.Command {
 	var (
-		coreInstanceName         string
-		coreCloudURL             string
-		coreFluentBitDockerImage string
-		coreDockerToCloudImage   string
-		coreDockerFromCloudImage string
-		noHealthCheckPipeline    bool
-		enableClusterLogging     bool
-		skipServiceCreation      bool
-		environment              string
-		tags                     []string
-		dryRun                   bool
-		waitReady                bool
-		noTLSVerify              bool
-		metricsPort              string
+		coreInstanceName               string
+		coreCloudURL                   string
+		coreFluentBitDockerImage       string
+		coreDockerToCloudImage         string
+		coreDockerFromCloudImage       string
+		noHealthCheckPipeline          bool
+		healthCheckPipelinePort        string
+		healthCheckPipelineServiceType string
+		enableClusterLogging           bool
+		skipServiceCreation            bool
+		environment                    string
+		tags                           []string
+		dryRun                         bool
+		waitReady                      bool
+		noTLSVerify                    bool
+		metricsPort                    string
 	)
 
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
@@ -137,6 +141,26 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				Tags:                   tags,
 				SkipServiceCreation:    skipServiceCreation,
 				Metadata:               metadata,
+			}
+
+			if !noHealthCheckPipeline {
+				if healthCheckPipelinePort != "" {
+					p, err := strconv.Atoi(healthCheckPipelinePort)
+					if err != nil {
+						return err
+					}
+					if !(p > 0 && p <= 65535) {
+						return fmt.Errorf("invalid provided pipeline port number, must be > 0 < 65535: %w", err)
+					}
+					coreInstanceParams.HealthCheckPipelinePort = uint(p)
+				}
+
+				if healthCheckPipelineServiceType != "" {
+					if !ValidPipelinePortKind(healthCheckPipelineServiceType) {
+						return fmt.Errorf("invalid health check pipeline service type: %s", healthCheckPipelineServiceType)
+					}
+					coreInstanceParams.HealthCheckPipelinePortKind = cloud.PipelinePortKind(healthCheckPipelineServiceType)
+				}
 			}
 
 			// Only set the version if != latest, otherwise use the default value
@@ -303,6 +327,8 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 
 	fs.BoolVar(&waitReady, "wait", false, "Wait for the core instance to be ready before returning")
 	fs.BoolVar(&noHealthCheckPipeline, "no-health-check-pipeline", false, "Disable health check pipeline creation alongside the core instance")
+	fs.StringVar(&healthCheckPipelinePort, "health-check-pipeline-port-number", "", "Port number to expose the health-check pipeline")
+	fs.StringVar(&healthCheckPipelineServiceType, "health-check-pipeline-service-type", "", fmt.Sprintf("Service type to use for health-check pipeline, options: %s", AllValidPortKinds()))
 	fs.BoolVar(&enableClusterLogging, "enable-cluster-logging", false, "Enable cluster logging pipeline creation.")
 	fs.BoolVar(&skipServiceCreation, "skip-service-creation", false, "Skip the creation of kubernetes services for any pipeline under this core instance.")
 	fs.BoolVar(&dryRun, "dry-run", false, "Passing this value will skip creation of any Kubernetes resources and it will return resources as YAML manifest")
@@ -374,4 +400,21 @@ func getClusterName() (string, error) {
 	}
 
 	return clusterName, nil
+}
+
+func ValidPipelinePortKind(s string) bool {
+	for _, pk := range cloud.AllValidPipelinePortKinds {
+		if cloud.PipelinePortKind(s) == pk {
+			return true
+		}
+	}
+	return false
+}
+
+func AllValidPortKinds() string {
+	var r []string
+	for _, v := range cloud.AllValidPipelinePortKinds {
+		r = append(r, string(v))
+	}
+	return strings.Join(r, ",")
 }
