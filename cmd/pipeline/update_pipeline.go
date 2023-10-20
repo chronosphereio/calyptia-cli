@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/calyptia/cli/cmd/coreinstance"
 	"path/filepath"
 	"strings"
 	"text/tabwriter"
@@ -36,6 +37,7 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 	var metadataFile string
 	var providedConfigFormat string
 	var deploymentStrategy string
+	var portsServiceType string
 
 	completer := completer.Completer{Config: config}
 
@@ -126,6 +128,14 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 				Metadata:                  metadata,
 			}
 
+			if portsServiceType != "" {
+				if !coreinstance.ValidPipelinePortKind(portsServiceType) {
+					return fmt.Errorf("invalid provided service type %s, options are: %s", portsServiceType, coreinstance.AllValidPortKinds())
+				}
+				k := cloud.PipelinePortKind(portsServiceType)
+				update.PortKind = &k
+			}
+
 			var strategy *cloud.DeploymentStrategy
 			if deploymentStrategy != "" {
 				if !isValidDeploymentStrategy(deploymentStrategy) {
@@ -190,6 +200,7 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 	fs.StringVar(&providedConfigFormat, "config-format", "", "Default configuration format to use (yaml, ini(deprecated))")
 	fs.IntVar(&newReplicasCount, "replicas", -1, "New pipeline replica size")
 	fs.BoolVar(&autoCreatePortsFromConfig, "auto-create-ports", true, "Automatically create pipeline ports from config if updated")
+	fs.StringVar(&portsServiceType, "service-type", "", fmt.Sprintf("Service type to use for all ports that are auto-created on this pipeline, options are: %s", coreinstance.AllValidPortKinds()))
 	fs.BoolVar(&skipConfigValidation, "skip-config-validation", false, "Opt-in to skip config validation (Use with caution as this option might be removed soon)")
 	fs.StringVar(&secretsFile, "secrets-file", "", "Optional file containing a full definition of all secrets.\nThe format is derived either from the extension or the --secrets-format argument.\nThese can be referenced in pipeline files as such:\n{{ secrets.name }}\nThe prefix is the same for all secrets, the name is defined in the secrets file.")
 	fs.StringVar(&secretsFormat, "secrets-format", "auto", "Secrets file format. Allowed: auto, env, json, yaml. If not set it is derived from secrets file extension")
