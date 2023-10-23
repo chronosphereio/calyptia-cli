@@ -219,6 +219,11 @@ spec:
                       type: integer
                     protocol:
                       type: string
+                    serviceType:
+                      default: LoadBalancer
+                      description: Service Type string describes ingress methods for
+                        a service
+                      type: string
                   type: object
                 type: array
               replicasCount:
@@ -830,7 +835,7 @@ spec:
       containers:
       - command:
         - /manager
-        image: ghcr.io/calyptia/core-operator:v2.0.15
+        image: ghcr.io/calyptia/core-operator:v2.0.16
         livenessProbe:
           httpGet:
             path: /healthz
