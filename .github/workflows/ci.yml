@@ -61,7 +61,7 @@ jobs:
     runs-on: ${{ (contains(matrix.platform, 'arm') && 'actuated-arm64') || 'actuated' }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Actuated mirror
         if: contains(matrix.platform, 'arm')
