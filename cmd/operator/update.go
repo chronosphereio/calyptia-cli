@@ -99,7 +99,7 @@ func NewCmdUpdate() *cobra.Command {
 				return err
 			}
 
-			label := fmt.Sprintf("%s=%s,%s=%s,%s=%s", k8s.LabelComponent, "manager", k8s.LabelCreatedBy, "operator", k8s.LabelInstance, "controller-manager")
+			label := fmt.Sprintf("%s=%s,%s=%s", k8s.LabelComponent, "manager", k8s.LabelCreatedBy, "operator")
 			cmd.Printf("Waiting for core-operator to update...\n")
 			if err := k.UpdateOperatorDeploymentByLabel(cmd.Context(), label, fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorDockerImage, coreOperatorVersion), verbose, waitTimeout); err != nil {
 				if !verbose {
