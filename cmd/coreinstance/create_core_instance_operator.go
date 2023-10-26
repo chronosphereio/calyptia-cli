@@ -189,6 +189,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 					k8s.LabelCreatedBy:    "calyptia-cli",
 					k8s.LabelProjectID:    config.ProjectID,
 					k8s.LabelAggregatorID: created.ID,
+					k8s.LabelInstance:     coreInstanceName,
 				}
 			}
 
