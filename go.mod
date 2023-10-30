@@ -22,7 +22,7 @@ require (
 	github.com/hashicorp/go-version v1.6.0
 	github.com/itchyny/json2yaml v0.1.4
 	github.com/joho/godotenv v1.5.1
-	github.com/matryer/moq v0.3.2
+	github.com/matryer/moq v0.3.3
 	github.com/pkg/errors v0.9.1
 	github.com/rjeczalik/interfaces v0.3.0
 	github.com/sethvargo/go-retry v0.2.4
