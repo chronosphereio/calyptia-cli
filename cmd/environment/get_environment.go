@@ -71,5 +71,4 @@ func NewCmdGetEnvironment(c *cfg.Config) *cobra.Command {
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
 	return cmd
-
 }

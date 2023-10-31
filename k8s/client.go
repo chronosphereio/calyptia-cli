@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -19,8 +20,6 @@ import (
 	"k8s.io/client-go/dynamic"
 	restclient "k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
-
-	"strconv"
 
 	appsv1 "k8s.io/api/apps/v1"
 	apiv1 "k8s.io/api/core/v1"
@@ -53,6 +52,7 @@ var (
 	ErrNoContext            = fmt.Errorf("no context is currently set")
 	ErrCoreOperatorNotFound = fmt.Errorf("could not find core operator across all namespaces")
 )
+
 var (
 	deploymentReplicas           int32 = 1
 	automountServiceAccountToken       = true
@@ -122,7 +122,6 @@ func (client *Client) createOwnNamespace(ctx context.Context) (*apiv1.Namespace,
 func (client *Client) CreateSecret(ctx context.Context, agg cloud.CreatedCoreInstance, dryRun bool) (*apiv1.Secret, error) {
 	metadata := client.getObjectMeta(agg, secretObjectType)
 	req := &apiv1.Secret{
-
 		ObjectMeta: metadata,
 		Data: map[string][]byte{
 			metadata.Name: agg.PrivateRSAKey,
@@ -143,7 +142,6 @@ func (client *Client) CreateSecret(ctx context.Context, agg cloud.CreatedCoreIns
 func (client *Client) CreateSecretOperatorRSAKey(ctx context.Context, agg cloud.CreatedCoreInstance, dryRun bool) (*apiv1.Secret, error) {
 	metadata := client.getObjectMeta(agg, secretObjectType)
 	req := &apiv1.Secret{
-
 		ObjectMeta: metadata,
 		Data: map[string][]byte{
 			"private-key": agg.PrivateRSAKey,
@@ -228,7 +226,6 @@ func (client *Client) CreateClusterRole(ctx context.Context, agg cloud.CreatedCo
 
 func (client *Client) CreateServiceAccount(ctx context.Context, agg cloud.CreatedCoreInstance, dryRun bool) (*apiv1.ServiceAccount, error) {
 	req := &apiv1.ServiceAccount{
-
 		ObjectMeta: client.getObjectMeta(agg, serviceAccountObjectType),
 	}
 

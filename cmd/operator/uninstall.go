@@ -12,7 +12,6 @@ import (
 )
 
 func NewCmdUninstall() *cobra.Command {
-
 	// Create a new default kubectl command and retrieve its flags
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	configOverrides := &clientcmd.ConfigOverrides{}

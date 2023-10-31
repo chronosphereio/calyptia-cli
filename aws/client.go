@@ -472,7 +472,6 @@ func (c *DefaultClient) DeleteResources(ctx context.Context, resources []Resourc
 	}
 
 	return nil
-
 }
 
 func (c *DefaultClient) GetResourcesByTags(ctx context.Context, tags TagSpec) ([]Resource, error) {
@@ -746,7 +745,6 @@ func (c *DefaultClient) CreateInstance(ctx context.Context, params *CreateInstan
 
 	elasticIpv4Address, err := c.EnsureAndAssociateElasticIPv4Address(ctx, out.EC2InstanceID, params.Environment,
 		params.PublicIPAddress.Pool, params.PublicIPAddress.Address)
-
 	if err != nil {
 		return out, fmt.Errorf("could not associate public ipv4 address: %w", err)
 	}

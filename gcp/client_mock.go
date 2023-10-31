@@ -124,9 +124,7 @@ func (mock *ClientMock) Delete(ctx context.Context, coreInstanceName string) err
 	mock.calls.Delete = append(mock.calls.Delete, callInfo)
 	mock.lockDelete.Unlock()
 	if mock.DeleteFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.DeleteFunc(ctx, coreInstanceName)
@@ -161,9 +159,7 @@ func (mock *ClientMock) Deploy(contextMoqParam context.Context) error {
 	mock.calls.Deploy = append(mock.calls.Deploy, callInfo)
 	mock.lockDeploy.Unlock()
 	if mock.DeployFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.DeployFunc(contextMoqParam)
@@ -276,9 +272,7 @@ func (mock *ClientMock) Rollback(contextMoqParam context.Context) error {
 	mock.calls.Rollback = append(mock.calls.Rollback, callInfo)
 	mock.lockRollback.Unlock()
 	if mock.RollbackFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.RollbackFunc(contextMoqParam)

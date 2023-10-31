@@ -222,7 +222,6 @@ func (c *Config) SetProjectToken(token string) *Config {
 }
 
 func (c *Config) SetSSHKey(user string, key string) *Config {
-
 	if user == "" || key == "" {
 		return c
 	}
@@ -282,5 +281,4 @@ func (c *Config) SkipServiceCreation(skipServiceCreation bool) *Config {
 		Value: strconv.FormatBool(skipServiceCreation),
 	})
 	return c
-
 }

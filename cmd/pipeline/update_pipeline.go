@@ -4,10 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/calyptia/cli/cmd/coreinstance"
 	"path/filepath"
 	"strings"
 	"text/tabwriter"
+
+	"github.com/calyptia/cli/cmd/coreinstance"
 
 	"github.com/joho/godotenv"
 	"github.com/pkg/errors"

@@ -8,8 +8,10 @@ import (
 	"fmt"
 )
 
-const ServiceName = "cloud.calyptia.com"
-const BackUpFolder = ".calyptia"
+const (
+	ServiceName  = "cloud.calyptia.com"
+	BackUpFolder = ".calyptia"
+)
 
 var ErrInvalidToken = errors.New("invalid token")
 

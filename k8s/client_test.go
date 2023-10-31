@@ -37,11 +37,11 @@ contexts:
 	// Create a temporary kubeconfig file for testing
 	tmpDir := t.TempDir()
 	kubeconfigPath := filepath.Join(tmpDir, ".kube", "config")
-	err := os.MkdirAll(filepath.Dir(kubeconfigPath), 0700)
+	err := os.MkdirAll(filepath.Dir(kubeconfigPath), 0o700)
 	if err != nil {
 		t.Fatal(err)
 	}
-	err = os.WriteFile(kubeconfigPath, []byte(testKubeconfig), 0600)
+	err = os.WriteFile(kubeconfigPath, []byte(testKubeconfig), 0o600)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -77,11 +77,11 @@ contexts: []
 	// Create a temporary kubeconfig file for testing
 	tmpDir := t.TempDir()
 	kubeconfigPath := filepath.Join(tmpDir, ".kube", "config")
-	err := os.MkdirAll(filepath.Dir(kubeconfigPath), 0700)
+	err := os.MkdirAll(filepath.Dir(kubeconfigPath), 0o700)
 	if err != nil {
 		t.Fatal(err)
 	}
-	err = os.WriteFile(kubeconfigPath, []byte(testKubeconfigNoContext), 0600)
+	err = os.WriteFile(kubeconfigPath, []byte(testKubeconfigNoContext), 0o600)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -164,7 +164,8 @@ func TestUpdateOperatorDeploymentByLabel(t *testing.T) {
 			name: "update operator pass",
 			client: Client{
 				Interface: fake.NewSimpleClientset(&dd, &pod),
-				Namespace: "default"},
+				Namespace: "default",
+			},
 			manager:   "manager",
 			expectErr: false,
 		},
@@ -172,7 +173,8 @@ func TestUpdateOperatorDeploymentByLabel(t *testing.T) {
 			name: "update operator fail",
 			client: Client{
 				Interface: fake.NewSimpleClientset(&dd, &pod),
-				Namespace: "default"},
+				Namespace: "default",
+			},
 			manager:   "manager1",
 			expectErr: true,
 		},
@@ -180,7 +182,6 @@ func TestUpdateOperatorDeploymentByLabel(t *testing.T) {
 
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
-
 			label := fmt.Sprintf("%s=%s,%s=%s,%s=%s", LabelComponent, tc.manager, LabelCreatedBy, "operator", LabelInstance, "controller-manager")
 
 			if err := tc.client.UpdateOperatorDeploymentByLabel(context.TODO(), label, fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorDockerImage, "1234"), false); err != nil && !tc.expectErr {
@@ -266,7 +267,8 @@ func TestUpdateSyncDeploymentByLabel(t *testing.T) {
 			name: "update sync pass",
 			client: Client{
 				Interface: fake.NewSimpleClientset(&dd, &pod),
-				Namespace: "default"},
+				Namespace: "default",
+			},
 			aggID:     "444",
 			expectErr: false,
 		},
@@ -274,7 +276,8 @@ func TestUpdateSyncDeploymentByLabel(t *testing.T) {
 			name: "update sync fail",
 			client: Client{
 				Interface: fake.NewSimpleClientset(&dd, &pod),
-				Namespace: "default"},
+				Namespace: "default",
+			},
 			aggID:     "333",
 			expectErr: true,
 		},
@@ -282,7 +285,6 @@ func TestUpdateSyncDeploymentByLabel(t *testing.T) {
 
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
-
 			label := fmt.Sprintf("%s=%s,%s=%s,%s=%s", LabelComponent, "operator", LabelCreatedBy, "calyptia-cli", LabelAggregatorID, tc.aggID)
 
 			if err := tc.client.UpdateSyncDeploymentByLabel(context.TODO(), label, fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorDockerImage, "1234"), "true", false); err != nil && !tc.expectErr {

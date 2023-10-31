@@ -4,12 +4,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/calyptia/cli/cmd/coreinstance"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
 	"text/tabwriter"
+
+	"github.com/calyptia/cli/cmd/coreinstance"
 
 	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
@@ -129,7 +130,7 @@ func NewCmdCreatePipeline(config *cfg.Config) *cobra.Command {
 				format = cloud.ConfigFormatINI
 			}
 
-			var strategy = cloud.DefaultDeploymentStrategy
+			strategy := cloud.DefaultDeploymentStrategy
 			if deploymentStrategy == "" {
 				if hotReload {
 					strategy = cloud.DeploymentStrategyHotReload

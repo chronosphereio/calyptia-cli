@@ -2501,9 +2501,7 @@ func (mock *ClientMock) AcceptInvitation(contextMoqParam context.Context, accept
 	mock.calls.AcceptInvitation = append(mock.calls.AcceptInvitation, callInfo)
 	mock.lockAcceptInvitation.Unlock()
 	if mock.AcceptInvitationFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.AcceptInvitationFunc(contextMoqParam, acceptInvitation)
@@ -3848,9 +3846,7 @@ func (mock *ClientMock) CreateAWSContractFromToken(contextMoqParam context.Conte
 	mock.calls.CreateAWSContractFromToken = append(mock.calls.CreateAWSContractFromToken, callInfo)
 	mock.lockCreateAWSContractFromToken.Unlock()
 	if mock.CreateAWSContractFromTokenFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.CreateAWSContractFromTokenFunc(contextMoqParam, createAWSContractFromToken)
@@ -4349,9 +4345,7 @@ func (mock *ClientMock) CreateInvitation(contextMoqParam context.Context, s stri
 	mock.calls.CreateInvitation = append(mock.calls.CreateInvitation, callInfo)
 	mock.lockCreateInvitation.Unlock()
 	if mock.CreateInvitationFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.CreateInvitationFunc(contextMoqParam, s, createInvitation)
@@ -4906,9 +4900,7 @@ func (mock *ClientMock) DeleteAgent(contextMoqParam context.Context, s string) e
 	mock.calls.DeleteAgent = append(mock.calls.DeleteAgent, callInfo)
 	mock.lockDeleteAgent.Unlock()
 	if mock.DeleteAgentFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.DeleteAgentFunc(contextMoqParam, s)
@@ -4947,9 +4939,7 @@ func (mock *ClientMock) DeleteAgents(contextMoqParam context.Context, s string, 
 	mock.calls.DeleteAgents = append(mock.calls.DeleteAgents, callInfo)
 	mock.lockDeleteAgents.Unlock()
 	if mock.DeleteAgentsFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.DeleteAgentsFunc(contextMoqParam, s, strings...)
@@ -4988,9 +4978,7 @@ func (mock *ClientMock) DeleteClusterObject(contextMoqParam context.Context, s s
 	mock.calls.DeleteClusterObject = append(mock.calls.DeleteClusterObject, callInfo)
 	mock.lockDeleteClusterObject.Unlock()
 	if mock.DeleteClusterObjectFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.DeleteClusterObjectFunc(contextMoqParam, s)
@@ -5027,9 +5015,7 @@ func (mock *ClientMock) DeleteClusterObjectRegex(contextMoqParam context.Context
 	mock.calls.DeleteClusterObjectRegex = append(mock.calls.DeleteClusterObjectRegex, callInfo)
 	mock.lockDeleteClusterObjectRegex.Unlock()
 	if mock.DeleteClusterObjectRegexFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.DeleteClusterObjectRegexFunc(contextMoqParam, s)
@@ -5066,9 +5052,7 @@ func (mock *ClientMock) DeleteConfigSection(contextMoqParam context.Context, s s
 	mock.calls.DeleteConfigSection = append(mock.calls.DeleteConfigSection, callInfo)
 	mock.lockDeleteConfigSection.Unlock()
 	if mock.DeleteConfigSectionFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.DeleteConfigSectionFunc(contextMoqParam, s)
@@ -5105,9 +5089,7 @@ func (mock *ClientMock) DeleteCoreInstance(contextMoqParam context.Context, s st
 	mock.calls.DeleteCoreInstance = append(mock.calls.DeleteCoreInstance, callInfo)
 	mock.lockDeleteCoreInstance.Unlock()
 	if mock.DeleteCoreInstanceFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.DeleteCoreInstanceFunc(contextMoqParam, s)
@@ -5144,9 +5126,7 @@ func (mock *ClientMock) DeleteCoreInstanceCheck(contextMoqParam context.Context,
 	mock.calls.DeleteCoreInstanceCheck = append(mock.calls.DeleteCoreInstanceCheck, callInfo)
 	mock.lockDeleteCoreInstanceCheck.Unlock()
 	if mock.DeleteCoreInstanceCheckFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.DeleteCoreInstanceCheckFunc(contextMoqParam, s)
@@ -5265,9 +5245,7 @@ func (mock *ClientMock) DeleteCoreInstances(contextMoqParam context.Context, s s
 	mock.calls.DeleteCoreInstances = append(mock.calls.DeleteCoreInstances, callInfo)
 	mock.lockDeleteCoreInstances.Unlock()
 	if mock.DeleteCoreInstancesFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.DeleteCoreInstancesFunc(contextMoqParam, s, strings...)
@@ -5306,9 +5284,7 @@ func (mock *ClientMock) DeleteEnvironment(contextMoqParam context.Context, s str
 	mock.calls.DeleteEnvironment = append(mock.calls.DeleteEnvironment, callInfo)
 	mock.lockDeleteEnvironment.Unlock()
 	if mock.DeleteEnvironmentFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.DeleteEnvironmentFunc(contextMoqParam, s)
@@ -5385,9 +5361,7 @@ func (mock *ClientMock) DeleteIngestCheck(contextMoqParam context.Context, s str
 	mock.calls.DeleteIngestCheck = append(mock.calls.DeleteIngestCheck, callInfo)
 	mock.lockDeleteIngestCheck.Unlock()
 	if mock.DeleteIngestCheckFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.DeleteIngestCheckFunc(contextMoqParam, s)
@@ -5424,9 +5398,7 @@ func (mock *ClientMock) DeletePipeline(contextMoqParam context.Context, s string
 	mock.calls.DeletePipeline = append(mock.calls.DeletePipeline, callInfo)
 	mock.lockDeletePipeline.Unlock()
 	if mock.DeletePipelineFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.DeletePipelineFunc(contextMoqParam, s)
@@ -5463,9 +5435,7 @@ func (mock *ClientMock) DeletePipelineCheck(contextMoqParam context.Context, s s
 	mock.calls.DeletePipelineCheck = append(mock.calls.DeletePipelineCheck, callInfo)
 	mock.lockDeletePipelineCheck.Unlock()
 	if mock.DeletePipelineCheckFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.DeletePipelineCheckFunc(contextMoqParam, s)
@@ -5504,9 +5474,7 @@ func (mock *ClientMock) DeletePipelineClusterObjects(contextMoqParam context.Con
 	mock.calls.DeletePipelineClusterObjects = append(mock.calls.DeletePipelineClusterObjects, callInfo)
 	mock.lockDeletePipelineClusterObjects.Unlock()
 	if mock.DeletePipelineClusterObjectsFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.DeletePipelineClusterObjectsFunc(contextMoqParam, s, strings...)
@@ -5545,9 +5513,7 @@ func (mock *ClientMock) DeletePipelineFile(contextMoqParam context.Context, s st
 	mock.calls.DeletePipelineFile = append(mock.calls.DeletePipelineFile, callInfo)
 	mock.lockDeletePipelineFile.Unlock()
 	if mock.DeletePipelineFileFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.DeletePipelineFileFunc(contextMoqParam, s)
@@ -5584,9 +5550,7 @@ func (mock *ClientMock) DeletePipelinePort(contextMoqParam context.Context, s st
 	mock.calls.DeletePipelinePort = append(mock.calls.DeletePipelinePort, callInfo)
 	mock.lockDeletePipelinePort.Unlock()
 	if mock.DeletePipelinePortFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.DeletePipelinePortFunc(contextMoqParam, s)
@@ -5623,9 +5587,7 @@ func (mock *ClientMock) DeletePipelineSecret(contextMoqParam context.Context, s 
 	mock.calls.DeletePipelineSecret = append(mock.calls.DeletePipelineSecret, callInfo)
 	mock.lockDeletePipelineSecret.Unlock()
 	if mock.DeletePipelineSecretFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.DeletePipelineSecretFunc(contextMoqParam, s)
@@ -5664,9 +5626,7 @@ func (mock *ClientMock) DeletePipelines(contextMoqParam context.Context, s strin
 	mock.calls.DeletePipelines = append(mock.calls.DeletePipelines, callInfo)
 	mock.lockDeletePipelines.Unlock()
 	if mock.DeletePipelinesFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.DeletePipelinesFunc(contextMoqParam, s, strings...)
@@ -5705,9 +5665,7 @@ func (mock *ClientMock) DeleteProcessingRule(contextMoqParam context.Context, s 
 	mock.calls.DeleteProcessingRule = append(mock.calls.DeleteProcessingRule, callInfo)
 	mock.lockDeleteProcessingRule.Unlock()
 	if mock.DeleteProcessingRuleFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.DeleteProcessingRuleFunc(contextMoqParam, s)
@@ -5784,9 +5742,7 @@ func (mock *ClientMock) DeleteResourceProfile(contextMoqParam context.Context, s
 	mock.calls.DeleteResourceProfile = append(mock.calls.DeleteResourceProfile, callInfo)
 	mock.lockDeleteResourceProfile.Unlock()
 	if mock.DeleteResourceProfileFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.DeleteResourceProfileFunc(contextMoqParam, s)
@@ -5823,9 +5779,7 @@ func (mock *ClientMock) DeleteToken(contextMoqParam context.Context, s string) e
 	mock.calls.DeleteToken = append(mock.calls.DeleteToken, callInfo)
 	mock.lockDeleteToken.Unlock()
 	if mock.DeleteTokenFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.DeleteTokenFunc(contextMoqParam, s)
@@ -7378,9 +7332,7 @@ func (mock *ClientMock) PushAWSMarketplaceSubscriptionNotification(contextMoqPar
 	mock.calls.PushAWSMarketplaceSubscriptionNotification = append(mock.calls.PushAWSMarketplaceSubscriptionNotification, callInfo)
 	mock.lockPushAWSMarketplaceSubscriptionNotification.Unlock()
 	if mock.PushAWSMarketplaceSubscriptionNotificationFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.PushAWSMarketplaceSubscriptionNotificationFunc(contextMoqParam, aWSMarketplaceSubscriptionNotification)
@@ -7579,9 +7531,7 @@ func (mock *ClientMock) SendVerificationEmail(contextMoqParam context.Context) e
 	mock.calls.SendVerificationEmail = append(mock.calls.SendVerificationEmail, callInfo)
 	mock.lockSendVerificationEmail.Unlock()
 	if mock.SendVerificationEmailFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.SendVerificationEmailFunc(contextMoqParam)
@@ -7998,9 +7948,7 @@ func (mock *ClientMock) UpdateAgent(contextMoqParam context.Context, s string, u
 	mock.calls.UpdateAgent = append(mock.calls.UpdateAgent, callInfo)
 	mock.lockUpdateAgent.Unlock()
 	if mock.UpdateAgentFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.UpdateAgentFunc(contextMoqParam, s, updateAgent)
@@ -8041,9 +7989,7 @@ func (mock *ClientMock) UpdateClusterObject(contextMoqParam context.Context, s s
 	mock.calls.UpdateClusterObject = append(mock.calls.UpdateClusterObject, callInfo)
 	mock.lockUpdateClusterObject.Unlock()
 	if mock.UpdateClusterObjectFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.UpdateClusterObjectFunc(contextMoqParam, s, updateClusterObject)
@@ -8168,9 +8114,7 @@ func (mock *ClientMock) UpdateConfigSectionSet(contextMoqParam context.Context, 
 	mock.calls.UpdateConfigSectionSet = append(mock.calls.UpdateConfigSectionSet, callInfo)
 	mock.lockUpdateConfigSectionSet.Unlock()
 	if mock.UpdateConfigSectionSetFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.UpdateConfigSectionSetFunc(contextMoqParam, s, strings...)
@@ -8211,9 +8155,7 @@ func (mock *ClientMock) UpdateCoreInstance(contextMoqParam context.Context, s st
 	mock.calls.UpdateCoreInstance = append(mock.calls.UpdateCoreInstance, callInfo)
 	mock.lockUpdateCoreInstance.Unlock()
 	if mock.UpdateCoreInstanceFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.UpdateCoreInstanceFunc(contextMoqParam, s, updateCoreInstance)
@@ -8254,9 +8196,7 @@ func (mock *ClientMock) UpdateCoreInstanceCheck(contextMoqParam context.Context,
 	mock.calls.UpdateCoreInstanceCheck = append(mock.calls.UpdateCoreInstanceCheck, callInfo)
 	mock.lockUpdateCoreInstanceCheck.Unlock()
 	if mock.UpdateCoreInstanceCheckFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.UpdateCoreInstanceCheckFunc(contextMoqParam, s, updateCoreInstanceCheck)
@@ -8377,9 +8317,7 @@ func (mock *ClientMock) UpdateEnvironment(contextMoqParam context.Context, s str
 	mock.calls.UpdateEnvironment = append(mock.calls.UpdateEnvironment, callInfo)
 	mock.lockUpdateEnvironment.Unlock()
 	if mock.UpdateEnvironmentFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.UpdateEnvironmentFunc(contextMoqParam, s, updateEnvironment)
@@ -8460,9 +8398,7 @@ func (mock *ClientMock) UpdateIngestCheck(contextMoqParam context.Context, s str
 	mock.calls.UpdateIngestCheck = append(mock.calls.UpdateIngestCheck, callInfo)
 	mock.lockUpdateIngestCheck.Unlock()
 	if mock.UpdateIngestCheckFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.UpdateIngestCheckFunc(contextMoqParam, s, updateIngestCheck)
@@ -8501,9 +8437,7 @@ func (mock *ClientMock) UpdateMember(contextMoqParam context.Context, updateMemb
 	mock.calls.UpdateMember = append(mock.calls.UpdateMember, callInfo)
 	mock.lockUpdateMember.Unlock()
 	if mock.UpdateMemberFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.UpdateMemberFunc(contextMoqParam, updateMember)
@@ -8586,9 +8520,7 @@ func (mock *ClientMock) UpdatePipelineCheck(contextMoqParam context.Context, s s
 	mock.calls.UpdatePipelineCheck = append(mock.calls.UpdatePipelineCheck, callInfo)
 	mock.lockUpdatePipelineCheck.Unlock()
 	if mock.UpdatePipelineCheckFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.UpdatePipelineCheckFunc(contextMoqParam, s, updatePipelineCheck)
@@ -8629,9 +8561,7 @@ func (mock *ClientMock) UpdatePipelineClusterObjects(contextMoqParam context.Con
 	mock.calls.UpdatePipelineClusterObjects = append(mock.calls.UpdatePipelineClusterObjects, callInfo)
 	mock.lockUpdatePipelineClusterObjects.Unlock()
 	if mock.UpdatePipelineClusterObjectsFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.UpdatePipelineClusterObjectsFunc(contextMoqParam, s, updatePipelineClusterObjects)
@@ -8672,9 +8602,7 @@ func (mock *ClientMock) UpdatePipelineFile(contextMoqParam context.Context, s st
 	mock.calls.UpdatePipelineFile = append(mock.calls.UpdatePipelineFile, callInfo)
 	mock.lockUpdatePipelineFile.Unlock()
 	if mock.UpdatePipelineFileFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.UpdatePipelineFileFunc(contextMoqParam, s, updatePipelineFile)
@@ -8715,9 +8643,7 @@ func (mock *ClientMock) UpdatePipelineMetadata(contextMoqParam context.Context, 
 	mock.calls.UpdatePipelineMetadata = append(mock.calls.UpdatePipelineMetadata, callInfo)
 	mock.lockUpdatePipelineMetadata.Unlock()
 	if mock.UpdatePipelineMetadataFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.UpdatePipelineMetadataFunc(contextMoqParam, s, updatePipelineMetadata)
@@ -8758,9 +8684,7 @@ func (mock *ClientMock) UpdatePipelinePort(contextMoqParam context.Context, s st
 	mock.calls.UpdatePipelinePort = append(mock.calls.UpdatePipelinePort, callInfo)
 	mock.lockUpdatePipelinePort.Unlock()
 	if mock.UpdatePipelinePortFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.UpdatePipelinePortFunc(contextMoqParam, s, updatePipelinePort)
@@ -8801,9 +8725,7 @@ func (mock *ClientMock) UpdatePipelineSecret(contextMoqParam context.Context, s 
 	mock.calls.UpdatePipelineSecret = append(mock.calls.UpdatePipelineSecret, callInfo)
 	mock.lockUpdatePipelineSecret.Unlock()
 	if mock.UpdatePipelineSecretFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.UpdatePipelineSecretFunc(contextMoqParam, s, updatePipelineSecret)
@@ -8924,9 +8846,7 @@ func (mock *ClientMock) UpdateProject(contextMoqParam context.Context, s string,
 	mock.calls.UpdateProject = append(mock.calls.UpdateProject, callInfo)
 	mock.lockUpdateProject.Unlock()
 	if mock.UpdateProjectFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.UpdateProjectFunc(contextMoqParam, s, updateProject)
@@ -8967,9 +8887,7 @@ func (mock *ClientMock) UpdateResourceProfile(contextMoqParam context.Context, s
 	mock.calls.UpdateResourceProfile = append(mock.calls.UpdateResourceProfile, callInfo)
 	mock.lockUpdateResourceProfile.Unlock()
 	if mock.UpdateResourceProfileFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.UpdateResourceProfileFunc(contextMoqParam, s, updateResourceProfile)
@@ -9008,9 +8926,7 @@ func (mock *ClientMock) UpdateToken(contextMoqParam context.Context, updateToken
 	mock.calls.UpdateToken = append(mock.calls.UpdateToken, callInfo)
 	mock.lockUpdateToken.Unlock()
 	if mock.UpdateTokenFunc == nil {
-		var (
-			errOut error
-		)
+		var errOut error
 		return errOut
 	}
 	return mock.UpdateTokenFunc(contextMoqParam, updateToken)
