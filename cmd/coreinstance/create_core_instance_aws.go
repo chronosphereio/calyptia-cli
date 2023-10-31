@@ -2,6 +2,7 @@ package coreinstance
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -9,8 +10,6 @@ import (
 	"time"
 
 	"github.com/sethvargo/go-retry"
-
-	"errors"
 
 	"github.com/spf13/cobra"
 
@@ -69,7 +68,6 @@ func (c *DefaultCoreInstancePoller) Ready(ctx context.Context, environment, name
 
 	err := retry.Do(ctx, coreInstanceUpCheckMaxDuration(), func(ctx context.Context) error {
 		instances, err := c.config.Cloud.CoreInstances(ctx, c.config.ProjectID, params)
-
 		if err != nil {
 			return retry.RetryableError(err)
 		}
@@ -84,7 +82,6 @@ func (c *DefaultCoreInstancePoller) Ready(ctx context.Context, environment, name
 		}
 		return nil
 	})
-
 	if err != nil {
 		return "", err
 	}
@@ -289,7 +286,6 @@ func getCoreInstanceByName(ctx context.Context, config *cfg.Config, environment,
 	}
 
 	coreInstances, err := config.Cloud.CoreInstances(ctx, config.ProjectID, params)
-
 	if err != nil {
 		return out, err
 	}

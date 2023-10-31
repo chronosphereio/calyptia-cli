@@ -50,6 +50,7 @@ func newCmdGet(config *cfg.Config) *cobra.Command {
 		cnfg.NewCmdGetConfigSections(config),
 		ingestcheck.NewCmdGetIngestChecks(config),
 		ingestcheck.NewCmdGetIngestCheck(config),
+		ingestcheck.NewCmdGetIngestCheckLogs(config),
 		fleet.NewCmdGetFleets(config),
 		fleet.NewCmdGetFleet(config),
 		fleet.NewCmdGetFleetFiles(config),

@@ -56,7 +56,6 @@ func TestKeyring(t *testing.T) {
 				t.Errorf("Get() got = %v, want %v", get, "data")
 			}
 		})
-
 	})
 	t.Run("Delete", func(t *testing.T) {
 		t.Run("NotFound", func(t *testing.T) {

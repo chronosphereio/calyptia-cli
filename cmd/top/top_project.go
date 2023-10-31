@@ -96,7 +96,6 @@ type GotProjectError struct {
 func (m ProjectModel) loadData(ctx context.Context, skipError bool) tea.Cmd {
 	return func() tea.Msg {
 		project, projectMetrics, agents, agentMetricsByAgentID, err := m.loadProjectData(ctx)
-
 		if err != nil {
 			if ctx.Err() != nil {
 				return nil

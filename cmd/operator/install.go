@@ -6,7 +6,10 @@ import (
 	_ "embed"
 	"errors"
 	"fmt"
+	"os"
+	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	"gopkg.in/yaml.v3"
@@ -15,10 +18,6 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 
 	"github.com/calyptia/cli/cmd/utils"
-
-	"os"
-	"regexp"
-	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"

@@ -442,7 +442,6 @@ func (c *Completer) LoadEnvironmentID(environmentName string) (string, error) {
 
 	if len(aa.Items) == 0 {
 		return "", fmt.Errorf("could not find environment %q", environmentName)
-
 	}
 
 	return aa.Items[0].ID, nil
