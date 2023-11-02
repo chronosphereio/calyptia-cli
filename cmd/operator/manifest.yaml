@@ -720,6 +720,7 @@ rules:
   - daemonsets
   - replicasets
   - pods
+  - pods/log
   - services
   - configmaps
   - deployments/scale
@@ -782,6 +783,7 @@ rules:
   - daemonsets
   - replicasets
   - pods
+  - pods/log
   - services
   - configmaps
   - deployments/scale
