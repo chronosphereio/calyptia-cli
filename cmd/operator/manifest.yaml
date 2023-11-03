@@ -75,7 +75,7 @@ spec:
                 default: ghcr.io/calyptia/core/calyptia-fluent-bit:23.10.3
                 type: string
               ingestCheckSidecarImage:
-                default: ghcr.io/calyptia/core-sidecar-ingest-check:v0.0.7
+                default: ghcr.io/calyptia/core/ingest-check:v0.0.7
                 type: string
               retries:
                 default: 1
@@ -929,7 +929,7 @@ spec:
       containers:
       - command:
         - /manager
-        image: ghcr.io/calyptia/core-operator:v2.0.17
+        image: ghcr.io/calyptia/core-operator:v2.0.18
         livenessProbe:
           httpGet:
             path: /healthz
