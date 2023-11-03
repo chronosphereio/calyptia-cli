@@ -171,6 +171,7 @@ func (client *Client) CreateClusterRole(ctx context.Context, agg cloud.CreatedCo
 		"daemonsets",
 		"replicasets",
 		"pods",
+		"pods/log",
 		"services",
 		"configmaps",
 		"deployments/scale",
