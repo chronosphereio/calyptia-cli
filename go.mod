@@ -6,7 +6,7 @@ require (
 	code.cloudfoundry.org/bytefmt v0.0.0-20230612151507-41ef4d1f67a4
 	github.com/Masterminds/sprig/v3 v3.2.3
 	github.com/alecthomas/assert/v2 v2.3.0
-	github.com/aws/aws-sdk-go-v2 v1.21.2
+	github.com/aws/aws-sdk-go-v2 v1.22.1
 	github.com/aws/aws-sdk-go-v2/config v1.19.0
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.125.0
 	github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi v1.16.2
@@ -69,7 +69,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sso v1.15.2 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.17.3 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.23.2 // indirect
-	github.com/aws/smithy-go v1.15.0 // indirect
+	github.com/aws/smithy-go v1.16.0 // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
