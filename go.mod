@@ -30,7 +30,7 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/zalando/go-keyring v0.2.3
 	golang.org/x/exp v0.0.0-20231006140011-7918f672742d
-	golang.org/x/sync v0.4.0
+	golang.org/x/sync v0.5.0
 	golang.org/x/term v0.13.0
 	golang.org/x/time v0.3.0
 	google.golang.org/api v0.148.0
