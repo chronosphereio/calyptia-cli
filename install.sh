@@ -48,7 +48,7 @@ _download_url() {
   _download_version=$cli_VERSION
 
   if [ -z "$cli_VERSION" ]; then
-    version=$(curl -s https://api.github.com/repos/calyptia/cli/releases/latest 2> /dev/null | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+    version=$(curl -sf https://api.github.com/repos/calyptia/cli/releases/latest 2> /dev/null | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
   fi
 
   _download_trailedVersion="$(echo "$version" | tr -d v)"
