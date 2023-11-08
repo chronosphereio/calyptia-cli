@@ -105,11 +105,6 @@ func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				return fmt.Errorf("could not update core instance at calyptia cloud: %w", err)
 			}
 
-			agg, err := config.Cloud.CoreInstance(ctx, coreInstanceID)
-			if err != nil {
-				return err
-			}
-
 			if configOverrides.Context.Namespace == "" {
 				configOverrides.Context.Namespace = apiv1.NamespaceDefault
 			}
@@ -138,12 +133,12 @@ func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 					ProjectToken: config.ProjectToken,
 					CloudBaseURL: config.BaseURL,
 				}
-				label := fmt.Sprintf("%s=%s,%s=%s,%s=%s", k8s.LabelComponent, "operator", k8s.LabelCreatedBy, "calyptia-cli", k8s.LabelAggregatorID, agg.ID)
-
+				
 				if err := k8sClient.EnsureOwnNamespace(ctx); err != nil {
 					return fmt.Errorf("could not ensure kubernetes namespace exists: %w", err)
 				}
 
+				label := fmt.Sprintf("%s=%s", k8s.LabelInstance, coreInstanceKey)
 				cmd.Printf("Waiting for core-instance to update...\n")
 				if err := k8sClient.UpdateSyncDeploymentByLabel(ctx, label, newVersion, strconv.FormatBool(!noTLSVerify), verbose, waitTimeout); err != nil {
 					if !verbose {
