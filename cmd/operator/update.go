@@ -1,6 +1,7 @@
 package operator
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"strings"
@@ -18,6 +19,10 @@ import (
 	apiv1 "k8s.io/api/core/v1"
 
 	"github.com/calyptia/cli/k8s"
+)
+
+const (
+	defaultWaitTimeout = time.Second * 30
 )
 
 func NewCmdUpdate() *cobra.Command {
@@ -99,18 +104,30 @@ func NewCmdUpdate() *cobra.Command {
 				return err
 			}
 
-			label := fmt.Sprintf("%s=%s,%s=%s", k8s.LabelComponent, "manager", k8s.LabelCreatedBy, "operator")
-			cmd.Printf("Waiting for core-operator to update...\n")
-			if err := k.UpdateOperatorDeploymentByLabel(cmd.Context(), label, fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorDockerImage, coreOperatorVersion), verbose, waitTimeout); err != nil {
-				if !verbose {
-					return fmt.Errorf("could not update core-operator to version %s for extra details use --verbose flag", coreOperatorVersion)
-				}
-				return fmt.Errorf("could not update core-operator to version %s, \n%s", coreOperatorVersion, err)
+			if coreOperatorVersion == "" {
+				coreOperatorVersion = utils.DefaultCoreOperatorDockerImageTag
+			}
 
+			manifest, err := installManifest(namespace, utils.DefaultCoreOperatorDockerImage, coreOperatorVersion, k8serrors.IsNotFound(err))
+			if err != nil {
+				return err
+			}
+
+			if waitReady {
+				deployment, err := extractDeployment(manifest)
+				if err != nil {
+					return err
+				}
+				start := time.Now()
+				fmt.Printf("Waiting for core operator manager to be updated...\n")
+				err = k.WaitReady(context.Background(), namespace, deployment, false, waitTimeout)
+				if err != nil {
+					return err
+				}
+				fmt.Printf("Core operator manager is ready. Update took %s\n", time.Since(start))
 			}
 
 			cmd.Printf("Core operator manager successfully updated to version %s\n", coreOperatorVersion)
-
 			return nil
 		},
 	}
@@ -118,7 +135,7 @@ func NewCmdUpdate() *cobra.Command {
 	fs := cmd.Flags()
 
 	fs.BoolVar(&waitReady, "wait", false, "Wait for the core instance to be ready before returning")
-	fs.DurationVar(&waitTimeout, "timeout", time.Second*30, "Wait timeout")
+	fs.DurationVar(&waitTimeout, "timeout", defaultWaitTimeout, "Wait timeout")
 	fs.BoolVar(&verbose, "verbose", false, "Print verbose command output")
 	fs.StringVar(&coreOperatorVersion, "version", "", "Core instance version")
 	_ = cmd.Flags().MarkHidden("image")

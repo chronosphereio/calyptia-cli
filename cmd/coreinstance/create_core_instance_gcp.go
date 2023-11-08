@@ -3,16 +3,15 @@ package coreinstance
 import (
 	"errors"
 	"fmt"
+	"os"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	rateLimiter "golang.org/x/time/rate"
 
 	"github.com/spf13/cobra"
-
-	"os"
-	"strings"
 
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/gcp"
@@ -22,7 +21,6 @@ import (
 const OperationConcluded = "DONE"
 
 func newCmdCreateCoreInstanceOnGCP(config *cfg.Config, client gcp.Client) *cobra.Command {
-
 	var (
 		coreInstanceName      string
 		zone                  string

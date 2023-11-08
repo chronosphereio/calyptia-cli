@@ -6,7 +6,10 @@ import (
 	_ "embed"
 	"errors"
 	"fmt"
+	"os"
+	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	"gopkg.in/yaml.v3"
@@ -15,10 +18,6 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 
 	"github.com/calyptia/cli/cmd/utils"
-
-	"os"
-	"regexp"
-	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -53,7 +52,6 @@ func NewCmdInstall() *cobra.Command {
 		Aliases: []string{"opr"},
 		Short:   "Setup a new core operator instance",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			kctl := newKubectlCmd()
 			var namespace string
 
 			kubeNamespaceFlag := cmd.Flag("kube-namespace")
@@ -94,7 +92,8 @@ func NewCmdInstall() *cobra.Command {
 			if !confirmed {
 				isInstalled, err := k.IsOperatorInstalled(cmd.Context())
 				if isInstalled {
-					if e, ok := err.(*k8s.OperatorIncompleteError); ok {
+					var e *k8s.OperatorIncompleteError
+					if errors.As(err, &e) {
 						cmd.Printf("Previous operator installation components found:\n%s\n", e.Error())
 						cmd.Printf("Are you sure you want to proceed? (y/N) ")
 						var answer string
@@ -120,20 +119,13 @@ func NewCmdInstall() *cobra.Command {
 				return err
 			}
 
-			yaml, err := prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace, k8serrors.IsNotFound(err))
-			defer os.RemoveAll(yaml)
-			if err != nil {
-				return err
-			}
-
-			kctl.SetArgs([]string{"apply", "-f", yaml})
-			err = kctl.Execute()
+			manifest, err := installManifest(namespace, coreDockerImage, coreInstanceVersion, k8serrors.IsNotFound(err))
 			if err != nil {
 				return err
 			}
 
 			if waitReady {
-				deployment, err := extractDeployment(yaml)
+				deployment, err := extractDeployment(manifest)
 				if err != nil {
 					return err
 				}
@@ -297,4 +289,22 @@ func newKubectlCmd() *cobra.Command {
 
 	logs.AddFlags(cmd.PersistentFlags())
 	return cmd
+}
+
+func installManifest(namespace, coreDockerImage, coreInstanceVersion string, createNamespace bool) (string, error) {
+	kctl := newKubectlCmd()
+
+	manifest, err := prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace, createNamespace)
+	defer os.RemoveAll(manifest)
+	if err != nil {
+		return "", err
+	}
+
+	kctl.SetArgs([]string{"apply", "-f", manifest})
+	err = kctl.Execute()
+	if err != nil {
+		return "", err
+	}
+
+	return manifest, err
 }

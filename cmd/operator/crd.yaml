@@ -6,6 +6,95 @@ metadata:
   creationTimestamp: null
   labels:
     calyptia.core: core-operator
+  name: ingestchecks.core.calyptia.com
+spec:
+  group: core.calyptia.com
+  names:
+    kind: IngestCheck
+    listKind: IngestCheckList
+    plural: ingestchecks
+    singular: ingestcheck
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - description: Status of the ingest check
+      jsonPath: .status.status
+      name: Status
+      type: string
+    name: v1
+    schema:
+      openAPIV3Schema:
+        description: IngestCheck is the Schema for the ingestchecks API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: IngestCheckSpec defines the desired state of IngestCheck
+            properties:
+              activeDeadlineSeconds:
+                default: 60
+                description: Specifies the duration in seconds relative to the startTime
+                  that the job may be continuously active before the system tries
+                  to terminate it; value must be positive integer.
+                format: int64
+                type: integer
+              cloudResourceID:
+                description: CloudResourceID represents the ID under which ingestcheck
+                  exists in Cloud API
+                type: string
+              collectLogs:
+                default: false
+                type: boolean
+              config:
+                type: string
+              fluentBitImage:
+                default: ghcr.io/calyptia/core/calyptia-fluent-bit:23.11.1
+                type: string
+              ingestCheckSidecarImage:
+                default: ghcr.io/calyptia/core/ingest-check:v0.0.7
+                type: string
+              retries:
+                default: 1
+                format: int32
+                type: integer
+            required:
+            - config
+            type: object
+          status:
+            description: IngestCheckStatus defines the observed state of IngestCheck
+            properties:
+              logs:
+                additionalProperties:
+                  type: string
+                type: object
+              status:
+                default: NEW
+                type: string
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.11.1
+  creationTimestamp: null
+  labels:
+    calyptia.core: core-operator
   name: pipelines.core.calyptia.com
 spec:
   group: core.calyptia.com
@@ -184,7 +273,7 @@ spec:
                 default: ghcr.io/calyptia/configmap-reload:v0.11.1
                 type: string
               image:
-                default: ghcr.io/calyptia/core/calyptia-fluent-bit:23.10.3
+                default: ghcr.io/calyptia/core/calyptia-fluent-bit:23.11.1
                 type: string
               kind:
                 description: Enums

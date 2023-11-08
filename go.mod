@@ -7,10 +7,10 @@ require (
 	github.com/Masterminds/sprig/v3 v3.2.3
 	github.com/alecthomas/assert/v2 v2.3.0
 	github.com/aws/aws-sdk-go-v2 v1.21.2
-	github.com/aws/aws-sdk-go-v2/config v1.18.45
+	github.com/aws/aws-sdk-go-v2/config v1.19.0
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.125.0
 	github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi v1.16.2
-	github.com/calyptia/api v1.5.8
+	github.com/calyptia/api v1.6.1
 	github.com/calyptia/cli/k8s v0.0.0-20231013130444-c5317d8f9ddf
 	github.com/calyptia/core-images-index/go-index v0.0.0-20231013100952-16114b0b4692
 	github.com/calyptia/go-bubble-table v0.2.1
@@ -33,15 +33,15 @@ require (
 	golang.org/x/sync v0.4.0
 	golang.org/x/term v0.13.0
 	golang.org/x/time v0.3.0
-	google.golang.org/api v0.147.0
+	google.golang.org/api v0.148.0
 	gopkg.in/yaml.v2 v2.4.0
 	gopkg.in/yaml.v3 v3.0.1
-	k8s.io/api v0.28.2
-	k8s.io/apimachinery v0.28.2
-	k8s.io/cli-runtime v0.28.2
-	k8s.io/client-go v0.28.2
-	k8s.io/component-base v0.28.2
-	k8s.io/kubectl v0.28.2
+	k8s.io/api v0.28.3
+	k8s.io/apimachinery v0.28.3
+	k8s.io/cli-runtime v0.28.3
+	k8s.io/client-go v0.28.3
+	k8s.io/component-base v0.28.3
+	k8s.io/kubectl v0.28.3
 )
 
 require (
@@ -214,10 +214,10 @@ require (
 	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
-	k8s.io/component-helpers v0.28.2 // indirect
+	k8s.io/component-helpers v0.28.3 // indirect
 	k8s.io/klog/v2 v2.100.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20231010175941-2dd684a91f00 // indirect
-	k8s.io/metrics v0.28.2 // indirect
+	k8s.io/metrics v0.28.3 // indirect
 	k8s.io/utils v0.0.0-20230726121419-3b25d923346b // indirect
 	sigs.k8s.io/controller-runtime v0.16.2 // indirect
 	sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd // indirect

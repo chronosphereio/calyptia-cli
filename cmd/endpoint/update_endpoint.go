@@ -2,9 +2,10 @@ package endpoint
 
 import (
 	"fmt"
-	"github.com/calyptia/cli/cmd/coreinstance"
 	"strconv"
 	"strings"
+
+	"github.com/calyptia/cli/cmd/coreinstance"
 
 	"github.com/spf13/cobra"
 

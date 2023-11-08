@@ -35,7 +35,7 @@ func NewCmdDeleteCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 
-			//delete the core instance on the cloud
+			// delete the core instance on the cloud
 			var environmentID string
 			if environment != "" {
 				var err error
@@ -59,7 +59,7 @@ func NewCmdDeleteCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				return err
 			}
 
-			//delete the k8s resources
+			// delete the k8s resources
 			if configOverrides.Context.Namespace == "" {
 				namespace, err := k8s.GetCurrentContextNamespace()
 				if err != nil {

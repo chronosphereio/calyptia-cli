@@ -76,7 +76,6 @@ func NewCmdDeleteCoreInstanceOnAWS(config *cfg.Config, client awsclient.Client) 
 				awsclient.DefaultCoreInstanceTag:            coreInstanceName,
 				awsclient.DefaultCoreInstanceEnvironmentTag: environment,
 			})
-
 			if err != nil {
 				return fmt.Errorf("could not get resources from AWS with the given tags: %w", err)
 			}

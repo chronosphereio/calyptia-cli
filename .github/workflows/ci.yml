@@ -61,7 +61,7 @@ jobs:
     runs-on: ${{ (contains(matrix.platform, 'arm') && 'actuated-arm64') || 'actuated' }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Actuated mirror
         if: contains(matrix.platform, 'arm')
@@ -130,7 +130,7 @@ jobs:
     steps:
       - name: Extract metadata from Github
         id: meta
-        uses: docker/metadata-action@v4
+        uses: docker/metadata-action@v5
         with:
           images: ${{ needs.ci-get-metadata.outputs.image }}
           tags: |
@@ -233,11 +233,15 @@ jobs:
           username: ${{ secrets.CI_USERNAME }}
           password: ${{ secrets.CI_PAT }}
 
-      - name: Login to Google Cloud
-        uses: google-github-actions/setup-gcloud@v0.6.0
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v1'
         with:
-          service_account_key: ${{ secrets.GCP_SA_KEY }}
-          export_default_credentials: true
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          export_environment_variables: true
+          create_credentials_file: true
+
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v1'
 
       - name: Extract image metadata
         id: meta-github-image
