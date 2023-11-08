@@ -195,6 +195,7 @@ jobs:
       id-token: write
     with:
       cli-image: ${{ needs.ci-build-container-image-manifest.outputs.tag }}
+      calyptia-tests: "operator/"
     secrets:
       registry-username: ${{ secrets.CI_USERNAME }}
       registry-password: ${{ secrets.CI_PAT }}
