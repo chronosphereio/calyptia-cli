@@ -57,8 +57,9 @@ _download_url() {
 
 echo "Downloading Calyptia CLI from URL: $(_download_url)"
 curl --progress-bar --output cli.tar.gz -SLf "$(_download_url)"
+rm -f calyptia
 tar -xzf cli.tar.gz calyptia
-rm cli.tar.gz
+rm -f cli.tar.gz
 
 install_dir=$1
 if [ "$install_dir" != "" ]; then
