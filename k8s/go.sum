@@ -34,8 +34,8 @@ github.com/bytedance/sonic v1.10.2 h1:GQebETVBxYB7JGWJtLBi07OVzWwt+8dWA00gEVW2ZF
 github.com/bytedance/sonic v1.10.2/go.mod h1:iZcSUejdk5aukTND/Eu/ivjQuEL0Cu9/rf50Hi0u/g4=
 github.com/calyptia/api v1.6.1 h1:RgZAfwUXpS88OFJz3xbVjsi0TTSzclRjsUCX/kx6dsU=
 github.com/calyptia/api v1.6.1/go.mod h1:qBRVZyXFcUX2DJWVIO34K5T9ir1fRjtezpO8kLdp3pY=
-github.com/calyptia/cli v1.8.9 h1:2uSR/2bQBEjPfBrZwfQHWFp3TLft/qcdadb8qUV3iwg=
-github.com/calyptia/cli v1.8.9/go.mod h1:Xd13sBGbbQc03ipl2N167zs4nGEoIc6AhW8cFeHBj0U=
+github.com/calyptia/cli v1.9.0 h1:WfBrKl78Yd2d4/PxQgj5fzP5ftppBejqalu6MfLEogA=
+github.com/calyptia/cli v1.9.0/go.mod h1:Xd13sBGbbQc03ipl2N167zs4nGEoIc6AhW8cFeHBj0U=
 github.com/calyptia/go-fluentbit-config/v2 v2.1.1 h1:dXvBc0P6xrDjoXR2arhX4NjOaM1A/K86YBd+m38mYX8=
 github.com/calyptia/go-fluentbit-config/v2 v2.1.1/go.mod h1:bmPxFuwb7//+pLPSvLbLxS/fYesxysQtiSksElDVszQ=
 github.com/cespare/xxhash v1.1.0 h1:a6HrQnmkObjyL+Gs60czilIUGqrzKutQD6XZog3p+ko=
