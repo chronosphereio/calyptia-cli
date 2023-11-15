@@ -712,6 +712,7 @@ rules:
   - core.calyptia.com
   - core
   - rbac.authorization.k8s.io
+  - security.openshift.io
   resources:
   - namespaces
   - serviceaccounts
@@ -735,6 +736,7 @@ rules:
   - pipelines
   - pipelines/finalizers
   - pipelines/status
+  - securitycontextconstraints
   verbs:
   - get
   - list
@@ -929,7 +931,7 @@ spec:
       containers:
       - command:
         - /manager
-        image: ghcr.io/calyptia/core-operator:v2.0.19
+        image: ghcr.io/calyptia/core-operator:v2.0.20
         livenessProbe:
           httpGet:
             path: /healthz
