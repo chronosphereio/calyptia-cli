@@ -13,7 +13,6 @@ import (
 
 	cloudclient "github.com/calyptia/api/client"
 	cnfg "github.com/calyptia/cli/cmd/config"
-	"github.com/calyptia/cli/cmd/top"
 	"github.com/calyptia/cli/cmd/version"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/localdata"
@@ -104,7 +103,6 @@ func NewRootCmd(ctx context.Context) *cobra.Command {
 		newCmdInstall(),
 		newCmdUninstall(),
 		newCmdDelete(config),
-		top.NewCmdTop(config),
 		version.NewVersionCommand(),
 	)
 
