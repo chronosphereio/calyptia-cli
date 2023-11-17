@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
 	"strings"
 	"time"
 
@@ -112,6 +113,8 @@ func NewCmdUpdate() *cobra.Command {
 			if err != nil {
 				return err
 			}
+
+			defer os.RemoveAll(manifest)
 
 			if waitReady {
 				deployment, err := extractDeployment(manifest)
