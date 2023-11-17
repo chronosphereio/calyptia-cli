@@ -55,7 +55,7 @@ require (
 	github.com/Shopify/goreferrer v0.0.0-20220729165902-8cddb4f5de06 // indirect
 	github.com/alecthomas/repr v0.3.0 // indirect
 	github.com/alessio/shellescape v1.4.1 // indirect
-	github.com/andybalholm/brotli v1.0.5 // indirect
+	github.com/andybalholm/brotli v1.0.6 // indirect
 	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
 	github.com/aws/aws-sdk-go-v2/credentials v1.16.1 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.14.4 // indirect
@@ -131,12 +131,12 @@ require (
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/kataras/blocks v0.0.8 // indirect
-	github.com/kataras/golog v0.1.9 // indirect
-	github.com/kataras/iris/v12 v12.2.7 // indirect
-	github.com/kataras/pio v0.0.12 // indirect
+	github.com/kataras/golog v0.1.11 // indirect
+	github.com/kataras/iris/v12 v12.2.8 // indirect
+	github.com/kataras/pio v0.0.13 // indirect
 	github.com/kataras/sitemap v0.0.6 // indirect
 	github.com/kataras/tunnel v0.0.4 // indirect
-	github.com/klauspost/compress v1.17.0 // indirect
+	github.com/klauspost/compress v1.17.2 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.5 // indirect
 	github.com/labstack/echo/v4 v4.11.2 // indirect
 	github.com/labstack/gommon v0.4.0 // indirect
@@ -172,13 +172,13 @@ require (
 	github.com/shopspring/decimal v1.2.0 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/spf13/cast v1.3.1 // indirect
-	github.com/tdewolff/minify/v2 v2.12.9 // indirect
-	github.com/tdewolff/parse/v2 v2.6.8 // indirect
+	github.com/tdewolff/minify/v2 v2.20.6 // indirect
+	github.com/tdewolff/parse/v2 v2.7.4 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
-	github.com/vmihailenco/msgpack/v5 v5.4.0 // indirect
+	github.com/vmihailenco/msgpack/v5 v5.4.1 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	github.com/xlab/treeprint v1.2.0 // indirect
 	github.com/yosssi/ace v0.0.5 // indirect
