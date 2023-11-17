@@ -123,6 +123,7 @@ func NewCmdInstall() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			defer os.RemoveAll(manifest)
 
 			if waitReady {
 				deployment, err := extractDeployment(manifest)
@@ -295,7 +296,6 @@ func installManifest(namespace, coreDockerImage, coreInstanceVersion string, cre
 	kctl := newKubectlCmd()
 
 	manifest, err := prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace, createNamespace)
-	defer os.RemoveAll(manifest)
 	if err != nil {
 		return "", err
 	}
