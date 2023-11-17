@@ -1,8 +1,8 @@
-
 # Calyptia Cloud CLI
 
 [![CI](https://github.com/calyptia/cli/actions/workflows/ci.yml/badge.svg)](https://github.com/calyptia/cloud-cli/actions/workflows/ci.yml)
 [![Codecov](https://codecov.io/gh/calyptia/cli/branch/main/graph/badge.svg?token=TY36W7B87A)](https://codecov.io/gh/calyptia/cli)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fcalyptia%2Fcli.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fcalyptia%2Fcli?ref=badge_shield)
 
 This CLI interacts with the [Calyptia Cloud](https://cloud.calyptia.com) service
 using the [API Client](https://github.com/calyptia/api).
@@ -103,3 +103,7 @@ Flags:
 
 Use "calyptia [command] --help" for more information about a command.
 ```
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fcalyptia%2Fcli.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fcalyptia%2Fcli?ref=badge_large)
