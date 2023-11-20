@@ -8,9 +8,9 @@ require (
 	github.com/calyptia/api v1.6.1
 	github.com/calyptia/cli v1.8.9
 	github.com/hashicorp/go-version v1.6.0
-	k8s.io/api v0.28.3
-	k8s.io/apimachinery v0.28.3
-	k8s.io/client-go v0.28.3
+	k8s.io/api v0.28.4
+	k8s.io/apimachinery v0.28.4
+	k8s.io/client-go v0.28.4
 	sigs.k8s.io/controller-runtime v0.16.2
 )
 
