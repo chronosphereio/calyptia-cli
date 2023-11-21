@@ -177,7 +177,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 
 			created, err := config.Cloud.CreateCoreInstance(ctx, coreInstanceParams)
 			if err != nil {
-				return fmt.Errorf("could not create core instance at calyptia cloud: %w", err)
+				return fmt.Errorf("could not create core instance (%q) at calyptia cloud (%q): %w", coreInstanceName, coreCloudURL, err)
 			}
 
 			labelsFunc := func() map[string]string {
