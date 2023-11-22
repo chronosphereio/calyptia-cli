@@ -29,6 +29,7 @@ func newCmdCreate(config *cfg.Config) *cobra.Command {
 		pipeline.NewCmdCreatePipeline(config),
 		resourceprofile.NewCmdCreateResourceProfile(config),
 		pipeline.NewCmdCreatePipelineFile(config),
+		pipeline.NewCmdCreatePipelineLog(config),
 		environment.NewCmdCreateEnvironment(config),
 		tracesession.NewCmdCreateTraceSession(config),
 		cnfg.NewCmdCreateConfigSection(config),
