@@ -6,13 +6,13 @@ require (
 	code.cloudfoundry.org/bytefmt v0.0.0-20231017140541-3b893ed0421b
 	github.com/Masterminds/sprig/v3 v3.2.3
 	github.com/alecthomas/assert/v2 v2.4.0
-	github.com/aws/aws-sdk-go-v2 v1.23.0
-	github.com/aws/aws-sdk-go-v2/config v1.25.2
-	github.com/aws/aws-sdk-go-v2/service/ec2 v1.135.0
-	github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi v1.18.2
+	github.com/aws/aws-sdk-go-v2 v1.23.1
+	github.com/aws/aws-sdk-go-v2/config v1.25.5
+	github.com/aws/aws-sdk-go-v2/service/ec2 v1.137.1
+	github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi v1.18.3
 	github.com/calyptia/api v1.6.8
-	github.com/calyptia/cli/k8s v0.0.0-20231117093945-1c5c80f2619d
-	github.com/calyptia/core-images-index/go-index v0.0.0-20231107192834-21376bc0cc88
+	github.com/calyptia/cli/k8s v0.0.0-20231122210256-4efd5127e1ee
+	github.com/calyptia/core-images-index/go-index v0.0.0-20231123093318-98738e9d3d85
 	github.com/calyptia/go-fluentbit-config/v2 v2.1.1
 	github.com/go-logfmt/logfmt v0.6.0
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
@@ -55,18 +55,18 @@ require (
 	github.com/Shopify/goreferrer v0.0.0-20220729165902-8cddb4f5de06 // indirect
 	github.com/alecthomas/repr v0.3.0 // indirect
 	github.com/alessio/shellescape v1.4.1 // indirect
-	github.com/andybalholm/brotli v1.0.6 // indirect
+	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
-	github.com/aws/aws-sdk-go-v2/credentials v1.16.1 // indirect
-	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.14.4 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/configsources v1.2.3 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.5.3 // indirect
+	github.com/aws/aws-sdk-go-v2/credentials v1.16.4 // indirect
+	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.14.5 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/configsources v1.2.4 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.5.4 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/ini v1.7.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.10.1 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.10.3 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sso v1.17.2 // indirect
-	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.19.2 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sts v1.25.2 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.10.4 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sso v1.17.3 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.20.1 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sts v1.25.4 // indirect
 	github.com/aws/smithy-go v1.17.0 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
@@ -131,12 +131,12 @@ require (
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/kataras/blocks v0.0.8 // indirect
-	github.com/kataras/golog v0.1.11 // indirect
-	github.com/kataras/iris/v12 v12.2.8 // indirect
-	github.com/kataras/pio v0.0.13 // indirect
+	github.com/kataras/golog v0.1.9 // indirect
+	github.com/kataras/iris/v12 v12.2.7 // indirect
+	github.com/kataras/pio v0.0.12 // indirect
 	github.com/kataras/sitemap v0.0.6 // indirect
 	github.com/kataras/tunnel v0.0.4 // indirect
-	github.com/klauspost/compress v1.17.2 // indirect
+	github.com/klauspost/compress v1.17.0 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.5 // indirect
 	github.com/labstack/echo/v4 v4.11.2 // indirect
 	github.com/labstack/gommon v0.4.0 // indirect
@@ -172,13 +172,13 @@ require (
 	github.com/shopspring/decimal v1.2.0 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/spf13/cast v1.3.1 // indirect
-	github.com/tdewolff/minify/v2 v2.20.6 // indirect
-	github.com/tdewolff/parse/v2 v2.7.4 // indirect
+	github.com/tdewolff/minify/v2 v2.12.9 // indirect
+	github.com/tdewolff/parse/v2 v2.6.8 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.11 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
-	github.com/vmihailenco/msgpack/v5 v5.4.1 // indirect
+	github.com/vmihailenco/msgpack/v5 v5.4.0 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	github.com/xlab/treeprint v1.2.0 // indirect
 	github.com/yosssi/ace v0.0.5 // indirect
