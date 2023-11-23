@@ -86,6 +86,8 @@ github.com/bytedance/sonic v1.10.2 h1:GQebETVBxYB7JGWJtLBi07OVzWwt+8dWA00gEVW2ZF
 github.com/bytedance/sonic v1.10.2/go.mod h1:iZcSUejdk5aukTND/Eu/ivjQuEL0Cu9/rf50Hi0u/g4=
 github.com/calyptia/api v1.6.7 h1:2ZlJjHS7a5+AND7myFzeRfMbIRJKcrNidQTRoYshBoI=
 github.com/calyptia/api v1.6.7/go.mod h1:HO2BGsbLEioKKRMgQrvrPgthXBom6Wiz3Dr+t/dgjpI=
+github.com/calyptia/api v1.6.8 h1:9dGmWHC/cmIV9Zb8c/Pvme4CdeR3VMVrpp8NwRjbpyQ=
+github.com/calyptia/api v1.6.8/go.mod h1:HO2BGsbLEioKKRMgQrvrPgthXBom6Wiz3Dr+t/dgjpI=
 github.com/calyptia/cli/k8s v0.0.0-20231117093945-1c5c80f2619d h1:QmyVJpadI8I09Y1Q6jlx8pRlwa4UBxc9KVmlPFITl1s=
 github.com/calyptia/cli/k8s v0.0.0-20231117093945-1c5c80f2619d/go.mod h1:xQTUh070sK499hKwfusrVif31iL/5y9esH6rIRu8ZsA=
 github.com/calyptia/core-images-index/go-index v0.0.0-20231107192834-21376bc0cc88 h1:0gY7US3ATzvalVoOUAZ7DQPM6i8Qx6y1t+QQdPSLUSk=
