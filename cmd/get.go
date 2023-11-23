@@ -40,6 +40,8 @@ func newCmdGet(config *cfg.Config) *cobra.Command {
 		pipeline.NewCmdGetPipelineSecrets(config),
 		pipeline.NewCmdGetPipelineFiles(config),
 		pipeline.NewCmdGetPipelineFile(config),
+		pipeline.NewCmdGetPipelineLog(config),
+		pipeline.NewCmdGetPipelineLogs(config),
 		clusterobject.NewCmdGetClusterObjects(config),
 		pipeline.NewCmdGetPipelineClusterObjects(config),
 		resourceprofile.NewCmdGetResourceProfiles(config),
