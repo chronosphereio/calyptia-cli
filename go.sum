@@ -86,10 +86,10 @@ github.com/bytedance/sonic v1.10.2 h1:GQebETVBxYB7JGWJtLBi07OVzWwt+8dWA00gEVW2ZF
 github.com/bytedance/sonic v1.10.2/go.mod h1:iZcSUejdk5aukTND/Eu/ivjQuEL0Cu9/rf50Hi0u/g4=
 github.com/calyptia/api v1.6.8 h1:9dGmWHC/cmIV9Zb8c/Pvme4CdeR3VMVrpp8NwRjbpyQ=
 github.com/calyptia/api v1.6.8/go.mod h1:HO2BGsbLEioKKRMgQrvrPgthXBom6Wiz3Dr+t/dgjpI=
-github.com/calyptia/cli/k8s v0.0.0-20231122210256-4efd5127e1ee h1:SpJyyMp1F91VBPqRefseI5bNoDo5nfMtPsTnE625ArU=
-github.com/calyptia/cli/k8s v0.0.0-20231122210256-4efd5127e1ee/go.mod h1:xQTUh070sK499hKwfusrVif31iL/5y9esH6rIRu8ZsA=
-github.com/calyptia/core-images-index/go-index v0.0.0-20231123093318-98738e9d3d85 h1:8OaJBT1yG5KZqnCfVrbFtL8NOHBPdwIjLpTUDbCNW9o=
-github.com/calyptia/core-images-index/go-index v0.0.0-20231123093318-98738e9d3d85/go.mod h1:9+aUlL+o9dpq2wcF4CLEQlPAcjlmuwohVRvOxNN6TWk=
+github.com/calyptia/cli/k8s v0.0.0-20231122202035-e1e64f435ed6 h1:1A2ZvbOyyqCsAgJyIIsnSDYuJoEAc0UkBdZIag8HTtY=
+github.com/calyptia/cli/k8s v0.0.0-20231122202035-e1e64f435ed6/go.mod h1:xQTUh070sK499hKwfusrVif31iL/5y9esH6rIRu8ZsA=
+github.com/calyptia/core-images-index/go-index v0.0.0-20231122200241-68594ece7524 h1:10pClVKEFD/x66fmS8YF4XizqlsT8ONWEf6qbDfAOMc=
+github.com/calyptia/core-images-index/go-index v0.0.0-20231122200241-68594ece7524/go.mod h1:9+aUlL+o9dpq2wcF4CLEQlPAcjlmuwohVRvOxNN6TWk=
 github.com/calyptia/go-fluentbit-config/v2 v2.1.1 h1:dXvBc0P6xrDjoXR2arhX4NjOaM1A/K86YBd+m38mYX8=
 github.com/calyptia/go-fluentbit-config/v2 v2.1.1/go.mod h1:bmPxFuwb7//+pLPSvLbLxS/fYesxysQtiSksElDVszQ=
 github.com/census-instrumentation/opencensus-proto v0.2.1/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=

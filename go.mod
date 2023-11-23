@@ -11,8 +11,8 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.137.1
 	github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi v1.18.3
 	github.com/calyptia/api v1.6.8
-	github.com/calyptia/cli/k8s v0.0.0-20231122210256-4efd5127e1ee
-	github.com/calyptia/core-images-index/go-index v0.0.0-20231123093318-98738e9d3d85
+	github.com/calyptia/cli/k8s v0.0.0-20231122202035-e1e64f435ed6
+	github.com/calyptia/core-images-index/go-index v0.0.0-20231122200241-68594ece7524
 	github.com/calyptia/go-fluentbit-config/v2 v2.1.1
 	github.com/go-logfmt/logfmt v0.6.0
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
