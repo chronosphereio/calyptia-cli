@@ -931,7 +931,7 @@ spec:
       containers:
       - command:
         - /manager
-        image: ghcr.io/calyptia/core-operator:v2.0.24
+        image: ghcr.io/calyptia/core-operator:v2.0.25
         livenessProbe:
           httpGet:
             path: /healthz
