@@ -5,7 +5,7 @@ go 1.21.0
 toolchain go1.21.1
 
 require (
-	github.com/calyptia/api v1.6.1
+	github.com/calyptia/api v1.6.8
 	github.com/calyptia/cli v1.8.9
 	github.com/hashicorp/go-version v1.6.0
 	k8s.io/api v0.28.3
