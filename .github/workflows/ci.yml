@@ -199,7 +199,7 @@ jobs:
       - name: Create k8s Kind Cluster
         uses: helm/kind-action@v1.8.0
         with:
-          node_image: kindest/node:${{ matrix.k8s-release }}
+          node_image: kindest/node:latest
           cluster_name: kind
           wait: 300s
     
