@@ -203,7 +203,7 @@ jobs:
           wait: 300s
       - name: Install operator
         run: |
-          ./smoke-test/test.sh
+          REGISTRY_PASSWORD=${{ secrets.CI_PAT }} ./smoke-test/test.sh
     
   # cloud-e2e:
   #   strategy:

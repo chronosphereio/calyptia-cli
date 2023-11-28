@@ -14,4 +14,9 @@ echo "test install operator into test namespace"
 ./calyptia install operator --kube-namespace test
 ./calyptia update operator --version "$beforelatest" --kube-namespace test--verbose
 
-
+kubectl create ns calyptia
+kubectl -n calyptia create secret docker-registry "regcreds" \
+    --docker-server="ghcr.io" \
+    --docker-username="${REGISTRY_USERNAME:-calyptia-ci}" \
+    --docker-password="$REGISTRY_PASSWORD" \
+    --docker-email="${REGISTRY_EMAIL:-ci@calyptia.com}"
