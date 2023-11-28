@@ -21,13 +21,15 @@ kubectl -n calyptia create secret docker-registry "regcreds" \
     --docker-password="$REGISTRY_PASSWORD" \
     --docker-email="${REGISTRY_EMAIL:-ci@calyptia.com}"
 
+helm repo add --force-update calyptia https://calyptia.github.io/charts
+helm repo update --fail-on-repo-update-fail
 helm upgrade --install \
-            --create-namespace --namespace "$TEST_NAMESPACE" \
-            --set global.imagePullSecrets[0]="regcreds" \
-            --set global.pullPolicy=IfNotPresent \
-            --set vivo.enabled=false \
-            --set frontend.enabled=false \
-            --set cloudApi.service.type="ClusterIP" \
-            --set operator.enabled=false \
-            --wait \
-            calyptia-cloud calyptia/calyptia-standalone
+    --create-namespace --namespace "cloud" \
+    --set global.imagePullSecrets[0]="regcreds" \
+    --set global.pullPolicy=IfNotPresent \
+    --set vivo.enabled=false \
+    --set frontend.enabled=false \
+    --set cloudApi.service.type="ClusterIP" \
+    --set operator.enabled=false \
+    --wait \
+    calyptia-cloud calyptia/calyptia-standalone
