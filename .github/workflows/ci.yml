@@ -180,7 +180,28 @@ jobs:
         run: |
           docker buildx imagetools inspect ${{ needs.ci-get-metadata.outputs.image }}:${{ steps.meta.outputs.version }}
         shell: bash
+  smoke-tests:
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.21"
+      - name: Install dependencies
+        run: go get .
+      - name: Build
+        run: go build -o calyptia
 
+      - name: Create k8s Kind Cluster
+        uses: helm/kind-action@v1.8.0
+        with:
+          node_image: kindest/node:${{ matrix.k8s-release }}
+          cluster_name: kind
+          wait: 300s
+    
   cloud-e2e:
     strategy:
       fail-fast: false
