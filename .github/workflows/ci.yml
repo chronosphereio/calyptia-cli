@@ -205,35 +205,35 @@ jobs:
         run: |
           REGISTRY_PASSWORD=${{ secrets.CI_PAT }} ./smoke-test/test.sh
     
-  # cloud-e2e:
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       testset:
-  #         - operator-install
-  #         - operator    
-  #         - vm-images
-  #   # Do not run for releases, no point
-  #   if: ${{ ! startsWith(github.ref, 'refs/tags/v') }}
-  #   name: Run calyptia/cloud-e2e tests
+  cloud-e2e:
+    strategy:
+      fail-fast: false
+      matrix:
+        testset:
+          - operator-install
+          - operator    
+          - vm-images
+    # Do not run for releases, no point
+    if: ${{ ! startsWith(github.ref, 'refs/tags/v') }}
+    name: Run calyptia/cloud-e2e tests
     
-  #   needs:
-  #     - ci-build-container-image-manifest
-  #   # Invoke via public repo, the public/private has to match
-  #   uses: calyptia/core-product-release/.github/workflows/call-integration-tests.yaml@main
-  #   permissions:
-  #     contents: read
-  #     packages: read
-  #     id-token: write
-  #   with:
-  #     cli-image: ${{ needs.ci-build-container-image-manifest.outputs.tag }}
-  #     calyptia-tests: "${{ matrix.testset }}/"
-  #   secrets:
-  #     registry-username: ${{ secrets.CI_USERNAME }}
-  #     registry-password: ${{ secrets.CI_PAT }}
-  #     # Replace with playground key after: https://app.asana.com/0/1205042382663691/1205231066738712/f
-  #     google-access-key: ${{ secrets.GCP_SA_KEY }}
-  #     github-token: ${{ secrets.CI_PAT }}
+    needs:
+      - ci-build-container-image-manifest
+    # Invoke via public repo, the public/private has to match
+    uses: calyptia/core-product-release/.github/workflows/call-integration-tests.yaml@main
+    permissions:
+      contents: read
+      packages: read
+      id-token: write
+    with:
+      cli-image: ${{ needs.ci-build-container-image-manifest.outputs.tag }}
+      calyptia-tests: "${{ matrix.testset }}/"
+    secrets:
+      registry-username: ${{ secrets.CI_USERNAME }}
+      registry-password: ${{ secrets.CI_PAT }}
+      # Replace with playground key after: https://app.asana.com/0/1205042382663691/1205231066738712/f
+      google-access-key: ${{ secrets.GCP_SA_KEY }}
+      github-token: ${{ secrets.CI_PAT }}
 
   release:
     name: Release the artefacts
