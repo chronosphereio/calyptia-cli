@@ -1,7 +1,7 @@
 package operator
 
 import (
-	"context"
+	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -37,12 +37,12 @@ func NewCmdUninstall() *cobra.Command {
 				Interface: clientSet,
 			}
 
-			version, err := k.CheckOperatorVersion(context.Background())
-			if err != nil {
-				return err
+			exists, err := k.CheckOperatorInstalled(cmd.Context(), namespace)
+			if !exists || err != nil {
+				return fmt.Errorf("operator not installed in the namespace %s %s", namespace, err.Error())
 			}
 
-			yaml, err := prepareUninstallManifest(version, namespace)
+			yaml, err := prepareUninstallManifest(namespace)
 			if err != nil {
 				return err
 			}
@@ -64,7 +64,7 @@ func NewCmdUninstall() *cobra.Command {
 	return cmd
 }
 
-func prepareUninstallManifest(version string, namespace string) (string, error) {
+func prepareUninstallManifest(namespace string) (string, error) {
 	file, err := f.ReadFile(manifestFile)
 	if err != nil {
 		return "", err
@@ -72,7 +72,7 @@ func prepareUninstallManifest(version string, namespace string) (string, error) 
 
 	fullFile := string(file)
 
-	solveNamespace := solveNamespaceCreation(false, fullFile, namespace)
+	solveNamespace := solveNamespaceCreationForDelete(fullFile, namespace)
 	withNamespace := injectNamespace(solveNamespace, namespace)
 
 	dir, err := os.MkdirTemp("", "calyptia-operator")

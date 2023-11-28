@@ -954,6 +954,27 @@ func FormatResourceName(parts ...string) string {
 	}
 	return str
 }
+func (client *Client) CheckOperatorInstalled(ctx context.Context, namespace string) (bool, error) {
+	toFind := "calyptia-core-controller-manager"
+	if namespace == "" {
+		namespace = "default"
+	}
+	if namespace != "default" {
+		toFind = fmt.Sprintf("%s-controller-manager", namespace)
+	}
+
+	client.Namespace = namespace
+	manager, err := client.FindDeploymentByName(ctx, toFind)
+	if err != nil {
+		return false, err
+	}
+	managerImage := manager.Spec.Template.Spec.Containers[0].Image
+	managerImageVersion := strings.Split(managerImage, ":")[1]
+	if managerImageVersion == "" {
+		return false, fmt.Errorf("could not parse version from manager image: %s", managerImage)
+	}
+	return true, nil
+}
 
 func (client *Client) CheckOperatorVersion(ctx context.Context) (string, error) {
 	manager, err := client.SearchManagerAcrossAllNamespaces(ctx)
@@ -975,7 +996,7 @@ func (client *Client) SearchManagerAcrossAllNamespaces(ctx context.Context) (*ap
 	}
 	var manager *appsv1.Deployment
 	for _, namespace := range namespaces.Items {
-		manager, err = client.AppsV1().Deployments(namespace.Name).Get(ctx, "calyptia-core-controller-manager", metav1.GetOptions{})
+		manager, err = client.AppsV1().Deployments(namespace.Name).Get(ctx, fmt.Sprintf("%s-controller-manager", namespace.Name), metav1.GetOptions{})
 		if err != nil && !apiErrors.IsNotFound(err) {
 			return nil, err
 		}
