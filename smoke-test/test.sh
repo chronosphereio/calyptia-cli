@@ -20,3 +20,14 @@ kubectl -n calyptia create secret docker-registry "regcreds" \
     --docker-username="${REGISTRY_USERNAME:-calyptia-ci}" \
     --docker-password="$REGISTRY_PASSWORD" \
     --docker-email="${REGISTRY_EMAIL:-ci@calyptia.com}"
+
+helm upgrade --install \
+            --create-namespace --namespace "$TEST_NAMESPACE" \
+            --set global.imagePullSecrets[0]="regcreds" \
+            --set global.pullPolicy=IfNotPresent \
+            --set vivo.enabled=false \
+            --set frontend.enabled=false \
+            --set cloudApi.service.type="ClusterIP" \
+            --set operator.enabled=false \
+            --wait \
+            calyptia-cloud calyptia/calyptia-standalone
