@@ -210,9 +210,6 @@ func prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace stri
 	if err != nil {
 		return "", err
 	}
-	fmt.Println("**********")
-	fmt.Println(withImage)
-	fmt.Println("**********")
 
 	return temp.Name(), err
 }
