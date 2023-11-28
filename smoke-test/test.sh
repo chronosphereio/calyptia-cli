@@ -21,10 +21,12 @@ kubectl -n calyptia create secret docker-registry "regcreds" \
     --docker-password="$REGISTRY_PASSWORD" \
     --docker-email="${REGISTRY_EMAIL:-ci@calyptia.com}"
 
+namespace="cloud"
+local_port=5001
 helm repo add --force-update calyptia https://calyptia.github.io/charts
 helm repo update --fail-on-repo-update-fail
 helm upgrade --install \
-    --create-namespace --namespace "cloud" \
+    --namespace "$namespace" \
     --set global.imagePullSecrets[0]="regcreds" \
     --set global.pullPolicy=IfNotPresent \
     --set vivo.enabled=false \
@@ -33,3 +35,5 @@ helm upgrade --install \
     --set operator.enabled=false \
     --wait \
     calyptia-cloud calyptia/calyptia-standalone
+
+kubectl -n "$namespace" port-forward --address 127.0.0.1,172.17.0.1 svc/cloud-api "$local_port:5000" &
