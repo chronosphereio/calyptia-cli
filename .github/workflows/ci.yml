@@ -192,6 +192,7 @@ jobs:
     # Do not run for releases, no point
     if: ${{ ! startsWith(github.ref, 'refs/tags/v') }}
     name: Run calyptia/cloud-e2e tests
+    
     needs:
       - ci-build-container-image-manifest
     # Invoke via public repo, the public/private has to match
