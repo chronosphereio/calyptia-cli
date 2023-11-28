@@ -210,6 +210,9 @@ func prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace stri
 	if err != nil {
 		return "", err
 	}
+	fmt.Println("**********")
+	fmt.Println(withImage)
+	fmt.Println("**********")
 
 	return temp.Name(), err
 }
@@ -222,7 +225,8 @@ func solveNamespaceCreation(createNamespace bool, fullFile string, namespace str
 	if _, err := strconv.Atoi(namespace); err == nil {
 		namespace = fmt.Sprintf(`"%s"`, namespace)
 	}
-	return strings.ReplaceAll(fullFile, "name: calyptia-core", fmt.Sprintf("name: %s", namespace))
+	temp := strings.ReplaceAll(fullFile, "serviceAccountName: calyptia-core", fmt.Sprintf("serviceAccountName: %s", namespace))
+	return strings.ReplaceAll(temp, "name: calyptia-core", fmt.Sprintf("name: %s", namespace))
 }
 
 func addImage(coreDockerImage, coreInstanceVersion, file string) (string, error) {
