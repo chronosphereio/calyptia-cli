@@ -206,7 +206,8 @@ jobs:
           latest=$(curl -sf https://api.github.com/repos/calyptia/core-operator-releases/releases | jq -r .[0].tag_name)
           beforelatest=$(curl -sf https://api.github.com/repos/calyptia/core-operator-releases/releases | jq -r .[1].tag_name)
           ./calyptia install operator
-          ./calyptia update operator --version $beforelatest
+          ./calyptia update operator --version $beforelatest --verbose
+          ./calyptia update operator --version $latest --verbose
     
   # cloud-e2e:
   #   strategy:
