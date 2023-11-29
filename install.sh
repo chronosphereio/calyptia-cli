@@ -45,14 +45,23 @@ _detect_os() {
 _download_url() {
   _download_arch="$(_detect_arch)"
   _download_os="$(_detect_os)"
-  _download_version=$cli_VERSION
+  # shellcheck disable=SC2154
+  _download_version="$cli_VERSION"
 
-  if [ -z "$cli_VERSION" ]; then
-    version=$(curl -sf https://api.github.com/repos/calyptia/cli/releases/latest 2> /dev/null | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+  if [ -z "$_download_version" ] || [ "$_download_version" = "latest" ]; then
+    if [ -z "$GITHUB_TOKEN" ]; then
+      _download_version=$(curl --header "Authorization: Bearer $GITHUB_TOKEN" -sSfL https://api.github.com/repos/calyptia/cli/releases/latest 2> /dev/null | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+    else
+      _download_version=$(curl -sSfL https://api.github.com/repos/calyptia/cli/releases/latest 2> /dev/null | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+    fi
+    if [ -z "$_download_version" ]; then
+      echo "Unable to retrieve latest CLI version"
+      exit 1
+    fi
   fi
 
-  _download_trailedVersion="$(echo "$version" | tr -d v)"
-  echo "https://github.com/calyptia/cli/releases/download/${version}/cli_${_download_trailedVersion}_${_download_os}_${_download_arch}.tar.gz"
+  _download_trailedVersion="$(echo "$_download_version" | tr -d v)"
+  echo "https://github.com/calyptia/cli/releases/download/${_download_version}/cli_${_download_trailedVersion}_${_download_os}_${_download_arch}.tar.gz"
 }
 
 echo "Downloading Calyptia CLI from URL: $(_download_url)"
