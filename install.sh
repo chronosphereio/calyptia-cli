@@ -48,8 +48,17 @@ _download_url() {
   # shellcheck disable=SC2154
   _download_version="$cli_VERSION"
 
+  # releases should be prefixed with `v`
+  case "$_download_version" in
+    "latest") ;;
+    "") ;;
+    "v"*) ;;
+    *)
+      _download_version="v$cli_VERSION"
+  esac
+
   if [ -z "$_download_version" ] || [ "$_download_version" = "latest" ]; then
-    if [ -z "$GITHUB_TOKEN" ]; then
+    if [ -n "$GITHUB_TOKEN" ]; then
       _download_version=$(curl --header "Authorization: Bearer $GITHUB_TOKEN" -sSfL https://api.github.com/repos/calyptia/cli/releases/latest 2> /dev/null | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
     else
       _download_version=$(curl -sSfL https://api.github.com/repos/calyptia/cli/releases/latest 2> /dev/null | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
