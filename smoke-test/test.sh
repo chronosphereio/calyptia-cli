@@ -42,7 +42,7 @@ cloud_url="http://127.0.0.1:$local_port"
 core_cloud_url="http://cloud-api.$namespace:5000"
 
 core_instance_name="test"
-./calyptia create core_instance operator --name "$core_instance_name" --core-cloud-url="$core_cloud_url" --cloud-url="$cloud_url" --token="$(kubectl get secret -n "$namespace" auth-secret -o jsonpath='{.data.ONPREM_CLOUD_API_PROJECT_TOKEN}'| base64 --decode)" --wait
+./calyptia create core_instance operator --name "$core_instance_name" --core-cloud-url="$core_cloud_url" --cloud-url="$cloud_url" --token="$(kubectl get secret -n "$namespace" auth-secret -o jsonpath='{.data.token}'| base64 --decode)" --wait
 
 kubectl get secret -n "$namespace" auth-secret
 kubectl get all
