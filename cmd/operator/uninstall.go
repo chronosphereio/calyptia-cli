@@ -71,8 +71,11 @@ func prepareUninstallManifest(namespace string) (string, error) {
 	}
 
 	fullFile := string(file)
-
-	solveNamespace := solveNamespaceCreationForDelete(fullFile, namespace)
+	var isNamespace bool
+	if namespace != "" {
+		isNamespace = true
+	}
+	solveNamespace := solveNamespaceCreation(isNamespace, fullFile, namespace)
 	withNamespace := injectNamespace(solveNamespace, namespace)
 
 	dir, err := os.MkdirTemp("", "calyptia-operator")

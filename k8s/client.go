@@ -959,9 +959,6 @@ func (client *Client) CheckOperatorInstalled(ctx context.Context, namespace stri
 	if namespace == "" {
 		namespace = "default"
 	}
-	if namespace != "default" {
-		toFind = fmt.Sprintf("%s-controller-manager", namespace)
-	}
 
 	client.Namespace = namespace
 	manager, err := client.FindDeploymentByName(ctx, toFind)
