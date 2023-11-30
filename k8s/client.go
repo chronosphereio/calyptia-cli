@@ -13,6 +13,7 @@ import (
 
 	goversion "github.com/hashicorp/go-version"
 	apiErrors "k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/api/resource"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/types"
@@ -632,17 +633,29 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, 
 			Value: httpsProxy,
 		},
 	}
+	memoryLimit, _ := resource.ParseQuantity("512Mi")
 	toCloud := apiv1.Container{
 		Name:            coreInstance.Name + "-sync-to-cloud",
 		Image:           toCloudImage,
 		ImagePullPolicy: apiv1.PullAlways,
 		Env:             env,
+		Resources: corev1.ResourceRequirements{
+			Limits: corev1.ResourceList{
+				"memory": memoryLimit,
+			},
+		},
 	}
+
 	fromCloud := apiv1.Container{
 		Name:            coreInstance.Name + "-sync-from-cloud",
 		Image:           fromCloudImage,
 		ImagePullPolicy: apiv1.PullAlways,
 		Env:             env,
+		Resources: corev1.ResourceRequirements{
+			Limits: corev1.ResourceList{
+				"memory": memoryLimit,
+			},
+		},
 	}
 
 	req := &appsv1.Deployment{
