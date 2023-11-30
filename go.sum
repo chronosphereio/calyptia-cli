@@ -86,8 +86,8 @@ github.com/bytedance/sonic v1.10.2 h1:GQebETVBxYB7JGWJtLBi07OVzWwt+8dWA00gEVW2ZF
 github.com/bytedance/sonic v1.10.2/go.mod h1:iZcSUejdk5aukTND/Eu/ivjQuEL0Cu9/rf50Hi0u/g4=
 github.com/calyptia/api v1.6.8 h1:9dGmWHC/cmIV9Zb8c/Pvme4CdeR3VMVrpp8NwRjbpyQ=
 github.com/calyptia/api v1.6.8/go.mod h1:HO2BGsbLEioKKRMgQrvrPgthXBom6Wiz3Dr+t/dgjpI=
-github.com/calyptia/cli/k8s v0.0.0-20231122202035-e1e64f435ed6 h1:1A2ZvbOyyqCsAgJyIIsnSDYuJoEAc0UkBdZIag8HTtY=
-github.com/calyptia/cli/k8s v0.0.0-20231122202035-e1e64f435ed6/go.mod h1:xQTUh070sK499hKwfusrVif31iL/5y9esH6rIRu8ZsA=
+github.com/calyptia/cli/k8s v0.0.0-20231129172428-2eba1e0a0c62 h1:76iFSavbiR4aT+dezJsKL/WqIXfOfyYS0d5ALXHxhGM=
+github.com/calyptia/cli/k8s v0.0.0-20231129172428-2eba1e0a0c62/go.mod h1:xQTUh070sK499hKwfusrVif31iL/5y9esH6rIRu8ZsA=
 github.com/calyptia/core-images-index/go-index v0.0.0-20231122200241-68594ece7524 h1:10pClVKEFD/x66fmS8YF4XizqlsT8ONWEf6qbDfAOMc=
 github.com/calyptia/core-images-index/go-index v0.0.0-20231122200241-68594ece7524/go.mod h1:9+aUlL+o9dpq2wcF4CLEQlPAcjlmuwohVRvOxNN6TWk=
 github.com/calyptia/go-fluentbit-config/v2 v2.1.1 h1:dXvBc0P6xrDjoXR2arhX4NjOaM1A/K86YBd+m38mYX8=
