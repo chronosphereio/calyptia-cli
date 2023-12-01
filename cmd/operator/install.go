@@ -131,7 +131,7 @@ func NewCmdInstall() *cobra.Command {
 					return err
 				}
 				start := time.Now()
-				fmt.Printf("Waiting for core operator manager to be ready...\n")
+				fmt.Println("Waiting for core operator manager to be ready...")
 				err = k.WaitReady(context.Background(), namespace, deployment, false, waitTimeout)
 				if err != nil {
 					return err
@@ -218,12 +218,19 @@ func solveNamespaceCreation(createNamespace bool, fullFile string, namespace str
 	if !createNamespace {
 		splitFile := strings.Split(fullFile, "---\n")
 		return strings.Join(splitFile[1:], "---\n")
+	} else {
+		splitFile := strings.Split(fullFile, "---\n")
+		if strings.Contains(splitFile[0], "kind: Namespace") {
+			splitFile[0] = strings.ReplaceAll(splitFile[0], "name: calyptia-core", fmt.Sprintf("name: %s", namespace))
+		}
+		fullFile = strings.Join(splitFile, "---\n")
 	}
 	if _, err := strconv.Atoi(namespace); err == nil {
 		namespace = fmt.Sprintf(`"%s"`, namespace)
 	}
-	temp := strings.ReplaceAll(fullFile, "serviceAccountName: calyptia-core", fmt.Sprintf("serviceAccountName: %s", namespace))
-	return strings.ReplaceAll(temp, "name: calyptia-core", fmt.Sprintf("name: %s", namespace))
+
+	out := strings.ReplaceAll(fullFile, "namespace: calyptia-core", fmt.Sprintf("namespace: %s", namespace))
+	return out
 }
 
 func solveNamespaceCreationForDelete(fullFile string, namespace string) string {

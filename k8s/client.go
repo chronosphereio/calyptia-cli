@@ -959,9 +959,6 @@ func (client *Client) CheckOperatorInstalled(ctx context.Context, namespace stri
 	if namespace == "" {
 		namespace = "default"
 	}
-	if namespace != "default" {
-		toFind = fmt.Sprintf("%s-controller-manager", namespace)
-	}
 
 	client.Namespace = namespace
 	manager, err := client.FindDeploymentByName(ctx, toFind)
@@ -996,7 +993,7 @@ func (client *Client) SearchManagerAcrossAllNamespaces(ctx context.Context) (*ap
 	}
 	var manager *appsv1.Deployment
 	for _, namespace := range namespaces.Items {
-		manager, err = client.AppsV1().Deployments(namespace.Name).Get(ctx, fmt.Sprintf("%s-controller-manager", namespace.Name), metav1.GetOptions{})
+		manager, err = client.AppsV1().Deployments(namespace.Name).Get(ctx, "calyptia-core-controller-manager", metav1.GetOptions{})
 		if err != nil && !apiErrors.IsNotFound(err) {
 			return nil, err
 		}

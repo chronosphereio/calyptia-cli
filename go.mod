@@ -11,6 +11,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.137.1
 	github.com/aws/aws-sdk-go-v2/service/resourcegroupstaggingapi v1.18.3
 	github.com/calyptia/api v1.6.8
+	github.com/calyptia/cli/k8s v0.0.0-00010101000000-000000000000
 	github.com/calyptia/core-images-index/go-index v0.0.0-20231122200241-68594ece7524
 	github.com/calyptia/go-fluentbit-config/v2 v2.1.1
 	github.com/go-logfmt/logfmt v0.6.0
@@ -210,3 +211,5 @@ require (
 	sigs.k8s.io/structured-merge-diff/v4 v4.3.0 // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
+
+replace github.com/calyptia/cli/k8s => ./k8s
