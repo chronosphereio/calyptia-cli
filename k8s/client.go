@@ -593,7 +593,7 @@ func (client *Client) FindDeploymentByLabel(ctx context.Context, label string) (
 	return client.AppsV1().Deployments(client.Namespace).List(ctx, metav1.ListOptions{LabelSelector: label})
 }
 
-func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, fromCloudImage, toCloudImage string, metricsPort string, noTLSVerify bool, httpProxy, httpsProxy string, coreInstance cloud.CreatedCoreInstance, serviceAccount string) (*appsv1.Deployment, error) {
+func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, fromCloudImage, toCloudImage string, metricsPort string, memoryLimit string, noTLSVerify bool, httpProxy, httpsProxy string, coreInstance cloud.CreatedCoreInstance, serviceAccount string) (*appsv1.Deployment, error) {
 	labels := client.LabelsFunc()
 	env := []apiv1.EnvVar{
 		{
@@ -633,29 +633,32 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, 
 			Value: httpsProxy,
 		},
 	}
-	memoryLimit, _ := resource.ParseQuantity("512Mi")
 	toCloud := apiv1.Container{
 		Name:            coreInstance.Name + "-sync-to-cloud",
 		Image:           toCloudImage,
 		ImagePullPolicy: apiv1.PullAlways,
 		Env:             env,
-		Resources: corev1.ResourceRequirements{
-			Limits: corev1.ResourceList{
-				"memory": memoryLimit,
-			},
-		},
 	}
+
+	resources := corev1.ResourceRequirements{
+		Limits: corev1.ResourceList{},
+	}
+
+	ml, err := resource.ParseQuantity(memoryLimit)
+	if err == nil {
+		resources.Limits = corev1.ResourceList{
+			"memory": ml,
+		}
+	}
+
+	toCloud.Resources = resources
 
 	fromCloud := apiv1.Container{
 		Name:            coreInstance.Name + "-sync-from-cloud",
 		Image:           fromCloudImage,
 		ImagePullPolicy: apiv1.PullAlways,
 		Env:             env,
-		Resources: corev1.ResourceRequirements{
-			Limits: corev1.ResourceList{
-				"memory": memoryLimit,
-			},
-		},
+		Resources:       resources,
 	}
 
 	req := &appsv1.Deployment{
