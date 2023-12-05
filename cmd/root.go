@@ -28,9 +28,6 @@ func NewRootCmd(ctx context.Context) *cobra.Command {
 		Client: http.DefaultClient,
 	}
 
-	_, found := os.LookupEnv("CALYPTIA_DISABLE_VERSION_CHECK") // if environment variable CALYPTIA_DISABLE_VERSION_CHECK is present just disable version check
-	vercheck = !found
-
 	storageDir := os.Getenv("CALYPTIA_STORAGE_DIR")
 	if storageDir == "" {
 		baseDir, err := os.UserHomeDir()
@@ -102,10 +99,11 @@ func NewRootCmd(ctx context.Context) *cobra.Command {
 
 	cmd.SetOut(os.Stdout)
 
+	_, found := os.LookupEnv("CALYPTIA_DISABLE_VERSION_CHECK")
 	fs := cmd.PersistentFlags()
 	fs.StringVar(&cloudURLStr, "cloud-url", cfg.Env("CALYPTIA_CLOUD_URL", cloudURLStr), "Calyptia Cloud URL")
 	fs.StringVar(&token, "token", cfg.Env("CALYPTIA_CLOUD_TOKEN", token), "Calyptia Cloud Project token")
-	fs.BoolVar(&vercheck, "disable-version-check", false, "disable version check ")
+	fs.BoolVar(&vercheck, "disable-version-check", found, "disable version check ")
 	fs.Lookup("token").DefValue = "check with the 'calyptia config current_token' command"
 
 	cmd.AddCommand(
