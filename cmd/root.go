@@ -28,6 +28,9 @@ func NewRootCmd(ctx context.Context) *cobra.Command {
 		Client: http.DefaultClient,
 	}
 
+	_, found := os.LookupEnv("CALYPTIA_DISABLE_VERSION_CHECK") // if environment variable CALYPTIA_DISABLE_VERSION_CHECK is present just disable version check
+	vercheck = !found
+
 	storageDir := os.Getenv("CALYPTIA_STORAGE_DIR")
 	if storageDir == "" {
 		baseDir, err := os.UserHomeDir()
