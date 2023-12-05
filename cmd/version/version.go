@@ -6,7 +6,7 @@ import (
 
 var (
 	DefaultCloudURLStr = "https://cloud-api.calyptia.com"
-	Version            = "1.0.0" // To be injected at build time:  -ldflags="-X 'github.com/calyptia/cli/cmd/version.Version=xxx'"
+	Version            = "dev" // To be injected at build time:  -ldflags="-X 'github.com/calyptia/cli/cmd/version.Version=xxx'"
 )
 
 func NewVersionCommand() *cobra.Command {
