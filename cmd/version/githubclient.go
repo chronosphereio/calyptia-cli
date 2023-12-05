@@ -128,19 +128,6 @@ func (c *GithubClient) Do(req *http.Request, v interface{}) (*ErrorResponse, err
 	return nil, err
 }
 
-type Tag struct {
-	Ref    string `json:"ref,omitempty"`
-	NodeID string `json:"node_id,omitempty"`
-	URL    string `json:"url,omitempty"`
-	Object Obj    `json:"object,omitempty"`
-}
-
-type Obj struct {
-	SHA   string `json:"sha,omitempty"`
-	TType string `json:"type,omitempty"`
-	URL   string `json:"url,omitempty"`
-}
-
 type Latest struct {
 	TagName string `json:"tag_name"`
 }
