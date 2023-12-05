@@ -122,29 +122,29 @@ func NewRootCmd(ctx context.Context) *cobra.Command {
 }
 
 func versionCheck(cmd *cobra.Command) {
-	if isatty.IsTerminal(os.Stdout.Fd()) {
-		if len(cliversion.Version) != 0 && cliversion.Version != "dev" {
-			ghclient := cliversion.NewGithubClient("", nil)
+	if isatty.IsTerminal(os.Stdout.Fd()) &&
+		len(cliversion.Version) != 0 &&
+		cliversion.Version != "dev" {
+		ghclient := cliversion.NewGithubClient("", nil)
 
-			ref, err := ghclient.GetLatestTag("cli")
-			if err != nil {
-				return
-			}
+		ref, err := ghclient.GetLatestTag("cli")
+		if err != nil {
+			return
+		}
 
-			latestVersion, err := version.NewVersion(ref)
-			if err != nil {
-				return
-			}
+		latestVersion, err := version.NewVersion(ref)
+		if err != nil {
+			return
+		}
 
-			currentVersion, err := version.NewVersion(cliversion.Version)
-			if err != nil {
-				return
-			}
+		currentVersion, err := version.NewVersion(cliversion.Version)
+		if err != nil {
+			return
+		}
 
-			if currentVersion != nil && currentVersion.LessThan(latestVersion) {
-				fmt.Printf("Warning: This version %s of Calyptia cli is outdated. The latest version available is %s\n", currentVersion, latestVersion)
-				return
-			}
+		if currentVersion != nil && currentVersion.LessThan(latestVersion) {
+			fmt.Printf("Warning: This version %s of Calyptia cli is outdated. The latest version available is %s\n", currentVersion, latestVersion)
+			return
 		}
 	}
 }
