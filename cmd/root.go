@@ -16,7 +16,6 @@ import (
 	cloudclient "github.com/calyptia/api/client"
 	cnfg "github.com/calyptia/cli/cmd/config"
 	cliversion "github.com/calyptia/cli/cmd/version"
-	utils "github.com/calyptia/cli/cmd/version"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/localdata"
 )
@@ -125,12 +124,9 @@ func NewRootCmd(ctx context.Context) *cobra.Command {
 func versionCheck(cmd *cobra.Command) {
 	if isatty.IsTerminal(os.Stdout.Fd()) {
 		if len(cliversion.Version) != 0 && cliversion.Version != "dev" {
-			ghclient, err := utils.NewGithubClient("", nil)
-			if err != nil {
-				return
-			}
+			ghclient := cliversion.NewGithubClient("", nil)
 
-			ref, err := ghclient.GetLatest("cli")
+			ref, err := ghclient.GetLatestTag("cli")
 			if err != nil {
 				return
 			}
@@ -142,7 +138,6 @@ func versionCheck(cmd *cobra.Command) {
 
 			currentVersion, err := version.NewVersion(cliversion.Version)
 			if err != nil {
-				fmt.Println("err", err)
 				return
 			}
 
