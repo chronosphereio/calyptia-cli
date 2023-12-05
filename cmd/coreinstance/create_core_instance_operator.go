@@ -44,6 +44,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 		noTLSVerify                    bool
 		metricsPort                    string
 		httpProxy, httpsProxy          string
+		memoryLimit                    string
 	)
 
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
@@ -272,7 +273,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				coreDockerFromCloudImage = fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorFromCloudDockerImage, coreDockerFromCloudImageTag)
 			}
 
-			syncDeployment, err := k8sClient.DeployCoreOperatorSync(ctx, coreCloudURL, coreDockerFromCloudImage, coreDockerToCloudImage, metricsPort, !noTLSVerify, httpProxy, httpsProxy, created, serviceAccount.Name)
+			syncDeployment, err := k8sClient.DeployCoreOperatorSync(ctx, coreCloudURL, coreDockerFromCloudImage, coreDockerToCloudImage, metricsPort, memoryLimit, !noTLSVerify, httpProxy, httpsProxy, created, serviceAccount.Name)
 			if err != nil {
 				fmt.Printf("An error occurred while creating the core operator instance. %s Rolling back created resources.\n", err)
 				resources, err := k8sClient.DeleteResources(ctx, resourcesCreated)
@@ -338,6 +339,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 	fs.BoolVar(&dryRun, "dry-run", false, "Passing this value will skip creation of any Kubernetes resources and it will return resources as YAML manifest")
 	fs.BoolVar(&noTLSVerify, "no-tls-verify", false, "Disable TLS verification when connecting to Calyptia Cloud API.")
 	fs.StringVar(&metricsPort, "metrics-port", "15334", "Port for metrics endpoint.")
+	fs.StringVar(&memoryLimit, "memory-limit", "512Mi", "Minimum memory required")
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 	fs.StringVar(&httpProxy, "http-proxy", "", "http proxy to use on this core instance")
 	fs.StringVar(&httpsProxy, "https-proxy", "", "http proxy to use on this core instance")
