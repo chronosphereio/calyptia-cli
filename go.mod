@@ -20,6 +20,7 @@ require (
 	github.com/itchyny/json2yaml v0.1.4
 	github.com/joho/godotenv v1.5.1
 	github.com/matryer/moq v0.3.3
+	github.com/mattn/go-isatty v0.0.19
 	github.com/pkg/errors v0.9.1
 	github.com/rjeczalik/interfaces v0.3.0
 	github.com/sethvargo/go-retry v0.2.4
@@ -146,7 +147,6 @@ require (
 	github.com/mailgun/raymond/v2 v2.0.48 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
-	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.26 // indirect
 	github.com/mitchellh/copystructure v1.0.0 // indirect
