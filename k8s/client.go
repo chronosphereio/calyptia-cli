@@ -593,7 +593,7 @@ func (client *Client) FindDeploymentByLabel(ctx context.Context, label string) (
 	return client.AppsV1().Deployments(client.Namespace).List(ctx, metav1.ListOptions{LabelSelector: label})
 }
 
-func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, fromCloudImage, toCloudImage string, metricsPort string, memoryLimit string, noTLSVerify bool, httpProxy, httpsProxy string, coreInstance cloud.CreatedCoreInstance, serviceAccount string) (*appsv1.Deployment, error) {
+func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, fromCloudImage, toCloudImage string, metricsPort string, memoryLimit string, annotations string, noTLSVerify bool, httpProxy, httpsProxy string, coreInstance cloud.CreatedCoreInstance, serviceAccount string) (*appsv1.Deployment, error) {
 	labels := client.LabelsFunc()
 	env := []apiv1.EnvVar{
 		{
@@ -631,6 +631,10 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, 
 		{
 			Name:  "HTTPS_PROXY",
 			Value: httpsProxy,
+		},
+		{
+			Name:  "ANNOTATINS",
+			Value: annotations,
 		},
 	}
 	toCloud := apiv1.Container{
