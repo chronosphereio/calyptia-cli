@@ -633,7 +633,7 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, 
 			Value: httpsProxy,
 		},
 		{
-			Name:  "ANNOTATINS",
+			Name:  "ANNOTATIONS",
 			Value: annotations,
 		},
 	}
