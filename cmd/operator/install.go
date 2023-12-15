@@ -260,6 +260,9 @@ func addImage(coreDockerImage, coreInstanceVersion, file string) (string, error)
 }
 
 func injectNamespace(s string, namespace string) string {
+	if namespace == "" {
+		namespace = "default"
+	}
 	if _, err := strconv.Atoi(namespace); err == nil {
 		namespace = fmt.Sprintf(`"%s"`, namespace)
 	}

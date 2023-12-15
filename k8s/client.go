@@ -1116,6 +1116,28 @@ func (client *Client) IsOperatorInstalled(ctx context.Context) (bool, error) {
 	return false, nil
 }
 
+func (client *Client) PurgeLeftoverRBAC(ctx context.Context) error {
+
+	if err := client.RbacV1().ClusterRoles().DeleteCollection(ctx, metav1.DeleteOptions{}, metav1.ListOptions{LabelSelector: "calyptia.core=core-operator"}); err != nil {
+		return err
+	}
+	if err := client.RbacV1().ClusterRoleBindings().DeleteCollection(ctx, metav1.DeleteOptions{}, metav1.ListOptions{LabelSelector: "calyptia.core=core-operator"}); err != nil {
+		return err
+	}
+
+	nsList, err := client.CoreV1().Namespaces().List(ctx, metav1.ListOptions{})
+	if err != nil {
+		return err
+	}
+
+	for _, ns := range nsList.Items {
+		if err := client.CoreV1().ServiceAccounts(ns.Name).DeleteCollection(ctx, metav1.DeleteOptions{}, metav1.ListOptions{LabelSelector: "calyptia.core=core-operator"}); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 const operatorDeploymentName = "calyptia-core-controller-manager"
 
 type OperatorIncompleteError struct {
