@@ -154,7 +154,7 @@ jobs:
             org.calyptia.contact="support@calyptia.com"
 
       - name: Download digests
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: production-digests
           path: /tmp/digests

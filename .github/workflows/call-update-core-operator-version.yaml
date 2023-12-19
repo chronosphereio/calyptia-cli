@@ -46,7 +46,7 @@ jobs:
           NEW_VERSION: ${{ inputs.core-operator-version }}
         shell: bash
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.manifest-artefact }}
           path: cmd/operator
