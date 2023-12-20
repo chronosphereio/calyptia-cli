@@ -72,7 +72,7 @@ spec:
               config:
                 type: string
               fluentBitImage:
-                default: ghcr.io/calyptia/core/calyptia-fluent-bit:23.12.1
+                default: ghcr.io/calyptia/core/calyptia-fluent-bit:23.12.2
                 type: string
               ingestCheckSidecarImage:
                 default: ghcr.io/calyptia/core/ingest-check:v0.0.7
@@ -287,7 +287,7 @@ spec:
                 default: ghcr.io/calyptia/configmap-reload:v0.11.1
                 type: string
               image:
-                default: ghcr.io/calyptia/core/calyptia-fluent-bit:23.12.1
+                default: ghcr.io/calyptia/core/calyptia-fluent-bit:23.12.2
                 type: string
               kind:
                 description: Enums
@@ -932,7 +932,7 @@ spec:
       containers:
       - command:
         - /manager
-        image: ghcr.io/calyptia/core-operator:v2.2.0
+        image: ghcr.io/calyptia/core-operator:v2.3.0
         livenessProbe:
           httpGet:
             path: /healthz
