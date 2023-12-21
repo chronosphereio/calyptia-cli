@@ -42,6 +42,20 @@ func NewCmdUninstall() *cobra.Command {
 				return fmt.Errorf("operator not installed in the namespace %s %s", namespace, err.Error())
 			}
 
+			// remove all pipelines
+			kctl.SetArgs([]string{"delete", "pipeline", "-A", "--all"})
+			err = kctl.Execute()
+			if err != nil {
+				return err
+			}
+
+			// remove all ingestchecks
+			kctl.SetArgs([]string{"delete", "ingestcheck", "-A", "--all"})
+			err = kctl.Execute()
+			if err != nil {
+				return err
+			}
+
 			yaml, err := prepareUninstallManifest(namespace)
 			if err != nil {
 				return err
@@ -54,6 +68,12 @@ func NewCmdUninstall() *cobra.Command {
 				return err
 			}
 			defer os.RemoveAll(yaml)
+
+			// when each Pipeline is create we ensure that there are appropriate RBAC setting for each. 
+			// This will ensure that the respective ClusterRole, ClusterRoleBinding and ServiceAccount get wiped 
+			if err := k.PurgeLeftoverRBAC(cmd.Context()); err != nil {
+				return err
+			}
 
 			cmd.Printf("Calyptia Operator uninstalled successfully.\n")
 			return nil
@@ -75,6 +95,7 @@ func prepareUninstallManifest(namespace string) (string, error) {
 	if namespace != "" {
 		isNamespace = true
 	}
+
 	solveNamespace := solveNamespaceCreation(isNamespace, fullFile, namespace)
 	withNamespace := injectNamespace(solveNamespace, namespace)
 
