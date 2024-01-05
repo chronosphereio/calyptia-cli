@@ -52,8 +52,8 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 
 	cmd := &cobra.Command{
 		Use:     "operator",
-		Aliases: []string{"opr"},
-		Short:   "Setup a new core operator instance",
+		Aliases: []string{"opr", "k8s"},
+		Short:   "Setup a new core instance on top of a operator installation",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.Background()
 			if configOverrides.Context.Namespace == "" {

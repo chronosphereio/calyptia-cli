@@ -5,26 +5,21 @@ import (
 	"os"
 	"strings"
 
-	"github.com/spf13/cobra"
-	"golang.org/x/term"
-	"k8s.io/client-go/kubernetes"
-
 	"github.com/calyptia/api/types"
 	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/confirm"
+	"github.com/spf13/cobra"
+	"golang.org/x/term"
 )
 
-func NewCmdDeleteCoreInstance(config *cfg.Config, testClientSet kubernetes.Interface) *cobra.Command {
+func NewCmdDeleteCoreInstance(config *cfg.Config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "core_instance",
 		Aliases: []string{"instance", "core_instance"},
-		Short:   "Delete a core instance from either Kubernetes, Amazon EC2, or Google Compute Engine",
+		Short:   "Delete a core instance from a Kubernetes cluster.",
 	}
 	cmd.AddCommand(
-		NewCmdDeleteCoreInstanceK8s(config, nil),
-		NewCmdDeleteCoreInstanceOnAWS(config, nil),
-		NewCmdDeleteCoreInstanceOnGCP(config, nil),
 		NewCmdDeleteCoreInstanceOperator(config, nil),
 	)
 	return cmd

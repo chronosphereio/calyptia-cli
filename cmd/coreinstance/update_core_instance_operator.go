@@ -35,7 +35,7 @@ func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 
 	cmd := &cobra.Command{
 		Use:               "operator CORE_INSTANCE",
-		Aliases:           []string{"opr"},
+		Aliases:           []string{"opr", "k8s"},
 		Short:             "update a core instance operator",
 		Args:              cobra.ExactArgs(1),
 		ValidArgsFunction: completer.CompleteCoreInstances,
@@ -133,7 +133,7 @@ func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 					ProjectToken: config.ProjectToken,
 					CloudBaseURL: config.BaseURL,
 				}
-				
+
 				if err := k8sClient.EnsureOwnNamespace(ctx); err != nil {
 					return fmt.Errorf("could not ensure kubernetes namespace exists: %w", err)
 				}

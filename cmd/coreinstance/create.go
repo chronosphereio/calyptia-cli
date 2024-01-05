@@ -11,12 +11,9 @@ import (
 func NewCmdCreateCoreInstance(config *cfg.Config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:               "core_instance",
-		Short:             "Setup a new core instance on either Kubernetes, Amazon EC2, or Google Compute Engine",
+		Short:             "Setup a new core instance on a Kubernetes cluster.",
 		PersistentPreRunE: checkForProjectToken(config),
 	}
-	cmd.AddCommand(newCmdCreateCoreInstanceOnK8s(config, nil))
-	cmd.AddCommand(newCmdCreateCoreInstanceOnAWS(config, nil, nil))
-	cmd.AddCommand(newCmdCreateCoreInstanceOnGCP(config, nil))
 	cmd.AddCommand(newCmdCreateCoreInstanceOperator(config, nil))
 	return cmd
 }
