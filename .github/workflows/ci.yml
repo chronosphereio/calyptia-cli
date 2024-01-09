@@ -197,6 +197,7 @@ jobs:
     with:
       cli-image: ${{ needs.ci-build-container-image-manifest.outputs.tag }}
       calyptia-tests: "operator/"
+      k8s-distribution: "vcluster"
     secrets:
       registry-username: ${{ secrets.CI_USERNAME }}
       registry-password: ${{ secrets.CI_PAT }}
