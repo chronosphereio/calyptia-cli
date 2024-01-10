@@ -509,12 +509,13 @@ func (client *Client) UpdateSyncDeploymentByLabel(ctx context.Context, label, ne
 		}
 	}
 
+	if deployment.Spec.Template.Annotations == nil {
+        	deployment.Spec.Template.Annotations = make(map[string]string)
+   	}
+    	deployment.Spec.Template.Annotations["kubectl.kubernetes.io/restartedAt"] = time.Now().Format("20060102150405")
+
 	_, err = client.AppsV1().Deployments(client.Namespace).Update(ctx, &deployment, metav1.UpdateOptions{})
 	if err != nil {
-		return err
-	}
-
-	if err := client.rolloutDeployment(ctx, deployment.Namespace, deployment.Name); err != nil {
 		return err
 	}
 
