@@ -5,7 +5,7 @@ go 1.21.0
 require (
 	code.cloudfoundry.org/bytefmt v0.0.0-20231017140541-3b893ed0421b
 	github.com/Masterminds/sprig/v3 v3.2.3
-	github.com/alecthomas/assert/v2 v2.4.0
+	github.com/alecthomas/assert/v2 v2.5.0
 	github.com/calyptia/api v1.6.8
 	github.com/calyptia/cli/k8s v0.0.0-00010101000000-000000000000
 	github.com/calyptia/core-images-index/go-index v0.0.0-20231122200241-68594ece7524
@@ -31,7 +31,6 @@ require (
 	k8s.io/client-go v0.28.4
 	k8s.io/component-base v0.28.4
 	k8s.io/kubectl v0.28.4
-	sigs.k8s.io/controller-runtime v0.16.2
 )
 
 require (
@@ -176,6 +175,7 @@ require (
 	k8s.io/kube-openapi v0.0.0-20231010175941-2dd684a91f00 // indirect
 	k8s.io/metrics v0.28.4 // indirect
 	k8s.io/utils v0.0.0-20230726121419-3b25d923346b // indirect
+	sigs.k8s.io/controller-runtime v0.16.2 // indirect
 	sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd // indirect
 	sigs.k8s.io/kustomize/api v0.13.5-0.20230601165947-6ce0bf390ce3 // indirect
 	sigs.k8s.io/kustomize/kustomize/v5 v5.0.4-0.20230601165947-6ce0bf390ce3 // indirect
