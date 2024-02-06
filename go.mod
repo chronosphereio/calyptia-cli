@@ -6,7 +6,7 @@ require (
 	code.cloudfoundry.org/bytefmt v0.0.0-20231017140541-3b893ed0421b
 	github.com/Masterminds/sprig/v3 v3.2.3
 	github.com/alecthomas/assert/v2 v2.4.0
-	github.com/calyptia/api v1.6.8
+	github.com/calyptia/api v1.7.0
 	github.com/calyptia/cli/k8s v0.0.0-00010101000000-000000000000
 	github.com/calyptia/core-images-index/go-index v0.0.0-20231122200241-68594ece7524
 	github.com/calyptia/go-fluentbit-config/v2 v2.1.1
