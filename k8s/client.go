@@ -746,7 +746,7 @@ var GetOperatorManifest = func(version string) ([]byte, error) {
 }
 
 func getOperatorDownloadURL(version string) (string, error) {
-	const operatorReleases = "https://api.github.com/repos/calyptia/core-operator-releases/releases"
+	const operatorReleases = "https://api.github.com/repos/chronosphereio/calyptia-core-operator-releases/releases"
 	type Release struct {
 		TagName string `json:"tag_name"`
 		Assets  []struct {
