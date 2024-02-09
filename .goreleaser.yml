@@ -1,8 +1,3 @@
-blobs:
-  - provider: gs
-    bucket: calyptia_cli_bucket
-    folder: "releases/{{.Version}}"
-
 upx:
   -
     ids: [ calyptia ]
@@ -33,8 +28,8 @@ universal_binaries:
 brews:
   - name: calyptia
     description: Calyptia Cloud CLI
-    homepage: https://github.com/calyptia/cli
+    homepage: https://github.com/chronosphereio/calyptia-cli
     repository:
-      owner: calyptia
-      name: homebrew-tap
+      owner: chronosphereio
+      name: calyptia-homebrew-tap
     folder: Formula
