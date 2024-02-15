@@ -1,8 +1,3 @@
-blobs:
-  - provider: gs
-    bucket: calyptia_cli_bucket
-    folder: "releases/{{.Version}}"
-
 upx:
   -
     ids: [ calyptia ]
