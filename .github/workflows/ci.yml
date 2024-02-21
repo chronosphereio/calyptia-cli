@@ -20,7 +20,7 @@ jobs:
       - name: internal image
         if: ${{ ! startsWith(github.ref, 'refs/tags/v') }}
         run: |
-          echo "WORKFLOW_IMAGE=ghcr.io/calyptia/internal/cli" >> $GITHUB_ENV
+          echo "WORKFLOW_IMAGE=ghcr.io/chronosphereio/calyptia-internal/cli" >> $GITHUB_ENV
           echo "RELEASE_VERSION=v0.1-dev" >> $GITHUB_ENV
         shell: bash
 
@@ -90,11 +90,11 @@ jobs:
           platforms: linux/${{ matrix.platform }}
           provenance: false
           labels: |
-            org.opencontainers.image.title="calyptia/cli" \
+            org.opencontainers.image.title="chronosphereio/calyptia-cli" \
             org.opencontainers.image.description="Calyptia Core CLI" \
             org.opencontainers.image.url="https://calyptia.com/products/calyptia-core/"
             org.opencontainers.image.licenses="/licenses/calyptia.txt"
-            org.opencontainers.image.maintainer="Jorge Niedbalski <jorge@calyptia.com>" \
+            org.opencontainers.image.maintainer="CI <ci@calyptia.com>" \
             org.opencontainers.image.vendor="Calyptia Inc"
             org.calyptia.contact="support@calyptia.com"
 
@@ -145,11 +145,11 @@ jobs:
             type=ref,event=pr
             type=raw,value=main,enable=${{ endsWith(github.ref, github.event.repository.default_branch) }}
           labels: |
-            org.opencontainers.image.title="calyptia/cli" \
+            org.opencontainers.image.title="chronosphereio/calyptia-cli" \
             org.opencontainers.image.description="Calyptia Core CLI" \
             org.opencontainers.image.url="https://calyptia.com/products/calyptia-core/"
             org.opencontainers.image.licenses="/licenses/calyptia.txt"
-            org.opencontainers.image.maintainer="Jorge Niedbalski <jorge@calyptia.com>" \
+            org.opencontainers.image.maintainer="CI <ci@calyptia.com>" \
             org.opencontainers.image.vendor="Calyptia Inc"
             org.calyptia.contact="support@calyptia.com"
 
@@ -185,11 +185,11 @@ jobs:
   cloud-e2e:
     # Do not run for releases, no point
     if: ${{ ! startsWith(github.ref, 'refs/tags/v') }}
-    name: Run calyptia/cloud-e2e tests
+    name: Run cloud-e2e tests
     needs:
       - ci-build-container-image-manifest
     # Invoke via public repo, the public/private has to match
-    uses: calyptia/core-product-release/.github/workflows/call-integration-tests.yaml@main
+    uses: chronosphereio/calyptia-core-product-release/.github/workflows/call-integration-tests.yaml@main
     permissions:
       contents: read
       packages: read
@@ -197,7 +197,6 @@ jobs:
     with:
       cli-image: ${{ needs.ci-build-container-image-manifest.outputs.tag }}
       calyptia-tests: "operator/"
-      k8s-distribution: "vcluster"
     secrets:
       registry-username: ${{ secrets.CI_USERNAME }}
       registry-password: ${{ secrets.CI_PAT }}
@@ -305,7 +304,7 @@ jobs:
     if: ${{ startsWith(github.ref, 'refs/tags/v') }}
     needs:
       - release
-    uses: calyptia/core-product-release/.github/workflows/update-product-version.yaml@main
+    uses: chronosphereio/calyptia-core-product-release/.github/workflows/update-product-version.yaml@main
     with:
       product: cli
       version: ${{ github.ref_name }}

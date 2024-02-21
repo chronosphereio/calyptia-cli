@@ -33,7 +33,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           token: ${{ secrets.token }}
-          repository: calyptia/cli
+          repository: chronosphereio/calyptia-cli
 
       - name: Update default Core Operator version
         run: |
