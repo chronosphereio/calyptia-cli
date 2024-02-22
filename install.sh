@@ -47,6 +47,7 @@ _download_url() {
   _download_os="$(_detect_os)"
   # shellcheck disable=SC2154
   _download_version="$cli_VERSION"
+  _download_artefact_prefix="${cli_ARTEFACT_PREFIX:-calyptia-cli}"
 
   # releases should be prefixed with `v`
   case "$_download_version" in
@@ -70,7 +71,7 @@ _download_url() {
   fi
 
   _download_trailedVersion="$(echo "$_download_version" | tr -d v)"
-  echo "https://github.com/chronosphereio/calyptia-cli/releases/download/${_download_version}/cli_${_download_trailedVersion}_${_download_os}_${_download_arch}.tar.gz"
+  echo "https://github.com/chronosphereio/calyptia-cli/releases/download/${_download_version}/${_download_artefact_prefix}_${_download_trailedVersion}_${_download_os}_${_download_arch}.tar.gz"
 }
 
 echo "Downloading Calyptia CLI from URL: $(_download_url)"
