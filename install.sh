@@ -70,7 +70,7 @@ _download_url() {
   fi
 
   _download_trailedVersion="$(echo "$_download_version" | tr -d v)"
-  echo "https://github.com/chronosphereio/calyptia-cli/releases/download/${_download_version}/cli_${_download_trailedVersion}_${_download_os}_${_download_arch}.tar.gz"
+  echo "https://github.com/chronosphereio/calyptia-cli/releases/download/${_download_version}/calyptia-cli_${_download_trailedVersion}_${_download_os}_${_download_arch}.tar.gz"
 }
 
 echo "Downloading Calyptia CLI from URL: $(_download_url)"
