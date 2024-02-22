@@ -9,14 +9,18 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/hashicorp/go-version"
+	"github.com/mattn/go-isatty"
 	"github.com/spf13/cobra"
 
 	cloudclient "github.com/calyptia/api/client"
 	cnfg "github.com/calyptia/cli/cmd/config"
-	"github.com/calyptia/cli/cmd/version"
+	cliversion "github.com/calyptia/cli/cmd/version"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/localdata"
 )
+
+var vercheck bool
 
 func NewRootCmd(ctx context.Context) *cobra.Command {
 	client := &cloudclient.Client{
@@ -50,7 +54,7 @@ func NewRootCmd(ctx context.Context) *cobra.Command {
 	}
 
 	if cloudURLStr == "" {
-		cloudURLStr = version.DefaultCloudURLStr
+		cloudURLStr = cliversion.DefaultCloudURLStr
 	}
 
 	cobra.OnInitialize(func() {
@@ -85,13 +89,20 @@ func NewRootCmd(ctx context.Context) *cobra.Command {
 		Short:         "Calyptia Cloud CLI",
 		SilenceErrors: true,
 		SilenceUsage:  true,
+		PersistentPreRun: func(cmd *cobra.Command, args []string) {
+			if !vercheck {
+				versionCheck(cmd)
+			}
+		},
 	}
 
 	cmd.SetOut(os.Stdout)
 
+	_, found := os.LookupEnv("CALYPTIA_DISABLE_VERSION_CHECK")
 	fs := cmd.PersistentFlags()
 	fs.StringVar(&cloudURLStr, "cloud-url", cfg.Env("CALYPTIA_CLOUD_URL", cloudURLStr), "Calyptia Cloud URL")
 	fs.StringVar(&token, "token", cfg.Env("CALYPTIA_CLOUD_TOKEN", token), "Calyptia Cloud Project token")
+	fs.BoolVar(&vercheck, "disable-version-check", found, "disable version check ")
 	fs.Lookup("token").DefValue = "check with the 'calyptia config current_token' command"
 
 	cmd.AddCommand(
@@ -104,8 +115,36 @@ func NewRootCmd(ctx context.Context) *cobra.Command {
 		newCmdUninstall(),
 		newCmdDelete(config),
 		newCmdWatch(config),
-		version.NewVersionCommand(),
+		cliversion.NewVersionCommand(),
 	)
 
 	return cmd
+}
+
+func versionCheck(cmd *cobra.Command) {
+	if isatty.IsTerminal(os.Stdout.Fd()) &&
+		len(cliversion.Version) != 0 &&
+		cliversion.Version != "dev" {
+		ghclient := cliversion.NewGithubClient("", nil)
+
+		ref, err := ghclient.GetLatestTag("cli")
+		if err != nil {
+			return
+		}
+
+		latestVersion, err := version.NewVersion(ref)
+		if err != nil {
+			return
+		}
+
+		currentVersion, err := version.NewVersion(cliversion.Version)
+		if err != nil {
+			return
+		}
+
+		if currentVersion != nil && currentVersion.LessThan(latestVersion) {
+			fmt.Printf("Warning: This version %s of Calyptia cli is outdated. The latest version available is %s\n", currentVersion, latestVersion)
+			return
+		}
+	}
 }

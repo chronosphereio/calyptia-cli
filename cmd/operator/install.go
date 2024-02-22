@@ -34,114 +34,26 @@ var f embed.FS
 
 const manifestFile = "manifest.yaml"
 
-func NewCmdInstall() *cobra.Command {
-	var (
-		coreInstanceVersion string
-		coreDockerImage     string
-		isNonInteractive    bool
-		waitReady           bool
-		waitTimeout         time.Duration
-		confirmed           bool
-	)
+var (
+	loadingRules        *clientcmd.ClientConfigLoadingRules
+	configOverrides     *clientcmd.ConfigOverrides
+	confirmed           bool
+	coreInstanceVersion string
+	coreDockerImage     string
+	isNonInteractive    bool
+	waitReady           bool
+	waitTimeout         time.Duration
+)
 
-	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
+func NewCmdInstall() *cobra.Command {
+	loadingRules = clientcmd.NewDefaultClientConfigLoadingRules()
 	configOverrides := &clientcmd.ConfigOverrides{}
 
 	cmd := &cobra.Command{
 		Use:     "operator",
 		Aliases: []string{"opr"},
 		Short:   "Setup a new core operator instance",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			var namespace string
-
-			kubeNamespaceFlag := cmd.Flag("kube-namespace")
-			if kubeNamespaceFlag != nil {
-				namespace = kubeNamespaceFlag.Value.String()
-			}
-
-			if namespace == "" {
-				namespace = apiv1.NamespaceDefault
-			}
-
-			n, err := k8s.GetCurrentContextNamespace()
-			if err != nil {
-				if errors.Is(err, k8s.ErrNoContext) {
-					cmd.Printf("No context is currently set. Using default namespace.\n")
-				} else {
-					return err
-				}
-			}
-			if n != "" {
-				namespace = n
-			}
-
-			kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
-			kubeClientConfig, err := kubeConfig.ClientConfig()
-			if err != nil {
-				return err
-			}
-
-			clientSet, err := kubernetes.NewForConfig(kubeClientConfig)
-			if err != nil {
-				return err
-			}
-			k := &k8s.Client{
-				Interface: clientSet,
-				Config:    kubeClientConfig,
-			}
-			if !confirmed {
-				isInstalled, err := k.IsOperatorInstalled(cmd.Context())
-				if isInstalled {
-					var e *k8s.OperatorIncompleteError
-					if errors.As(err, &e) {
-						cmd.Printf("Previous operator installation components found:\n%s\n", e.Error())
-						cmd.Printf("Are you sure you want to proceed? (y/N) ")
-						var answer string
-						_, err := fmt.Scanln(&answer)
-						if err != nil && err.Error() == "unexpected newline" {
-							err = nil
-						}
-
-						if err != nil {
-							return fmt.Errorf("could not to read answer: %v", err)
-						}
-
-						answer = strings.TrimSpace(strings.ToLower(answer))
-						if answer != "y" && answer != "yes" {
-							return nil
-						}
-					}
-				}
-			}
-
-			_, err = k.GetNamespace(context.Background(), namespace)
-			if err != nil && !k8serrors.IsNotFound(err) {
-				return err
-			}
-
-			manifest, err := installManifest(namespace, coreDockerImage, coreInstanceVersion, k8serrors.IsNotFound(err))
-			if err != nil {
-				return err
-			}
-			defer os.RemoveAll(manifest)
-
-			if waitReady {
-				deployment, err := extractDeployment(manifest)
-				if err != nil {
-					return err
-				}
-				start := time.Now()
-				fmt.Println("Waiting for core operator manager to be ready...")
-				err = k.WaitReady(context.Background(), namespace, deployment, false, waitTimeout)
-				if err != nil {
-					return err
-				}
-				fmt.Printf("Core operator manager is ready. Took %s\n", time.Since(start))
-			}
-
-			cmd.Printf("Core operator manager successfully installed.\n")
-			return nil
-		},
+		RunE:    InstallOperator,
 	}
 
 	fs := cmd.Flags()
@@ -155,6 +67,102 @@ func NewCmdInstall() *cobra.Command {
 	clientcmd.BindOverrideFlags(configOverrides, fs, clientcmd.RecommendedConfigOverrideFlags("kube-"))
 
 	return cmd
+}
+
+func InstallOperator(cmd *cobra.Command, args []string) error {
+	name, ok := cmd.Annotations["name"] // check if the annotations match to update and disable prompt
+	if ok && name == "update" {
+		confirmed = true
+	}
+	var namespace string
+
+	kubeNamespaceFlag := cmd.Flag("kube-namespace")
+	if kubeNamespaceFlag != nil {
+		namespace = kubeNamespaceFlag.Value.String()
+	}
+
+	if namespace == "" {
+		namespace = apiv1.NamespaceDefault
+	}
+
+	n, err := k8s.GetCurrentContextNamespace()
+	if err != nil {
+		if errors.Is(err, k8s.ErrNoContext) {
+			cmd.Printf("No context is currently set. Using default namespace.\n")
+		} else {
+			return err
+		}
+	}
+	if n != "" {
+		namespace = n
+	}
+
+	kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
+	kubeClientConfig, err := kubeConfig.ClientConfig()
+	if err != nil {
+		return err
+	}
+
+	clientSet, err := kubernetes.NewForConfig(kubeClientConfig)
+	if err != nil {
+		return err
+	}
+	k := &k8s.Client{
+		Interface: clientSet,
+		Config:    kubeClientConfig,
+	}
+	if !confirmed {
+		isInstalled, err := k.IsOperatorInstalled(cmd.Context())
+		if isInstalled {
+			var e *k8s.OperatorIncompleteError
+			if errors.As(err, &e) {
+				cmd.Printf("Previous operator installation components found:\n%s\n", e.Error())
+				cmd.Printf("Are you sure you want to proceed? (y/N) ")
+				var answer string
+				_, err := fmt.Scanln(&answer)
+				if err != nil && err.Error() == "unexpected newline" {
+					err = nil
+				}
+
+				if err != nil {
+					return fmt.Errorf("could not to read answer: %v", err)
+				}
+
+				answer = strings.TrimSpace(strings.ToLower(answer))
+				if answer != "y" && answer != "yes" {
+					return nil
+				}
+			}
+		}
+	}
+
+	_, err = k.GetNamespace(context.Background(), namespace)
+	if err != nil && !k8serrors.IsNotFound(err) {
+		return err
+	}
+
+	manifest, err := installManifest(namespace, coreDockerImage, coreInstanceVersion, k8serrors.IsNotFound(err))
+	if err != nil {
+		return err
+	}
+	defer os.RemoveAll(manifest)
+
+	if waitReady {
+		deployment, err := extractDeployment(manifest)
+		if err != nil {
+			return err
+		}
+		start := time.Now()
+		fmt.Println("Waiting for core operator manager to be ready...")
+		err = k.WaitReady(context.Background(), namespace, deployment, false, waitTimeout)
+		if err != nil {
+			return err
+		}
+		fmt.Printf("Core operator manager is ready. Took %s\n", time.Since(start))
+	}
+
+	cmd.Printf("Core operator manager successfully installed.\n")
+	return nil
 }
 
 // extractDeployment extracts the name of the deployment from the yaml file
@@ -231,18 +239,6 @@ func solveNamespaceCreation(createNamespace bool, fullFile string, namespace str
 
 	out := strings.ReplaceAll(fullFile, "namespace: calyptia-core", fmt.Sprintf("namespace: %s", namespace))
 	return out
-}
-
-func solveNamespaceCreationForDelete(fullFile string, namespace string) string {
-	if namespace == "" {
-		splitFile := strings.Split(fullFile, "---\n")
-		return strings.Join(splitFile[1:], "---\n")
-	}
-	if _, err := strconv.Atoi(namespace); err == nil {
-		namespace = fmt.Sprintf(`"%s"`, namespace)
-	}
-	temp := strings.ReplaceAll(fullFile, "serviceAccountName: calyptia-core", fmt.Sprintf("serviceAccountName: %s", namespace))
-	return strings.ReplaceAll(temp, "name: calyptia-core", fmt.Sprintf("name: %s", namespace))
 }
 
 func addImage(coreDockerImage, coreInstanceVersion, file string) (string, error) {
