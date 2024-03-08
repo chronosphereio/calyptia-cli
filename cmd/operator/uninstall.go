@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v3"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 
@@ -85,19 +86,18 @@ func NewCmdUninstall() *cobra.Command {
 }
 
 func prepareUninstallManifest(namespace string) (string, error) {
-	file, err := f.ReadFile(manifestFile)
+	manifests, err := parseManifest(manifestFile)
 	if err != nil {
 		return "", err
 	}
 
-	fullFile := string(file)
 	var isNamespace bool
 	if namespace != "" {
 		isNamespace = true
 	}
 
-	solveNamespace := solveNamespaceCreation(isNamespace, fullFile, namespace)
-	withNamespace := injectNamespace(solveNamespace, namespace)
+	*manifests = solveNamespaceCreation(isNamespace, *manifests, namespace)
+	*manifests = injectNamespace(*manifests, namespace)
 
 	dir, err := os.MkdirTemp("", "calyptia-operator")
 	if err != nil {
@@ -110,7 +110,12 @@ func prepareUninstallManifest(namespace string) (string, error) {
 	}
 	defer sysFile.Close()
 
-	_, err = sysFile.WriteString(withNamespace)
+	b, err := yaml.Marshal(manifests)
+	if err != nil {
+		return "", err
+	}
+
+	_, err = sysFile.Write(b)
 	if err != nil {
 		return "", err
 	}

@@ -1,27 +1,30 @@
 package operator
 
 import (
+	"bytes"
 	"context"
 	"embed"
 	_ "embed"
 	"errors"
 	"fmt"
 	"os"
-	"regexp"
-	"strconv"
 	"strings"
 	"time"
 
 	"gopkg.in/yaml.v3"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
+	sigyaml "sigs.k8s.io/yaml"
 
 	"github.com/calyptia/cli/cmd/utils"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
+	appsv1 "k8s.io/api/apps/v1"
 	apiv1 "k8s.io/api/core/v1"
+	rbacv1 "k8s.io/api/rbac/v1"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
 	"k8s.io/component-base/logs"
 	kubectl "k8s.io/kubectl/pkg/cmd"
@@ -36,12 +39,13 @@ const manifestFile = "manifest.yaml"
 
 func NewCmdInstall() *cobra.Command {
 	var (
-		coreInstanceVersion string
-		coreDockerImage     string
-		isNonInteractive    bool
-		waitReady           bool
-		waitTimeout         time.Duration
-		confirmed           bool
+		coreInstanceVersion        string
+		coreDockerImage            string
+		isNonInteractive           bool
+		waitReady                  bool
+		waitTimeout                time.Duration
+		confirmed                  bool
+		externalTrafficPolicyLocal bool
 	)
 
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
@@ -119,7 +123,8 @@ func NewCmdInstall() *cobra.Command {
 				return err
 			}
 
-			manifest, err := installManifest(namespace, coreDockerImage, coreInstanceVersion, k8serrors.IsNotFound(err))
+			manifest, err := installManifest(namespace, coreDockerImage,
+				coreInstanceVersion, k8serrors.IsNotFound(err), externalTrafficPolicyLocal)
 			if err != nil {
 				return err
 			}
@@ -151,6 +156,7 @@ func NewCmdInstall() *cobra.Command {
 	fs.DurationVar(&waitTimeout, "timeout", time.Second*30, "Wait timeout")
 	fs.StringVar(&coreInstanceVersion, "version", "", "Core instance version")
 	fs.StringVar(&coreDockerImage, "image", utils.DefaultCoreOperatorDockerImage, "Calyptia core manager docker image to use (fully composed docker image).")
+	fs.BoolVarP(&externalTrafficPolicyLocal, "external-traffic-policy-local", "Set ExternalTrafficPolicy to local for all services used by core operator pipelines.")
 	_ = cmd.Flags().MarkHidden("image")
 	clientcmd.BindOverrideFlags(configOverrides, fs, clientcmd.RecommendedConfigOverrideFlags("kube-"))
 
@@ -182,16 +188,44 @@ func extractDeployment(yml string) (string, error) {
 	return deployName, nil
 }
 
-func prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace string, createNamespace bool) (string, error) {
-	file, err := f.ReadFile(manifestFile)
+func enableExternalTrafficPolicyLocal(manifests manifests) manifests {
+	for idx, manifest := range manifests {
+		if manifest.Kind == "Deployment" {
+			deployment, ok := manifest.Descriptor.(appsv1.Deployment)
+			if !ok {
+				return manifests
+			}
+
+			for cidx, container := range deployment.Spec.Template.Spec.Containers {
+				if container.Command[0] == "/manager" {
+					container.Args = append(container.Args,
+						"enable-external-traffic-policy-local")
+				}
+				deployment.Spec.Template.Spec.Containers[cidx] = container
+			}
+			manifest.Descriptor = deployment
+		}
+		manifests[idx] = manifest
+		break
+	}
+
+	return manifests
+}
+
+func prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace string, createNamespace, externalTrafficPolicyLocal bool) (string, error) {
+	manifests, err := parseManifest(manifestFile)
 	if err != nil {
 		return "", err
 	}
-	fullFile := string(file)
-	solveNamespace := solveNamespaceCreation(createNamespace, fullFile, namespace)
-	withNamespace := injectNamespace(solveNamespace, namespace)
 
-	withImage, err := addImage(coreDockerImage, coreInstanceVersion, withNamespace)
+	*manifests = solveNamespaceCreation(createNamespace, *manifests, namespace)
+	*manifests = injectNamespace(*manifests, namespace)
+
+	if externalTrafficPolicyLocal {
+		*manifests = enableExternalTrafficPolicyLocal(manifests)
+	}
+
+	*manifests, err = addImage(*manifests, coreDockerImage, coreInstanceVersion)
 	if err != nil {
 		return "", err
 	}
@@ -206,7 +240,12 @@ func prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace stri
 		return "", err
 	}
 
-	_, err = temp.WriteString(withImage)
+	b, err := yaml.Marshal(manifests)
+	if err != nil {
+		return "", err
+	}
+
+	_, err = temp.Write(b)
 	if err != nil {
 		return "", err
 	}
@@ -214,59 +253,48 @@ func prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace stri
 	return temp.Name(), err
 }
 
-func solveNamespaceCreation(createNamespace bool, fullFile string, namespace string) string {
-	if !createNamespace {
-		splitFile := strings.Split(fullFile, "---\n")
-		return strings.Join(splitFile[1:], "---\n")
-	} else {
-		splitFile := strings.Split(fullFile, "---\n")
-		if strings.Contains(splitFile[0], "kind: Namespace") {
-			splitFile[0] = strings.ReplaceAll(splitFile[0], "name: calyptia-core", fmt.Sprintf("name: %s", namespace))
+func solveNamespaceCreation(createNamespace bool, manifests manifests, namespace string) manifests {
+	for idx, manifest := range manifests {
+		if !createNamespace {
+			if manifest.Kind == "Namespace" {
+				manifests = append(manifests[:idx], manifests[idx+1:]...)
+			}
+		} else {
+			manifests[idx].Metadata.Name = namespace
 		}
-		fullFile = strings.Join(splitFile, "---\n")
-	}
-	if _, err := strconv.Atoi(namespace); err == nil {
-		namespace = fmt.Sprintf(`"%s"`, namespace)
+
+		break
 	}
 
-	out := strings.ReplaceAll(fullFile, "namespace: calyptia-core", fmt.Sprintf("namespace: %s", namespace))
-	return out
+	return manifests
 }
 
-func solveNamespaceCreationForDelete(fullFile string, namespace string) string {
-	if namespace == "" {
-		splitFile := strings.Split(fullFile, "---\n")
-		return strings.Join(splitFile[1:], "---\n")
+func addImage(manifests manifests, coreDockerImage, coreInstanceVersion string) (manifests, error) {
+	if coreInstanceVersion == "" {
+		return manifests, nil
 	}
-	if _, err := strconv.Atoi(namespace); err == nil {
-		namespace = fmt.Sprintf(`"%s"`, namespace)
-	}
-	temp := strings.ReplaceAll(fullFile, "serviceAccountName: calyptia-core", fmt.Sprintf("serviceAccountName: %s", namespace))
-	return strings.ReplaceAll(temp, "name: calyptia-core", fmt.Sprintf("name: %s", namespace))
-}
-
-func addImage(coreDockerImage, coreInstanceVersion, file string) (string, error) {
-	if coreInstanceVersion != "" {
-		const pattern string = `image:\s*ghcr.io/calyptia/core-operator:[^\n\r]*`
-		reImagePattern := regexp.MustCompile(pattern)
-		match := reImagePattern.FindString(file)
-		if match == "" {
-			return "", errors.New("could not find image in manifest")
+	for idx := range manifests {
+		if manifests[idx].Kind == "Deployment" {
+			deployment, ok := manifests[idx].Descriptor.(appsv1.Deployment)
+			if !ok {
+				return manifests, fmt.Errorf("unable to decipher deployment")
+			}
+			deployment.Spec.Template.Spec.Containers[0].Image =
+				fmt.Sprintf("%s:%s", coreDockerImage, coreInstanceVersion)
+			break
 		}
-		updatedMatch := fmt.Sprintf("image: %s:%s", coreDockerImage, coreInstanceVersion) // Remove '\n' at the end
-		return reImagePattern.ReplaceAllString(file, updatedMatch), nil
 	}
-	return file, nil
+	return manifests, nil
 }
 
-func injectNamespace(s string, namespace string) string {
+func injectNamespace(manifests manifests, namespace string) manifests {
 	if namespace == "" {
 		namespace = "default"
 	}
-	if _, err := strconv.Atoi(namespace); err == nil {
-		namespace = fmt.Sprintf(`"%s"`, namespace)
+	for idx := range manifests {
+		manifests[idx].Metadata.Namespace = namespace
 	}
-	return strings.ReplaceAll(s, "namespace: calyptia-core", fmt.Sprintf("namespace: %s", namespace))
+	return manifests
 }
 
 func newKubectlCmd() *cobra.Command {
@@ -315,10 +343,10 @@ func newKubectlCmd() *cobra.Command {
 	return cmd
 }
 
-func installManifest(namespace, coreDockerImage, coreInstanceVersion string, createNamespace bool) (string, error) {
+func installManifest(namespace, coreDockerImage, coreInstanceVersion string, createNamespace, externalTrafficPolicyLocal bool) (string, error) {
 	kctl := newKubectlCmd()
 
-	manifest, err := prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace, createNamespace)
+	manifest, err := prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace, createNamespace, externalTrafficPolicyLocal)
 	if err != nil {
 		return "", err
 	}
@@ -330,4 +358,110 @@ func installManifest(namespace, coreDockerImage, coreInstanceVersion string, cre
 	}
 
 	return manifest, err
+}
+
+type manifest struct {
+	APIVersion string            `yaml:"apiVersion"`
+	Kind       string            `yaml:"kind"`
+	Metadata   metav1.ObjectMeta `yaml:"metadata"`
+	Node       *yaml.Node        `yaml:"-"`
+	Descriptor any               `yaml:"-"`
+}
+
+func (m *manifest) UnmarshalYAML(value *yaml.Node) error {
+	*m = manifest{Node: value}
+
+	for i := 0; i < len(value.Content); i += 2 {
+		prop := value.Content[i]
+		val := value.Content[i+1]
+		switch prop.Value {
+		case "apiVersion":
+			m.APIVersion = val.Value
+		case "kind":
+			m.Kind = val.Value
+		case "metadata":
+			y, err := yaml.Marshal(val)
+			if err != nil {
+				return err
+			}
+			sigyaml.Unmarshal(y, &m.Metadata)
+		}
+	}
+
+	switch m.Kind {
+	case "Namespace":
+		ns := apiv1.Namespace{}
+		value.Decode(&ns)
+		m.Descriptor = ns
+	case "CustomResourceDefinition":
+		m.Descriptor = value
+	case "ServiceAccount":
+		sa := apiv1.ServiceAccount{}
+		value.Decode(&sa)
+		m.Descriptor = sa
+	case "ClusterRole":
+		cr := rbacv1.ClusterRole{}
+		value.Decode(&cr)
+		m.Descriptor = cr
+	case "ClusterRoleBinding":
+		crb := rbacv1.ClusterRoleBinding{}
+		value.Decode(&crb)
+		m.Descriptor = crb
+	case "Service":
+		svc := apiv1.Service{}
+		value.Decode(&svc)
+		m.Descriptor = svc
+	case "Deployment":
+		var deploy appsv1.Deployment
+		y, err := yaml.Marshal(value)
+		if err != nil {
+			return err
+		}
+		sigyaml.Unmarshal(y, &deploy)
+		m.Descriptor = deploy
+	}
+	return nil
+}
+
+func (m manifest) MarshalYAML() (interface{}, error) {
+	base := map[string]any{
+		"apiVersion": m.APIVersion,
+		"kind":       m.Kind,
+		"metadata":   m.Metadata,
+	}
+
+	desc, _ := sigyaml.Marshal(m.Descriptor)
+
+	spec := make(map[string]interface{})
+	sigyaml.Unmarshal(desc, &spec)
+
+	for k, v := range spec {
+		if _, ok := base[k]; !ok {
+			base[k] = v
+		}
+	}
+
+	return base, nil
+}
+
+type manifests []manifest
+
+func parseManifest(filename string) (*manifests, error) {
+	manifests := make(manifests, 0)
+
+	data, err := os.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
+
+	dec := yaml.NewDecoder(bytes.NewReader(data))
+	for {
+		var doc manifest
+		if dec.Decode(&doc) != nil {
+			break
+		}
+		manifests = append(manifests, doc)
+	}
+
+	return &manifests, nil
 }
