@@ -222,7 +222,7 @@ func prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace stri
 	*manifests = injectNamespace(*manifests, namespace)
 
 	if externalTrafficPolicyLocal {
-		*manifests = enableExternalTrafficPolicyLocal(manifests)
+		*manifests = enableExternalTrafficPolicyLocal(*manifests)
 	}
 
 	*manifests, err = addImage(*manifests, coreDockerImage, coreInstanceVersion)
