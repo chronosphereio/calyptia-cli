@@ -6,7 +6,8 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/calyptia/api/types"
-	cfg "github.com/calyptia/cli/config"
+
+	cfg "github.com/chronosphereio/calyptia-cli/config"
 )
 
 func NewCmdCreateEnvironment(c *cfg.Config) *cobra.Command {

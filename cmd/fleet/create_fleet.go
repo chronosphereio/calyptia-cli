@@ -12,8 +12,9 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
-	cfg "github.com/calyptia/cli/config"
-	"github.com/calyptia/cli/formatters"
+
+	cfg "github.com/chronosphereio/calyptia-cli/config"
+	"github.com/chronosphereio/calyptia-cli/formatters"
 )
 
 func getFormat(configFile, configFormat string) types.ConfigFormat {

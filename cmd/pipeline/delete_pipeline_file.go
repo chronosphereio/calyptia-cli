@@ -7,8 +7,9 @@ import (
 	"github.com/spf13/cobra"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/completer"
-	cfg "github.com/calyptia/cli/config"
+
+	"github.com/chronosphereio/calyptia-cli/completer"
+	cfg "github.com/chronosphereio/calyptia-cli/config"
 )
 
 func NewCmdDeletePipelineFile(config *cfg.Config) *cobra.Command {

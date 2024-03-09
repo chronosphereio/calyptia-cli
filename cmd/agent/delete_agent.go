@@ -10,9 +10,10 @@ import (
 	"golang.org/x/term"
 
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/completer"
-	cfg "github.com/calyptia/cli/config"
-	"github.com/calyptia/cli/confirm"
+
+	"github.com/chronosphereio/calyptia-cli/completer"
+	cfg "github.com/chronosphereio/calyptia-cli/config"
+	"github.com/chronosphereio/calyptia-cli/confirm"
 )
 
 func NewCmdDeleteAgent(config *cfg.Config) *cobra.Command {

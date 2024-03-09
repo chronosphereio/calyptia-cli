@@ -13,7 +13,8 @@ import (
 
 	"github.com/calyptia/api/client"
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/localdata"
+
+	"github.com/chronosphereio/calyptia-cli/localdata"
 )
 
 type Config struct {

@@ -12,10 +12,11 @@ import (
 	"github.com/spf13/cobra"
 
 	cloudclient "github.com/calyptia/api/client"
-	cnfg "github.com/calyptia/cli/cmd/config"
-	"github.com/calyptia/cli/cmd/version"
-	cfg "github.com/calyptia/cli/config"
-	"github.com/calyptia/cli/localdata"
+
+	cnfg "github.com/chronosphereio/calyptia-cli/cmd/config"
+	"github.com/chronosphereio/calyptia-cli/cmd/version"
+	cfg "github.com/chronosphereio/calyptia-cli/config"
+	"github.com/chronosphereio/calyptia-cli/localdata"
 )
 
 func NewRootCmd(ctx context.Context) *cobra.Command {

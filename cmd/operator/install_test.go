@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/calyptia/cli/k8s"
+	"github.com/chronosphereio/calyptia-cli/k8s"
 )
 
 func TestAddImage(t *testing.T) {

@@ -10,13 +10,16 @@ import (
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"
 
-	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/config"
-	"github.com/calyptia/cli/formatters"
-	"github.com/calyptia/cli/helpers"
-	"github.com/calyptia/cli/slice"
 	"github.com/calyptia/core-images-index/go-index"
+
 	fluentbitconfig "github.com/calyptia/go-fluentbit-config/v2"
+
+	"github.com/calyptia/api/types"
+
+	"github.com/chronosphereio/calyptia-cli/config"
+	"github.com/chronosphereio/calyptia-cli/formatters"
+	"github.com/chronosphereio/calyptia-cli/helpers"
+	"github.com/chronosphereio/calyptia-cli/slice"
 )
 
 type Completer struct {

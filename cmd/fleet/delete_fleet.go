@@ -7,9 +7,9 @@ import (
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
 
-	"github.com/calyptia/cli/completer"
-	"github.com/calyptia/cli/config"
-	"github.com/calyptia/cli/confirm"
+	"github.com/chronosphereio/calyptia-cli/completer"
+	"github.com/chronosphereio/calyptia-cli/config"
+	"github.com/chronosphereio/calyptia-cli/confirm"
 )
 
 func NewCmdDeleteFleet(config *config.Config) *cobra.Command {

@@ -9,10 +9,11 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/completer"
-	cfg "github.com/calyptia/cli/config"
-	"github.com/calyptia/cli/formatters"
-	"github.com/calyptia/cli/helpers"
+
+	"github.com/chronosphereio/calyptia-cli/completer"
+	cfg "github.com/chronosphereio/calyptia-cli/config"
+	"github.com/chronosphereio/calyptia-cli/formatters"
+	"github.com/chronosphereio/calyptia-cli/helpers"
 )
 
 func NewCmdUpdateConfigSection(config *cfg.Config) *cobra.Command {

@@ -15,6 +15,7 @@ type Client interface {
 	AWSCustomerRedirect(context.Context, string) (*url.URL, error)
 	AcceptInvitation(context.Context, types.AcceptInvitation) error
 	ActiveTraceSession(context.Context, string) (types.TraceSession, error)
+	AddAgentMetrics(context.Context, string, []byte) error
 	AddAgentMetricsV1(context.Context, string, []types.Metric) (types.MetricsOverTimeByPlugin, error)
 	Agent(context.Context, string) (types.Agent, error)
 	AgentConfigHistory(context.Context, string, types.AgentConfigHistoryParams) (types.AgentConfigHistory, error)
@@ -56,11 +57,13 @@ type Client interface {
 	CreateCoreInstanceSecret(context.Context, types.CreateCoreInstanceSecret) (types.Created, error)
 	CreateEnvironment(context.Context, string, types.CreateEnvironment) (types.CreatedEnvironment, error)
 	CreateFleet(context.Context, types.CreateFleet) (types.Created, error)
+	CreateFleetFile(context.Context, string, types.CreateFleetFile) (types.Created, error)
 	CreateIngestCheck(context.Context, string, types.CreateIngestCheck) (types.Created, error)
 	CreateInvitation(context.Context, string, types.CreateInvitation) error
 	CreatePipeline(context.Context, string, types.CreatePipeline) (types.CreatedPipeline, error)
 	CreatePipelineCheck(context.Context, string, types.CreatePipelineCheck) (types.Created, error)
 	CreatePipelineFile(context.Context, string, types.CreatePipelineFile) (types.Created, error)
+	CreatePipelineLog(context.Context, types.CreatePipelineLog) (types.Created, error)
 	CreatePipelinePort(context.Context, string, types.CreatePipelinePort) (types.CreatedPipelinePort, error)
 	CreatePipelineSecret(context.Context, string, types.CreatePipelineSecret) (types.Created, error)
 	CreateProcessingRule(context.Context, types.CreateProcessingRule) (types.CreatedProcessingRule, error)
@@ -82,23 +85,31 @@ type Client interface {
 	DeleteCoreInstances(context.Context, string, ...string) error
 	DeleteEnvironment(context.Context, string) error
 	DeleteFleet(context.Context, string) (types.Deleted, error)
+	DeleteFleetFile(context.Context, string) error
 	DeleteIngestCheck(context.Context, string) error
+	DeleteMember(context.Context, string) (types.Deleted, error)
 	DeletePipeline(context.Context, string) error
 	DeletePipelineCheck(context.Context, string) error
 	DeletePipelineClusterObjects(context.Context, string, ...string) error
 	DeletePipelineFile(context.Context, string) error
+	DeletePipelineLog(context.Context, string) (types.Deleted, error)
 	DeletePipelinePort(context.Context, string) error
 	DeletePipelineSecret(context.Context, string) error
 	DeletePipelines(context.Context, string, ...string) error
 	DeleteProcessingRule(context.Context, string) error
 	DeleteProcessingRuleTemplate(context.Context, string) (types.Deleted, error)
+	DeleteProject(context.Context, string) (types.Deleted, error)
 	DeleteResourceProfile(context.Context, string) error
 	DeleteToken(context.Context, string) error
 	DismissAgentError(context.Context, types.DismissAgentError) (types.DismissedAgentError, error)
 	Environments(context.Context, string, types.EnvironmentsParams) (types.Environments, error)
 	Fleet(context.Context, types.FleetParams) (types.Fleet, error)
 	FleetConfig(context.Context, string, types.FleetConfigParams) (*fluentbitconfig.Config, error)
+	FleetFile(context.Context, string) (types.FleetFile, error)
+	FleetFiles(context.Context, string, types.FleetFilesParams) (types.FleetFiles, error)
+	FleetStatus(context.Context, types.FleetStatusParams) (types.FleetsStatus, error)
 	Fleets(context.Context, types.FleetsParams) (types.Fleets, error)
+	FleetsStatus(context.Context, types.FleetsStatusParams) (types.FleetsStatus, error)
 	Health(context.Context) (types.Health, error)
 	IngestCheck(context.Context, string) (types.IngestCheck, error)
 	IngestChecks(context.Context, string, types.IngestChecksParams) (types.IngestChecks, error)
@@ -110,6 +121,8 @@ type Client interface {
 	PipelineConfigHistory(context.Context, string, types.PipelineConfigHistoryParams) (types.PipelineConfigHistory, error)
 	PipelineFile(context.Context, string) (types.PipelineFile, error)
 	PipelineFiles(context.Context, string, types.PipelineFilesParams) (types.PipelineFiles, error)
+	PipelineLog(context.Context, string) (types.PipelineLog, error)
+	PipelineLogs(context.Context, types.ListPipelineLogs) (types.PipelineLogs, error)
 	PipelineMetadata(context.Context, string, ...string) (types.PipelineMetadata, error)
 	PipelineMetrics(context.Context, string, types.MetricsParams) (types.MetricsSummary, error)
 	PipelineMetricsByPlugin(context.Context, string, types.MetricsParams) (types.MetricsSummaryPlugin, error)
@@ -157,12 +170,14 @@ type Client interface {
 	UpdateCoreInstanceSecret(context.Context, types.UpdateCoreInstanceSecret) (types.Updated, error)
 	UpdateEnvironment(context.Context, string, types.UpdateEnvironment) error
 	UpdateFleet(context.Context, types.UpdateFleet) (types.Updated, error)
+	UpdateFleetFile(context.Context, string, types.UpdateFleetFile) error
 	UpdateIngestCheck(context.Context, string, types.UpdateIngestCheck) error
 	UpdateMember(context.Context, types.UpdateMember) error
 	UpdatePipeline(context.Context, string, types.UpdatePipeline) (types.UpdatedPipeline, error)
 	UpdatePipelineCheck(context.Context, string, types.UpdatePipelineCheck) error
 	UpdatePipelineClusterObjects(context.Context, string, types.UpdatePipelineClusterObjects) error
 	UpdatePipelineFile(context.Context, string, types.UpdatePipelineFile) error
+	UpdatePipelineLog(context.Context, types.UpdatePipelineLog) (types.Updated, error)
 	UpdatePipelineMetadata(context.Context, string, types.UpdatePipelineMetadata) error
 	UpdatePipelinePort(context.Context, string, types.UpdatePipelinePort) error
 	UpdatePipelineSecret(context.Context, string, types.UpdatePipelineSecret) error

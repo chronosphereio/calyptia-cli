@@ -12,26 +12,25 @@ import (
 	"time"
 
 	goversion "github.com/hashicorp/go-version"
+	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
+	rbacv1 "k8s.io/api/rbac/v1"
 	apiErrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/resource"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/client-go/dynamic"
+	"k8s.io/client-go/kubernetes"
 	restclient "k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
-
-	appsv1 "k8s.io/api/apps/v1"
-	apiv1 "k8s.io/api/core/v1"
-	corev1 "k8s.io/api/core/v1"
-	rbacv1 "k8s.io/api/rbac/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/kubernetes"
 	k8sclient "sigs.k8s.io/controller-runtime/pkg/client"
 
+	"github.com/chronosphereio/calyptia-cli/cmd/utils"
+
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/cmd/utils"
 )
 
 type objectType string
@@ -111,8 +110,8 @@ func (client *Client) ownNamespaceExists(ctx context.Context) (bool, error) {
 	return true, nil
 }
 
-func (client *Client) createOwnNamespace(ctx context.Context) (*apiv1.Namespace, error) {
-	return client.CoreV1().Namespaces().Create(ctx, &apiv1.Namespace{
+func (client *Client) createOwnNamespace(ctx context.Context) (*corev1.Namespace, error) {
+	return client.CoreV1().Namespaces().Create(ctx, &corev1.Namespace{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: client.Namespace,
 		},
@@ -120,9 +119,9 @@ func (client *Client) createOwnNamespace(ctx context.Context) (*apiv1.Namespace,
 }
 
 // CreateSecret TODO: DELETE AFTER OPERATOR LAUNCHES and create by k8s become deprecated
-func (client *Client) CreateSecret(ctx context.Context, agg cloud.CreatedCoreInstance, dryRun bool) (*apiv1.Secret, error) {
+func (client *Client) CreateSecret(ctx context.Context, agg cloud.CreatedCoreInstance, dryRun bool) (*corev1.Secret, error) {
 	metadata := client.getObjectMeta(agg, secretObjectType)
-	req := &apiv1.Secret{
+	req := &corev1.Secret{
 		ObjectMeta: metadata,
 		Data: map[string][]byte{
 			metadata.Name: agg.PrivateRSAKey,
@@ -140,9 +139,9 @@ func (client *Client) CreateSecret(ctx context.Context, agg cloud.CreatedCoreIns
 	return client.CoreV1().Secrets(client.Namespace).Create(ctx, req, options)
 }
 
-func (client *Client) CreateSecretOperatorRSAKey(ctx context.Context, agg cloud.CreatedCoreInstance, dryRun bool) (*apiv1.Secret, error) {
+func (client *Client) CreateSecretOperatorRSAKey(ctx context.Context, agg cloud.CreatedCoreInstance, dryRun bool) (*corev1.Secret, error) {
 	metadata := client.getObjectMeta(agg, secretObjectType)
-	req := &apiv1.Secret{
+	req := &corev1.Secret{
 		ObjectMeta: metadata,
 		Data: map[string][]byte{
 			"private-key": agg.PrivateRSAKey,
@@ -229,8 +228,8 @@ func (client *Client) CreateClusterRole(ctx context.Context, agg cloud.CreatedCo
 	return client.RbacV1().ClusterRoles().Create(ctx, req, metav1.CreateOptions{})
 }
 
-func (client *Client) CreateServiceAccount(ctx context.Context, agg cloud.CreatedCoreInstance, dryRun bool) (*apiv1.ServiceAccount, error) {
-	req := &apiv1.ServiceAccount{
+func (client *Client) CreateServiceAccount(ctx context.Context, agg cloud.CreatedCoreInstance, dryRun bool) (*corev1.ServiceAccount, error) {
+	req := &corev1.ServiceAccount{
 		ObjectMeta: client.getObjectMeta(agg, serviceAccountObjectType),
 	}
 
@@ -250,7 +249,7 @@ func (client *Client) CreateClusterRoleBinding(
 	ctx context.Context,
 	agg cloud.CreatedCoreInstance,
 	clusterRole *rbacv1.ClusterRole,
-	serviceAccount *apiv1.ServiceAccount,
+	serviceAccount *corev1.ServiceAccount,
 	dryRun bool,
 ) (*rbacv1.ClusterRoleBinding, error) {
 	req := &rbacv1.ClusterRoleBinding{
@@ -286,7 +285,7 @@ func (client *Client) CreateDeployment(
 	image string,
 	agg cloud.CreatedCoreInstance,
 	coreCloudURL string,
-	serviceAccount *apiv1.ServiceAccount,
+	serviceAccount *corev1.ServiceAccount,
 	tlsVerify bool,
 	skipServiceCreation bool,
 	dryRun bool,
@@ -300,20 +299,20 @@ func (client *Client) CreateDeployment(
 			Selector: &metav1.LabelSelector{
 				MatchLabels: labels,
 			},
-			Template: apiv1.PodTemplateSpec{
+			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
 					Labels: labels,
 				},
-				Spec: apiv1.PodSpec{
+				Spec: corev1.PodSpec{
 					ServiceAccountName:           serviceAccount.Name,
 					AutomountServiceAccountToken: &automountServiceAccountToken,
-					Containers: []apiv1.Container{
+					Containers: []corev1.Container{
 						{
 							Name:            agg.Name,
 							Image:           image,
-							ImagePullPolicy: apiv1.PullAlways,
+							ImagePullPolicy: corev1.PullAlways,
 							Args:            []string{"-debug=true"},
-							Env: []apiv1.EnvVar{
+							Env: []corev1.EnvVar{
 								{
 									Name:  "AGGREGATOR_NAME",
 									Value: agg.Name,
@@ -340,8 +339,8 @@ func (client *Client) CreateDeployment(
 								},
 								{
 									Name: "DEPLOYMENT_NAME",
-									ValueFrom: &apiv1.EnvVarSource{
-										FieldRef: &apiv1.ObjectFieldSelector{
+									ValueFrom: &corev1.EnvVarSource{
+										FieldRef: &corev1.ObjectFieldSelector{
 											FieldPath: "metadata.name",
 										},
 									},
@@ -437,7 +436,7 @@ func (client *Client) DeleteConfigMapsByLabel(ctx context.Context, label, ns str
 	return err
 }
 
-func (client *Client) FindServicesByLabel(ctx context.Context, label, ns string) (*apiv1.ServiceList, error) {
+func (client *Client) FindServicesByLabel(ctx context.Context, label, ns string) (*corev1.ServiceList, error) {
 	return client.CoreV1().Services(ns).List(ctx, metav1.ListOptions{LabelSelector: label})
 }
 
@@ -469,7 +468,7 @@ func (client *Client) UpdateDeploymentByLabel(ctx context.Context, label, newIma
 	}
 
 	if !found {
-		envVars = append(envVars, apiv1.EnvVar{
+		envVars = append(envVars, corev1.EnvVar{
 			Name:  syncTLSVerifyEnvVar,
 			Value: tlsVerify,
 		})
@@ -511,9 +510,9 @@ func (client *Client) UpdateSyncDeploymentByLabel(ctx context.Context, label, ne
 
 	annotations := deployment.Spec.Template.Annotations
 	if len(annotations) == 0 {
-        	annotations = make(map[string]string)
-   	}
-    	annotations["kubectl.kubernetes.io/restartedAt"] = time.Now().Format("20060102150405")
+		annotations = make(map[string]string)
+	}
+	annotations["kubectl.kubernetes.io/restartedAt"] = time.Now().Format("20060102150405")
 	deployment.Spec.Template.Annotations = annotations
 
 	_, err = client.AppsV1().Deployments(client.Namespace).Update(ctx, &deployment, metav1.UpdateOptions{})
@@ -534,7 +533,7 @@ func (client *Client) rolloutDeployment(ctx context.Context, namespace, deployme
 	return err
 }
 
-func (client *Client) updateEnvVars(envVars []apiv1.EnvVar, tlsVerify string) []apiv1.EnvVar {
+func (client *Client) updateEnvVars(envVars []corev1.EnvVar, tlsVerify string) []corev1.EnvVar {
 	found := false
 	for idx, envVar := range envVars {
 		if envVar.Name == syncTLSVerifyEnvVar {
@@ -546,7 +545,7 @@ func (client *Client) updateEnvVars(envVars []apiv1.EnvVar, tlsVerify string) []
 	}
 
 	if !found {
-		envVars = append(envVars, apiv1.EnvVar{
+		envVars = append(envVars, corev1.EnvVar{
 			Name:  coreTLSVerifyEnvVar,
 			Value: tlsVerify,
 		})
@@ -598,7 +597,7 @@ func (client *Client) FindDeploymentByLabel(ctx context.Context, label string) (
 
 func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, fromCloudImage, toCloudImage string, metricsPort string, memoryLimit string, annotations string, noTLSVerify bool, httpProxy, httpsProxy string, coreInstance cloud.CreatedCoreInstance, serviceAccount string) (*appsv1.Deployment, error) {
 	labels := client.LabelsFunc()
-	env := []apiv1.EnvVar{
+	env := []corev1.EnvVar{
 		{
 			Name:  "CORE_INSTANCE",
 			Value: coreInstance.Name,
@@ -640,10 +639,10 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, 
 			Value: annotations,
 		},
 	}
-	toCloud := apiv1.Container{
+	toCloud := corev1.Container{
 		Name:            coreInstance.Name + "-sync-to-cloud",
 		Image:           toCloudImage,
-		ImagePullPolicy: apiv1.PullAlways,
+		ImagePullPolicy: corev1.PullAlways,
 		Env:             env,
 	}
 
@@ -660,10 +659,10 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, 
 
 	toCloud.Resources = resources
 
-	fromCloud := apiv1.Container{
+	fromCloud := corev1.Container{
 		Name:            coreInstance.Name + "-sync-from-cloud",
 		Image:           fromCloudImage,
-		ImagePullPolicy: apiv1.PullAlways,
+		ImagePullPolicy: corev1.PullAlways,
 		Env:             env,
 		Resources:       resources,
 	}
@@ -683,13 +682,13 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, 
 			Selector: &metav1.LabelSelector{
 				MatchLabels: labels,
 			},
-			Template: apiv1.PodTemplateSpec{
+			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
 					Labels: labels,
 				},
-				Spec: apiv1.PodSpec{
+				Spec: corev1.PodSpec{
 					ServiceAccountName: serviceAccount,
-					Containers:         []apiv1.Container{fromCloud, toCloud},
+					Containers:         []corev1.Container{fromCloud, toCloud},
 				},
 			},
 		},
@@ -824,7 +823,7 @@ func ExtractGroupVersionResource(obj runtime.Object) (schema.GroupVersionResourc
 }
 
 func (client *Client) WaitReady(ctx context.Context, namespace, name string, verbose bool, waitTimeout time.Duration) error {
-	if err := wait.PollUntilContextTimeout(ctx, 3*time.Second, waitTimeout, true, client.isDeploymentReady(ctx, namespace, name)); err != nil {
+	if err := wait.PollUntilContextTimeout(ctx, 3*time.Second, waitTimeout, true, client.isDeploymentReady(namespace, name)); err != nil {
 		if verbose {
 			get, err := client.AppsV1().Deployments(namespace).Get(ctx, name, metav1.GetOptions{})
 			if err != nil {
@@ -861,7 +860,7 @@ func (client *Client) WaitReady(ctx context.Context, namespace, name string, ver
 	return nil
 }
 
-func (client *Client) isDeploymentReady(ctx context.Context, namespace, name string) wait.ConditionWithContextFunc {
+func (client *Client) isDeploymentReady(namespace, name string) wait.ConditionWithContextFunc {
 	return func(ctx context.Context) (done bool, err error) {
 		get, err := client.AppsV1().Deployments(namespace).Get(ctx, name, metav1.GetOptions{})
 		if err != nil {
@@ -875,7 +874,7 @@ func (client *Client) isDeploymentReady(ctx context.Context, namespace, name str
 
 		var running bool
 		for _, pod := range pods.Items {
-			running = pod.Status.Phase == apiv1.PodRunning
+			running = pod.Status.Phase == corev1.PodRunning
 			if !running {
 				break
 			}
@@ -1031,7 +1030,7 @@ func (client *Client) SearchManagerAcrossAllNamespaces(ctx context.Context) (*ap
 }
 
 // GetNamespace returns the namespace if it exists.
-func (client *Client) GetNamespace(ctx context.Context, name string) (*apiv1.Namespace, error) {
+func (client *Client) GetNamespace(ctx context.Context, name string) (*corev1.Namespace, error) {
 	return client.CoreV1().Namespaces().Get(ctx, name, metav1.GetOptions{})
 }
 
@@ -1065,7 +1064,7 @@ func (client *Client) IsOperatorInstalled(ctx context.Context) (bool, error) {
 	}
 	for _, i := range deploymentList.Items {
 		if i.Name == operatorDeploymentName {
-			operatorIncomplete.Errors = append(operatorIncomplete.Errors, fmt.Errorf("Operator pod: %s/%s", i.Namespace, i.Name))
+			operatorIncomplete.Errors = append(operatorIncomplete.Errors, fmt.Errorf("operator pod: %s/%s", i.Namespace, i.Name))
 		}
 	}
 

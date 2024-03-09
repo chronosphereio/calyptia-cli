@@ -5,12 +5,13 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/calyptia/cli/cmd/coreinstance"
+	"github.com/chronosphereio/calyptia-cli/cmd/coreinstance"
 
 	"github.com/spf13/cobra"
 
 	cloud "github.com/calyptia/api/types"
-	cfg "github.com/calyptia/cli/config"
+
+	cfg "github.com/chronosphereio/calyptia-cli/config"
 )
 
 func NewCmdUpdateEndpoint(config *cfg.Config) *cobra.Command {

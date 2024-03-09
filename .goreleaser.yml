@@ -1,9 +1,8 @@
 upx:
-  -
-    ids: [ calyptia ]
+  - ids: [calyptia]
     enabled: true
-    goos: [ linux, windows ] # skip darwin (macOS 13.x Ventura is not support now)
-    goarch: [ amd64, arm64 ]
+    goos: [linux, windows] # skip darwin (macOS 13.x Ventura is not support now)
+    goarch: [amd64, arm64]
 
 builds:
   - main: .
@@ -12,7 +11,7 @@ builds:
       - CGO_ENABLED=0
     binary: calyptia
     ldflags:
-      - -s -w -X github.com/calyptia/cli/cmd/version.Version={{.Version}}
+      - -s -w -X github.com/chronosphereio/calyptia-cli/cmd/version.Version={{.Version}}
     gcflags:
       - all=-C -l -B
     targets:

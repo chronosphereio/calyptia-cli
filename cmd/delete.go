@@ -3,16 +3,16 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/calyptia/cli/cmd/agent"
-	cnfg "github.com/calyptia/cli/cmd/config"
-	"github.com/calyptia/cli/cmd/coreinstance"
-	"github.com/calyptia/cli/cmd/endpoint"
-	"github.com/calyptia/cli/cmd/environment"
-	"github.com/calyptia/cli/cmd/fleet"
-	"github.com/calyptia/cli/cmd/ingestcheck"
-	"github.com/calyptia/cli/cmd/pipeline"
-	"github.com/calyptia/cli/cmd/tracesession"
-	cfg "github.com/calyptia/cli/config"
+	"github.com/chronosphereio/calyptia-cli/cmd/agent"
+	cnfg "github.com/chronosphereio/calyptia-cli/cmd/config"
+	"github.com/chronosphereio/calyptia-cli/cmd/coreinstance"
+	"github.com/chronosphereio/calyptia-cli/cmd/endpoint"
+	"github.com/chronosphereio/calyptia-cli/cmd/environment"
+	"github.com/chronosphereio/calyptia-cli/cmd/fleet"
+	"github.com/chronosphereio/calyptia-cli/cmd/ingestcheck"
+	"github.com/chronosphereio/calyptia-cli/cmd/pipeline"
+	"github.com/chronosphereio/calyptia-cli/cmd/tracesession"
+	cfg "github.com/chronosphereio/calyptia-cli/config"
 )
 
 func newCmdDelete(config *cfg.Config) *cobra.Command {

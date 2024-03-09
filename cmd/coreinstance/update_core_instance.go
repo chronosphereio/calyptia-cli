@@ -3,7 +3,7 @@ package coreinstance
 import (
 	"github.com/spf13/cobra"
 
-	cfg "github.com/calyptia/cli/config"
+	cfg "github.com/chronosphereio/calyptia-cli/config"
 )
 
 func NewCmdUpdateCoreInstance(config *cfg.Config) *cobra.Command {

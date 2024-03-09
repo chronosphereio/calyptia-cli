@@ -10,16 +10,17 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/calyptia/cli/cmd/coreinstance"
+	"github.com/chronosphereio/calyptia-cli/cmd/coreinstance"
 
 	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/completer"
-	cfg "github.com/calyptia/cli/config"
-	"github.com/calyptia/cli/formatters"
+
+	"github.com/chronosphereio/calyptia-cli/completer"
+	cfg "github.com/chronosphereio/calyptia-cli/config"
+	"github.com/chronosphereio/calyptia-cli/formatters"
 )
 
 func NewCmdCreatePipeline(config *cfg.Config) *cobra.Command {

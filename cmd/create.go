@@ -3,16 +3,16 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 
-	cnfg "github.com/calyptia/cli/cmd/config"
-	"github.com/calyptia/cli/cmd/coreinstance"
-	"github.com/calyptia/cli/cmd/environment"
-	"github.com/calyptia/cli/cmd/fleet"
-	"github.com/calyptia/cli/cmd/ingestcheck"
-	"github.com/calyptia/cli/cmd/invitation"
-	"github.com/calyptia/cli/cmd/pipeline"
-	"github.com/calyptia/cli/cmd/resourceprofile"
-	"github.com/calyptia/cli/cmd/tracesession"
-	cfg "github.com/calyptia/cli/config"
+	cnfg "github.com/chronosphereio/calyptia-cli/cmd/config"
+	"github.com/chronosphereio/calyptia-cli/cmd/coreinstance"
+	"github.com/chronosphereio/calyptia-cli/cmd/environment"
+	"github.com/chronosphereio/calyptia-cli/cmd/fleet"
+	"github.com/chronosphereio/calyptia-cli/cmd/ingestcheck"
+	"github.com/chronosphereio/calyptia-cli/cmd/invitation"
+	"github.com/chronosphereio/calyptia-cli/cmd/pipeline"
+	"github.com/chronosphereio/calyptia-cli/cmd/resourceprofile"
+	"github.com/chronosphereio/calyptia-cli/cmd/tracesession"
+	cfg "github.com/chronosphereio/calyptia-cli/config"
 )
 
 func newCmdCreate(config *cfg.Config) *cobra.Command {

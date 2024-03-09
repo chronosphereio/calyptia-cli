@@ -5,12 +5,14 @@ import (
 	"os"
 	"strings"
 
-	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/completer"
-	cfg "github.com/calyptia/cli/config"
-	"github.com/calyptia/cli/confirm"
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
+
+	"github.com/calyptia/api/types"
+
+	"github.com/chronosphereio/calyptia-cli/completer"
+	cfg "github.com/chronosphereio/calyptia-cli/config"
+	"github.com/chronosphereio/calyptia-cli/confirm"
 )
 
 func NewCmdDeleteCoreInstance(config *cfg.Config) *cobra.Command {

@@ -6,7 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	cfg "github.com/calyptia/cli/config"
+	cfg "github.com/chronosphereio/calyptia-cli/config"
 )
 
 func NewCmdDeletePipelineLog(config *cfg.Config) *cobra.Command {

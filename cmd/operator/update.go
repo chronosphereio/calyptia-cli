@@ -12,14 +12,15 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 
-	"github.com/calyptia/cli/cmd/utils"
+	"github.com/chronosphereio/calyptia-cli/cmd/utils"
+
 	"github.com/calyptia/core-images-index/go-index"
 
 	semver "github.com/hashicorp/go-version"
 	"github.com/spf13/cobra"
 	apiv1 "k8s.io/api/core/v1"
 
-	"github.com/calyptia/cli/k8s"
+	"github.com/chronosphereio/calyptia-cli/k8s"
 )
 
 const (

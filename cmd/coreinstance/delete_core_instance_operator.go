@@ -12,9 +12,9 @@ import (
 	restclient "k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 
-	"github.com/calyptia/cli/completer"
-	cfg "github.com/calyptia/cli/config"
-	"github.com/calyptia/cli/k8s"
+	"github.com/chronosphereio/calyptia-cli/completer"
+	cfg "github.com/chronosphereio/calyptia-cli/config"
+	"github.com/chronosphereio/calyptia-cli/k8s"
 )
 
 func NewCmdDeleteCoreInstanceOperator(config *cfg.Config, testClientSet kubernetes.Interface) *cobra.Command {

@@ -2,7 +2,7 @@
 set -eu
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-CONFIG=$(curl -sSfl https://raw.githubusercontent.com/calyptia/core-product-release/main/component-config.json)
+CONFIG=$(curl -sSfl https://raw.githubusercontent.com/chronosphereio/calyptia-core-product-release/main/component-config.json)
 echo "$CONFIG" | jq .
 
 export NEW_VERSION=${NEW_VERSION:-$(echo "$CONFIG" | jq -r .versions.core_operator)}

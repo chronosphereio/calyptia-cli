@@ -11,10 +11,10 @@ import (
 	"golang.org/x/term"
 	"gopkg.in/yaml.v2"
 
-	"github.com/calyptia/cli/completer"
-	cfg "github.com/calyptia/cli/config"
-	"github.com/calyptia/cli/confirm"
-	"github.com/calyptia/cli/formatters"
+	"github.com/chronosphereio/calyptia-cli/completer"
+	cfg "github.com/chronosphereio/calyptia-cli/config"
+	"github.com/chronosphereio/calyptia-cli/confirm"
+	"github.com/chronosphereio/calyptia-cli/formatters"
 )
 
 func NewCmdDeleteTraceSession(config *cfg.Config) *cobra.Command {

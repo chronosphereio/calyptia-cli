@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	cfg "github.com/calyptia/cli/config"
+	cfg "github.com/chronosphereio/calyptia-cli/config"
 )
 
 func NewCmdCreateCoreInstance(config *cfg.Config) *cobra.Command {

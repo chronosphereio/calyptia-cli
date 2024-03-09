@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	cfg "github.com/calyptia/cli/config"
+	cfg "github.com/chronosphereio/calyptia-cli/config"
 )
 
 func NewCmdDeleteIngestCheck(c *cfg.Config) *cobra.Command {

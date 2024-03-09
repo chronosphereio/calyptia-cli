@@ -6,8 +6,9 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/completer"
-	"github.com/calyptia/cli/config"
+
+	"github.com/chronosphereio/calyptia-cli/completer"
+	"github.com/chronosphereio/calyptia-cli/config"
 )
 
 func NewCmdUpdateMember(config *config.Config) *cobra.Command {

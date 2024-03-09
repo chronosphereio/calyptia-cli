@@ -8,7 +8,7 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/calyptia/cli/cmd/coreinstance"
+	"github.com/chronosphereio/calyptia-cli/cmd/coreinstance"
 
 	"github.com/joho/godotenv"
 	"github.com/pkg/errors"
@@ -16,10 +16,11 @@ import (
 	"gopkg.in/yaml.v2"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/cmd/utils"
-	"github.com/calyptia/cli/completer"
-	cfg "github.com/calyptia/cli/config"
-	"github.com/calyptia/cli/formatters"
+
+	"github.com/chronosphereio/calyptia-cli/cmd/utils"
+	"github.com/chronosphereio/calyptia-cli/completer"
+	cfg "github.com/chronosphereio/calyptia-cli/config"
+	"github.com/chronosphereio/calyptia-cli/formatters"
 )
 
 func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {

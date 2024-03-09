@@ -9,10 +9,11 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/completer"
-	cfg "github.com/calyptia/cli/config"
-	"github.com/calyptia/cli/confirm"
-	"github.com/calyptia/cli/formatters"
+
+	"github.com/chronosphereio/calyptia-cli/completer"
+	cfg "github.com/chronosphereio/calyptia-cli/config"
+	"github.com/chronosphereio/calyptia-cli/confirm"
+	"github.com/chronosphereio/calyptia-cli/formatters"
 )
 
 func NewCmdDeleteCoreInstanceSecret(config *cfg.Config) *cobra.Command {

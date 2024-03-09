@@ -1,8 +1,7 @@
-
 # Calyptia Cloud CLI
 
-[![CI](https://github.com/calyptia/cli/actions/workflows/ci.yml/badge.svg)](https://github.com/calyptia/cloud-cli/actions/workflows/ci.yml)
-[![Codecov](https://codecov.io/gh/calyptia/cli/branch/main/graph/badge.svg?token=TY36W7B87A)](https://codecov.io/gh/calyptia/cli)
+[![CI](https://github.com/chronosphereio/calyptia-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/chronosphereio/calyptia-cli/actions/workflows/ci.yml)
+[![Codecov](https://codecov.io/gh/chronosphereio/calyptia-cli/branch/main/graph/badge.svg?token=TY36W7B87A)](https://codecov.io/gh/chronosphereio/calyptia-cli)
 
 This CLI interacts with the [Calyptia Cloud](https://cloud.calyptia.com) service
 using the [API Client](https://github.com/calyptia/api).
@@ -23,7 +22,7 @@ go build
 ## Install
 
 You can get the latest release artifacts for the major operating systems
-at the [Releases](https://github.com/calyptia/cloud-cli/releases) page.
+at the [Releases](https://github.com/chronosphereio/calyptia-cli/releases) page.
 
 Alternatively, you can use `Brew`:
 
@@ -37,7 +36,7 @@ You can even install latest from `main` branch using `Go`:
 ---
 
 ```bash
-go install github.com/calyptia/cli@latest
+go install github.com/chronosphereio/calyptia-cli@latest
 ```
 
 ---

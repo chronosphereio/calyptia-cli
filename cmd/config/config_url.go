@@ -7,8 +7,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/calyptia/cli/cmd/version"
-	cfg "github.com/calyptia/cli/config"
+	"github.com/chronosphereio/calyptia-cli/cmd/version"
+	cfg "github.com/chronosphereio/calyptia-cli/config"
 )
 
 var ErrURLNotFound = errors.New("url not found")

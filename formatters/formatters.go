@@ -18,7 +18,8 @@ import (
 	"github.com/spf13/pflag"
 
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/helpers"
+
+	"github.com/chronosphereio/calyptia-cli/helpers"
 )
 
 type OutputFormat string

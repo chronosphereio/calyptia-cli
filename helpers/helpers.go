@@ -6,9 +6,11 @@ import (
 
 	"golang.org/x/exp/slices"
 
-	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/slice"
 	fluentbitconfig "github.com/calyptia/go-fluentbit-config/v2"
+
+	"github.com/calyptia/api/types"
+
+	"github.com/chronosphereio/calyptia-cli/slice"
 )
 
 // pluginProps -

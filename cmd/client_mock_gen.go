@@ -31,6 +31,9 @@ var _ Client = &ClientMock{}
 //			ActiveTraceSessionFunc: func(contextMoqParam context.Context, s string) (types.TraceSession, error) {
 //				panic("mock out the ActiveTraceSession method")
 //			},
+//			AddAgentMetricsFunc: func(contextMoqParam context.Context, s string, bytes []byte) error {
+//				panic("mock out the AddAgentMetrics method")
+//			},
 //			AddAgentMetricsV1Func: func(contextMoqParam context.Context, s string, metrics []types.Metric) (types.MetricsOverTimeByPlugin, error) {
 //				panic("mock out the AddAgentMetricsV1 method")
 //			},
@@ -154,6 +157,9 @@ var _ Client = &ClientMock{}
 //			CreateFleetFunc: func(contextMoqParam context.Context, createFleet types.CreateFleet) (types.Created, error) {
 //				panic("mock out the CreateFleet method")
 //			},
+//			CreateFleetFileFunc: func(contextMoqParam context.Context, s string, createFleetFile types.CreateFleetFile) (types.Created, error) {
+//				panic("mock out the CreateFleetFile method")
+//			},
 //			CreateIngestCheckFunc: func(contextMoqParam context.Context, s string, createIngestCheck types.CreateIngestCheck) (types.Created, error) {
 //				panic("mock out the CreateIngestCheck method")
 //			},
@@ -168,6 +174,9 @@ var _ Client = &ClientMock{}
 //			},
 //			CreatePipelineFileFunc: func(contextMoqParam context.Context, s string, createPipelineFile types.CreatePipelineFile) (types.Created, error) {
 //				panic("mock out the CreatePipelineFile method")
+//			},
+//			CreatePipelineLogFunc: func(contextMoqParam context.Context, createPipelineLog types.CreatePipelineLog) (types.Created, error) {
+//				panic("mock out the CreatePipelineLog method")
 //			},
 //			CreatePipelinePortFunc: func(contextMoqParam context.Context, s string, createPipelinePort types.CreatePipelinePort) (types.CreatedPipelinePort, error) {
 //				panic("mock out the CreatePipelinePort method")
@@ -232,8 +241,14 @@ var _ Client = &ClientMock{}
 //			DeleteFleetFunc: func(contextMoqParam context.Context, s string) (types.Deleted, error) {
 //				panic("mock out the DeleteFleet method")
 //			},
+//			DeleteFleetFileFunc: func(contextMoqParam context.Context, s string) error {
+//				panic("mock out the DeleteFleetFile method")
+//			},
 //			DeleteIngestCheckFunc: func(contextMoqParam context.Context, s string) error {
 //				panic("mock out the DeleteIngestCheck method")
+//			},
+//			DeleteMemberFunc: func(contextMoqParam context.Context, s string) (types.Deleted, error) {
+//				panic("mock out the DeleteMember method")
 //			},
 //			DeletePipelineFunc: func(contextMoqParam context.Context, s string) error {
 //				panic("mock out the DeletePipeline method")
@@ -246,6 +261,9 @@ var _ Client = &ClientMock{}
 //			},
 //			DeletePipelineFileFunc: func(contextMoqParam context.Context, s string) error {
 //				panic("mock out the DeletePipelineFile method")
+//			},
+//			DeletePipelineLogFunc: func(contextMoqParam context.Context, s string) (types.Deleted, error) {
+//				panic("mock out the DeletePipelineLog method")
 //			},
 //			DeletePipelinePortFunc: func(contextMoqParam context.Context, s string) error {
 //				panic("mock out the DeletePipelinePort method")
@@ -261,6 +279,9 @@ var _ Client = &ClientMock{}
 //			},
 //			DeleteProcessingRuleTemplateFunc: func(contextMoqParam context.Context, s string) (types.Deleted, error) {
 //				panic("mock out the DeleteProcessingRuleTemplate method")
+//			},
+//			DeleteProjectFunc: func(contextMoqParam context.Context, s string) (types.Deleted, error) {
+//				panic("mock out the DeleteProject method")
 //			},
 //			DeleteResourceProfileFunc: func(contextMoqParam context.Context, s string) error {
 //				panic("mock out the DeleteResourceProfile method")
@@ -280,8 +301,20 @@ var _ Client = &ClientMock{}
 //			FleetConfigFunc: func(contextMoqParam context.Context, s string, fleetConfigParams types.FleetConfigParams) (*fluentbitconfig.Config, error) {
 //				panic("mock out the FleetConfig method")
 //			},
+//			FleetFileFunc: func(contextMoqParam context.Context, s string) (types.FleetFile, error) {
+//				panic("mock out the FleetFile method")
+//			},
+//			FleetFilesFunc: func(contextMoqParam context.Context, s string, fleetFilesParams types.FleetFilesParams) (types.FleetFiles, error) {
+//				panic("mock out the FleetFiles method")
+//			},
+//			FleetStatusFunc: func(contextMoqParam context.Context, fleetStatusParams types.FleetStatusParams) (types.FleetsStatus, error) {
+//				panic("mock out the FleetStatus method")
+//			},
 //			FleetsFunc: func(contextMoqParam context.Context, fleetsParams types.FleetsParams) (types.Fleets, error) {
 //				panic("mock out the Fleets method")
+//			},
+//			FleetsStatusFunc: func(contextMoqParam context.Context, fleetsStatusParams types.FleetsStatusParams) (types.FleetsStatus, error) {
+//				panic("mock out the FleetsStatus method")
 //			},
 //			HealthFunc: func(contextMoqParam context.Context) (types.Health, error) {
 //				panic("mock out the Health method")
@@ -315,6 +348,12 @@ var _ Client = &ClientMock{}
 //			},
 //			PipelineFilesFunc: func(contextMoqParam context.Context, s string, pipelineFilesParams types.PipelineFilesParams) (types.PipelineFiles, error) {
 //				panic("mock out the PipelineFiles method")
+//			},
+//			PipelineLogFunc: func(contextMoqParam context.Context, s string) (types.PipelineLog, error) {
+//				panic("mock out the PipelineLog method")
+//			},
+//			PipelineLogsFunc: func(contextMoqParam context.Context, listPipelineLogs types.ListPipelineLogs) (types.PipelineLogs, error) {
+//				panic("mock out the PipelineLogs method")
 //			},
 //			PipelineMetadataFunc: func(contextMoqParam context.Context, s string, strings ...string) (types.PipelineMetadata, error) {
 //				panic("mock out the PipelineMetadata method")
@@ -457,6 +496,9 @@ var _ Client = &ClientMock{}
 //			UpdateFleetFunc: func(contextMoqParam context.Context, updateFleet types.UpdateFleet) (types.Updated, error) {
 //				panic("mock out the UpdateFleet method")
 //			},
+//			UpdateFleetFileFunc: func(contextMoqParam context.Context, s string, updateFleetFile types.UpdateFleetFile) error {
+//				panic("mock out the UpdateFleetFile method")
+//			},
 //			UpdateIngestCheckFunc: func(contextMoqParam context.Context, s string, updateIngestCheck types.UpdateIngestCheck) error {
 //				panic("mock out the UpdateIngestCheck method")
 //			},
@@ -474,6 +516,9 @@ var _ Client = &ClientMock{}
 //			},
 //			UpdatePipelineFileFunc: func(contextMoqParam context.Context, s string, updatePipelineFile types.UpdatePipelineFile) error {
 //				panic("mock out the UpdatePipelineFile method")
+//			},
+//			UpdatePipelineLogFunc: func(contextMoqParam context.Context, updatePipelineLog types.UpdatePipelineLog) (types.Updated, error) {
+//				panic("mock out the UpdatePipelineLog method")
 //			},
 //			UpdatePipelineMetadataFunc: func(contextMoqParam context.Context, s string, updatePipelineMetadata types.UpdatePipelineMetadata) error {
 //				panic("mock out the UpdatePipelineMetadata method")
@@ -523,6 +568,9 @@ type ClientMock struct {
 
 	// ActiveTraceSessionFunc mocks the ActiveTraceSession method.
 	ActiveTraceSessionFunc func(contextMoqParam context.Context, s string) (types.TraceSession, error)
+
+	// AddAgentMetricsFunc mocks the AddAgentMetrics method.
+	AddAgentMetricsFunc func(contextMoqParam context.Context, s string, bytes []byte) error
 
 	// AddAgentMetricsV1Func mocks the AddAgentMetricsV1 method.
 	AddAgentMetricsV1Func func(contextMoqParam context.Context, s string, metrics []types.Metric) (types.MetricsOverTimeByPlugin, error)
@@ -647,6 +695,9 @@ type ClientMock struct {
 	// CreateFleetFunc mocks the CreateFleet method.
 	CreateFleetFunc func(contextMoqParam context.Context, createFleet types.CreateFleet) (types.Created, error)
 
+	// CreateFleetFileFunc mocks the CreateFleetFile method.
+	CreateFleetFileFunc func(contextMoqParam context.Context, s string, createFleetFile types.CreateFleetFile) (types.Created, error)
+
 	// CreateIngestCheckFunc mocks the CreateIngestCheck method.
 	CreateIngestCheckFunc func(contextMoqParam context.Context, s string, createIngestCheck types.CreateIngestCheck) (types.Created, error)
 
@@ -661,6 +712,9 @@ type ClientMock struct {
 
 	// CreatePipelineFileFunc mocks the CreatePipelineFile method.
 	CreatePipelineFileFunc func(contextMoqParam context.Context, s string, createPipelineFile types.CreatePipelineFile) (types.Created, error)
+
+	// CreatePipelineLogFunc mocks the CreatePipelineLog method.
+	CreatePipelineLogFunc func(contextMoqParam context.Context, createPipelineLog types.CreatePipelineLog) (types.Created, error)
 
 	// CreatePipelinePortFunc mocks the CreatePipelinePort method.
 	CreatePipelinePortFunc func(contextMoqParam context.Context, s string, createPipelinePort types.CreatePipelinePort) (types.CreatedPipelinePort, error)
@@ -725,8 +779,14 @@ type ClientMock struct {
 	// DeleteFleetFunc mocks the DeleteFleet method.
 	DeleteFleetFunc func(contextMoqParam context.Context, s string) (types.Deleted, error)
 
+	// DeleteFleetFileFunc mocks the DeleteFleetFile method.
+	DeleteFleetFileFunc func(contextMoqParam context.Context, s string) error
+
 	// DeleteIngestCheckFunc mocks the DeleteIngestCheck method.
 	DeleteIngestCheckFunc func(contextMoqParam context.Context, s string) error
+
+	// DeleteMemberFunc mocks the DeleteMember method.
+	DeleteMemberFunc func(contextMoqParam context.Context, s string) (types.Deleted, error)
 
 	// DeletePipelineFunc mocks the DeletePipeline method.
 	DeletePipelineFunc func(contextMoqParam context.Context, s string) error
@@ -739,6 +799,9 @@ type ClientMock struct {
 
 	// DeletePipelineFileFunc mocks the DeletePipelineFile method.
 	DeletePipelineFileFunc func(contextMoqParam context.Context, s string) error
+
+	// DeletePipelineLogFunc mocks the DeletePipelineLog method.
+	DeletePipelineLogFunc func(contextMoqParam context.Context, s string) (types.Deleted, error)
 
 	// DeletePipelinePortFunc mocks the DeletePipelinePort method.
 	DeletePipelinePortFunc func(contextMoqParam context.Context, s string) error
@@ -754,6 +817,9 @@ type ClientMock struct {
 
 	// DeleteProcessingRuleTemplateFunc mocks the DeleteProcessingRuleTemplate method.
 	DeleteProcessingRuleTemplateFunc func(contextMoqParam context.Context, s string) (types.Deleted, error)
+
+	// DeleteProjectFunc mocks the DeleteProject method.
+	DeleteProjectFunc func(contextMoqParam context.Context, s string) (types.Deleted, error)
 
 	// DeleteResourceProfileFunc mocks the DeleteResourceProfile method.
 	DeleteResourceProfileFunc func(contextMoqParam context.Context, s string) error
@@ -773,8 +839,20 @@ type ClientMock struct {
 	// FleetConfigFunc mocks the FleetConfig method.
 	FleetConfigFunc func(contextMoqParam context.Context, s string, fleetConfigParams types.FleetConfigParams) (*fluentbitconfig.Config, error)
 
+	// FleetFileFunc mocks the FleetFile method.
+	FleetFileFunc func(contextMoqParam context.Context, s string) (types.FleetFile, error)
+
+	// FleetFilesFunc mocks the FleetFiles method.
+	FleetFilesFunc func(contextMoqParam context.Context, s string, fleetFilesParams types.FleetFilesParams) (types.FleetFiles, error)
+
+	// FleetStatusFunc mocks the FleetStatus method.
+	FleetStatusFunc func(contextMoqParam context.Context, fleetStatusParams types.FleetStatusParams) (types.FleetsStatus, error)
+
 	// FleetsFunc mocks the Fleets method.
 	FleetsFunc func(contextMoqParam context.Context, fleetsParams types.FleetsParams) (types.Fleets, error)
+
+	// FleetsStatusFunc mocks the FleetsStatus method.
+	FleetsStatusFunc func(contextMoqParam context.Context, fleetsStatusParams types.FleetsStatusParams) (types.FleetsStatus, error)
 
 	// HealthFunc mocks the Health method.
 	HealthFunc func(contextMoqParam context.Context) (types.Health, error)
@@ -808,6 +886,12 @@ type ClientMock struct {
 
 	// PipelineFilesFunc mocks the PipelineFiles method.
 	PipelineFilesFunc func(contextMoqParam context.Context, s string, pipelineFilesParams types.PipelineFilesParams) (types.PipelineFiles, error)
+
+	// PipelineLogFunc mocks the PipelineLog method.
+	PipelineLogFunc func(contextMoqParam context.Context, s string) (types.PipelineLog, error)
+
+	// PipelineLogsFunc mocks the PipelineLogs method.
+	PipelineLogsFunc func(contextMoqParam context.Context, listPipelineLogs types.ListPipelineLogs) (types.PipelineLogs, error)
 
 	// PipelineMetadataFunc mocks the PipelineMetadata method.
 	PipelineMetadataFunc func(contextMoqParam context.Context, s string, strings ...string) (types.PipelineMetadata, error)
@@ -950,6 +1034,9 @@ type ClientMock struct {
 	// UpdateFleetFunc mocks the UpdateFleet method.
 	UpdateFleetFunc func(contextMoqParam context.Context, updateFleet types.UpdateFleet) (types.Updated, error)
 
+	// UpdateFleetFileFunc mocks the UpdateFleetFile method.
+	UpdateFleetFileFunc func(contextMoqParam context.Context, s string, updateFleetFile types.UpdateFleetFile) error
+
 	// UpdateIngestCheckFunc mocks the UpdateIngestCheck method.
 	UpdateIngestCheckFunc func(contextMoqParam context.Context, s string, updateIngestCheck types.UpdateIngestCheck) error
 
@@ -967,6 +1054,9 @@ type ClientMock struct {
 
 	// UpdatePipelineFileFunc mocks the UpdatePipelineFile method.
 	UpdatePipelineFileFunc func(contextMoqParam context.Context, s string, updatePipelineFile types.UpdatePipelineFile) error
+
+	// UpdatePipelineLogFunc mocks the UpdatePipelineLog method.
+	UpdatePipelineLogFunc func(contextMoqParam context.Context, updatePipelineLog types.UpdatePipelineLog) (types.Updated, error)
 
 	// UpdatePipelineMetadataFunc mocks the UpdatePipelineMetadata method.
 	UpdatePipelineMetadataFunc func(contextMoqParam context.Context, s string, updatePipelineMetadata types.UpdatePipelineMetadata) error
@@ -1023,6 +1113,15 @@ type ClientMock struct {
 			ContextMoqParam context.Context
 			// S is the s argument value.
 			S string
+		}
+		// AddAgentMetrics holds details about calls to the AddAgentMetrics method.
+		AddAgentMetrics []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// S is the s argument value.
+			S string
+			// Bytes is the bytes argument value.
+			Bytes []byte
 		}
 		// AddAgentMetricsV1 holds details about calls to the AddAgentMetricsV1 method.
 		AddAgentMetricsV1 []struct {
@@ -1353,6 +1452,15 @@ type ClientMock struct {
 			// CreateFleet is the createFleet argument value.
 			CreateFleet types.CreateFleet
 		}
+		// CreateFleetFile holds details about calls to the CreateFleetFile method.
+		CreateFleetFile []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// S is the s argument value.
+			S string
+			// CreateFleetFile is the createFleetFile argument value.
+			CreateFleetFile types.CreateFleetFile
+		}
 		// CreateIngestCheck holds details about calls to the CreateIngestCheck method.
 		CreateIngestCheck []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
@@ -1397,6 +1505,13 @@ type ClientMock struct {
 			S string
 			// CreatePipelineFile is the createPipelineFile argument value.
 			CreatePipelineFile types.CreatePipelineFile
+		}
+		// CreatePipelineLog holds details about calls to the CreatePipelineLog method.
+		CreatePipelineLog []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// CreatePipelineLog is the createPipelineLog argument value.
+			CreatePipelineLog types.CreatePipelineLog
 		}
 		// CreatePipelinePort holds details about calls to the CreatePipelinePort method.
 		CreatePipelinePort []struct {
@@ -1561,8 +1676,22 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 		}
+		// DeleteFleetFile holds details about calls to the DeleteFleetFile method.
+		DeleteFleetFile []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// S is the s argument value.
+			S string
+		}
 		// DeleteIngestCheck holds details about calls to the DeleteIngestCheck method.
 		DeleteIngestCheck []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// S is the s argument value.
+			S string
+		}
+		// DeleteMember holds details about calls to the DeleteMember method.
+		DeleteMember []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// S is the s argument value.
@@ -1593,6 +1722,13 @@ type ClientMock struct {
 		}
 		// DeletePipelineFile holds details about calls to the DeletePipelineFile method.
 		DeletePipelineFile []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// S is the s argument value.
+			S string
+		}
+		// DeletePipelineLog holds details about calls to the DeletePipelineLog method.
+		DeletePipelineLog []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// S is the s argument value.
@@ -1630,6 +1766,13 @@ type ClientMock struct {
 		}
 		// DeleteProcessingRuleTemplate holds details about calls to the DeleteProcessingRuleTemplate method.
 		DeleteProcessingRuleTemplate []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// S is the s argument value.
+			S string
+		}
+		// DeleteProject holds details about calls to the DeleteProject method.
+		DeleteProject []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// S is the s argument value.
@@ -1681,12 +1824,42 @@ type ClientMock struct {
 			// FleetConfigParams is the fleetConfigParams argument value.
 			FleetConfigParams types.FleetConfigParams
 		}
+		// FleetFile holds details about calls to the FleetFile method.
+		FleetFile []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// S is the s argument value.
+			S string
+		}
+		// FleetFiles holds details about calls to the FleetFiles method.
+		FleetFiles []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// S is the s argument value.
+			S string
+			// FleetFilesParams is the fleetFilesParams argument value.
+			FleetFilesParams types.FleetFilesParams
+		}
+		// FleetStatus holds details about calls to the FleetStatus method.
+		FleetStatus []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// FleetStatusParams is the fleetStatusParams argument value.
+			FleetStatusParams types.FleetStatusParams
+		}
 		// Fleets holds details about calls to the Fleets method.
 		Fleets []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// FleetsParams is the fleetsParams argument value.
 			FleetsParams types.FleetsParams
+		}
+		// FleetsStatus holds details about calls to the FleetsStatus method.
+		FleetsStatus []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// FleetsStatusParams is the fleetsStatusParams argument value.
+			FleetsStatusParams types.FleetsStatusParams
 		}
 		// Health holds details about calls to the Health method.
 		Health []struct {
@@ -1776,6 +1949,20 @@ type ClientMock struct {
 			S string
 			// PipelineFilesParams is the pipelineFilesParams argument value.
 			PipelineFilesParams types.PipelineFilesParams
+		}
+		// PipelineLog holds details about calls to the PipelineLog method.
+		PipelineLog []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// S is the s argument value.
+			S string
+		}
+		// PipelineLogs holds details about calls to the PipelineLogs method.
+		PipelineLogs []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// ListPipelineLogs is the listPipelineLogs argument value.
+			ListPipelineLogs types.ListPipelineLogs
 		}
 		// PipelineMetadata holds details about calls to the PipelineMetadata method.
 		PipelineMetadata []struct {
@@ -2140,6 +2327,15 @@ type ClientMock struct {
 			// UpdateFleet is the updateFleet argument value.
 			UpdateFleet types.UpdateFleet
 		}
+		// UpdateFleetFile holds details about calls to the UpdateFleetFile method.
+		UpdateFleetFile []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// S is the s argument value.
+			S string
+			// UpdateFleetFile is the updateFleetFile argument value.
+			UpdateFleetFile types.UpdateFleetFile
+		}
 		// UpdateIngestCheck holds details about calls to the UpdateIngestCheck method.
 		UpdateIngestCheck []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
@@ -2191,6 +2387,13 @@ type ClientMock struct {
 			S string
 			// UpdatePipelineFile is the updatePipelineFile argument value.
 			UpdatePipelineFile types.UpdatePipelineFile
+		}
+		// UpdatePipelineLog holds details about calls to the UpdatePipelineLog method.
+		UpdatePipelineLog []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// UpdatePipelineLog is the updatePipelineLog argument value.
+			UpdatePipelineLog types.UpdatePipelineLog
 		}
 		// UpdatePipelineMetadata holds details about calls to the UpdatePipelineMetadata method.
 		UpdatePipelineMetadata []struct {
@@ -2287,6 +2490,7 @@ type ClientMock struct {
 	lockAWSCustomerRedirect                        sync.RWMutex
 	lockAcceptInvitation                           sync.RWMutex
 	lockActiveTraceSession                         sync.RWMutex
+	lockAddAgentMetrics                            sync.RWMutex
 	lockAddAgentMetricsV1                          sync.RWMutex
 	lockAgent                                      sync.RWMutex
 	lockAgentConfigHistory                         sync.RWMutex
@@ -2328,11 +2532,13 @@ type ClientMock struct {
 	lockCreateCoreInstanceSecret                   sync.RWMutex
 	lockCreateEnvironment                          sync.RWMutex
 	lockCreateFleet                                sync.RWMutex
+	lockCreateFleetFile                            sync.RWMutex
 	lockCreateIngestCheck                          sync.RWMutex
 	lockCreateInvitation                           sync.RWMutex
 	lockCreatePipeline                             sync.RWMutex
 	lockCreatePipelineCheck                        sync.RWMutex
 	lockCreatePipelineFile                         sync.RWMutex
+	lockCreatePipelineLog                          sync.RWMutex
 	lockCreatePipelinePort                         sync.RWMutex
 	lockCreatePipelineSecret                       sync.RWMutex
 	lockCreateProcessingRule                       sync.RWMutex
@@ -2354,23 +2560,31 @@ type ClientMock struct {
 	lockDeleteCoreInstances                        sync.RWMutex
 	lockDeleteEnvironment                          sync.RWMutex
 	lockDeleteFleet                                sync.RWMutex
+	lockDeleteFleetFile                            sync.RWMutex
 	lockDeleteIngestCheck                          sync.RWMutex
+	lockDeleteMember                               sync.RWMutex
 	lockDeletePipeline                             sync.RWMutex
 	lockDeletePipelineCheck                        sync.RWMutex
 	lockDeletePipelineClusterObjects               sync.RWMutex
 	lockDeletePipelineFile                         sync.RWMutex
+	lockDeletePipelineLog                          sync.RWMutex
 	lockDeletePipelinePort                         sync.RWMutex
 	lockDeletePipelineSecret                       sync.RWMutex
 	lockDeletePipelines                            sync.RWMutex
 	lockDeleteProcessingRule                       sync.RWMutex
 	lockDeleteProcessingRuleTemplate               sync.RWMutex
+	lockDeleteProject                              sync.RWMutex
 	lockDeleteResourceProfile                      sync.RWMutex
 	lockDeleteToken                                sync.RWMutex
 	lockDismissAgentError                          sync.RWMutex
 	lockEnvironments                               sync.RWMutex
 	lockFleet                                      sync.RWMutex
 	lockFleetConfig                                sync.RWMutex
+	lockFleetFile                                  sync.RWMutex
+	lockFleetFiles                                 sync.RWMutex
+	lockFleetStatus                                sync.RWMutex
 	lockFleets                                     sync.RWMutex
+	lockFleetsStatus                               sync.RWMutex
 	lockHealth                                     sync.RWMutex
 	lockIngestCheck                                sync.RWMutex
 	lockIngestChecks                               sync.RWMutex
@@ -2382,6 +2596,8 @@ type ClientMock struct {
 	lockPipelineConfigHistory                      sync.RWMutex
 	lockPipelineFile                               sync.RWMutex
 	lockPipelineFiles                              sync.RWMutex
+	lockPipelineLog                                sync.RWMutex
+	lockPipelineLogs                               sync.RWMutex
 	lockPipelineMetadata                           sync.RWMutex
 	lockPipelineMetrics                            sync.RWMutex
 	lockPipelineMetricsByPlugin                    sync.RWMutex
@@ -2429,12 +2645,14 @@ type ClientMock struct {
 	lockUpdateCoreInstanceSecret                   sync.RWMutex
 	lockUpdateEnvironment                          sync.RWMutex
 	lockUpdateFleet                                sync.RWMutex
+	lockUpdateFleetFile                            sync.RWMutex
 	lockUpdateIngestCheck                          sync.RWMutex
 	lockUpdateMember                               sync.RWMutex
 	lockUpdatePipeline                             sync.RWMutex
 	lockUpdatePipelineCheck                        sync.RWMutex
 	lockUpdatePipelineClusterObjects               sync.RWMutex
 	lockUpdatePipelineFile                         sync.RWMutex
+	lockUpdatePipelineLog                          sync.RWMutex
 	lockUpdatePipelineMetadata                     sync.RWMutex
 	lockUpdatePipelinePort                         sync.RWMutex
 	lockUpdatePipelineSecret                       sync.RWMutex
@@ -2501,7 +2719,9 @@ func (mock *ClientMock) AcceptInvitation(contextMoqParam context.Context, accept
 	mock.calls.AcceptInvitation = append(mock.calls.AcceptInvitation, callInfo)
 	mock.lockAcceptInvitation.Unlock()
 	if mock.AcceptInvitationFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.AcceptInvitationFunc(contextMoqParam, acceptInvitation)
@@ -2562,6 +2782,49 @@ func (mock *ClientMock) ActiveTraceSessionCalls() []struct {
 	mock.lockActiveTraceSession.RLock()
 	calls = mock.calls.ActiveTraceSession
 	mock.lockActiveTraceSession.RUnlock()
+	return calls
+}
+
+// AddAgentMetrics calls AddAgentMetricsFunc.
+func (mock *ClientMock) AddAgentMetrics(contextMoqParam context.Context, s string, bytes []byte) error {
+	callInfo := struct {
+		ContextMoqParam context.Context
+		S               string
+		Bytes           []byte
+	}{
+		ContextMoqParam: contextMoqParam,
+		S:               s,
+		Bytes:           bytes,
+	}
+	mock.lockAddAgentMetrics.Lock()
+	mock.calls.AddAgentMetrics = append(mock.calls.AddAgentMetrics, callInfo)
+	mock.lockAddAgentMetrics.Unlock()
+	if mock.AddAgentMetricsFunc == nil {
+		var (
+			errOut error
+		)
+		return errOut
+	}
+	return mock.AddAgentMetricsFunc(contextMoqParam, s, bytes)
+}
+
+// AddAgentMetricsCalls gets all the calls that were made to AddAgentMetrics.
+// Check the length with:
+//
+//	len(mockedClient.AddAgentMetricsCalls())
+func (mock *ClientMock) AddAgentMetricsCalls() []struct {
+	ContextMoqParam context.Context
+	S               string
+	Bytes           []byte
+} {
+	var calls []struct {
+		ContextMoqParam context.Context
+		S               string
+		Bytes           []byte
+	}
+	mock.lockAddAgentMetrics.RLock()
+	calls = mock.calls.AddAgentMetrics
+	mock.lockAddAgentMetrics.RUnlock()
 	return calls
 }
 
@@ -3846,7 +4109,9 @@ func (mock *ClientMock) CreateAWSContractFromToken(contextMoqParam context.Conte
 	mock.calls.CreateAWSContractFromToken = append(mock.calls.CreateAWSContractFromToken, callInfo)
 	mock.lockCreateAWSContractFromToken.Unlock()
 	if mock.CreateAWSContractFromTokenFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.CreateAWSContractFromTokenFunc(contextMoqParam, createAWSContractFromToken)
@@ -4286,6 +4551,50 @@ func (mock *ClientMock) CreateFleetCalls() []struct {
 	return calls
 }
 
+// CreateFleetFile calls CreateFleetFileFunc.
+func (mock *ClientMock) CreateFleetFile(contextMoqParam context.Context, s string, createFleetFile types.CreateFleetFile) (types.Created, error) {
+	callInfo := struct {
+		ContextMoqParam context.Context
+		S               string
+		CreateFleetFile types.CreateFleetFile
+	}{
+		ContextMoqParam: contextMoqParam,
+		S:               s,
+		CreateFleetFile: createFleetFile,
+	}
+	mock.lockCreateFleetFile.Lock()
+	mock.calls.CreateFleetFile = append(mock.calls.CreateFleetFile, callInfo)
+	mock.lockCreateFleetFile.Unlock()
+	if mock.CreateFleetFileFunc == nil {
+		var (
+			createdOut types.Created
+			errOut     error
+		)
+		return createdOut, errOut
+	}
+	return mock.CreateFleetFileFunc(contextMoqParam, s, createFleetFile)
+}
+
+// CreateFleetFileCalls gets all the calls that were made to CreateFleetFile.
+// Check the length with:
+//
+//	len(mockedClient.CreateFleetFileCalls())
+func (mock *ClientMock) CreateFleetFileCalls() []struct {
+	ContextMoqParam context.Context
+	S               string
+	CreateFleetFile types.CreateFleetFile
+} {
+	var calls []struct {
+		ContextMoqParam context.Context
+		S               string
+		CreateFleetFile types.CreateFleetFile
+	}
+	mock.lockCreateFleetFile.RLock()
+	calls = mock.calls.CreateFleetFile
+	mock.lockCreateFleetFile.RUnlock()
+	return calls
+}
+
 // CreateIngestCheck calls CreateIngestCheckFunc.
 func (mock *ClientMock) CreateIngestCheck(contextMoqParam context.Context, s string, createIngestCheck types.CreateIngestCheck) (types.Created, error) {
 	callInfo := struct {
@@ -4345,7 +4654,9 @@ func (mock *ClientMock) CreateInvitation(contextMoqParam context.Context, s stri
 	mock.calls.CreateInvitation = append(mock.calls.CreateInvitation, callInfo)
 	mock.lockCreateInvitation.Unlock()
 	if mock.CreateInvitationFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.CreateInvitationFunc(contextMoqParam, s, createInvitation)
@@ -4500,6 +4811,46 @@ func (mock *ClientMock) CreatePipelineFileCalls() []struct {
 	mock.lockCreatePipelineFile.RLock()
 	calls = mock.calls.CreatePipelineFile
 	mock.lockCreatePipelineFile.RUnlock()
+	return calls
+}
+
+// CreatePipelineLog calls CreatePipelineLogFunc.
+func (mock *ClientMock) CreatePipelineLog(contextMoqParam context.Context, createPipelineLog types.CreatePipelineLog) (types.Created, error) {
+	callInfo := struct {
+		ContextMoqParam   context.Context
+		CreatePipelineLog types.CreatePipelineLog
+	}{
+		ContextMoqParam:   contextMoqParam,
+		CreatePipelineLog: createPipelineLog,
+	}
+	mock.lockCreatePipelineLog.Lock()
+	mock.calls.CreatePipelineLog = append(mock.calls.CreatePipelineLog, callInfo)
+	mock.lockCreatePipelineLog.Unlock()
+	if mock.CreatePipelineLogFunc == nil {
+		var (
+			createdOut types.Created
+			errOut     error
+		)
+		return createdOut, errOut
+	}
+	return mock.CreatePipelineLogFunc(contextMoqParam, createPipelineLog)
+}
+
+// CreatePipelineLogCalls gets all the calls that were made to CreatePipelineLog.
+// Check the length with:
+//
+//	len(mockedClient.CreatePipelineLogCalls())
+func (mock *ClientMock) CreatePipelineLogCalls() []struct {
+	ContextMoqParam   context.Context
+	CreatePipelineLog types.CreatePipelineLog
+} {
+	var calls []struct {
+		ContextMoqParam   context.Context
+		CreatePipelineLog types.CreatePipelineLog
+	}
+	mock.lockCreatePipelineLog.RLock()
+	calls = mock.calls.CreatePipelineLog
+	mock.lockCreatePipelineLog.RUnlock()
 	return calls
 }
 
@@ -4900,7 +5251,9 @@ func (mock *ClientMock) DeleteAgent(contextMoqParam context.Context, s string) e
 	mock.calls.DeleteAgent = append(mock.calls.DeleteAgent, callInfo)
 	mock.lockDeleteAgent.Unlock()
 	if mock.DeleteAgentFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.DeleteAgentFunc(contextMoqParam, s)
@@ -4939,7 +5292,9 @@ func (mock *ClientMock) DeleteAgents(contextMoqParam context.Context, s string, 
 	mock.calls.DeleteAgents = append(mock.calls.DeleteAgents, callInfo)
 	mock.lockDeleteAgents.Unlock()
 	if mock.DeleteAgentsFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.DeleteAgentsFunc(contextMoqParam, s, strings...)
@@ -4978,7 +5333,9 @@ func (mock *ClientMock) DeleteClusterObject(contextMoqParam context.Context, s s
 	mock.calls.DeleteClusterObject = append(mock.calls.DeleteClusterObject, callInfo)
 	mock.lockDeleteClusterObject.Unlock()
 	if mock.DeleteClusterObjectFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.DeleteClusterObjectFunc(contextMoqParam, s)
@@ -5015,7 +5372,9 @@ func (mock *ClientMock) DeleteClusterObjectRegex(contextMoqParam context.Context
 	mock.calls.DeleteClusterObjectRegex = append(mock.calls.DeleteClusterObjectRegex, callInfo)
 	mock.lockDeleteClusterObjectRegex.Unlock()
 	if mock.DeleteClusterObjectRegexFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.DeleteClusterObjectRegexFunc(contextMoqParam, s)
@@ -5052,7 +5411,9 @@ func (mock *ClientMock) DeleteConfigSection(contextMoqParam context.Context, s s
 	mock.calls.DeleteConfigSection = append(mock.calls.DeleteConfigSection, callInfo)
 	mock.lockDeleteConfigSection.Unlock()
 	if mock.DeleteConfigSectionFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.DeleteConfigSectionFunc(contextMoqParam, s)
@@ -5089,7 +5450,9 @@ func (mock *ClientMock) DeleteCoreInstance(contextMoqParam context.Context, s st
 	mock.calls.DeleteCoreInstance = append(mock.calls.DeleteCoreInstance, callInfo)
 	mock.lockDeleteCoreInstance.Unlock()
 	if mock.DeleteCoreInstanceFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.DeleteCoreInstanceFunc(contextMoqParam, s)
@@ -5126,7 +5489,9 @@ func (mock *ClientMock) DeleteCoreInstanceCheck(contextMoqParam context.Context,
 	mock.calls.DeleteCoreInstanceCheck = append(mock.calls.DeleteCoreInstanceCheck, callInfo)
 	mock.lockDeleteCoreInstanceCheck.Unlock()
 	if mock.DeleteCoreInstanceCheckFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.DeleteCoreInstanceCheckFunc(contextMoqParam, s)
@@ -5245,7 +5610,9 @@ func (mock *ClientMock) DeleteCoreInstances(contextMoqParam context.Context, s s
 	mock.calls.DeleteCoreInstances = append(mock.calls.DeleteCoreInstances, callInfo)
 	mock.lockDeleteCoreInstances.Unlock()
 	if mock.DeleteCoreInstancesFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.DeleteCoreInstancesFunc(contextMoqParam, s, strings...)
@@ -5284,7 +5651,9 @@ func (mock *ClientMock) DeleteEnvironment(contextMoqParam context.Context, s str
 	mock.calls.DeleteEnvironment = append(mock.calls.DeleteEnvironment, callInfo)
 	mock.lockDeleteEnvironment.Unlock()
 	if mock.DeleteEnvironmentFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.DeleteEnvironmentFunc(contextMoqParam, s)
@@ -5348,6 +5717,45 @@ func (mock *ClientMock) DeleteFleetCalls() []struct {
 	return calls
 }
 
+// DeleteFleetFile calls DeleteFleetFileFunc.
+func (mock *ClientMock) DeleteFleetFile(contextMoqParam context.Context, s string) error {
+	callInfo := struct {
+		ContextMoqParam context.Context
+		S               string
+	}{
+		ContextMoqParam: contextMoqParam,
+		S:               s,
+	}
+	mock.lockDeleteFleetFile.Lock()
+	mock.calls.DeleteFleetFile = append(mock.calls.DeleteFleetFile, callInfo)
+	mock.lockDeleteFleetFile.Unlock()
+	if mock.DeleteFleetFileFunc == nil {
+		var (
+			errOut error
+		)
+		return errOut
+	}
+	return mock.DeleteFleetFileFunc(contextMoqParam, s)
+}
+
+// DeleteFleetFileCalls gets all the calls that were made to DeleteFleetFile.
+// Check the length with:
+//
+//	len(mockedClient.DeleteFleetFileCalls())
+func (mock *ClientMock) DeleteFleetFileCalls() []struct {
+	ContextMoqParam context.Context
+	S               string
+} {
+	var calls []struct {
+		ContextMoqParam context.Context
+		S               string
+	}
+	mock.lockDeleteFleetFile.RLock()
+	calls = mock.calls.DeleteFleetFile
+	mock.lockDeleteFleetFile.RUnlock()
+	return calls
+}
+
 // DeleteIngestCheck calls DeleteIngestCheckFunc.
 func (mock *ClientMock) DeleteIngestCheck(contextMoqParam context.Context, s string) error {
 	callInfo := struct {
@@ -5361,7 +5769,9 @@ func (mock *ClientMock) DeleteIngestCheck(contextMoqParam context.Context, s str
 	mock.calls.DeleteIngestCheck = append(mock.calls.DeleteIngestCheck, callInfo)
 	mock.lockDeleteIngestCheck.Unlock()
 	if mock.DeleteIngestCheckFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.DeleteIngestCheckFunc(contextMoqParam, s)
@@ -5385,6 +5795,46 @@ func (mock *ClientMock) DeleteIngestCheckCalls() []struct {
 	return calls
 }
 
+// DeleteMember calls DeleteMemberFunc.
+func (mock *ClientMock) DeleteMember(contextMoqParam context.Context, s string) (types.Deleted, error) {
+	callInfo := struct {
+		ContextMoqParam context.Context
+		S               string
+	}{
+		ContextMoqParam: contextMoqParam,
+		S:               s,
+	}
+	mock.lockDeleteMember.Lock()
+	mock.calls.DeleteMember = append(mock.calls.DeleteMember, callInfo)
+	mock.lockDeleteMember.Unlock()
+	if mock.DeleteMemberFunc == nil {
+		var (
+			deletedOut types.Deleted
+			errOut     error
+		)
+		return deletedOut, errOut
+	}
+	return mock.DeleteMemberFunc(contextMoqParam, s)
+}
+
+// DeleteMemberCalls gets all the calls that were made to DeleteMember.
+// Check the length with:
+//
+//	len(mockedClient.DeleteMemberCalls())
+func (mock *ClientMock) DeleteMemberCalls() []struct {
+	ContextMoqParam context.Context
+	S               string
+} {
+	var calls []struct {
+		ContextMoqParam context.Context
+		S               string
+	}
+	mock.lockDeleteMember.RLock()
+	calls = mock.calls.DeleteMember
+	mock.lockDeleteMember.RUnlock()
+	return calls
+}
+
 // DeletePipeline calls DeletePipelineFunc.
 func (mock *ClientMock) DeletePipeline(contextMoqParam context.Context, s string) error {
 	callInfo := struct {
@@ -5398,7 +5848,9 @@ func (mock *ClientMock) DeletePipeline(contextMoqParam context.Context, s string
 	mock.calls.DeletePipeline = append(mock.calls.DeletePipeline, callInfo)
 	mock.lockDeletePipeline.Unlock()
 	if mock.DeletePipelineFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.DeletePipelineFunc(contextMoqParam, s)
@@ -5435,7 +5887,9 @@ func (mock *ClientMock) DeletePipelineCheck(contextMoqParam context.Context, s s
 	mock.calls.DeletePipelineCheck = append(mock.calls.DeletePipelineCheck, callInfo)
 	mock.lockDeletePipelineCheck.Unlock()
 	if mock.DeletePipelineCheckFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.DeletePipelineCheckFunc(contextMoqParam, s)
@@ -5474,7 +5928,9 @@ func (mock *ClientMock) DeletePipelineClusterObjects(contextMoqParam context.Con
 	mock.calls.DeletePipelineClusterObjects = append(mock.calls.DeletePipelineClusterObjects, callInfo)
 	mock.lockDeletePipelineClusterObjects.Unlock()
 	if mock.DeletePipelineClusterObjectsFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.DeletePipelineClusterObjectsFunc(contextMoqParam, s, strings...)
@@ -5513,7 +5969,9 @@ func (mock *ClientMock) DeletePipelineFile(contextMoqParam context.Context, s st
 	mock.calls.DeletePipelineFile = append(mock.calls.DeletePipelineFile, callInfo)
 	mock.lockDeletePipelineFile.Unlock()
 	if mock.DeletePipelineFileFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.DeletePipelineFileFunc(contextMoqParam, s)
@@ -5537,6 +5995,46 @@ func (mock *ClientMock) DeletePipelineFileCalls() []struct {
 	return calls
 }
 
+// DeletePipelineLog calls DeletePipelineLogFunc.
+func (mock *ClientMock) DeletePipelineLog(contextMoqParam context.Context, s string) (types.Deleted, error) {
+	callInfo := struct {
+		ContextMoqParam context.Context
+		S               string
+	}{
+		ContextMoqParam: contextMoqParam,
+		S:               s,
+	}
+	mock.lockDeletePipelineLog.Lock()
+	mock.calls.DeletePipelineLog = append(mock.calls.DeletePipelineLog, callInfo)
+	mock.lockDeletePipelineLog.Unlock()
+	if mock.DeletePipelineLogFunc == nil {
+		var (
+			deletedOut types.Deleted
+			errOut     error
+		)
+		return deletedOut, errOut
+	}
+	return mock.DeletePipelineLogFunc(contextMoqParam, s)
+}
+
+// DeletePipelineLogCalls gets all the calls that were made to DeletePipelineLog.
+// Check the length with:
+//
+//	len(mockedClient.DeletePipelineLogCalls())
+func (mock *ClientMock) DeletePipelineLogCalls() []struct {
+	ContextMoqParam context.Context
+	S               string
+} {
+	var calls []struct {
+		ContextMoqParam context.Context
+		S               string
+	}
+	mock.lockDeletePipelineLog.RLock()
+	calls = mock.calls.DeletePipelineLog
+	mock.lockDeletePipelineLog.RUnlock()
+	return calls
+}
+
 // DeletePipelinePort calls DeletePipelinePortFunc.
 func (mock *ClientMock) DeletePipelinePort(contextMoqParam context.Context, s string) error {
 	callInfo := struct {
@@ -5550,7 +6048,9 @@ func (mock *ClientMock) DeletePipelinePort(contextMoqParam context.Context, s st
 	mock.calls.DeletePipelinePort = append(mock.calls.DeletePipelinePort, callInfo)
 	mock.lockDeletePipelinePort.Unlock()
 	if mock.DeletePipelinePortFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.DeletePipelinePortFunc(contextMoqParam, s)
@@ -5587,7 +6087,9 @@ func (mock *ClientMock) DeletePipelineSecret(contextMoqParam context.Context, s 
 	mock.calls.DeletePipelineSecret = append(mock.calls.DeletePipelineSecret, callInfo)
 	mock.lockDeletePipelineSecret.Unlock()
 	if mock.DeletePipelineSecretFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.DeletePipelineSecretFunc(contextMoqParam, s)
@@ -5626,7 +6128,9 @@ func (mock *ClientMock) DeletePipelines(contextMoqParam context.Context, s strin
 	mock.calls.DeletePipelines = append(mock.calls.DeletePipelines, callInfo)
 	mock.lockDeletePipelines.Unlock()
 	if mock.DeletePipelinesFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.DeletePipelinesFunc(contextMoqParam, s, strings...)
@@ -5665,7 +6169,9 @@ func (mock *ClientMock) DeleteProcessingRule(contextMoqParam context.Context, s 
 	mock.calls.DeleteProcessingRule = append(mock.calls.DeleteProcessingRule, callInfo)
 	mock.lockDeleteProcessingRule.Unlock()
 	if mock.DeleteProcessingRuleFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.DeleteProcessingRuleFunc(contextMoqParam, s)
@@ -5729,6 +6235,46 @@ func (mock *ClientMock) DeleteProcessingRuleTemplateCalls() []struct {
 	return calls
 }
 
+// DeleteProject calls DeleteProjectFunc.
+func (mock *ClientMock) DeleteProject(contextMoqParam context.Context, s string) (types.Deleted, error) {
+	callInfo := struct {
+		ContextMoqParam context.Context
+		S               string
+	}{
+		ContextMoqParam: contextMoqParam,
+		S:               s,
+	}
+	mock.lockDeleteProject.Lock()
+	mock.calls.DeleteProject = append(mock.calls.DeleteProject, callInfo)
+	mock.lockDeleteProject.Unlock()
+	if mock.DeleteProjectFunc == nil {
+		var (
+			deletedOut types.Deleted
+			errOut     error
+		)
+		return deletedOut, errOut
+	}
+	return mock.DeleteProjectFunc(contextMoqParam, s)
+}
+
+// DeleteProjectCalls gets all the calls that were made to DeleteProject.
+// Check the length with:
+//
+//	len(mockedClient.DeleteProjectCalls())
+func (mock *ClientMock) DeleteProjectCalls() []struct {
+	ContextMoqParam context.Context
+	S               string
+} {
+	var calls []struct {
+		ContextMoqParam context.Context
+		S               string
+	}
+	mock.lockDeleteProject.RLock()
+	calls = mock.calls.DeleteProject
+	mock.lockDeleteProject.RUnlock()
+	return calls
+}
+
 // DeleteResourceProfile calls DeleteResourceProfileFunc.
 func (mock *ClientMock) DeleteResourceProfile(contextMoqParam context.Context, s string) error {
 	callInfo := struct {
@@ -5742,7 +6288,9 @@ func (mock *ClientMock) DeleteResourceProfile(contextMoqParam context.Context, s
 	mock.calls.DeleteResourceProfile = append(mock.calls.DeleteResourceProfile, callInfo)
 	mock.lockDeleteResourceProfile.Unlock()
 	if mock.DeleteResourceProfileFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.DeleteResourceProfileFunc(contextMoqParam, s)
@@ -5779,7 +6327,9 @@ func (mock *ClientMock) DeleteToken(contextMoqParam context.Context, s string) e
 	mock.calls.DeleteToken = append(mock.calls.DeleteToken, callInfo)
 	mock.lockDeleteToken.Unlock()
 	if mock.DeleteTokenFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.DeleteTokenFunc(contextMoqParam, s)
@@ -5971,6 +6521,130 @@ func (mock *ClientMock) FleetConfigCalls() []struct {
 	return calls
 }
 
+// FleetFile calls FleetFileFunc.
+func (mock *ClientMock) FleetFile(contextMoqParam context.Context, s string) (types.FleetFile, error) {
+	callInfo := struct {
+		ContextMoqParam context.Context
+		S               string
+	}{
+		ContextMoqParam: contextMoqParam,
+		S:               s,
+	}
+	mock.lockFleetFile.Lock()
+	mock.calls.FleetFile = append(mock.calls.FleetFile, callInfo)
+	mock.lockFleetFile.Unlock()
+	if mock.FleetFileFunc == nil {
+		var (
+			fleetFileOut types.FleetFile
+			errOut       error
+		)
+		return fleetFileOut, errOut
+	}
+	return mock.FleetFileFunc(contextMoqParam, s)
+}
+
+// FleetFileCalls gets all the calls that were made to FleetFile.
+// Check the length with:
+//
+//	len(mockedClient.FleetFileCalls())
+func (mock *ClientMock) FleetFileCalls() []struct {
+	ContextMoqParam context.Context
+	S               string
+} {
+	var calls []struct {
+		ContextMoqParam context.Context
+		S               string
+	}
+	mock.lockFleetFile.RLock()
+	calls = mock.calls.FleetFile
+	mock.lockFleetFile.RUnlock()
+	return calls
+}
+
+// FleetFiles calls FleetFilesFunc.
+func (mock *ClientMock) FleetFiles(contextMoqParam context.Context, s string, fleetFilesParams types.FleetFilesParams) (types.FleetFiles, error) {
+	callInfo := struct {
+		ContextMoqParam  context.Context
+		S                string
+		FleetFilesParams types.FleetFilesParams
+	}{
+		ContextMoqParam:  contextMoqParam,
+		S:                s,
+		FleetFilesParams: fleetFilesParams,
+	}
+	mock.lockFleetFiles.Lock()
+	mock.calls.FleetFiles = append(mock.calls.FleetFiles, callInfo)
+	mock.lockFleetFiles.Unlock()
+	if mock.FleetFilesFunc == nil {
+		var (
+			fleetFilesOut types.FleetFiles
+			errOut        error
+		)
+		return fleetFilesOut, errOut
+	}
+	return mock.FleetFilesFunc(contextMoqParam, s, fleetFilesParams)
+}
+
+// FleetFilesCalls gets all the calls that were made to FleetFiles.
+// Check the length with:
+//
+//	len(mockedClient.FleetFilesCalls())
+func (mock *ClientMock) FleetFilesCalls() []struct {
+	ContextMoqParam  context.Context
+	S                string
+	FleetFilesParams types.FleetFilesParams
+} {
+	var calls []struct {
+		ContextMoqParam  context.Context
+		S                string
+		FleetFilesParams types.FleetFilesParams
+	}
+	mock.lockFleetFiles.RLock()
+	calls = mock.calls.FleetFiles
+	mock.lockFleetFiles.RUnlock()
+	return calls
+}
+
+// FleetStatus calls FleetStatusFunc.
+func (mock *ClientMock) FleetStatus(contextMoqParam context.Context, fleetStatusParams types.FleetStatusParams) (types.FleetsStatus, error) {
+	callInfo := struct {
+		ContextMoqParam   context.Context
+		FleetStatusParams types.FleetStatusParams
+	}{
+		ContextMoqParam:   contextMoqParam,
+		FleetStatusParams: fleetStatusParams,
+	}
+	mock.lockFleetStatus.Lock()
+	mock.calls.FleetStatus = append(mock.calls.FleetStatus, callInfo)
+	mock.lockFleetStatus.Unlock()
+	if mock.FleetStatusFunc == nil {
+		var (
+			fleetsStatusOut types.FleetsStatus
+			errOut          error
+		)
+		return fleetsStatusOut, errOut
+	}
+	return mock.FleetStatusFunc(contextMoqParam, fleetStatusParams)
+}
+
+// FleetStatusCalls gets all the calls that were made to FleetStatus.
+// Check the length with:
+//
+//	len(mockedClient.FleetStatusCalls())
+func (mock *ClientMock) FleetStatusCalls() []struct {
+	ContextMoqParam   context.Context
+	FleetStatusParams types.FleetStatusParams
+} {
+	var calls []struct {
+		ContextMoqParam   context.Context
+		FleetStatusParams types.FleetStatusParams
+	}
+	mock.lockFleetStatus.RLock()
+	calls = mock.calls.FleetStatus
+	mock.lockFleetStatus.RUnlock()
+	return calls
+}
+
 // Fleets calls FleetsFunc.
 func (mock *ClientMock) Fleets(contextMoqParam context.Context, fleetsParams types.FleetsParams) (types.Fleets, error) {
 	callInfo := struct {
@@ -6008,6 +6682,46 @@ func (mock *ClientMock) FleetsCalls() []struct {
 	mock.lockFleets.RLock()
 	calls = mock.calls.Fleets
 	mock.lockFleets.RUnlock()
+	return calls
+}
+
+// FleetsStatus calls FleetsStatusFunc.
+func (mock *ClientMock) FleetsStatus(contextMoqParam context.Context, fleetsStatusParams types.FleetsStatusParams) (types.FleetsStatus, error) {
+	callInfo := struct {
+		ContextMoqParam    context.Context
+		FleetsStatusParams types.FleetsStatusParams
+	}{
+		ContextMoqParam:    contextMoqParam,
+		FleetsStatusParams: fleetsStatusParams,
+	}
+	mock.lockFleetsStatus.Lock()
+	mock.calls.FleetsStatus = append(mock.calls.FleetsStatus, callInfo)
+	mock.lockFleetsStatus.Unlock()
+	if mock.FleetsStatusFunc == nil {
+		var (
+			fleetsStatusOut types.FleetsStatus
+			errOut          error
+		)
+		return fleetsStatusOut, errOut
+	}
+	return mock.FleetsStatusFunc(contextMoqParam, fleetsStatusParams)
+}
+
+// FleetsStatusCalls gets all the calls that were made to FleetsStatus.
+// Check the length with:
+//
+//	len(mockedClient.FleetsStatusCalls())
+func (mock *ClientMock) FleetsStatusCalls() []struct {
+	ContextMoqParam    context.Context
+	FleetsStatusParams types.FleetsStatusParams
+} {
+	var calls []struct {
+		ContextMoqParam    context.Context
+		FleetsStatusParams types.FleetsStatusParams
+	}
+	mock.lockFleetsStatus.RLock()
+	calls = mock.calls.FleetsStatus
+	mock.lockFleetsStatus.RUnlock()
 	return calls
 }
 
@@ -6472,6 +7186,86 @@ func (mock *ClientMock) PipelineFilesCalls() []struct {
 	mock.lockPipelineFiles.RLock()
 	calls = mock.calls.PipelineFiles
 	mock.lockPipelineFiles.RUnlock()
+	return calls
+}
+
+// PipelineLog calls PipelineLogFunc.
+func (mock *ClientMock) PipelineLog(contextMoqParam context.Context, s string) (types.PipelineLog, error) {
+	callInfo := struct {
+		ContextMoqParam context.Context
+		S               string
+	}{
+		ContextMoqParam: contextMoqParam,
+		S:               s,
+	}
+	mock.lockPipelineLog.Lock()
+	mock.calls.PipelineLog = append(mock.calls.PipelineLog, callInfo)
+	mock.lockPipelineLog.Unlock()
+	if mock.PipelineLogFunc == nil {
+		var (
+			pipelineLogOut types.PipelineLog
+			errOut         error
+		)
+		return pipelineLogOut, errOut
+	}
+	return mock.PipelineLogFunc(contextMoqParam, s)
+}
+
+// PipelineLogCalls gets all the calls that were made to PipelineLog.
+// Check the length with:
+//
+//	len(mockedClient.PipelineLogCalls())
+func (mock *ClientMock) PipelineLogCalls() []struct {
+	ContextMoqParam context.Context
+	S               string
+} {
+	var calls []struct {
+		ContextMoqParam context.Context
+		S               string
+	}
+	mock.lockPipelineLog.RLock()
+	calls = mock.calls.PipelineLog
+	mock.lockPipelineLog.RUnlock()
+	return calls
+}
+
+// PipelineLogs calls PipelineLogsFunc.
+func (mock *ClientMock) PipelineLogs(contextMoqParam context.Context, listPipelineLogs types.ListPipelineLogs) (types.PipelineLogs, error) {
+	callInfo := struct {
+		ContextMoqParam  context.Context
+		ListPipelineLogs types.ListPipelineLogs
+	}{
+		ContextMoqParam:  contextMoqParam,
+		ListPipelineLogs: listPipelineLogs,
+	}
+	mock.lockPipelineLogs.Lock()
+	mock.calls.PipelineLogs = append(mock.calls.PipelineLogs, callInfo)
+	mock.lockPipelineLogs.Unlock()
+	if mock.PipelineLogsFunc == nil {
+		var (
+			pipelineLogsOut types.PipelineLogs
+			errOut          error
+		)
+		return pipelineLogsOut, errOut
+	}
+	return mock.PipelineLogsFunc(contextMoqParam, listPipelineLogs)
+}
+
+// PipelineLogsCalls gets all the calls that were made to PipelineLogs.
+// Check the length with:
+//
+//	len(mockedClient.PipelineLogsCalls())
+func (mock *ClientMock) PipelineLogsCalls() []struct {
+	ContextMoqParam  context.Context
+	ListPipelineLogs types.ListPipelineLogs
+} {
+	var calls []struct {
+		ContextMoqParam  context.Context
+		ListPipelineLogs types.ListPipelineLogs
+	}
+	mock.lockPipelineLogs.RLock()
+	calls = mock.calls.PipelineLogs
+	mock.lockPipelineLogs.RUnlock()
 	return calls
 }
 
@@ -7332,7 +8126,9 @@ func (mock *ClientMock) PushAWSMarketplaceSubscriptionNotification(contextMoqPar
 	mock.calls.PushAWSMarketplaceSubscriptionNotification = append(mock.calls.PushAWSMarketplaceSubscriptionNotification, callInfo)
 	mock.lockPushAWSMarketplaceSubscriptionNotification.Unlock()
 	if mock.PushAWSMarketplaceSubscriptionNotificationFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.PushAWSMarketplaceSubscriptionNotificationFunc(contextMoqParam, aWSMarketplaceSubscriptionNotification)
@@ -7531,7 +8327,9 @@ func (mock *ClientMock) SendVerificationEmail(contextMoqParam context.Context) e
 	mock.calls.SendVerificationEmail = append(mock.calls.SendVerificationEmail, callInfo)
 	mock.lockSendVerificationEmail.Unlock()
 	if mock.SendVerificationEmailFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.SendVerificationEmailFunc(contextMoqParam)
@@ -7948,7 +8746,9 @@ func (mock *ClientMock) UpdateAgent(contextMoqParam context.Context, s string, u
 	mock.calls.UpdateAgent = append(mock.calls.UpdateAgent, callInfo)
 	mock.lockUpdateAgent.Unlock()
 	if mock.UpdateAgentFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.UpdateAgentFunc(contextMoqParam, s, updateAgent)
@@ -7989,7 +8789,9 @@ func (mock *ClientMock) UpdateClusterObject(contextMoqParam context.Context, s s
 	mock.calls.UpdateClusterObject = append(mock.calls.UpdateClusterObject, callInfo)
 	mock.lockUpdateClusterObject.Unlock()
 	if mock.UpdateClusterObjectFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.UpdateClusterObjectFunc(contextMoqParam, s, updateClusterObject)
@@ -8114,7 +8916,9 @@ func (mock *ClientMock) UpdateConfigSectionSet(contextMoqParam context.Context, 
 	mock.calls.UpdateConfigSectionSet = append(mock.calls.UpdateConfigSectionSet, callInfo)
 	mock.lockUpdateConfigSectionSet.Unlock()
 	if mock.UpdateConfigSectionSetFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.UpdateConfigSectionSetFunc(contextMoqParam, s, strings...)
@@ -8155,7 +8959,9 @@ func (mock *ClientMock) UpdateCoreInstance(contextMoqParam context.Context, s st
 	mock.calls.UpdateCoreInstance = append(mock.calls.UpdateCoreInstance, callInfo)
 	mock.lockUpdateCoreInstance.Unlock()
 	if mock.UpdateCoreInstanceFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.UpdateCoreInstanceFunc(contextMoqParam, s, updateCoreInstance)
@@ -8196,7 +9002,9 @@ func (mock *ClientMock) UpdateCoreInstanceCheck(contextMoqParam context.Context,
 	mock.calls.UpdateCoreInstanceCheck = append(mock.calls.UpdateCoreInstanceCheck, callInfo)
 	mock.lockUpdateCoreInstanceCheck.Unlock()
 	if mock.UpdateCoreInstanceCheckFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.UpdateCoreInstanceCheckFunc(contextMoqParam, s, updateCoreInstanceCheck)
@@ -8317,7 +9125,9 @@ func (mock *ClientMock) UpdateEnvironment(contextMoqParam context.Context, s str
 	mock.calls.UpdateEnvironment = append(mock.calls.UpdateEnvironment, callInfo)
 	mock.lockUpdateEnvironment.Unlock()
 	if mock.UpdateEnvironmentFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.UpdateEnvironmentFunc(contextMoqParam, s, updateEnvironment)
@@ -8383,6 +9193,49 @@ func (mock *ClientMock) UpdateFleetCalls() []struct {
 	return calls
 }
 
+// UpdateFleetFile calls UpdateFleetFileFunc.
+func (mock *ClientMock) UpdateFleetFile(contextMoqParam context.Context, s string, updateFleetFile types.UpdateFleetFile) error {
+	callInfo := struct {
+		ContextMoqParam context.Context
+		S               string
+		UpdateFleetFile types.UpdateFleetFile
+	}{
+		ContextMoqParam: contextMoqParam,
+		S:               s,
+		UpdateFleetFile: updateFleetFile,
+	}
+	mock.lockUpdateFleetFile.Lock()
+	mock.calls.UpdateFleetFile = append(mock.calls.UpdateFleetFile, callInfo)
+	mock.lockUpdateFleetFile.Unlock()
+	if mock.UpdateFleetFileFunc == nil {
+		var (
+			errOut error
+		)
+		return errOut
+	}
+	return mock.UpdateFleetFileFunc(contextMoqParam, s, updateFleetFile)
+}
+
+// UpdateFleetFileCalls gets all the calls that were made to UpdateFleetFile.
+// Check the length with:
+//
+//	len(mockedClient.UpdateFleetFileCalls())
+func (mock *ClientMock) UpdateFleetFileCalls() []struct {
+	ContextMoqParam context.Context
+	S               string
+	UpdateFleetFile types.UpdateFleetFile
+} {
+	var calls []struct {
+		ContextMoqParam context.Context
+		S               string
+		UpdateFleetFile types.UpdateFleetFile
+	}
+	mock.lockUpdateFleetFile.RLock()
+	calls = mock.calls.UpdateFleetFile
+	mock.lockUpdateFleetFile.RUnlock()
+	return calls
+}
+
 // UpdateIngestCheck calls UpdateIngestCheckFunc.
 func (mock *ClientMock) UpdateIngestCheck(contextMoqParam context.Context, s string, updateIngestCheck types.UpdateIngestCheck) error {
 	callInfo := struct {
@@ -8398,7 +9251,9 @@ func (mock *ClientMock) UpdateIngestCheck(contextMoqParam context.Context, s str
 	mock.calls.UpdateIngestCheck = append(mock.calls.UpdateIngestCheck, callInfo)
 	mock.lockUpdateIngestCheck.Unlock()
 	if mock.UpdateIngestCheckFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.UpdateIngestCheckFunc(contextMoqParam, s, updateIngestCheck)
@@ -8437,7 +9292,9 @@ func (mock *ClientMock) UpdateMember(contextMoqParam context.Context, updateMemb
 	mock.calls.UpdateMember = append(mock.calls.UpdateMember, callInfo)
 	mock.lockUpdateMember.Unlock()
 	if mock.UpdateMemberFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.UpdateMemberFunc(contextMoqParam, updateMember)
@@ -8520,7 +9377,9 @@ func (mock *ClientMock) UpdatePipelineCheck(contextMoqParam context.Context, s s
 	mock.calls.UpdatePipelineCheck = append(mock.calls.UpdatePipelineCheck, callInfo)
 	mock.lockUpdatePipelineCheck.Unlock()
 	if mock.UpdatePipelineCheckFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.UpdatePipelineCheckFunc(contextMoqParam, s, updatePipelineCheck)
@@ -8561,7 +9420,9 @@ func (mock *ClientMock) UpdatePipelineClusterObjects(contextMoqParam context.Con
 	mock.calls.UpdatePipelineClusterObjects = append(mock.calls.UpdatePipelineClusterObjects, callInfo)
 	mock.lockUpdatePipelineClusterObjects.Unlock()
 	if mock.UpdatePipelineClusterObjectsFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.UpdatePipelineClusterObjectsFunc(contextMoqParam, s, updatePipelineClusterObjects)
@@ -8602,7 +9463,9 @@ func (mock *ClientMock) UpdatePipelineFile(contextMoqParam context.Context, s st
 	mock.calls.UpdatePipelineFile = append(mock.calls.UpdatePipelineFile, callInfo)
 	mock.lockUpdatePipelineFile.Unlock()
 	if mock.UpdatePipelineFileFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.UpdatePipelineFileFunc(contextMoqParam, s, updatePipelineFile)
@@ -8628,6 +9491,46 @@ func (mock *ClientMock) UpdatePipelineFileCalls() []struct {
 	return calls
 }
 
+// UpdatePipelineLog calls UpdatePipelineLogFunc.
+func (mock *ClientMock) UpdatePipelineLog(contextMoqParam context.Context, updatePipelineLog types.UpdatePipelineLog) (types.Updated, error) {
+	callInfo := struct {
+		ContextMoqParam   context.Context
+		UpdatePipelineLog types.UpdatePipelineLog
+	}{
+		ContextMoqParam:   contextMoqParam,
+		UpdatePipelineLog: updatePipelineLog,
+	}
+	mock.lockUpdatePipelineLog.Lock()
+	mock.calls.UpdatePipelineLog = append(mock.calls.UpdatePipelineLog, callInfo)
+	mock.lockUpdatePipelineLog.Unlock()
+	if mock.UpdatePipelineLogFunc == nil {
+		var (
+			updatedOut types.Updated
+			errOut     error
+		)
+		return updatedOut, errOut
+	}
+	return mock.UpdatePipelineLogFunc(contextMoqParam, updatePipelineLog)
+}
+
+// UpdatePipelineLogCalls gets all the calls that were made to UpdatePipelineLog.
+// Check the length with:
+//
+//	len(mockedClient.UpdatePipelineLogCalls())
+func (mock *ClientMock) UpdatePipelineLogCalls() []struct {
+	ContextMoqParam   context.Context
+	UpdatePipelineLog types.UpdatePipelineLog
+} {
+	var calls []struct {
+		ContextMoqParam   context.Context
+		UpdatePipelineLog types.UpdatePipelineLog
+	}
+	mock.lockUpdatePipelineLog.RLock()
+	calls = mock.calls.UpdatePipelineLog
+	mock.lockUpdatePipelineLog.RUnlock()
+	return calls
+}
+
 // UpdatePipelineMetadata calls UpdatePipelineMetadataFunc.
 func (mock *ClientMock) UpdatePipelineMetadata(contextMoqParam context.Context, s string, updatePipelineMetadata types.UpdatePipelineMetadata) error {
 	callInfo := struct {
@@ -8643,7 +9546,9 @@ func (mock *ClientMock) UpdatePipelineMetadata(contextMoqParam context.Context, 
 	mock.calls.UpdatePipelineMetadata = append(mock.calls.UpdatePipelineMetadata, callInfo)
 	mock.lockUpdatePipelineMetadata.Unlock()
 	if mock.UpdatePipelineMetadataFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.UpdatePipelineMetadataFunc(contextMoqParam, s, updatePipelineMetadata)
@@ -8684,7 +9589,9 @@ func (mock *ClientMock) UpdatePipelinePort(contextMoqParam context.Context, s st
 	mock.calls.UpdatePipelinePort = append(mock.calls.UpdatePipelinePort, callInfo)
 	mock.lockUpdatePipelinePort.Unlock()
 	if mock.UpdatePipelinePortFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.UpdatePipelinePortFunc(contextMoqParam, s, updatePipelinePort)
@@ -8725,7 +9632,9 @@ func (mock *ClientMock) UpdatePipelineSecret(contextMoqParam context.Context, s 
 	mock.calls.UpdatePipelineSecret = append(mock.calls.UpdatePipelineSecret, callInfo)
 	mock.lockUpdatePipelineSecret.Unlock()
 	if mock.UpdatePipelineSecretFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.UpdatePipelineSecretFunc(contextMoqParam, s, updatePipelineSecret)
@@ -8846,7 +9755,9 @@ func (mock *ClientMock) UpdateProject(contextMoqParam context.Context, s string,
 	mock.calls.UpdateProject = append(mock.calls.UpdateProject, callInfo)
 	mock.lockUpdateProject.Unlock()
 	if mock.UpdateProjectFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.UpdateProjectFunc(contextMoqParam, s, updateProject)
@@ -8887,7 +9798,9 @@ func (mock *ClientMock) UpdateResourceProfile(contextMoqParam context.Context, s
 	mock.calls.UpdateResourceProfile = append(mock.calls.UpdateResourceProfile, callInfo)
 	mock.lockUpdateResourceProfile.Unlock()
 	if mock.UpdateResourceProfileFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.UpdateResourceProfileFunc(contextMoqParam, s, updateResourceProfile)
@@ -8926,7 +9839,9 @@ func (mock *ClientMock) UpdateToken(contextMoqParam context.Context, updateToken
 	mock.calls.UpdateToken = append(mock.calls.UpdateToken, callInfo)
 	mock.lockUpdateToken.Unlock()
 	if mock.UpdateTokenFunc == nil {
-		var errOut error
+		var (
+			errOut error
+		)
 		return errOut
 	}
 	return mock.UpdateTokenFunc(contextMoqParam, updateToken)

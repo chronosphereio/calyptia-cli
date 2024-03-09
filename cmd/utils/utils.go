@@ -7,7 +7,7 @@ import (
 
 	"code.cloudfoundry.org/bytefmt"
 
-	metrics "github.com/calyptia/cli/metric"
+	metrics "github.com/chronosphereio/calyptia-cli/metric"
 
 	cloud "github.com/calyptia/api/types"
 )

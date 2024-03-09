@@ -7,8 +7,9 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/completer"
-	cfg "github.com/calyptia/cli/config"
+
+	"github.com/chronosphereio/calyptia-cli/completer"
+	cfg "github.com/chronosphereio/calyptia-cli/config"
 )
 
 func NewCmdCreateIngestCheck(config *cfg.Config) *cobra.Command {

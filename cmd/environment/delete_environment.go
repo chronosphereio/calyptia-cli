@@ -9,8 +9,9 @@ import (
 	"golang.org/x/term"
 
 	"github.com/calyptia/api/types"
-	cfg "github.com/calyptia/cli/config"
-	"github.com/calyptia/cli/confirm"
+
+	cfg "github.com/chronosphereio/calyptia-cli/config"
+	"github.com/chronosphereio/calyptia-cli/confirm"
 )
 
 func NewCmdDeleteEnvironment(c *cfg.Config) *cobra.Command {

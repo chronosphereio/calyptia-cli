@@ -17,11 +17,12 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/cmd/utils"
-	"github.com/calyptia/cli/cmd/version"
-	"github.com/calyptia/cli/completer"
-	cfg "github.com/calyptia/cli/config"
-	"github.com/calyptia/cli/k8s"
+
+	"github.com/chronosphereio/calyptia-cli/cmd/utils"
+	"github.com/chronosphereio/calyptia-cli/cmd/version"
+	"github.com/chronosphereio/calyptia-cli/completer"
+	cfg "github.com/chronosphereio/calyptia-cli/config"
+	"github.com/chronosphereio/calyptia-cli/k8s"
 )
 
 func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernetes.Interface) *cobra.Command {

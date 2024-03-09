@@ -7,14 +7,14 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 
 	appsv1 "k8s.io/api/apps/v1"
-	apiv1 "k8s.io/api/core/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes/fake"
 
-	"github.com/calyptia/cli/cmd/utils"
+	"github.com/chronosphereio/calyptia-cli/cmd/utils"
 )
 
 func TestGetCurrentContextNamespace(t *testing.T) {
@@ -150,7 +150,7 @@ func TestUpdateOperatorDeploymentByLabel(t *testing.T) {
 			},
 		},
 		Status: corev1.PodStatus{
-			Phase: apiv1.PodRunning,
+			Phase: corev1.PodRunning,
 		},
 	}
 
@@ -184,7 +184,7 @@ func TestUpdateOperatorDeploymentByLabel(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			label := fmt.Sprintf("%s=%s,%s=%s,%s=%s", LabelComponent, tc.manager, LabelCreatedBy, "operator", LabelInstance, "controller-manager")
 
-			if err := tc.client.UpdateOperatorDeploymentByLabel(context.TODO(), label, fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorDockerImage, "1234"), false); err != nil && !tc.expectErr {
+			if err := tc.client.UpdateOperatorDeploymentByLabel(context.TODO(), label, fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorDockerImage, "1234"), false, time.Minute); err != nil && !tc.expectErr {
 				t.Errorf("failed to find deployment by label %s", err)
 			}
 		})
@@ -253,7 +253,7 @@ func TestUpdateSyncDeploymentByLabel(t *testing.T) {
 			},
 		},
 		Status: corev1.PodStatus{
-			Phase: apiv1.PodRunning,
+			Phase: corev1.PodRunning,
 		},
 	}
 
@@ -287,7 +287,7 @@ func TestUpdateSyncDeploymentByLabel(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			label := fmt.Sprintf("%s=%s,%s=%s,%s=%s", LabelComponent, "operator", LabelCreatedBy, "calyptia-cli", LabelAggregatorID, tc.aggID)
 
-			if err := tc.client.UpdateSyncDeploymentByLabel(context.TODO(), label, fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorDockerImage, "1234"), "true", false); err != nil && !tc.expectErr {
+			if err := tc.client.UpdateSyncDeploymentByLabel(context.TODO(), label, fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorDockerImage, "1234"), "true", false, time.Minute); err != nil && !tc.expectErr {
 				t.Errorf("failed to find deployment by label %s", err)
 			}
 		})
