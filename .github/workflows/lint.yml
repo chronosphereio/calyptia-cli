@@ -4,7 +4,6 @@ on:
   workflow_dispatch:
 
 jobs:
-
   hadolint-pr:
     runs-on: ubuntu-latest
     name: PR - Hadolint
@@ -47,5 +46,5 @@ jobs:
       - name: golangci-lint
         uses: reviewdog/action-golangci-lint@v2
         with:
-          go_version: "1.21"
+          go_version: "1.22"
           golangci_lint_flags: "--timeout=10m"
