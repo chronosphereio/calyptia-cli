@@ -2,12 +2,14 @@ package pipeline
 
 import (
 	"fmt"
-	"github.com/calyptia/cli/completer"
 	"time"
+
+	"github.com/calyptia/cli/completer"
+
+	"github.com/spf13/cobra"
 
 	cloud "github.com/calyptia/api/types"
 	cfg "github.com/calyptia/cli/config"
-	"github.com/spf13/cobra"
 )
 
 func NewCmdWatchPipelineLogs(config *cfg.Config) *cobra.Command {
