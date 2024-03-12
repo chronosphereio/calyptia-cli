@@ -7,8 +7,15 @@ import (
 	"github.com/calyptia/cli/config"
 )
 
+var allPermissions = []string{
+	"create:*",
+	"read:*",
+	"update:*",
+	"delete:*",
+}
+
 func NewCmdSendInvitation(config *config.Config) *cobra.Command {
-	var redirectURI string
+	redirectURI := "https://core.calyptia.com"
 
 	if config.BaseURL == "https://cloud-api-dev.calyptia.com" {
 		redirectURI = "https://core-dev.calyptia.com"
@@ -16,6 +23,8 @@ func NewCmdSendInvitation(config *config.Config) *cobra.Command {
 	if config.BaseURL == "https://cloud-api-staging.calyptia.com" {
 		redirectURI = "https://core-staging.calyptia.com"
 	}
+
+	var permissions []string
 
 	cmd := &cobra.Command{
 		Use:   "invitation EMAIL", // child of `calyptia create`
@@ -27,6 +36,7 @@ func NewCmdSendInvitation(config *config.Config) *cobra.Command {
 				err := config.Cloud.CreateInvitation(ctx, config.ProjectID, types.CreateInvitation{
 					Email:       email,
 					RedirectURI: redirectURI,
+					Permissions: permissions,
 				})
 				if err != nil {
 					cmd.PrintErrf("failed to send invitation for %q: %v\n", email, err)
@@ -41,7 +51,12 @@ func NewCmdSendInvitation(config *config.Config) *cobra.Command {
 	}
 
 	fs := cmd.Flags()
-	fs.StringVar(&redirectURI, "redirect-uri", "https://core.calyptia.com", "Redirect URI for the invitation, leave the default value if you don't know what it is")
+	fs.StringVar(&redirectURI, "redirect-uri", redirectURI, "Redirect URI for the invitation, it should point to the Calyptia UI.")
+	fs.StringSliceVar(&permissions, "permissions", allPermissions, "Permissions to grant to the invited user.")
+
+	_ = cmd.RegisterFlagCompletionFunc("permissions", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return allPermissions, cobra.ShellCompDirectiveNoFileComp
+	})
 
 	return cmd
 }
