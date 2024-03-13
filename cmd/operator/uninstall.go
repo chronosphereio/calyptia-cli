@@ -69,8 +69,8 @@ func NewCmdUninstall() *cobra.Command {
 			}
 			defer os.RemoveAll(yaml)
 
-			// when each Pipeline is create we ensure that there are appropriate RBAC setting for each. 
-			// This will ensure that the respective ClusterRole, ClusterRoleBinding and ServiceAccount get wiped 
+			// when each Pipeline is create we ensure that there are appropriate RBAC setting for each.
+			// This will ensure that the respective ClusterRole, ClusterRoleBinding and ServiceAccount get wiped
 			if err := k.PurgeLeftoverRBAC(cmd.Context()); err != nil {
 				return err
 			}
