@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"embed"
-	_ "embed"
 	"errors"
 	"fmt"
 	"os"
@@ -240,14 +239,10 @@ func prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace stri
 		return "", err
 	}
 
-	b, err := yaml.Marshal(manifests)
-	if err != nil {
-		return "", err
-	}
+	enc := yaml.NewEncoder(temp)
 
-	_, err = temp.Write(b)
-	if err != nil {
-		return "", err
+	for _, manifest := range *manifests {
+		enc.Encode(manifest)
 	}
 
 	return temp.Name(), err
