@@ -380,32 +380,70 @@ func (m *manifest) UnmarshalYAML(value *yaml.Node) error {
 			if err != nil {
 				return err
 			}
-			sigyaml.Unmarshal(y, &m.Metadata)
+			err = sigyaml.Unmarshal(y, &m.Metadata)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
 	switch m.Kind {
 	case "Namespace":
 		ns := apiv1.Namespace{}
-		value.Decode(&ns)
+		y, err := yaml.Marshal(value)
+		if err != nil {
+			return err
+		}
+		err = sigyaml.Unmarshal(y, &ns)
+		if err != nil {
+			return err
+		}
 		m.Descriptor = ns
 	case "CustomResourceDefinition":
 		m.Descriptor = value
 	case "ServiceAccount":
 		sa := apiv1.ServiceAccount{}
-		value.Decode(&sa)
+		y, err := yaml.Marshal(value)
+		if err != nil {
+			return err
+		}
+		err = sigyaml.Unmarshal(y, &sa)
+		if err != nil {
+			return err
+		}
 		m.Descriptor = sa
 	case "ClusterRole":
 		cr := rbacv1.ClusterRole{}
-		value.Decode(&cr)
+		y, err := yaml.Marshal(value)
+		if err != nil {
+			return err
+		}
+		err = sigyaml.Unmarshal(y, &cr)
+		if err != nil {
+			return err
+		}
 		m.Descriptor = cr
 	case "ClusterRoleBinding":
 		crb := rbacv1.ClusterRoleBinding{}
-		value.Decode(&crb)
+		y, err := yaml.Marshal(value)
+		if err != nil {
+			return err
+		}
+		err = sigyaml.Unmarshal(y, &crb)
+		if err != nil {
+			return err
+		}
 		m.Descriptor = crb
 	case "Service":
 		svc := apiv1.Service{}
-		value.Decode(&svc)
+		y, err := yaml.Marshal(value)
+		if err != nil {
+			return err
+		}
+		err = sigyaml.Unmarshal(y, &svc)
+		if err != nil {
+			return err
+		}
 		m.Descriptor = svc
 	case "Deployment":
 		var deploy appsv1.Deployment
@@ -413,7 +451,10 @@ func (m *manifest) UnmarshalYAML(value *yaml.Node) error {
 		if err != nil {
 			return err
 		}
-		sigyaml.Unmarshal(y, &deploy)
+		err = sigyaml.Unmarshal(y, &deploy)
+		if err != nil {
+			return err
+		}
 		m.Descriptor = deploy
 	}
 	return nil
