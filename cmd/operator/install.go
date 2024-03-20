@@ -425,7 +425,13 @@ func (m manifest) MarshalYAML() (interface{}, error) {
 		"metadata":   m.Metadata,
 	}
 
-	desc, _ := sigyaml.Marshal(m.Descriptor)
+	var desc []byte
+
+	if m.Kind == "CustomResourceDefinition" {
+		desc, _ = yaml.Marshal(m.Descriptor)
+	} else {
+		desc, _ = sigyaml.Marshal(m.Descriptor)
+	}
 
 	spec := make(map[string]interface{})
 	sigyaml.Unmarshal(desc, &spec)
@@ -444,7 +450,7 @@ type manifests []manifest
 func parseManifest(filename string) (*manifests, error) {
 	manifests := make(manifests, 0)
 
-	data, err := os.ReadFile(filename)
+	data, err := f.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}

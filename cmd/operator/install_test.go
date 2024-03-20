@@ -150,7 +150,7 @@ spec:
 		}
 
 		// Test the prepareManifest function
-		resultFile, err := prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace, false)
+		resultFile, err := prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace, false, false)
 		// Verify the results
 		if err != nil {
 			t.Errorf("Expected no error, but got: %v", err)
