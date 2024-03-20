@@ -12,7 +12,8 @@ import (
 
 	"gopkg.in/yaml.v3"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+	// metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 	sigyaml "sigs.k8s.io/yaml"
@@ -255,7 +256,7 @@ func solveNamespaceCreation(createNamespace bool, manifests manifests, namespace
 				manifests = append(manifests[:idx], manifests[idx+1:]...)
 			}
 		} else {
-			manifests[idx].Metadata.Name = namespace
+			manifests[idx].Metadata["name"] = namespace
 		}
 
 		break
@@ -287,7 +288,7 @@ func injectNamespace(manifests manifests, namespace string) manifests {
 		namespace = "default"
 	}
 	for idx := range manifests {
-		manifests[idx].Metadata.Namespace = namespace
+		manifests[idx].Metadata["namespace"] = namespace
 	}
 	return manifests
 }
@@ -356,11 +357,11 @@ func installManifest(namespace, coreDockerImage, coreInstanceVersion string, cre
 }
 
 type manifest struct {
-	APIVersion string            `yaml:"apiVersion"`
-	Kind       string            `yaml:"kind"`
-	Metadata   metav1.ObjectMeta `yaml:"metadata"`
-	Node       *yaml.Node        `yaml:"-"`
-	Descriptor any               `yaml:"-"`
+	APIVersion string         `yaml:"apiVersion"`
+	Metadata   map[string]any `yaml:"metadata"`
+	Kind       string         `yaml:"kind"`
+	Node       *yaml.Node     `yaml:"-"`
+	Descriptor any            `yaml:"-"`
 }
 
 func (m *manifest) UnmarshalYAML(value *yaml.Node) error {
