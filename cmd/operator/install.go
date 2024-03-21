@@ -33,15 +33,17 @@ import (
 var f embed.FS
 
 const manifestFile = "manifest.yaml"
+const EnableExternalTrafficPolicyLocal = "enable-external-traffic-policy-local"
 
 func NewCmdInstall() *cobra.Command {
 	var (
-		coreInstanceVersion string
-		coreDockerImage     string
-		isNonInteractive    bool
-		waitReady           bool
-		waitTimeout         time.Duration
-		confirmed           bool
+		coreInstanceVersion        string
+		coreDockerImage            string
+		isNonInteractive           bool
+		waitReady                  bool
+		waitTimeout                time.Duration
+		confirmed                  bool
+		externalTrafficPolicyLocal bool
 	)
 
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
@@ -119,7 +121,7 @@ func NewCmdInstall() *cobra.Command {
 				return err
 			}
 
-			manifest, err := installManifest(namespace, coreDockerImage, coreInstanceVersion, k8serrors.IsNotFound(err))
+			manifest, err := installManifest(namespace, coreDockerImage, coreInstanceVersion, k8serrors.IsNotFound(err), externalTrafficPolicyLocal)
 			if err != nil {
 				return err
 			}
@@ -151,6 +153,7 @@ func NewCmdInstall() *cobra.Command {
 	fs.DurationVar(&waitTimeout, "timeout", time.Second*30, "Wait timeout")
 	fs.StringVar(&coreInstanceVersion, "version", "", "Core instance version")
 	fs.StringVar(&coreDockerImage, "image", utils.DefaultCoreOperatorDockerImage, "Calyptia core manager docker image to use (fully composed docker image).")
+	fs.BoolVar(&externalTrafficPolicyLocal, "external-traffic-policy-local", false, "Set ExternalTrafficPolicy to local for all services used by core operator pipelines.")
 	_ = cmd.Flags().MarkHidden("image")
 	clientcmd.BindOverrideFlags(configOverrides, fs, clientcmd.RecommendedConfigOverrideFlags("kube-"))
 
@@ -182,7 +185,7 @@ func extractDeployment(yml string) (string, error) {
 	return deployName, nil
 }
 
-func prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace string, createNamespace bool) (string, error) {
+func prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace string, createNamespace bool, externalTrafficPolicyLocal bool) (string, error) {
 	file, err := f.ReadFile(manifestFile)
 	if err != nil {
 		return "", err
@@ -195,6 +198,7 @@ func prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace stri
 	if err != nil {
 		return "", err
 	}
+	fullManifest := injectArguments(withImage, externalTrafficPolicyLocal)
 
 	dir, err := os.MkdirTemp("", "calyptia-operator")
 	if err != nil {
@@ -206,7 +210,7 @@ func prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace stri
 		return "", err
 	}
 
-	_, err = temp.WriteString(withImage)
+	_, err = temp.WriteString(fullManifest)
 	if err != nil {
 		return "", err
 	}
@@ -247,7 +251,7 @@ func solveNamespaceCreationForDelete(fullFile string, namespace string) string {
 
 func addImage(coreDockerImage, coreInstanceVersion, file string) (string, error) {
 	if coreInstanceVersion != "" {
-		const pattern string = `image:\s*ghcr.io/calyptia/core-operator:[^\n\r]*`
+		const pattern string = `image:\s*ghcr\.io/calyptia/core-operator:[^\n\r]*`
 		reImagePattern := regexp.MustCompile(pattern)
 		match := reImagePattern.FindString(file)
 		if match == "" {
@@ -267,6 +271,13 @@ func injectNamespace(s string, namespace string) string {
 		namespace = fmt.Sprintf(`"%s"`, namespace)
 	}
 	return strings.ReplaceAll(s, "namespace: calyptia-core", fmt.Sprintf("namespace: %s", namespace))
+}
+
+func injectArguments(s string, externalTrafficPolicyLocal bool) string {
+	if externalTrafficPolicyLocal {
+		return strings.ReplaceAll(s, "args: []", "args: ['"+EnableExternalTrafficPolicyLocal+"']")
+	}
+	return s
 }
 
 func newKubectlCmd() *cobra.Command {
@@ -315,10 +326,10 @@ func newKubectlCmd() *cobra.Command {
 	return cmd
 }
 
-func installManifest(namespace, coreDockerImage, coreInstanceVersion string, createNamespace bool) (string, error) {
+func installManifest(namespace, coreDockerImage, coreInstanceVersion string, createNamespace bool, externalTrafficPolicyLocal bool) (string, error) {
 	kctl := newKubectlCmd()
 
-	manifest, err := prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace, createNamespace)
+	manifest, err := prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace, createNamespace, externalTrafficPolicyLocal)
 	if err != nil {
 		return "", err
 	}

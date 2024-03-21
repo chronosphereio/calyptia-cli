@@ -963,6 +963,7 @@ spec:
       - command:
         - /manager
         image: ghcr.io/calyptia/core-operator:v2.8.0
+        args: []
         livenessProbe:
           httpGet:
             path: /healthz

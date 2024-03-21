@@ -49,6 +49,7 @@ func TestPrepareManifest(t *testing.T) {
 	coreInstanceVersion := "v1.0.0"
 	coreDockerImage := "calyptia/core-operator"
 	namespace := "my-namespace"
+	enableExternalTrafficPolicyLocal := true
 	const deploymentManifest string = `
 apiVersion: v1
 kind: Namespace
@@ -91,6 +92,7 @@ spec:
       containers:
       - command:
         - /manager
+        args: []
         image: ghcr.io/calyptia/core-operator:v1.0.0-RC1
         livenessProbe:
           httpGet:
@@ -130,7 +132,7 @@ spec:
 		}
 
 		// Test the prepareManifest function
-		resultFile, err := prepareInstallManifest(coreInstanceVersion, coreDockerImage, namespace, false)
+		resultFile, err := prepareInstallManifest(coreInstanceVersion, coreDockerImage, namespace, false, enableExternalTrafficPolicyLocal)
 		// Verify the results
 		if err != nil {
 			t.Errorf("Expected no error, but got: %v", err)
@@ -144,6 +146,9 @@ spec:
 		}
 		if strings.Contains(result, fmt.Sprintf("namespace: %s", namespace)) == false {
 			t.Errorf("Expected namespace: %s, but got: %s", namespace, result)
+		}
+		if strings.Contains(result, "args: ['"+EnableExternalTrafficPolicyLocal+"']") == false {
+			t.Errorf("Expected args: %s, but got: %s", EnableExternalTrafficPolicyLocal, result)
 		}
 
 		// Clean up the temporary file
