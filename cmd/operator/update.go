@@ -28,10 +28,11 @@ const (
 
 func NewCmdUpdate() *cobra.Command {
 	var (
-		coreOperatorVersion string
-		waitReady           bool
-		waitTimeout         time.Duration
-		verbose             bool
+		coreOperatorVersion        string
+		waitReady                  bool
+		waitTimeout                time.Duration
+		verbose                    bool
+		externalTrafficPolicyLocal bool
 	)
 
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
@@ -109,7 +110,7 @@ func NewCmdUpdate() *cobra.Command {
 				coreOperatorVersion = utils.DefaultCoreOperatorDockerImageTag
 			}
 
-			manifest, err := installManifest(namespace, utils.DefaultCoreOperatorDockerImage, coreOperatorVersion, k8serrors.IsNotFound(err))
+			manifest, err := installManifest(namespace, utils.DefaultCoreOperatorDockerImage, coreOperatorVersion, k8serrors.IsNotFound(err), externalTrafficPolicyLocal)
 			if err != nil {
 				return err
 			}
