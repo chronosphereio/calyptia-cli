@@ -1,4 +1,3 @@
-
 # Calyptia Cloud CLI
 
 [![CI](https://github.com/calyptia/cli/actions/workflows/ci.yml/badge.svg)](https://github.com/calyptia/cloud-cli/actions/workflows/ci.yml)
@@ -9,8 +8,8 @@ Further documentation on how to use the CLI
 can be found on [Calyptia Docs](https://docs.calyptia.com).
 
 ## Build instructions
-
 ---
+
 
 ```markdown
 go mod download
