@@ -1,24 +1,18 @@
-
 # Calyptia Cloud CLI
 
 [![CI](https://github.com/calyptia/cli/actions/workflows/ci.yml/badge.svg)](https://github.com/calyptia/cloud-cli/actions/workflows/ci.yml)
-[![Codecov](https://codecov.io/gh/calyptia/cli/branch/main/graph/badge.svg?token=TY36W7B87A)](https://codecov.io/gh/calyptia/cli)
 
 This CLI interacts with the [Calyptia Cloud](https://cloud.calyptia.com) service
 using the [API Client](https://github.com/calyptia/api).
-Futher documentation on how to use the CLI
+Further documentation on how to use the CLI
 can be found on [Calyptia Docs](https://docs.calyptia.com).
 
 ## Build instructions
-
----
 
 ```markdown
 go mod download
 go build
 ```
-
----
 
 ## Install
 
@@ -72,7 +66,7 @@ calyptia get members --token TOKEN
 
 A list of the supported environment variables that will override the provided flags.
 
-- CALYPTIA_CLOUD_URL: URL of the cloud API (default: https://cloud-api.calyptia.com/)
+- CALYPTIA_CLOUD_URL: URL of the cloud API (default: <https://cloud-api.calyptia.com/>)
 - CALYPTIA_CLOUD_TOKEN: Cloud project token (default: None)
 - CALYPTIA_STORAGE_DIR: Path to store the local configuration (fallback to $HOME/.calyptia)
 

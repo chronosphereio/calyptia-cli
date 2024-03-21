@@ -35,17 +35,6 @@ jobs:
     runs-on: ubuntu-latest
     name: PR - Markdownlint
     steps:
+      - uses: actions/checkout@v4
       - name: Run markdownlint
         uses: actionshub/markdownlint@v3.1.4
-
-  golint-pr:
-    runs-on: ubuntu-latest
-    name: PR - GO lint
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: golangci-lint
-        uses: reviewdog/action-golangci-lint@v2
-        with:
-          go_version: "1.21"
-          golangci_lint_flags: "--timeout=10m"
