@@ -8,15 +8,11 @@ Further documentation on how to use the CLI
 can be found on [Calyptia Docs](https://docs.calyptia.com).
 
 ## Build instructions
----
-
 
 ```markdown
 go mod download
 go build
 ```
-
----
 
 ## Install
 
