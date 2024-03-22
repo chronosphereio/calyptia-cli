@@ -142,6 +142,7 @@ func NewCmdUpdate() *cobra.Command {
 	fs.DurationVar(&waitTimeout, "timeout", defaultWaitTimeout, "Wait timeout")
 	fs.BoolVar(&verbose, "verbose", false, "Print verbose command output")
 	fs.StringVar(&coreOperatorVersion, "version", "", "Core instance version")
+	fs.BoolVar(&externalTrafficPolicyLocal, "external-traffic-policy-local", false, "Set ExternalTrafficPolicy to local for all services used by core operator pipelines.")
 	_ = cmd.Flags().MarkHidden("image")
 	clientcmd.BindOverrideFlags(configOverrides, fs, clientcmd.RecommendedConfigOverrideFlags("kube-"))
 

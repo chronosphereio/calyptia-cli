@@ -33,7 +33,7 @@ import (
 var f embed.FS
 
 const manifestFile = "manifest.yaml"
-const EnableExternalTrafficPolicyLocal = "enable-external-traffic-policy-local"
+const EnableExternalTrafficPolicyLocal = "-enable-external-traffic-policy-local=true"
 
 func NewCmdInstall() *cobra.Command {
 	var (
@@ -275,6 +275,7 @@ func injectNamespace(s string, namespace string) string {
 
 func injectArguments(s string, externalTrafficPolicyLocal bool) string {
 	if externalTrafficPolicyLocal {
+		fmt.Println("Enabling traffic policy LOCAL: ", EnableExternalTrafficPolicyLocal)
 		return strings.ReplaceAll(s, "args: []", "args: ['"+EnableExternalTrafficPolicyLocal+"']")
 	}
 	return s
