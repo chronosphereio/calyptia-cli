@@ -275,6 +275,7 @@ func injectNamespace(s string, namespace string) string {
 
 func injectArguments(s string, externalTrafficPolicyLocal bool) string {
 	if externalTrafficPolicyLocal {
+		fmt.Println("Enabling traffic policy LOCAL: ", EnableExternalTrafficPolicyLocal)
 		return strings.ReplaceAll(s, "args: []", "args: ['"+EnableExternalTrafficPolicyLocal+"']")
 	}
 	return s
