@@ -58,7 +58,7 @@ jobs:
           - amd64
           - arm64
     name: ${{ matrix.platform }} container image build
-    runs-on: ${{ (contains(matrix.platform, 'arm') && 'actuated-arm64') || 'actuated' }}
+    runs-on: ${{ (contains(matrix.platform, 'arm') && 'actuated-arm64') || 'ubuntu-latest' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -210,7 +210,7 @@ jobs:
       contents: write
       packages: write
     if: ${{ github.event_name != 'pull_request' }}
-    runs-on: actuated-4cpu-16gb
+    runs-on: ubuntu-latest-m
     steps:
       - name: Checkout
         uses: actions/checkout@v4
