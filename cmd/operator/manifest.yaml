@@ -971,6 +971,7 @@ spec:
           initialDelaySeconds: 15
           periodSeconds: 20
         name: manager
+        args: []
         ports:
         - containerPort: 8443
           name: https
