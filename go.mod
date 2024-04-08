@@ -10,7 +10,7 @@ replace (
 require (
 	code.cloudfoundry.org/bytefmt v0.0.0-20240318154019-470077afc6dc
 	github.com/Masterminds/sprig/v3 v3.2.3
-	github.com/alecthomas/assert/v2 v2.6.0
+	github.com/alecthomas/assert/v2 v2.8.0
 	github.com/calyptia/api v1.7.1
 	github.com/calyptia/cli/k8s v0.0.0-00010101000000-000000000000
 	github.com/calyptia/core-images-index/go-index v0.0.0-20240320145721-ea659fd093d7
