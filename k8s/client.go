@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -594,7 +595,11 @@ func (client *Client) FindDeploymentByLabel(ctx context.Context, label string) (
 	return client.AppsV1().Deployments(client.Namespace).List(ctx, metav1.ListOptions{LabelSelector: label})
 }
 
-func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, fromCloudImage, toCloudImage string, metricsPort string, memoryLimit string, annotations string, noTLSVerify bool, httpProxy, httpsProxy string, coreInstance cloud.CreatedCoreInstance, serviceAccount string) (*appsv1.Deployment, error) {
+func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, fromCloudImage, toCloudImage string, metricsPort string, memoryLimit string, annotations string, tolerations string, noTLSVerify bool, httpProxy, httpsProxy string, coreInstance cloud.CreatedCoreInstance, serviceAccount string) (*appsv1.Deployment, error) {
+	if err := validateTolerations(tolerations); err != nil {
+		return nil, err
+	}
+
 	labels := client.LabelsFunc()
 	env := []corev1.EnvVar{
 		{
@@ -636,6 +641,10 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, 
 		{
 			Name:  "ANNOTATIONS",
 			Value: annotations,
+		},
+		{
+			Name:  "TOLERATIONS",
+			Value: tolerations,
 		},
 	}
 	toCloud := corev1.Container{
@@ -1151,4 +1160,40 @@ func (o *OperatorIncompleteError) Error() string {
 		errs = append(errs, err.Error())
 	}
 	return strings.Join(errs, "\n")
+}
+
+var reKeyValue = regexp.MustCompile(`(.*?)=([^=]*)(?:,|$)`)
+
+var tolerationOperators = "Exists,Equal"
+var taintEffect = "NoSchedule,PreferNoSchedule,NoExecute"
+
+func validateTolerations(s string) error {
+	s = strings.TrimPrefix(s, ",")
+
+	out := map[string]string{}
+	for _, kv := range reKeyValue.FindAllStringSubmatch(s, -1) {
+		if len(kv) >= 3 {
+			out[kv[1]] = kv[2]
+		}
+	}
+	for _, v := range out {
+		values := strings.Split(v, ":")
+		if len(values) < 3 {
+			return fmt.Errorf("values must contain at least values")
+		}
+
+		if values[0] != "-" {
+			if !strings.Contains(tolerationOperators, values[0]) {
+				return fmt.Errorf("got %s Operator can be of %s", values[0], tolerationOperators)
+			}
+		}
+
+		if values[2] != "-" {
+			if !strings.Contains(taintEffect, values[2]) {
+				return fmt.Errorf("got %s TainfEffect can be of %s", values[2], taintEffect)
+			}
+		}
+	}
+
+	return nil
 }

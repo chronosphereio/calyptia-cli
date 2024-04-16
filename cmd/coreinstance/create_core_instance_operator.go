@@ -46,6 +46,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 		httpProxy, httpsProxy          string
 		memoryLimit                    string
 		annotations                    string
+		tolerations                    string
 	)
 
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
@@ -273,8 +274,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				}
 				coreDockerFromCloudImage = fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorFromCloudDockerImage, coreDockerFromCloudImageTag)
 			}
-
-			syncDeployment, err := k8sClient.DeployCoreOperatorSync(ctx, coreCloudURL, coreDockerFromCloudImage, coreDockerToCloudImage, metricsPort, memoryLimit, annotations, !noTLSVerify, httpProxy, httpsProxy, created, serviceAccount.Name)
+			syncDeployment, err := k8sClient.DeployCoreOperatorSync(ctx, coreCloudURL, coreDockerFromCloudImage, coreDockerToCloudImage, metricsPort, memoryLimit, annotations, tolerations, !noTLSVerify, httpProxy, httpsProxy, created, serviceAccount.Name)
 			if err != nil {
 				fmt.Printf("An error occurred while creating the core operator instance. %s Rolling back created resources.\n", err)
 				resources, err := k8sClient.DeleteResources(ctx, resourcesCreated)
@@ -345,6 +345,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 	fs.StringVar(&httpProxy, "http-proxy", "", "http proxy to use on this core instance")
 	fs.StringVar(&httpsProxy, "https-proxy", "", "http proxy to use on this core instance")
 	fs.StringVar(&annotations, "annotations", "", "Custom annotations for pipelines. Format should be 'annotation1=value1,annotation2=value2'")
+	fs.StringVar(&tolerations, "tolerations", "", `Custom tolerations for pipelines. Format should be '[{"key": "key1", "operator": "Equal", "value": "value1", "effect": "NoExecute","tolerationSeconds" : 3600}]'`)
 
 	fs.StringSliceVar(&tags, "tags", nil, "Tags to apply to the core instance")
 
