@@ -345,7 +345,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 	fs.StringVar(&httpProxy, "http-proxy", "", "http proxy to use on this core instance")
 	fs.StringVar(&httpsProxy, "https-proxy", "", "http proxy to use on this core instance")
 	fs.StringVar(&annotations, "annotations", "", "Custom annotations for pipelines. Format should be 'annotation1=value1,annotation2=value2'")
-	fs.StringVar(&tolerations, "tolerations", "", `Custom tolerations for pipelines. Format should be '[{"key": "key1", "operator": "Equal", "value": "value1", "effect": "NoExecute","tolerationSeconds" : 3600}]'`)
+	fs.StringVar(&tolerations, "tolerations", "", `Custom tolerations for pipelines. Format should be 'key1=Equal:value1:Execute:3600,key2=Exists:value2:NoExecute`)
 
 	fs.StringSliceVar(&tags, "tags", nil, "Tags to apply to the core instance")
 
