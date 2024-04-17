@@ -293,3 +293,42 @@ func TestUpdateSyncDeploymentByLabel(t *testing.T) {
 		})
 	}
 }
+
+func TestValidateTolerations(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+		pass  bool
+	}{
+		{
+			name:  "valid input",
+			input: "key1=Equal:value1:Execute:3600,key2=Exists:value2:NoExecute",
+			pass:  true,
+		},
+		{
+			name:  "invalid operator",
+			input: "key1=Invalid:value1:NoSchedule",
+			pass:  false,
+		},
+		{
+			name:  "invalid taint effect",
+			input: "key1=Equal:value1:Invalid",
+			pass:  false,
+		},
+		{
+			name:  "missing values",
+			input: "key1=",
+			pass:  false,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			err := validateTolerations(test.input)
+
+			if (err != nil) == test.pass {
+				t.Errorf("error occured %v", err)
+			}
+		})
+	}
+}

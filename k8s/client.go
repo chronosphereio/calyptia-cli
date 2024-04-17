@@ -7,7 +7,6 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -1162,38 +1161,33 @@ func (o *OperatorIncompleteError) Error() string {
 	return strings.Join(errs, "\n")
 }
 
-var reKeyValue = regexp.MustCompile(`(.*?)=([^=]*)(?:,|$)`)
-
 var tolerationOperators = "Exists,Equal"
 var taintEffect = "NoSchedule,PreferNoSchedule,NoExecute"
 
 func validateTolerations(s string) error {
-	s = strings.TrimPrefix(s, ",")
-
-	out := map[string]string{}
-	for _, kv := range reKeyValue.FindAllStringSubmatch(s, -1) {
-		if len(kv) >= 3 {
-			out[kv[1]] = kv[2]
+	keys := strings.Split(s, ",")
+	for _, key := range keys {
+		tmp := strings.Split(key, "=")
+		if len(tmp) == 1 {
+			return fmt.Errorf("no toleration values provided")
 		}
-	}
-	for _, v := range out {
-		values := strings.Split(v, ":")
+		values := strings.Split(tmp[1], ":")
 		if len(values) < 3 {
-			return fmt.Errorf("values must contain at least values")
+			return fmt.Errorf("toleration values must contain at least 3 values %s", values)
 		}
 
-		if values[0] != "-" {
+		if values[1] != "-" {
 			if !strings.Contains(tolerationOperators, values[0]) {
-				return fmt.Errorf("got %s Operator can be of %s", values[0], tolerationOperators)
+				fmt.Println("values[1]", values[0])
+				return fmt.Errorf("tolleration got %s Operator can be of %s", values[0], tolerationOperators)
 			}
 		}
 
 		if values[2] != "-" {
 			if !strings.Contains(taintEffect, values[2]) {
-				return fmt.Errorf("got %s TainfEffect can be of %s", values[2], taintEffect)
+				return fmt.Errorf("tolleration got %s TainfEffect can be of %s", values[2], taintEffect)
 			}
 		}
 	}
-
 	return nil
 }
