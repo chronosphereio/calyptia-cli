@@ -1165,6 +1165,9 @@ var tolerationOperators = "Exists,Equal"
 var taintEffect = "NoSchedule,PreferNoSchedule,NoExecute"
 
 func validateTolerations(s string) error {
+	if s == "" {
+		return nil
+	}
 	keys := strings.Split(s, ",")
 	for _, key := range keys {
 		tmp := strings.Split(key, "=")
