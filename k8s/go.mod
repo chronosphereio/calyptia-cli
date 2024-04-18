@@ -1,8 +1,6 @@
 module github.com/calyptia/cli/k8s
 
-go 1.22.0
-
-toolchain go1.22.1
+go 1.21
 
 replace (
 	github.com/calyptia/cli => ../.
