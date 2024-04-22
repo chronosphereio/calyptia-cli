@@ -12,6 +12,8 @@ import (
 	"time"
 
 	goversion "github.com/hashicorp/go-version"
+	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
@@ -22,10 +24,13 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/wait"
+	"k8s.io/cli-runtime/pkg/genericclioptions"
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
 	restclient "k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
+	"k8s.io/component-base/logs"
+	kubectl "k8s.io/kubectl/pkg/cmd"
 	k8sclient "sigs.k8s.io/controller-runtime/pkg/client"
 
 	cloud "github.com/calyptia/api/types"
@@ -135,7 +140,14 @@ func (client *Client) CreateSecret(ctx context.Context, agg cloud.CreatedCoreIns
 	if dryRun {
 		return req, nil
 	}
-	return client.CoreV1().Secrets(client.Namespace).Create(ctx, req, options)
+
+	sec, err := client.CoreV1().Secrets(client.Namespace).Create(ctx, req, options)
+	if err != nil {
+		return nil, err
+	}
+
+	sec.TypeMeta = req.TypeMeta
+	return sec, nil
 }
 
 func (client *Client) CreateSecretOperatorRSAKey(ctx context.Context, agg cloud.CreatedCoreInstance, dryRun bool) (*corev1.Secret, error) {
@@ -155,7 +167,14 @@ func (client *Client) CreateSecretOperatorRSAKey(ctx context.Context, agg cloud.
 	if dryRun {
 		return req, nil
 	}
-	return client.CoreV1().Secrets(client.Namespace).Create(ctx, req, options)
+
+	sec, err := client.CoreV1().Secrets(client.Namespace).Create(ctx, req, options)
+	if err != nil {
+		return nil, err
+	}
+
+	sec.TypeMeta = req.TypeMeta
+	return sec, nil
 }
 
 type ClusterRoleOpt struct {
@@ -713,18 +732,26 @@ type ResourceRollBack struct {
 }
 
 func (client *Client) DeleteResources(ctx context.Context, resources []ResourceRollBack) ([]ResourceRollBack, error) {
-	dynamicClient, err := dynamic.NewForConfig(client.Config)
-	if err != nil {
-		return nil, err
-	}
+	kctl := newKubectlCmd()
+
+	errs := []error{}
 	var deletedResources []ResourceRollBack
 	for _, r := range resources {
-		resource := dynamicClient.Resource(r.GVR)
-		err = resource.Namespace(client.Namespace).Delete(ctx, r.Name, metav1.DeleteOptions{})
+		kctl.SetArgs([]string{"delete", r.GVR.Resource, r.Name})
+		err := kctl.Execute()
 		if err != nil {
-			return nil, err
+			errs = append(errs, fmt.Errorf("%s, %s/%s", err.Error(), client.Namespace, r.Name))
 		}
+
 		deletedResources = append(deletedResources, r)
+	}
+
+	if len(errs) > 0 {
+		errStr := ""
+		for _, e := range errs {
+			errStr += e.Error()
+		}
+		return nil, fmt.Errorf(errStr)
 	}
 	return deletedResources, nil
 }
@@ -828,6 +855,8 @@ func ExtractGroupVersionResource(obj runtime.Object) (schema.GroupVersionResourc
 		Version:  gvk.Version,
 		Resource: gvk.Kind + "s",
 	}
+	fmt.Println("GVR", gvr)
+
 	return gvr, nil
 }
 
@@ -1232,4 +1261,50 @@ func validateTolerations(s string) ([]corev1.Toleration, error) {
 // Utility function to create a pointer to an int64 value
 func int64Ptr(i int64) *int64 {
 	return &i
+}
+
+func newKubectlCmd() *cobra.Command {
+	_ = pflag.CommandLine.MarkHidden("log-flush-frequency")
+	_ = pflag.CommandLine.MarkHidden("version")
+
+	args := kubectl.KubectlOptions{
+		IOStreams: genericclioptions.IOStreams{
+			In:     os.Stdin,
+			Out:    os.Stdout,
+			ErrOut: os.Stderr,
+		},
+		Arguments: os.Args,
+	}
+
+	cmd := kubectl.NewKubectlCommand(args)
+
+	cmd.Aliases = []string{"kc"}
+	cmd.Hidden = true
+	// Get handle on the original kubectl prerun so we can call it later
+	originalPreRunE := cmd.PersistentPreRunE
+	cmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
+		// Call parents pre-run if exists, cobra does not do this automatically
+		// See: https://github.com/spf13/cobra/issues/216
+		if parent := cmd.Parent(); parent != nil {
+			if parent.PersistentPreRun != nil {
+				parent.PersistentPreRun(parent, args)
+			}
+			if parent.PersistentPreRunE != nil {
+				err := parent.PersistentPreRunE(parent, args)
+				if err != nil {
+					return err
+				}
+			}
+		}
+		return originalPreRunE(cmd, args)
+	}
+
+	originalRun := cmd.Run
+	cmd.RunE = func(cmd *cobra.Command, args []string) error {
+		originalRun(cmd, args)
+		return nil
+	}
+
+	logs.AddFlags(cmd.PersistentFlags())
+	return cmd
 }
