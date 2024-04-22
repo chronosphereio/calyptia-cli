@@ -848,18 +848,6 @@ func GetCurrentContextNamespace() (string, error) {
 	return context.Namespace, nil
 }
 
-func ExtractGroupVersionResource(obj runtime.Object) (schema.GroupVersionResource, error) {
-	gvk := obj.GetObjectKind().GroupVersionKind()
-	gvr := schema.GroupVersionResource{
-		Group:    gvk.Group,
-		Version:  gvk.Version,
-		Resource: gvk.Kind + "s",
-	}
-	fmt.Println("GVR", gvr)
-
-	return gvr, nil
-}
-
 func (client *Client) WaitReady(ctx context.Context, namespace, name string, verbose bool, waitTimeout time.Duration) error {
 	if err := wait.PollUntilContextTimeout(ctx, 3*time.Second, waitTimeout, true, client.isDeploymentReady(namespace, name)); err != nil {
 		if verbose {
