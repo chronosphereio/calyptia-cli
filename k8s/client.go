@@ -595,7 +595,8 @@ func (client *Client) FindDeploymentByLabel(ctx context.Context, label string) (
 }
 
 func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, fromCloudImage, toCloudImage string, metricsPort string, memoryLimit string, annotations string, tolerations string, noTLSVerify bool, httpProxy, httpsProxy string, coreInstance cloud.CreatedCoreInstance, serviceAccount string) (*appsv1.Deployment, error) {
-	if err := validateTolerations(tolerations); err != nil {
+	podTolerations, err := validateTolerations(tolerations)
+	if err != nil {
 		return nil, err
 	}
 
@@ -696,6 +697,7 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, 
 				Spec: corev1.PodSpec{
 					ServiceAccountName: serviceAccount,
 					Containers:         []corev1.Container{fromCloud, toCloud},
+					Tolerations:        podTolerations,
 				},
 			},
 		},
@@ -1161,36 +1163,73 @@ func (o *OperatorIncompleteError) Error() string {
 	return strings.Join(errs, "\n")
 }
 
-var tolerationOperators = "Exists,Equal"
-var taintEffect = "NoSchedule,PreferNoSchedule,NoExecute"
-
-func validateTolerations(s string) error {
+func validateTolerations(s string) ([]corev1.Toleration, error) {
 	if s == "" {
-		return nil
+		return nil, nil
 	}
+
+	tolerations := []corev1.Toleration{}
+
 	keys := strings.Split(s, ",")
 	for _, key := range keys {
+
 		tmp := strings.Split(key, "=")
 		if len(tmp) == 1 {
-			return fmt.Errorf("no toleration values provided")
+			return nil, fmt.Errorf("no toleration values provided")
 		}
+		if tmp[0] == "" {
+			return nil, fmt.Errorf("no key provided")
+		}
+		toleration := corev1.Toleration{
+			Key: tmp[0],
+		}
+
 		values := strings.Split(tmp[1], ":")
-		if len(values) < 3 {
-			return fmt.Errorf("toleration values must contain at least 3 values %s", values)
-		}
 
+		if values[0] != "-" {
+			toleration.Operator = corev1.TolerationOperator(values[0])
+		}
 		if values[1] != "-" {
-			if !strings.Contains(tolerationOperators, values[0]) {
-				fmt.Println("values[1]", values[0])
-				return fmt.Errorf("tolleration got %s Operator can be of %s", values[0], tolerationOperators)
+			toleration.Value = values[1]
+		}
+		if values[2] != "-" {
+			toleration.Effect = corev1.TaintEffect(values[2])
+		}
+
+		if len(values) > 3 {
+			i, err := strconv.ParseInt(values[3], 10, 64)
+			if err == nil {
+				toleration.TolerationSeconds = int64Ptr(i)
+			} else {
+				return nil, err
 			}
 		}
 
-		if values[2] != "-" {
-			if !strings.Contains(taintEffect, values[2]) {
-				return fmt.Errorf("tolleration got %s TainfEffect can be of %s", values[2], taintEffect)
-			}
+		tolerations = append(tolerations, toleration)
+	}
+
+	for index, toleration := range tolerations {
+		if toleration.Operator == "NoExists" && toleration.Value != "" {
+			return nil, fmt.Errorf("error: Value cannot be specified for toleration with 'NoExists' operator at index %d", index)
+		}
+
+		if toleration.Key == "" && toleration.Operator == "" && toleration.Effect == "" {
+			return nil, fmt.Errorf("error: Tolerations at index %d must specify at least one of key, operator, or effect", index)
+		}
+
+		if toleration.Key == "" && toleration.Operator == "" {
+			return nil, fmt.Errorf("error: Tolerations at index %d must specify key and operator", index)
+		}
+
+		if toleration.Key == "" && toleration.Effect == "" {
+			return nil, fmt.Errorf("error: Tolerations at index %d must specify key and effect", index)
 		}
 	}
-	return nil
+
+	return tolerations, nil
+}
+
+// Utility function to create a pointer to an int64 value
+func int64Ptr(i int64) *int64 {
+	return &i
 }
