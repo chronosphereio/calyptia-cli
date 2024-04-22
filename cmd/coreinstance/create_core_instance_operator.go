@@ -278,7 +278,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 			syncDeployment, err := k8sClient.DeployCoreOperatorSync(ctx, coreCloudURL, coreDockerFromCloudImage, coreDockerToCloudImage, metricsPort, memoryLimit, annotations, tolerations, !noTLSVerify, httpProxy, httpsProxy, created, serviceAccount.Name)
 			if err != nil {
 				if err := config.Cloud.DeleteCoreInstance(ctx, created.ID); err != nil {
-					return fmt.Errorf("failed to rollback created core insatnce %v", err)
+					return fmt.Errorf("failed to rollback created core instance %v", err)
 				}
 				fmt.Printf("An error occurred while creating the core operator instance. %s Rolling back created resources.\n", err)
 
