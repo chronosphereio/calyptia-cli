@@ -281,7 +281,6 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 					return fmt.Errorf("failed to rollback created core insatnce %v", err)
 				}
 				fmt.Printf("An error occurred while creating the core operator instance. %s Rolling back created resources.\n", err)
-				fmt.Println("*******resourcesCreated", resourcesCreated)
 
 				resources, err := k8sClient.DeleteResources(ctx, resourcesCreated)
 				if err != nil {
