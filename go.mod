@@ -1,6 +1,7 @@
 module github.com/calyptia/cli
 
 go 1.21
+toolchain go1.22.2
 
 replace (
 	github.com/calyptia/cli/k8s => ./k8s
@@ -30,10 +31,10 @@ require (
 	golang.org/x/term v0.18.0
 	gopkg.in/yaml.v2 v2.4.0
 	gopkg.in/yaml.v3 v3.0.1
-	k8s.io/api v0.29.3
-	k8s.io/apimachinery v0.29.3
+	k8s.io/api v0.30.0
+	k8s.io/apimachinery v0.30.0
 	k8s.io/cli-runtime v0.29.3
-	k8s.io/client-go v0.29.3
+	k8s.io/client-go v0.30.0
 	k8s.io/component-base v0.29.3
 	k8s.io/kubectl v0.29.3
 )
@@ -116,7 +117,7 @@ require (
 	go.starlark.net v0.0.0-20240314022150-ee8ed142361c // indirect
 	golang.org/x/crypto v0.21.0 // indirect
 	golang.org/x/mod v0.16.0 // indirect
-	golang.org/x/net v0.22.0 // indirect
+	golang.org/x/net v0.23.0 // indirect
 	golang.org/x/oauth2 v0.18.0 // indirect
 	golang.org/x/sys v0.18.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
