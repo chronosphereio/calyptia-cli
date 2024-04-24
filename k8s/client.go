@@ -12,6 +12,8 @@ import (
 	"time"
 
 	goversion "github.com/hashicorp/go-version"
+	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
@@ -22,10 +24,13 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/wait"
+	"k8s.io/cli-runtime/pkg/genericclioptions"
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
 	restclient "k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
+	"k8s.io/component-base/logs"
+	kubectl "k8s.io/kubectl/pkg/cmd"
 	k8sclient "sigs.k8s.io/controller-runtime/pkg/client"
 
 	cloud "github.com/calyptia/api/types"
@@ -135,7 +140,14 @@ func (client *Client) CreateSecret(ctx context.Context, agg cloud.CreatedCoreIns
 	if dryRun {
 		return req, nil
 	}
-	return client.CoreV1().Secrets(client.Namespace).Create(ctx, req, options)
+
+	sec, err := client.CoreV1().Secrets(client.Namespace).Create(ctx, req, options)
+	if err != nil {
+		return nil, err
+	}
+
+	sec.TypeMeta = req.TypeMeta
+	return sec, nil
 }
 
 func (client *Client) CreateSecretOperatorRSAKey(ctx context.Context, agg cloud.CreatedCoreInstance, dryRun bool) (*corev1.Secret, error) {
@@ -155,7 +167,14 @@ func (client *Client) CreateSecretOperatorRSAKey(ctx context.Context, agg cloud.
 	if dryRun {
 		return req, nil
 	}
-	return client.CoreV1().Secrets(client.Namespace).Create(ctx, req, options)
+
+	sec, err := client.CoreV1().Secrets(client.Namespace).Create(ctx, req, options)
+	if err != nil {
+		return nil, err
+	}
+
+	sec.TypeMeta = req.TypeMeta
+	return sec, nil
 }
 
 type ClusterRoleOpt struct {
@@ -595,7 +614,8 @@ func (client *Client) FindDeploymentByLabel(ctx context.Context, label string) (
 }
 
 func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, fromCloudImage, toCloudImage string, metricsPort string, memoryLimit string, annotations string, tolerations string, noTLSVerify bool, httpProxy, httpsProxy string, coreInstance cloud.CreatedCoreInstance, serviceAccount string) (*appsv1.Deployment, error) {
-	if err := validateTolerations(tolerations); err != nil {
+	podTolerations, err := validateTolerations(tolerations)
+	if err != nil {
 		return nil, err
 	}
 
@@ -696,6 +716,7 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, 
 				Spec: corev1.PodSpec{
 					ServiceAccountName: serviceAccount,
 					Containers:         []corev1.Container{fromCloud, toCloud},
+					Tolerations:        podTolerations,
 				},
 			},
 		},
@@ -711,18 +732,26 @@ type ResourceRollBack struct {
 }
 
 func (client *Client) DeleteResources(ctx context.Context, resources []ResourceRollBack) ([]ResourceRollBack, error) {
-	dynamicClient, err := dynamic.NewForConfig(client.Config)
-	if err != nil {
-		return nil, err
-	}
+	kctl := newKubectlCmd()
+
+	errs := []error{}
 	var deletedResources []ResourceRollBack
 	for _, r := range resources {
-		resource := dynamicClient.Resource(r.GVR)
-		err = resource.Namespace(client.Namespace).Delete(ctx, r.Name, metav1.DeleteOptions{})
+		kctl.SetArgs([]string{"delete", r.GVR.Resource, r.Name})
+		err := kctl.Execute()
 		if err != nil {
-			return nil, err
+			errs = append(errs, fmt.Errorf("%s, %s/%s", err.Error(), client.Namespace, r.Name))
 		}
+
 		deletedResources = append(deletedResources, r)
+	}
+
+	if len(errs) > 0 {
+		errStr := ""
+		for _, e := range errs {
+			errStr += e.Error()
+		}
+		return nil, fmt.Errorf(errStr)
 	}
 	return deletedResources, nil
 }
@@ -817,16 +846,6 @@ func GetCurrentContextNamespace() (string, error) {
 		return "", ErrNoContext
 	}
 	return context.Namespace, nil
-}
-
-func ExtractGroupVersionResource(obj runtime.Object) (schema.GroupVersionResource, error) {
-	gvk := obj.GetObjectKind().GroupVersionKind()
-	gvr := schema.GroupVersionResource{
-		Group:    gvk.Group,
-		Version:  gvk.Version,
-		Resource: gvk.Kind + "s",
-	}
-	return gvr, nil
 }
 
 func (client *Client) WaitReady(ctx context.Context, namespace, name string, verbose bool, waitTimeout time.Duration) error {
@@ -1161,36 +1180,119 @@ func (o *OperatorIncompleteError) Error() string {
 	return strings.Join(errs, "\n")
 }
 
-var tolerationOperators = "Exists,Equal"
-var taintEffect = "NoSchedule,PreferNoSchedule,NoExecute"
-
-func validateTolerations(s string) error {
+func validateTolerations(s string) ([]corev1.Toleration, error) {
 	if s == "" {
-		return nil
+		return nil, nil
 	}
+
+	tolerations := []corev1.Toleration{}
+
 	keys := strings.Split(s, ",")
 	for _, key := range keys {
+
 		tmp := strings.Split(key, "=")
 		if len(tmp) == 1 {
-			return fmt.Errorf("no toleration values provided")
+			return nil, fmt.Errorf("no toleration values provided")
 		}
+		if tmp[0] == "" {
+			return nil, fmt.Errorf("no key provided")
+		}
+		toleration := corev1.Toleration{
+			Key: tmp[0],
+		}
+
 		values := strings.Split(tmp[1], ":")
-		if len(values) < 3 {
-			return fmt.Errorf("toleration values must contain at least 3 values %s", values)
-		}
 
+		if values[0] != "-" {
+			toleration.Operator = corev1.TolerationOperator(values[0])
+		}
 		if values[1] != "-" {
-			if !strings.Contains(tolerationOperators, values[0]) {
-				fmt.Println("values[1]", values[0])
-				return fmt.Errorf("tolleration got %s Operator can be of %s", values[0], tolerationOperators)
+			toleration.Value = values[1]
+		}
+		if values[2] != "-" {
+			toleration.Effect = corev1.TaintEffect(values[2])
+		}
+
+		if len(values) > 3 {
+			i, err := strconv.ParseInt(values[3], 10, 64)
+			if err == nil {
+				toleration.TolerationSeconds = int64Ptr(i)
+			} else {
+				return nil, err
 			}
 		}
 
-		if values[2] != "-" {
-			if !strings.Contains(taintEffect, values[2]) {
-				return fmt.Errorf("tolleration got %s TainfEffect can be of %s", values[2], taintEffect)
-			}
+		tolerations = append(tolerations, toleration)
+	}
+
+	for index, toleration := range tolerations {
+		if toleration.Operator == "NoExists" && toleration.Value != "" {
+			return nil, fmt.Errorf("error: Value cannot be specified for toleration with 'NoExists' operator at index %d", index)
+		}
+
+		if toleration.Key == "" && toleration.Operator == "" && toleration.Effect == "" {
+			return nil, fmt.Errorf("error: Tolerations at index %d must specify at least one of key, operator, or effect", index)
+		}
+
+		if toleration.Key == "" && toleration.Operator == "" {
+			return nil, fmt.Errorf("error: Tolerations at index %d must specify key and operator", index)
+		}
+
+		if toleration.Key == "" && toleration.Effect == "" {
+			return nil, fmt.Errorf("error: Tolerations at index %d must specify key and effect", index)
 		}
 	}
-	return nil
+
+	return tolerations, nil
+}
+
+// Utility function to create a pointer to an int64 value
+func int64Ptr(i int64) *int64 {
+	return &i
+}
+
+func newKubectlCmd() *cobra.Command {
+	_ = pflag.CommandLine.MarkHidden("log-flush-frequency")
+	_ = pflag.CommandLine.MarkHidden("version")
+
+	args := kubectl.KubectlOptions{
+		IOStreams: genericclioptions.IOStreams{
+			In:     os.Stdin,
+			Out:    os.Stdout,
+			ErrOut: os.Stderr,
+		},
+		Arguments: os.Args,
+	}
+
+	cmd := kubectl.NewKubectlCommand(args)
+
+	cmd.Aliases = []string{"kc"}
+	cmd.Hidden = true
+	// Get handle on the original kubectl prerun so we can call it later
+	originalPreRunE := cmd.PersistentPreRunE
+	cmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
+		// Call parents pre-run if exists, cobra does not do this automatically
+		// See: https://github.com/spf13/cobra/issues/216
+		if parent := cmd.Parent(); parent != nil {
+			if parent.PersistentPreRun != nil {
+				parent.PersistentPreRun(parent, args)
+			}
+			if parent.PersistentPreRunE != nil {
+				err := parent.PersistentPreRunE(parent, args)
+				if err != nil {
+					return err
+				}
+			}
+		}
+		return originalPreRunE(cmd, args)
+	}
+
+	originalRun := cmd.Run
+	cmd.RunE = func(cmd *cobra.Command, args []string) error {
+		originalRun(cmd, args)
+		return nil
+	}
+
+	logs.AddFlags(cmd.PersistentFlags())
+	return cmd
 }

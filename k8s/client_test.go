@@ -295,40 +295,103 @@ func TestUpdateSyncDeploymentByLabel(t *testing.T) {
 }
 
 func TestValidateTolerations(t *testing.T) {
-	tests := []struct {
-		name  string
-		input string
-		pass  bool
+	testCases := []struct {
+		input          string
+		expectedResult []corev1.Toleration
+		expectedError  error
 	}{
+		// Valid input with single toleration
 		{
-			name:  "valid input",
-			input: "key1=Equal:value1:Execute:3600,key2=Exists:value2:NoExecute",
-			pass:  true,
+			input: "key1=Exists:val1:NoSchedule:600",
+			expectedResult: []corev1.Toleration{
+				{
+					Key:               "key1",
+					Operator:          corev1.TolerationOpExists,
+					Value:             "val1",
+					Effect:            corev1.TaintEffectNoSchedule,
+					TolerationSeconds: int64Ptr(600),
+				},
+			},
+			expectedError: nil,
 		},
+		// Valid input with multiple tolerations
 		{
-			name:  "invalid operator",
-			input: "key1=Invalid:value1:NoSchedule",
-			pass:  false,
+			input: "key1=Exists:val1:NoSchedule:600,key2=Equal:val2:PreferNoSchedule:300",
+			expectedResult: []corev1.Toleration{
+				{
+					Key:               "key1",
+					Operator:          corev1.TolerationOpExists,
+					Value:             "val1",
+					Effect:            corev1.TaintEffectNoSchedule,
+					TolerationSeconds: int64Ptr(600),
+				},
+				{
+					Key:               "key2",
+					Operator:          corev1.TolerationOpEqual,
+					Value:             "val2",
+					Effect:            corev1.TaintEffectPreferNoSchedule,
+					TolerationSeconds: int64Ptr(300),
+				},
+			},
+			expectedError: nil,
 		},
+		// Invalid input: no toleration values provided
 		{
-			name:  "invalid taint effect",
-			input: "key1=Equal:value1:Invalid",
-			pass:  false,
+			input:         "key1",
+			expectedError: fmt.Errorf("no toleration values provided"),
 		},
+		// Invalid input: invalid tolerationSeconds value
 		{
-			name:  "missing values",
-			input: "key1=",
-			pass:  false,
+			input:         "key1=Exists:val1:NoSchedule:invalid",
+			expectedError: fmt.Errorf("strconv.ParseInt: parsing \"invalid\": invalid syntax"),
+		},
+		// Invalid input: invalid tolerationSeconds value
+		{
+			input:         "key1=Exists:val1:NoSchedule:invalid",
+			expectedError: fmt.Errorf("strconv.ParseInt: parsing \"invalid\": invalid syntax"),
+		},
+		// Invalid input: missing key
+		{
+			input:         "=Exists:val1:NoSchedule:600",
+			expectedError: fmt.Errorf("no key provided"),
 		},
 	}
 
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			err := validateTolerations(test.input)
+	for i, tc := range testCases {
+		result, err := validateTolerations(tc.input)
 
-			if (err != nil) == test.pass {
-				t.Errorf("error occured %v", err)
+		// Check for error
+		if err != nil {
+			if tc.expectedError == nil {
+				t.Errorf("Test case %d: unexpected error: %s", i, err)
+			} else if err.Error() != tc.expectedError.Error() {
+				t.Errorf("Test case %d: unexpected error message: got %s, want %s", i, err.Error(), tc.expectedError.Error())
 			}
-		})
+			continue
+		} else if tc.expectedError != nil {
+			t.Errorf("Test case %d: expected error %s, but got nil", i, tc.expectedError.Error())
+			continue
+		}
+
+		// Check for result
+		if len(result) != len(tc.expectedResult) {
+			t.Errorf("Test case %d: unexpected result length: got %d, want %d", i, len(result), len(tc.expectedResult))
+			continue
+		}
+
+		for j := range result {
+			if !tolerationEqual(result[j], tc.expectedResult[j]) {
+				t.Errorf("Test case %d: unexpected result: got %v, want %v", i, result[j], tc.expectedResult[j])
+			}
+		}
 	}
+}
+
+// Utility function to compare two tolerations for equality
+func tolerationEqual(t1, t2 corev1.Toleration) bool {
+	return t1.Key == t2.Key &&
+		t1.Operator == t2.Operator &&
+		t1.Value == t2.Value &&
+		t1.Effect == t2.Effect &&
+		((t1.TolerationSeconds == nil && t2.TolerationSeconds == nil) || (t1.TolerationSeconds != nil && t2.TolerationSeconds != nil && *t1.TolerationSeconds == *t2.TolerationSeconds))
 }

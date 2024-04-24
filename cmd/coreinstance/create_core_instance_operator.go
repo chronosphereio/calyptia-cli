@@ -10,7 +10,7 @@ import (
 
 	"github.com/spf13/cobra"
 	apiv1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/kubernetes"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp" // register GCP auth provider
 	restclient "k8s.io/client-go/rest"
@@ -208,7 +208,8 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				}
 				fmt.Printf("Rollback successful. Deleted %d resources.\n", len(resources))
 			}
-			err = addToRollBack(err, secret.Name, secret, &resourcesCreated)
+
+			err = addToRollBack(err, secret.Name, "secret", &resourcesCreated)
 			if err != nil {
 				return err
 			}
@@ -224,7 +225,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				fmt.Printf("Rollback successful. Deleted %d resources.\n", len(resources))
 			}
 
-			err = addToRollBack(err, clusterRole.Name, clusterRole, &resourcesCreated)
+			err = addToRollBack(err, clusterRole.Name, "clusterrole", &resourcesCreated)
 			if err != nil {
 				return err
 			}
@@ -239,7 +240,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				fmt.Printf("Rollback successful. Deleted %d resources.\n", len(resources))
 			}
 
-			err = addToRollBack(err, serviceAccount.Name, serviceAccount, &resourcesCreated)
+			err = addToRollBack(err, serviceAccount.Name, "serviceaccount", &resourcesCreated)
 			if err != nil {
 				return err
 			}
@@ -254,7 +255,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				fmt.Printf("Rollback successful. Deleted %d resources.\n", len(resources))
 			}
 
-			err = addToRollBack(err, serviceAccount.Name, binding, &resourcesCreated)
+			err = addToRollBack(err, binding.Name, "clusterrolebinding", &resourcesCreated)
 			if err != nil {
 				return err
 			}
@@ -276,7 +277,11 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 			}
 			syncDeployment, err := k8sClient.DeployCoreOperatorSync(ctx, coreCloudURL, coreDockerFromCloudImage, coreDockerToCloudImage, metricsPort, memoryLimit, annotations, tolerations, !noTLSVerify, httpProxy, httpsProxy, created, serviceAccount.Name)
 			if err != nil {
+				if err := config.Cloud.DeleteCoreInstance(ctx, created.ID); err != nil {
+					return fmt.Errorf("failed to rollback created core instance %v", err)
+				}
 				fmt.Printf("An error occurred while creating the core operator instance. %s Rolling back created resources.\n", err)
+
 				resources, err := k8sClient.DeleteResources(ctx, resourcesCreated)
 				if err != nil {
 					return fmt.Errorf("could not delete resources: %w", err)
@@ -294,7 +299,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				fmt.Printf("Core instance is ready. Took %s\n", time.Since(start))
 			}
 
-			err = addToRollBack(err, serviceAccount.Name, syncDeployment, &resourcesCreated)
+			err = addToRollBack(err, serviceAccount.Name, "deployment", &resourcesCreated)
 			if err != nil {
 				return err
 			}
@@ -357,31 +362,19 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 	return cmd
 }
 
-func addToRollBack(err error, name string, obj runtime.Object, resourcesCreated *[]k8s.ResourceRollBack) error {
+func addToRollBack(err error, name string, resource string, resourcesCreated *[]k8s.ResourceRollBack) error {
 	if err != nil {
 		return err
 	}
 
-	r, err := extractRollBack(name, obj)
-	if err != nil {
-		return err
-	}
-
-	*resourcesCreated = append(*resourcesCreated, r)
+	*resourcesCreated = append(*resourcesCreated, k8s.ResourceRollBack{
+		Name: name,
+		GVR: schema.GroupVersionResource{
+			Resource: resource,
+		},
+	})
 
 	return nil
-}
-
-func extractRollBack(name string, obj runtime.Object) (k8s.ResourceRollBack, error) {
-	resource, err := k8s.ExtractGroupVersionResource(obj)
-	if err != nil {
-		return k8s.ResourceRollBack{}, err
-	}
-	back := k8s.ResourceRollBack{
-		Name: name,
-		GVR:  resource,
-	}
-	return back, err
 }
 
 func getCoreInstanceMetadata(k8s *k8s.Client) (cloud.CoreInstanceMetadata, error) {
