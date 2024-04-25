@@ -209,11 +209,12 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				fmt.Printf("Rollback successful. Deleted %d resources.\n", len(resources))
 			}
 
-			err = addToRollBack(err, secret.Name, "secret", &resourcesCreated)
-			if err != nil {
-				return err
+			if secret != nil {
+				err = addToRollBack(err, secret.Name, configOverrides.Context.Namespace, "secret", &resourcesCreated)
+				if err != nil {
+					return err
+				}
 			}
-
 			var clusterRoleOpts k8s.ClusterRoleOpt
 			clusterRole, err := k8sClient.CreateClusterRole(ctx, created, dryRun, clusterRoleOpts)
 			if err != nil {
@@ -225,9 +226,11 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				fmt.Printf("Rollback successful. Deleted %d resources.\n", len(resources))
 			}
 
-			err = addToRollBack(err, clusterRole.Name, "clusterrole", &resourcesCreated)
-			if err != nil {
-				return err
+			if clusterRole != nil {
+				err = addToRollBack(err, clusterRole.Name, configOverrides.Context.Namespace, "clusterrole", &resourcesCreated)
+				if err != nil {
+					return err
+				}
 			}
 
 			serviceAccount, err := k8sClient.CreateServiceAccount(ctx, created, dryRun)
@@ -240,9 +243,11 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				fmt.Printf("Rollback successful. Deleted %d resources.\n", len(resources))
 			}
 
-			err = addToRollBack(err, serviceAccount.Name, "serviceaccount", &resourcesCreated)
-			if err != nil {
-				return err
+			if serviceAccount != nil {
+				err = addToRollBack(err, serviceAccount.Name, configOverrides.Context.Namespace, "serviceaccount", &resourcesCreated)
+				if err != nil {
+					return err
+				}
 			}
 
 			binding, err := k8sClient.CreateClusterRoleBinding(ctx, created, clusterRole, serviceAccount, dryRun)
@@ -255,7 +260,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				fmt.Printf("Rollback successful. Deleted %d resources.\n", len(resources))
 			}
 
-			err = addToRollBack(err, binding.Name, "clusterrolebinding", &resourcesCreated)
+			err = addToRollBack(err, binding.Name, configOverrides.Context.Namespace, "clusterrolebinding", &resourcesCreated)
 			if err != nil {
 				return err
 			}
@@ -299,7 +304,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				fmt.Printf("Core instance is ready. Took %s\n", time.Since(start))
 			}
 
-			err = addToRollBack(err, serviceAccount.Name, "deployment", &resourcesCreated)
+			err = addToRollBack(err, syncDeployment.Name, configOverrides.Context.Namespace, "deployment", &resourcesCreated)
 			if err != nil {
 				return err
 			}
@@ -362,13 +367,14 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 	return cmd
 }
 
-func addToRollBack(err error, name string, resource string, resourcesCreated *[]k8s.ResourceRollBack) error {
+func addToRollBack(err error, name string, namespace string, resource string, resourcesCreated *[]k8s.ResourceRollBack) error {
 	if err != nil {
 		return err
 	}
 
 	*resourcesCreated = append(*resourcesCreated, k8s.ResourceRollBack{
-		Name: name,
+		Name:      name,
+		Namespace: namespace,
 		GVR: schema.GroupVersionResource{
 			Resource: resource,
 		},
