@@ -727,8 +727,9 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, 
 }
 
 type ResourceRollBack struct {
-	Name string
-	GVR  schema.GroupVersionResource
+	Name      string
+	Namespace string
+	GVR       schema.GroupVersionResource
 }
 
 func (client *Client) DeleteResources(ctx context.Context, resources []ResourceRollBack) ([]ResourceRollBack, error) {
@@ -737,7 +738,12 @@ func (client *Client) DeleteResources(ctx context.Context, resources []ResourceR
 	errs := []error{}
 	var deletedResources []ResourceRollBack
 	for _, r := range resources {
-		kctl.SetArgs([]string{"delete", r.GVR.Resource, r.Name})
+		if r.GVR.Resource == "clusterrolebinding" || r.GVR.Resource == "clusterrole" {
+			kctl.SetArgs([]string{"delete", r.GVR.Resource, r.Name})
+		} else {
+			kctl.SetArgs([]string{"delete", "-n", r.Namespace, r.GVR.Resource, r.Name})
+		}
+
 		err := kctl.Execute()
 		if err != nil {
 			errs = append(errs, fmt.Errorf("%s, %s/%s", err.Error(), client.Namespace, r.Name))
