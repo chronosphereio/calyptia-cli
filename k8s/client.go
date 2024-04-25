@@ -42,6 +42,8 @@ type objectType string
 const (
 	deploymentObjectType          objectType = "deployment"
 	clusterRoleObjectType         objectType = "cluster-role"
+	clusterRoleName               string     = "clusterrole"
+	clusterRoleBindingName        string     = "clusterrolebinding"
 	clusterRoleBindingObjectType  objectType = "cluster-role-binding"
 	secretObjectType              objectType = "secret"
 	serviceAccountObjectType      objectType = "service-account"
@@ -738,7 +740,7 @@ func (client *Client) DeleteResources(ctx context.Context, resources []ResourceR
 	errs := []error{}
 	var deletedResources []ResourceRollBack
 	for _, r := range resources {
-		if r.GVR.Resource == "clusterrolebinding" || r.GVR.Resource == "clusterrole" {
+		if r.GVR.Resource == string(clusterRoleBindingName) || r.GVR.Resource == string(clusterRoleName) {
 			kctl.SetArgs([]string{"delete", r.GVR.Resource, r.Name})
 		} else {
 			kctl.SetArgs([]string{"delete", "-n", r.Namespace, r.GVR.Resource, r.Name})
