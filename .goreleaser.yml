@@ -29,9 +29,15 @@ universal_binaries:
 
 brews:
   - name: calyptia
+    alternative_names:
+      - calyptia@{{ .Version }}
+      - calyptia@{{ .Major }}
     description: Calyptia Cloud CLI
     homepage: https://github.com/chronosphereio/calyptia-cli
     repository:
       owner: chronosphereio
       name: calyptia-homebrew-tap
     directory: Formula
+    license: Apache-2.0
+    test: |
+          system "#{bin}/calyptia version"
