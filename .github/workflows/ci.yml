@@ -216,6 +216,10 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      
+      # Required for goreleaser cross-compilation
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -247,7 +251,7 @@ jobs:
 
       - name: Set up PR build
         if: ${{ github.event_name == 'pull_request' }}
-        run: echo "goreleaser-flags=--skip-publish --skip-sign --skip-sbom --snapshot" >> $GITHUB_ENV
+        run: echo 'goreleaser-flags=--skip=publish --skip=sign --skip=sbom --snapshot' >> $GITHUB_ENV
 
       - name: Run GoReleaser with flags
         uses: goreleaser/goreleaser-action@v4

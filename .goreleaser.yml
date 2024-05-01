@@ -32,4 +32,4 @@ brews:
     repository:
       owner: chronosphereio
       name: calyptia-homebrew-tap
-    folder: Formula
+    directory: Formula
