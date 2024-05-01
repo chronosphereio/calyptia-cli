@@ -24,6 +24,8 @@ builds:
 
 universal_binaries:
   - replace: true
+    id: calyptia
+    name_template: calyptia
 
 brews:
   - name: calyptia
