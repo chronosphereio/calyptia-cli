@@ -21,15 +21,24 @@ builds:
       - linux_amd64
       - linux_arm64
       - windows_amd64
+      - windows_arm64
 
 universal_binaries:
   - replace: true
+    id: calyptia
+    name_template: calyptia
 
 brews:
   - name: calyptia
+    alternative_names:
+      - calyptia@{{ .Version }}
+      - calyptia@{{ .Major }}
     description: Calyptia Cloud CLI
     homepage: https://github.com/chronosphereio/calyptia-cli
     repository:
       owner: chronosphereio
       name: calyptia-homebrew-tap
-    folder: Formula
+    directory: Formula
+    license: Apache-2.0
+    test: |
+          system "#{bin}/calyptia version"

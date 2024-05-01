@@ -1,14 +1,42 @@
 #!/usr/bin/env sh
 set -ef
 
+# Use CLI_INSTALL_DIR or first parameter to specify where to install the Calyptia CLI, otherwise it will default to /usr/local/bin.
+# Use cli_VERSION to specify the version to install, otherwise it will default to latest.
+# Use CLI_DOWNLOAD_OUTPUT_DIR to specify another directory other than the current one ($PWD) to download artefacts.
+# Use cli_ARTEFACT_PREFIX to override the name of the artefact used when downloading.
+
 if [ -n "${DEBUG}" ]; then
   set -x
 fi
 
-_sudo() {
-  [ "$(id -u)" -eq 0 ] || set -- command sudo "$@"
-  "$@"
-}
+# Specify a specific directory to install into
+install_dir="${CLI_INSTALL_DIR:-$1}"
+if [ -n "$install_dir" ]; then
+  mkdir -p "$install_dir"
+else
+  install_dir="/usr/local/bin"
+fi
+
+_download_output_dir="${CLI_DOWNLOAD_OUTPUT_DIR:-$PWD}"
+if [  "$_download_output_dir" != "$PWD" ]; then
+  mkdir -p "$_download_output_dir"
+fi
+if [ -z "$_download_output_dir" ]; then
+  _download_output_dir="."
+fi
+
+if ! command -v curl > /dev/null 2>&1; then
+  echo "ERROR: missing curl command, please install"
+  exit 1
+fi
+if ! command -v tar > /dev/null 2>&1; then
+  echo "ERROR: missing tar command, please install"
+  exit 1
+fi
+if ! command -v sudo > /dev/null 2>&1; then
+  echo "WARNING: missing sudo command, may be required to elevate permissions so please install or run with relevant permissions"
+fi
 
 _detect_arch() {
   case $(uname -m) in
@@ -42,7 +70,7 @@ _detect_os() {
   esac
 }
 
-_download_url() {
+_download_binary() {
   _download_arch="$(_detect_arch)"
   _download_os="$(_detect_os)"
   # shellcheck disable=SC2154
@@ -71,28 +99,30 @@ _download_url() {
   fi
 
   _download_trailedVersion="$(echo "$_download_version" | tr -d v)"
-  echo "https://github.com/chronosphereio/calyptia-cli/releases/download/${_download_version}/${_download_artefact_prefix}_${_download_trailedVersion}_${_download_os}_${_download_arch}.tar.gz"
+  _download_url_prefix="https://github.com/chronosphereio/calyptia-cli/releases/download/${_download_version}/${_download_artefact_prefix}_"
+  rm -f "$_download_output_dir"/cli.tar.gz
+
+  # macOS does a universal binary in more recent builds so try that as well as the per-arch option
+  _url=${_download_url_prefix}${_download_trailedVersion}_${_download_os}_${_download_arch}.tar.gz
+  if [ "$_download_os" = "darwin" ]; then
+    if ! curl --output /dev/null --silent --head --fail "$_url"; then
+      _url="${_download_url_prefix}${_download_trailedVersion}_${_download_os}_all.tar.gz"
+    fi
+  fi
+
+  # If we do not have it yet then use the arch version
+  echo "Downloading from URL:  ${_download_url_prefix}${_download_trailedVersion}_${_download_os}_${_download_arch}.tar.gz"
+  curl  --progress-bar --output "$_download_output_dir"/cli.tar.gz -SLf "${_download_url_prefix}${_download_trailedVersion}_${_download_os}_${_download_arch}.tar.gz"
+  tar -C "$_download_output_dir" -xzf cli.tar.gz calyptia
+  rm -f "$_download_output_dir"/cli.tar.gz
 }
 
-echo "Downloading Calyptia CLI from URL: $(_download_url)"
-curl --progress-bar --output cli.tar.gz -SLf "$(_download_url)"
-rm -f calyptia
-tar -xzf cli.tar.gz calyptia
-rm -f cli.tar.gz
+_download_binary
 
-install_dir=$1
-if [ "$install_dir" != "" ]; then
-  mkdir -p "$install_dir"
-  mv calyptia "${install_dir}/calyptia"
-  echo "Calyptia CLI installed in ${install_dir}"
-  exit 0
-fi
-
-if [ "$(id -u)" -ne 0 ]; then
-  echo "Sudo rights are needed to move the binary to /usr/local/bin, please type your password when asked"
-  _sudo mv calyptia /usr/local/bin/calyptia
+if [ -w "${install_dir}" ]; then
+  mv "${_download_output_dir}/calyptia" "${install_dir}/calyptia"
 else
-  mv calyptia /usr/local/bin/calyptia
+  echo "Sudo rights are needed to move the binary to ${install_dir}, please type your password when asked"
+  sudo mv "${_download_output_dir}/calyptia" "${install_dir}/calyptia"
 fi
-
-echo "Calyptia CLI installed in /usr/local/bin/calyptia"
+echo "Calyptia CLI installed in ${install_dir}"
