@@ -13,7 +13,7 @@ require (
 	code.cloudfoundry.org/bytefmt v0.0.0-20240423163756-f0951006707a
 	github.com/Masterminds/sprig/v3 v3.2.3
 	github.com/alecthomas/assert/v2 v2.8.1
-	github.com/calyptia/api v1.7.1
+	github.com/calyptia/api v1.8.0
 	github.com/calyptia/cli/k8s v0.0.0-20240424103931-e5102e920dca
 	github.com/calyptia/core-images-index/go-index v0.0.0-20240423130833-a87a7fb66960
 	github.com/calyptia/go-fluentbit-config/v2 v2.1.1
@@ -47,7 +47,6 @@ require (
 	github.com/Masterminds/semver/v3 v3.2.1 // indirect
 	github.com/alecthomas/repr v0.4.0 // indirect
 	github.com/alessio/shellescape v1.4.2 // indirect
-	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/blang/semver/v4 v4.0.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
@@ -82,9 +81,6 @@ require (
 	github.com/huandu/xstrings v1.4.0 // indirect
 	github.com/imdario/mergo v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
-	github.com/influxdata/influxdb v1.11.5 // indirect
-	github.com/influxdata/influxdb-client-go/v2 v2.13.0 // indirect
-	github.com/influxdata/line-protocol v0.0.0-20210922203350-b1ad95c89adf // indirect
 	github.com/jonboulle/clockwork v0.4.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
@@ -101,7 +97,6 @@ require (
 	github.com/monochromegane/go-gitignore v0.0.0-20200626010858-205db1a8cc00 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/mxk/go-flowrate v0.0.0-20140419014527-cca7078d478f // indirect
-	github.com/oapi-codegen/runtime v1.1.1 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/peterbourgon/diskv v2.0.1+incompatible // indirect
 	github.com/peterhellberg/link v1.2.0 // indirect

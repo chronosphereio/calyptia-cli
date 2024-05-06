@@ -6,10 +6,6 @@ import (
 	"strings"
 
 	"code.cloudfoundry.org/bytefmt"
-
-	metrics "github.com/calyptia/cli/metric"
-
-	cloud "github.com/calyptia/api/types"
 )
 
 const (
@@ -76,43 +72,6 @@ type Rates struct {
 
 func (rates Rates) OK() bool {
 	return rates.InputBytes != nil || rates.InputRecords != nil || rates.OutputBytes != nil || rates.OutputRecords != nil
-}
-
-func (rates *Rates) Apply(measurement, metric string, points []cloud.MetricFields) {
-	if strings.Contains(metric, "dropped_records") {
-		return
-	}
-
-	if strings.Contains(metric, "retried_records") {
-		return
-	}
-
-	if strings.Contains(metric, "retries_failed") {
-		return
-	}
-
-	if strings.Contains(metric, "retries") {
-		return
-	}
-
-	if strings.Contains(metric, "record") {
-		switch measurement {
-		case "fluentbit_input", "fluentd_input":
-			rates.InputRecords = metrics.Rate(points)
-		case "fluentbit_output", "fluentd_output":
-			rates.OutputRecords = metrics.Rate(points)
-		}
-		return
-	}
-
-	if strings.Contains(metric, "byte") || strings.Contains(metric, "size") {
-		switch measurement {
-		case "fluentbit_input", "fluentd_input":
-			rates.InputBytes = metrics.Rate(points)
-		case "fluentbit_output", "fluentd_output":
-			rates.OutputBytes = metrics.Rate(points)
-		}
-	}
 }
 
 func ZeroOfPtr[T comparable](v *T) T {
