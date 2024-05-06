@@ -4,10 +4,10 @@ package cmd
 
 import (
 	"context"
-	"net/url"
-
+	"github.com/calyptia/api/client"
 	"github.com/calyptia/api/types"
-	fluentbitconfig "github.com/calyptia/go-fluentbit-config/v2"
+	"github.com/calyptia/go-fluentbit-config/v2"
+	"net/url"
 )
 
 // Client is an interface generated for "github.com/calyptia/api/client.Client".
@@ -16,18 +16,17 @@ type Client interface {
 	AcceptInvitation(context.Context, types.AcceptInvitation) error
 	ActiveTraceSession(context.Context, string) (types.TraceSession, error)
 	AddAgentMetrics(context.Context, string, []byte) error
-	AddAgentMetricsV1(context.Context, string, []types.Metric) (types.MetricsOverTimeByPlugin, error)
 	Agent(context.Context, string) (types.Agent, error)
 	AgentConfigHistory(context.Context, string, types.AgentConfigHistoryParams) (types.AgentConfigHistory, error)
 	AgentErrors(context.Context, types.ListAgentErrors) (types.AgentErrors, error)
-	AgentMetrics(context.Context, string, types.MetricsParams) (types.MetricsSummary, error)
-	AgentMetricsByPlugin(context.Context, string, types.MetricsParams) (types.MetricsSummaryPlugin, error)
+	AgentMetrics(context.Context, string) (types.MetricsSummary, error)
+	AgentMetricsByPlugin(context.Context, string) (types.MetricsSummaryPlugin, error)
+	AgentMetricsOverTime(context.Context, string, types.MetricsParams) (types.MetricsOverTime, error)
 	AgentMetricsOverTimeByPlugin(context.Context, string, types.MetricsParams) (types.MetricsOverTimeByPlugin, error)
-	AgentMetricsV1(context.Context, string, types.MetricsParams) (types.AgentMetrics, error)
-	AgentOverTimeMetrics(context.Context, string, types.MetricsParams) (types.MetricsOverTime, error)
 	Agents(context.Context, string, types.AgentsParams) (types.Agents, error)
 	AllCoreInstanceFiles(context.Context, string) ([]types.CoreInstanceFile, error)
 	AllCoreInstanceSecrets(context.Context, string) ([]types.CoreInstanceSecret, error)
+	Clone() *client.Client
 	ClusterObject(context.Context, string) (types.ClusterObject, error)
 	ClusterObjectRegex(context.Context, string) (types.ClusterObjectRegex, error)
 	ClusterObjectRegexes(context.Context, types.ListClusterObjectRegexes) (types.ClusterObjectRegexes, error)
@@ -38,11 +37,10 @@ type Client interface {
 	CoreInstanceCheck(context.Context, string) (types.CoreInstanceCheck, error)
 	CoreInstanceChecks(context.Context, string, types.CoreInstanceChecksParams) (types.CoreInstanceChecks, error)
 	CoreInstanceFiles(context.Context, types.ListCoreInstanceFiles) (types.CoreInstanceFiles, error)
-	CoreInstanceMetrics(context.Context, string, types.MetricsParams) (types.MetricsSummary, error)
-	CoreInstanceMetricsByPlugin(context.Context, string, types.MetricsParams) (types.MetricsSummaryPlugin, error)
+	CoreInstanceMetrics(context.Context, string) (types.MetricsSummary, error)
+	CoreInstanceMetricsByPlugin(context.Context, string) (types.MetricsSummaryPlugin, error)
+	CoreInstanceMetricsOverTime(context.Context, string, types.MetricsParams) (types.MetricsOverTime, error)
 	CoreInstanceMetricsOverTimeByPlugin(context.Context, string, types.MetricsParams) (types.MetricsOverTimeByPlugin, error)
-	CoreInstanceMetricsV1(context.Context, string, types.MetricsParams) (types.CoreInstanceMetricsV1, error)
-	CoreInstanceOverTimeMetrics(context.Context, string, types.MetricsParams) (types.MetricsOverTime, error)
 	CoreInstancePing(context.Context, string) (types.CoreInstancePingResponse, error)
 	CoreInstanceSecrets(context.Context, types.ListCoreInstanceSecrets) (types.CoreInstanceSecrets, error)
 	CoreInstances(context.Context, string, types.CoreInstancesParams) (types.CoreInstances, error)
@@ -60,6 +58,7 @@ type Client interface {
 	CreateFleetFile(context.Context, string, types.CreateFleetFile) (types.Created, error)
 	CreateIngestCheck(context.Context, string, types.CreateIngestCheck) (types.Created, error)
 	CreateInvitation(context.Context, string, types.CreateInvitation) error
+	CreateMetrics(context.Context, types.CreateMetrics) (types.CreatedMetrics, error)
 	CreatePipeline(context.Context, string, types.CreatePipeline) (types.CreatedPipeline, error)
 	CreatePipelineCheck(context.Context, string, types.CreatePipelineCheck) (types.Created, error)
 	CreatePipelineFile(context.Context, string, types.CreatePipelineFile) (types.Created, error)
@@ -124,24 +123,21 @@ type Client interface {
 	PipelineLog(context.Context, string) (types.PipelineLog, error)
 	PipelineLogs(context.Context, types.ListPipelineLogs) (types.PipelineLogs, error)
 	PipelineMetadata(context.Context, string, ...string) (types.PipelineMetadata, error)
-	PipelineMetrics(context.Context, string, types.MetricsParams) (types.MetricsSummary, error)
-	PipelineMetricsByPlugin(context.Context, string, types.MetricsParams) (types.MetricsSummaryPlugin, error)
+	PipelineMetrics(context.Context, string) (types.MetricsSummary, error)
+	PipelineMetricsByPlugin(context.Context, string) (types.MetricsSummaryPlugin, error)
+	PipelineMetricsOverTime(context.Context, string, types.MetricsParams) (types.MetricsOverTime, error)
 	PipelineMetricsOverTimeByPlugin(context.Context, string, types.MetricsParams) (types.MetricsOverTimeByPlugin, error)
-	PipelineMetricsV1(context.Context, string, types.MetricsParams) (types.AgentMetrics, error)
-	PipelineOverTimeMetrics(context.Context, string, types.MetricsParams) (types.MetricsOverTime, error)
 	PipelinePort(context.Context, string) (types.PipelinePort, error)
 	PipelinePorts(context.Context, string, types.PipelinePortsParams) (types.PipelinePorts, error)
 	PipelineSecret(context.Context, string) (types.PipelineSecret, error)
 	PipelineSecrets(context.Context, string, types.PipelineSecretsParams) (types.PipelineSecrets, error)
 	PipelineStatusHistory(context.Context, string, types.PipelineStatusHistoryParams) (types.PipelineStatusHistory, error)
 	Pipelines(context.Context, types.PipelinesParams) (types.Pipelines, error)
-	PipelinesMetricsV1(context.Context, string, types.PipelinesMetricsParams) (types.PipelinesMetrics, error)
 	PreviewProcessingRule(context.Context, types.PreviewProcessingRule) ([]types.FluentBitLog, error)
 	ProcessingRule(context.Context, string) (types.ProcessingRule, error)
 	ProcessingRuleTemplates(context.Context, types.ListProcessingRuleTemplates) (types.ProcessingRuleTemplates, error)
 	ProcessingRules(context.Context, types.ProcessingRulesParams) (types.ProcessingRules, error)
 	Project(context.Context, string) (types.Project, error)
-	ProjectMetricsV1(context.Context, string, types.MetricsParams) (types.ProjectMetrics, error)
 	Projects(context.Context, types.ProjectsParams) (types.Projects, error)
 	PushAWSMarketplaceSubscriptionNotification(context.Context, types.AWSMarketplaceSubscriptionNotification) error
 	RegisterAgent(context.Context, types.RegisterAgent) (types.RegisteredAgent, error)

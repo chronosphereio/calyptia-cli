@@ -5,11 +5,11 @@ package cmd
 
 import (
 	"context"
+	cloudclient "github.com/calyptia/api/client"
+	"github.com/calyptia/api/types"
+	"github.com/calyptia/go-fluentbit-config/v2"
 	"net/url"
 	"sync"
-
-	"github.com/calyptia/api/types"
-	fluentbitconfig "github.com/calyptia/go-fluentbit-config/v2"
 )
 
 // Ensure, that ClientMock does implement Client.
@@ -34,9 +34,6 @@ var _ Client = &ClientMock{}
 //			AddAgentMetricsFunc: func(contextMoqParam context.Context, s string, bytes []byte) error {
 //				panic("mock out the AddAgentMetrics method")
 //			},
-//			AddAgentMetricsV1Func: func(contextMoqParam context.Context, s string, metrics []types.Metric) (types.MetricsOverTimeByPlugin, error) {
-//				panic("mock out the AddAgentMetricsV1 method")
-//			},
 //			AgentFunc: func(contextMoqParam context.Context, s string) (types.Agent, error) {
 //				panic("mock out the Agent method")
 //			},
@@ -46,20 +43,17 @@ var _ Client = &ClientMock{}
 //			AgentErrorsFunc: func(contextMoqParam context.Context, listAgentErrors types.ListAgentErrors) (types.AgentErrors, error) {
 //				panic("mock out the AgentErrors method")
 //			},
-//			AgentMetricsFunc: func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsSummary, error) {
+//			AgentMetricsFunc: func(contextMoqParam context.Context, s string) (types.MetricsSummary, error) {
 //				panic("mock out the AgentMetrics method")
 //			},
-//			AgentMetricsByPluginFunc: func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsSummaryPlugin, error) {
+//			AgentMetricsByPluginFunc: func(contextMoqParam context.Context, s string) (types.MetricsSummaryPlugin, error) {
 //				panic("mock out the AgentMetricsByPlugin method")
+//			},
+//			AgentMetricsOverTimeFunc: func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTime, error) {
+//				panic("mock out the AgentMetricsOverTime method")
 //			},
 //			AgentMetricsOverTimeByPluginFunc: func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTimeByPlugin, error) {
 //				panic("mock out the AgentMetricsOverTimeByPlugin method")
-//			},
-//			AgentMetricsV1Func: func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.AgentMetrics, error) {
-//				panic("mock out the AgentMetricsV1 method")
-//			},
-//			AgentOverTimeMetricsFunc: func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTime, error) {
-//				panic("mock out the AgentOverTimeMetrics method")
 //			},
 //			AgentsFunc: func(contextMoqParam context.Context, s string, agentsParams types.AgentsParams) (types.Agents, error) {
 //				panic("mock out the Agents method")
@@ -69,6 +63,9 @@ var _ Client = &ClientMock{}
 //			},
 //			AllCoreInstanceSecretsFunc: func(contextMoqParam context.Context, s string) ([]types.CoreInstanceSecret, error) {
 //				panic("mock out the AllCoreInstanceSecrets method")
+//			},
+//			CloneFunc: func() *cloudclient.Client {
+//				panic("mock out the Clone method")
 //			},
 //			ClusterObjectFunc: func(contextMoqParam context.Context, s string) (types.ClusterObject, error) {
 //				panic("mock out the ClusterObject method")
@@ -100,20 +97,17 @@ var _ Client = &ClientMock{}
 //			CoreInstanceFilesFunc: func(contextMoqParam context.Context, listCoreInstanceFiles types.ListCoreInstanceFiles) (types.CoreInstanceFiles, error) {
 //				panic("mock out the CoreInstanceFiles method")
 //			},
-//			CoreInstanceMetricsFunc: func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsSummary, error) {
+//			CoreInstanceMetricsFunc: func(contextMoqParam context.Context, s string) (types.MetricsSummary, error) {
 //				panic("mock out the CoreInstanceMetrics method")
 //			},
-//			CoreInstanceMetricsByPluginFunc: func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsSummaryPlugin, error) {
+//			CoreInstanceMetricsByPluginFunc: func(contextMoqParam context.Context, s string) (types.MetricsSummaryPlugin, error) {
 //				panic("mock out the CoreInstanceMetricsByPlugin method")
+//			},
+//			CoreInstanceMetricsOverTimeFunc: func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTime, error) {
+//				panic("mock out the CoreInstanceMetricsOverTime method")
 //			},
 //			CoreInstanceMetricsOverTimeByPluginFunc: func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTimeByPlugin, error) {
 //				panic("mock out the CoreInstanceMetricsOverTimeByPlugin method")
-//			},
-//			CoreInstanceMetricsV1Func: func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.CoreInstanceMetricsV1, error) {
-//				panic("mock out the CoreInstanceMetricsV1 method")
-//			},
-//			CoreInstanceOverTimeMetricsFunc: func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTime, error) {
-//				panic("mock out the CoreInstanceOverTimeMetrics method")
 //			},
 //			CoreInstancePingFunc: func(contextMoqParam context.Context, s string) (types.CoreInstancePingResponse, error) {
 //				panic("mock out the CoreInstancePing method")
@@ -165,6 +159,9 @@ var _ Client = &ClientMock{}
 //			},
 //			CreateInvitationFunc: func(contextMoqParam context.Context, s string, createInvitation types.CreateInvitation) error {
 //				panic("mock out the CreateInvitation method")
+//			},
+//			CreateMetricsFunc: func(contextMoqParam context.Context, createMetrics types.CreateMetrics) (types.CreatedMetrics, error) {
+//				panic("mock out the CreateMetrics method")
 //			},
 //			CreatePipelineFunc: func(contextMoqParam context.Context, s string, createPipeline types.CreatePipeline) (types.CreatedPipeline, error) {
 //				panic("mock out the CreatePipeline method")
@@ -358,20 +355,17 @@ var _ Client = &ClientMock{}
 //			PipelineMetadataFunc: func(contextMoqParam context.Context, s string, strings ...string) (types.PipelineMetadata, error) {
 //				panic("mock out the PipelineMetadata method")
 //			},
-//			PipelineMetricsFunc: func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsSummary, error) {
+//			PipelineMetricsFunc: func(contextMoqParam context.Context, s string) (types.MetricsSummary, error) {
 //				panic("mock out the PipelineMetrics method")
 //			},
-//			PipelineMetricsByPluginFunc: func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsSummaryPlugin, error) {
+//			PipelineMetricsByPluginFunc: func(contextMoqParam context.Context, s string) (types.MetricsSummaryPlugin, error) {
 //				panic("mock out the PipelineMetricsByPlugin method")
+//			},
+//			PipelineMetricsOverTimeFunc: func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTime, error) {
+//				panic("mock out the PipelineMetricsOverTime method")
 //			},
 //			PipelineMetricsOverTimeByPluginFunc: func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTimeByPlugin, error) {
 //				panic("mock out the PipelineMetricsOverTimeByPlugin method")
-//			},
-//			PipelineMetricsV1Func: func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.AgentMetrics, error) {
-//				panic("mock out the PipelineMetricsV1 method")
-//			},
-//			PipelineOverTimeMetricsFunc: func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTime, error) {
-//				panic("mock out the PipelineOverTimeMetrics method")
 //			},
 //			PipelinePortFunc: func(contextMoqParam context.Context, s string) (types.PipelinePort, error) {
 //				panic("mock out the PipelinePort method")
@@ -391,9 +385,6 @@ var _ Client = &ClientMock{}
 //			PipelinesFunc: func(contextMoqParam context.Context, pipelinesParams types.PipelinesParams) (types.Pipelines, error) {
 //				panic("mock out the Pipelines method")
 //			},
-//			PipelinesMetricsV1Func: func(contextMoqParam context.Context, s string, pipelinesMetricsParams types.PipelinesMetricsParams) (types.PipelinesMetrics, error) {
-//				panic("mock out the PipelinesMetricsV1 method")
-//			},
 //			PreviewProcessingRuleFunc: func(contextMoqParam context.Context, previewProcessingRule types.PreviewProcessingRule) ([]types.FluentBitLog, error) {
 //				panic("mock out the PreviewProcessingRule method")
 //			},
@@ -408,9 +399,6 @@ var _ Client = &ClientMock{}
 //			},
 //			ProjectFunc: func(contextMoqParam context.Context, s string) (types.Project, error) {
 //				panic("mock out the Project method")
-//			},
-//			ProjectMetricsV1Func: func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.ProjectMetrics, error) {
-//				panic("mock out the ProjectMetricsV1 method")
 //			},
 //			ProjectsFunc: func(contextMoqParam context.Context, projectsParams types.ProjectsParams) (types.Projects, error) {
 //				panic("mock out the Projects method")
@@ -572,9 +560,6 @@ type ClientMock struct {
 	// AddAgentMetricsFunc mocks the AddAgentMetrics method.
 	AddAgentMetricsFunc func(contextMoqParam context.Context, s string, bytes []byte) error
 
-	// AddAgentMetricsV1Func mocks the AddAgentMetricsV1 method.
-	AddAgentMetricsV1Func func(contextMoqParam context.Context, s string, metrics []types.Metric) (types.MetricsOverTimeByPlugin, error)
-
 	// AgentFunc mocks the Agent method.
 	AgentFunc func(contextMoqParam context.Context, s string) (types.Agent, error)
 
@@ -585,19 +570,16 @@ type ClientMock struct {
 	AgentErrorsFunc func(contextMoqParam context.Context, listAgentErrors types.ListAgentErrors) (types.AgentErrors, error)
 
 	// AgentMetricsFunc mocks the AgentMetrics method.
-	AgentMetricsFunc func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsSummary, error)
+	AgentMetricsFunc func(contextMoqParam context.Context, s string) (types.MetricsSummary, error)
 
 	// AgentMetricsByPluginFunc mocks the AgentMetricsByPlugin method.
-	AgentMetricsByPluginFunc func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsSummaryPlugin, error)
+	AgentMetricsByPluginFunc func(contextMoqParam context.Context, s string) (types.MetricsSummaryPlugin, error)
+
+	// AgentMetricsOverTimeFunc mocks the AgentMetricsOverTime method.
+	AgentMetricsOverTimeFunc func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTime, error)
 
 	// AgentMetricsOverTimeByPluginFunc mocks the AgentMetricsOverTimeByPlugin method.
 	AgentMetricsOverTimeByPluginFunc func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTimeByPlugin, error)
-
-	// AgentMetricsV1Func mocks the AgentMetricsV1 method.
-	AgentMetricsV1Func func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.AgentMetrics, error)
-
-	// AgentOverTimeMetricsFunc mocks the AgentOverTimeMetrics method.
-	AgentOverTimeMetricsFunc func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTime, error)
 
 	// AgentsFunc mocks the Agents method.
 	AgentsFunc func(contextMoqParam context.Context, s string, agentsParams types.AgentsParams) (types.Agents, error)
@@ -607,6 +589,9 @@ type ClientMock struct {
 
 	// AllCoreInstanceSecretsFunc mocks the AllCoreInstanceSecrets method.
 	AllCoreInstanceSecretsFunc func(contextMoqParam context.Context, s string) ([]types.CoreInstanceSecret, error)
+
+	// CloneFunc mocks the Clone method.
+	CloneFunc func() *cloudclient.Client
 
 	// ClusterObjectFunc mocks the ClusterObject method.
 	ClusterObjectFunc func(contextMoqParam context.Context, s string) (types.ClusterObject, error)
@@ -639,19 +624,16 @@ type ClientMock struct {
 	CoreInstanceFilesFunc func(contextMoqParam context.Context, listCoreInstanceFiles types.ListCoreInstanceFiles) (types.CoreInstanceFiles, error)
 
 	// CoreInstanceMetricsFunc mocks the CoreInstanceMetrics method.
-	CoreInstanceMetricsFunc func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsSummary, error)
+	CoreInstanceMetricsFunc func(contextMoqParam context.Context, s string) (types.MetricsSummary, error)
 
 	// CoreInstanceMetricsByPluginFunc mocks the CoreInstanceMetricsByPlugin method.
-	CoreInstanceMetricsByPluginFunc func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsSummaryPlugin, error)
+	CoreInstanceMetricsByPluginFunc func(contextMoqParam context.Context, s string) (types.MetricsSummaryPlugin, error)
+
+	// CoreInstanceMetricsOverTimeFunc mocks the CoreInstanceMetricsOverTime method.
+	CoreInstanceMetricsOverTimeFunc func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTime, error)
 
 	// CoreInstanceMetricsOverTimeByPluginFunc mocks the CoreInstanceMetricsOverTimeByPlugin method.
 	CoreInstanceMetricsOverTimeByPluginFunc func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTimeByPlugin, error)
-
-	// CoreInstanceMetricsV1Func mocks the CoreInstanceMetricsV1 method.
-	CoreInstanceMetricsV1Func func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.CoreInstanceMetricsV1, error)
-
-	// CoreInstanceOverTimeMetricsFunc mocks the CoreInstanceOverTimeMetrics method.
-	CoreInstanceOverTimeMetricsFunc func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTime, error)
 
 	// CoreInstancePingFunc mocks the CoreInstancePing method.
 	CoreInstancePingFunc func(contextMoqParam context.Context, s string) (types.CoreInstancePingResponse, error)
@@ -703,6 +685,9 @@ type ClientMock struct {
 
 	// CreateInvitationFunc mocks the CreateInvitation method.
 	CreateInvitationFunc func(contextMoqParam context.Context, s string, createInvitation types.CreateInvitation) error
+
+	// CreateMetricsFunc mocks the CreateMetrics method.
+	CreateMetricsFunc func(contextMoqParam context.Context, createMetrics types.CreateMetrics) (types.CreatedMetrics, error)
 
 	// CreatePipelineFunc mocks the CreatePipeline method.
 	CreatePipelineFunc func(contextMoqParam context.Context, s string, createPipeline types.CreatePipeline) (types.CreatedPipeline, error)
@@ -897,19 +882,16 @@ type ClientMock struct {
 	PipelineMetadataFunc func(contextMoqParam context.Context, s string, strings ...string) (types.PipelineMetadata, error)
 
 	// PipelineMetricsFunc mocks the PipelineMetrics method.
-	PipelineMetricsFunc func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsSummary, error)
+	PipelineMetricsFunc func(contextMoqParam context.Context, s string) (types.MetricsSummary, error)
 
 	// PipelineMetricsByPluginFunc mocks the PipelineMetricsByPlugin method.
-	PipelineMetricsByPluginFunc func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsSummaryPlugin, error)
+	PipelineMetricsByPluginFunc func(contextMoqParam context.Context, s string) (types.MetricsSummaryPlugin, error)
+
+	// PipelineMetricsOverTimeFunc mocks the PipelineMetricsOverTime method.
+	PipelineMetricsOverTimeFunc func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTime, error)
 
 	// PipelineMetricsOverTimeByPluginFunc mocks the PipelineMetricsOverTimeByPlugin method.
 	PipelineMetricsOverTimeByPluginFunc func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTimeByPlugin, error)
-
-	// PipelineMetricsV1Func mocks the PipelineMetricsV1 method.
-	PipelineMetricsV1Func func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.AgentMetrics, error)
-
-	// PipelineOverTimeMetricsFunc mocks the PipelineOverTimeMetrics method.
-	PipelineOverTimeMetricsFunc func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTime, error)
 
 	// PipelinePortFunc mocks the PipelinePort method.
 	PipelinePortFunc func(contextMoqParam context.Context, s string) (types.PipelinePort, error)
@@ -929,9 +911,6 @@ type ClientMock struct {
 	// PipelinesFunc mocks the Pipelines method.
 	PipelinesFunc func(contextMoqParam context.Context, pipelinesParams types.PipelinesParams) (types.Pipelines, error)
 
-	// PipelinesMetricsV1Func mocks the PipelinesMetricsV1 method.
-	PipelinesMetricsV1Func func(contextMoqParam context.Context, s string, pipelinesMetricsParams types.PipelinesMetricsParams) (types.PipelinesMetrics, error)
-
 	// PreviewProcessingRuleFunc mocks the PreviewProcessingRule method.
 	PreviewProcessingRuleFunc func(contextMoqParam context.Context, previewProcessingRule types.PreviewProcessingRule) ([]types.FluentBitLog, error)
 
@@ -946,9 +925,6 @@ type ClientMock struct {
 
 	// ProjectFunc mocks the Project method.
 	ProjectFunc func(contextMoqParam context.Context, s string) (types.Project, error)
-
-	// ProjectMetricsV1Func mocks the ProjectMetricsV1 method.
-	ProjectMetricsV1Func func(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.ProjectMetrics, error)
 
 	// ProjectsFunc mocks the Projects method.
 	ProjectsFunc func(contextMoqParam context.Context, projectsParams types.ProjectsParams) (types.Projects, error)
@@ -1123,15 +1099,6 @@ type ClientMock struct {
 			// Bytes is the bytes argument value.
 			Bytes []byte
 		}
-		// AddAgentMetricsV1 holds details about calls to the AddAgentMetricsV1 method.
-		AddAgentMetricsV1 []struct {
-			// ContextMoqParam is the contextMoqParam argument value.
-			ContextMoqParam context.Context
-			// S is the s argument value.
-			S string
-			// Metrics is the metrics argument value.
-			Metrics []types.Metric
-		}
 		// Agent holds details about calls to the Agent method.
 		Agent []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
@@ -1161,11 +1128,16 @@ type ClientMock struct {
 			ContextMoqParam context.Context
 			// S is the s argument value.
 			S string
-			// MetricsParams is the metricsParams argument value.
-			MetricsParams types.MetricsParams
 		}
 		// AgentMetricsByPlugin holds details about calls to the AgentMetricsByPlugin method.
 		AgentMetricsByPlugin []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// S is the s argument value.
+			S string
+		}
+		// AgentMetricsOverTime holds details about calls to the AgentMetricsOverTime method.
+		AgentMetricsOverTime []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// S is the s argument value.
@@ -1175,24 +1147,6 @@ type ClientMock struct {
 		}
 		// AgentMetricsOverTimeByPlugin holds details about calls to the AgentMetricsOverTimeByPlugin method.
 		AgentMetricsOverTimeByPlugin []struct {
-			// ContextMoqParam is the contextMoqParam argument value.
-			ContextMoqParam context.Context
-			// S is the s argument value.
-			S string
-			// MetricsParams is the metricsParams argument value.
-			MetricsParams types.MetricsParams
-		}
-		// AgentMetricsV1 holds details about calls to the AgentMetricsV1 method.
-		AgentMetricsV1 []struct {
-			// ContextMoqParam is the contextMoqParam argument value.
-			ContextMoqParam context.Context
-			// S is the s argument value.
-			S string
-			// MetricsParams is the metricsParams argument value.
-			MetricsParams types.MetricsParams
-		}
-		// AgentOverTimeMetrics holds details about calls to the AgentOverTimeMetrics method.
-		AgentOverTimeMetrics []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// S is the s argument value.
@@ -1222,6 +1176,9 @@ type ClientMock struct {
 			ContextMoqParam context.Context
 			// S is the s argument value.
 			S string
+		}
+		// Clone holds details about calls to the Clone method.
+		Clone []struct {
 		}
 		// ClusterObject holds details about calls to the ClusterObject method.
 		ClusterObject []struct {
@@ -1305,11 +1262,16 @@ type ClientMock struct {
 			ContextMoqParam context.Context
 			// S is the s argument value.
 			S string
-			// MetricsParams is the metricsParams argument value.
-			MetricsParams types.MetricsParams
 		}
 		// CoreInstanceMetricsByPlugin holds details about calls to the CoreInstanceMetricsByPlugin method.
 		CoreInstanceMetricsByPlugin []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// S is the s argument value.
+			S string
+		}
+		// CoreInstanceMetricsOverTime holds details about calls to the CoreInstanceMetricsOverTime method.
+		CoreInstanceMetricsOverTime []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// S is the s argument value.
@@ -1319,24 +1281,6 @@ type ClientMock struct {
 		}
 		// CoreInstanceMetricsOverTimeByPlugin holds details about calls to the CoreInstanceMetricsOverTimeByPlugin method.
 		CoreInstanceMetricsOverTimeByPlugin []struct {
-			// ContextMoqParam is the contextMoqParam argument value.
-			ContextMoqParam context.Context
-			// S is the s argument value.
-			S string
-			// MetricsParams is the metricsParams argument value.
-			MetricsParams types.MetricsParams
-		}
-		// CoreInstanceMetricsV1 holds details about calls to the CoreInstanceMetricsV1 method.
-		CoreInstanceMetricsV1 []struct {
-			// ContextMoqParam is the contextMoqParam argument value.
-			ContextMoqParam context.Context
-			// S is the s argument value.
-			S string
-			// MetricsParams is the metricsParams argument value.
-			MetricsParams types.MetricsParams
-		}
-		// CoreInstanceOverTimeMetrics holds details about calls to the CoreInstanceOverTimeMetrics method.
-		CoreInstanceOverTimeMetrics []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// S is the s argument value.
@@ -1478,6 +1422,13 @@ type ClientMock struct {
 			S string
 			// CreateInvitation is the createInvitation argument value.
 			CreateInvitation types.CreateInvitation
+		}
+		// CreateMetrics holds details about calls to the CreateMetrics method.
+		CreateMetrics []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// CreateMetrics is the createMetrics argument value.
+			CreateMetrics types.CreateMetrics
 		}
 		// CreatePipeline holds details about calls to the CreatePipeline method.
 		CreatePipeline []struct {
@@ -1979,11 +1930,16 @@ type ClientMock struct {
 			ContextMoqParam context.Context
 			// S is the s argument value.
 			S string
-			// MetricsParams is the metricsParams argument value.
-			MetricsParams types.MetricsParams
 		}
 		// PipelineMetricsByPlugin holds details about calls to the PipelineMetricsByPlugin method.
 		PipelineMetricsByPlugin []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// S is the s argument value.
+			S string
+		}
+		// PipelineMetricsOverTime holds details about calls to the PipelineMetricsOverTime method.
+		PipelineMetricsOverTime []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// S is the s argument value.
@@ -1993,24 +1949,6 @@ type ClientMock struct {
 		}
 		// PipelineMetricsOverTimeByPlugin holds details about calls to the PipelineMetricsOverTimeByPlugin method.
 		PipelineMetricsOverTimeByPlugin []struct {
-			// ContextMoqParam is the contextMoqParam argument value.
-			ContextMoqParam context.Context
-			// S is the s argument value.
-			S string
-			// MetricsParams is the metricsParams argument value.
-			MetricsParams types.MetricsParams
-		}
-		// PipelineMetricsV1 holds details about calls to the PipelineMetricsV1 method.
-		PipelineMetricsV1 []struct {
-			// ContextMoqParam is the contextMoqParam argument value.
-			ContextMoqParam context.Context
-			// S is the s argument value.
-			S string
-			// MetricsParams is the metricsParams argument value.
-			MetricsParams types.MetricsParams
-		}
-		// PipelineOverTimeMetrics holds details about calls to the PipelineOverTimeMetrics method.
-		PipelineOverTimeMetrics []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// S is the s argument value.
@@ -2066,15 +2004,6 @@ type ClientMock struct {
 			// PipelinesParams is the pipelinesParams argument value.
 			PipelinesParams types.PipelinesParams
 		}
-		// PipelinesMetricsV1 holds details about calls to the PipelinesMetricsV1 method.
-		PipelinesMetricsV1 []struct {
-			// ContextMoqParam is the contextMoqParam argument value.
-			ContextMoqParam context.Context
-			// S is the s argument value.
-			S string
-			// PipelinesMetricsParams is the pipelinesMetricsParams argument value.
-			PipelinesMetricsParams types.PipelinesMetricsParams
-		}
 		// PreviewProcessingRule holds details about calls to the PreviewProcessingRule method.
 		PreviewProcessingRule []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
@@ -2109,15 +2038,6 @@ type ClientMock struct {
 			ContextMoqParam context.Context
 			// S is the s argument value.
 			S string
-		}
-		// ProjectMetricsV1 holds details about calls to the ProjectMetricsV1 method.
-		ProjectMetricsV1 []struct {
-			// ContextMoqParam is the contextMoqParam argument value.
-			ContextMoqParam context.Context
-			// S is the s argument value.
-			S string
-			// MetricsParams is the metricsParams argument value.
-			MetricsParams types.MetricsParams
 		}
 		// Projects holds details about calls to the Projects method.
 		Projects []struct {
@@ -2491,18 +2411,17 @@ type ClientMock struct {
 	lockAcceptInvitation                           sync.RWMutex
 	lockActiveTraceSession                         sync.RWMutex
 	lockAddAgentMetrics                            sync.RWMutex
-	lockAddAgentMetricsV1                          sync.RWMutex
 	lockAgent                                      sync.RWMutex
 	lockAgentConfigHistory                         sync.RWMutex
 	lockAgentErrors                                sync.RWMutex
 	lockAgentMetrics                               sync.RWMutex
 	lockAgentMetricsByPlugin                       sync.RWMutex
+	lockAgentMetricsOverTime                       sync.RWMutex
 	lockAgentMetricsOverTimeByPlugin               sync.RWMutex
-	lockAgentMetricsV1                             sync.RWMutex
-	lockAgentOverTimeMetrics                       sync.RWMutex
 	lockAgents                                     sync.RWMutex
 	lockAllCoreInstanceFiles                       sync.RWMutex
 	lockAllCoreInstanceSecrets                     sync.RWMutex
+	lockClone                                      sync.RWMutex
 	lockClusterObject                              sync.RWMutex
 	lockClusterObjectRegex                         sync.RWMutex
 	lockClusterObjectRegexes                       sync.RWMutex
@@ -2515,9 +2434,8 @@ type ClientMock struct {
 	lockCoreInstanceFiles                          sync.RWMutex
 	lockCoreInstanceMetrics                        sync.RWMutex
 	lockCoreInstanceMetricsByPlugin                sync.RWMutex
+	lockCoreInstanceMetricsOverTime                sync.RWMutex
 	lockCoreInstanceMetricsOverTimeByPlugin        sync.RWMutex
-	lockCoreInstanceMetricsV1                      sync.RWMutex
-	lockCoreInstanceOverTimeMetrics                sync.RWMutex
 	lockCoreInstancePing                           sync.RWMutex
 	lockCoreInstanceSecrets                        sync.RWMutex
 	lockCoreInstances                              sync.RWMutex
@@ -2535,6 +2453,7 @@ type ClientMock struct {
 	lockCreateFleetFile                            sync.RWMutex
 	lockCreateIngestCheck                          sync.RWMutex
 	lockCreateInvitation                           sync.RWMutex
+	lockCreateMetrics                              sync.RWMutex
 	lockCreatePipeline                             sync.RWMutex
 	lockCreatePipelineCheck                        sync.RWMutex
 	lockCreatePipelineFile                         sync.RWMutex
@@ -2601,22 +2520,19 @@ type ClientMock struct {
 	lockPipelineMetadata                           sync.RWMutex
 	lockPipelineMetrics                            sync.RWMutex
 	lockPipelineMetricsByPlugin                    sync.RWMutex
+	lockPipelineMetricsOverTime                    sync.RWMutex
 	lockPipelineMetricsOverTimeByPlugin            sync.RWMutex
-	lockPipelineMetricsV1                          sync.RWMutex
-	lockPipelineOverTimeMetrics                    sync.RWMutex
 	lockPipelinePort                               sync.RWMutex
 	lockPipelinePorts                              sync.RWMutex
 	lockPipelineSecret                             sync.RWMutex
 	lockPipelineSecrets                            sync.RWMutex
 	lockPipelineStatusHistory                      sync.RWMutex
 	lockPipelines                                  sync.RWMutex
-	lockPipelinesMetricsV1                         sync.RWMutex
 	lockPreviewProcessingRule                      sync.RWMutex
 	lockProcessingRule                             sync.RWMutex
 	lockProcessingRuleTemplates                    sync.RWMutex
 	lockProcessingRules                            sync.RWMutex
 	lockProject                                    sync.RWMutex
-	lockProjectMetricsV1                           sync.RWMutex
 	lockProjects                                   sync.RWMutex
 	lockPushAWSMarketplaceSubscriptionNotification sync.RWMutex
 	lockRegisterAgent                              sync.RWMutex
@@ -2828,50 +2744,6 @@ func (mock *ClientMock) AddAgentMetricsCalls() []struct {
 	return calls
 }
 
-// AddAgentMetricsV1 calls AddAgentMetricsV1Func.
-func (mock *ClientMock) AddAgentMetricsV1(contextMoqParam context.Context, s string, metrics []types.Metric) (types.MetricsOverTimeByPlugin, error) {
-	callInfo := struct {
-		ContextMoqParam context.Context
-		S               string
-		Metrics         []types.Metric
-	}{
-		ContextMoqParam: contextMoqParam,
-		S:               s,
-		Metrics:         metrics,
-	}
-	mock.lockAddAgentMetricsV1.Lock()
-	mock.calls.AddAgentMetricsV1 = append(mock.calls.AddAgentMetricsV1, callInfo)
-	mock.lockAddAgentMetricsV1.Unlock()
-	if mock.AddAgentMetricsV1Func == nil {
-		var (
-			metricsOverTimeByPluginOut types.MetricsOverTimeByPlugin
-			errOut                     error
-		)
-		return metricsOverTimeByPluginOut, errOut
-	}
-	return mock.AddAgentMetricsV1Func(contextMoqParam, s, metrics)
-}
-
-// AddAgentMetricsV1Calls gets all the calls that were made to AddAgentMetricsV1.
-// Check the length with:
-//
-//	len(mockedClient.AddAgentMetricsV1Calls())
-func (mock *ClientMock) AddAgentMetricsV1Calls() []struct {
-	ContextMoqParam context.Context
-	S               string
-	Metrics         []types.Metric
-} {
-	var calls []struct {
-		ContextMoqParam context.Context
-		S               string
-		Metrics         []types.Metric
-	}
-	mock.lockAddAgentMetricsV1.RLock()
-	calls = mock.calls.AddAgentMetricsV1
-	mock.lockAddAgentMetricsV1.RUnlock()
-	return calls
-}
-
 // Agent calls AgentFunc.
 func (mock *ClientMock) Agent(contextMoqParam context.Context, s string) (types.Agent, error) {
 	callInfo := struct {
@@ -2997,15 +2869,13 @@ func (mock *ClientMock) AgentErrorsCalls() []struct {
 }
 
 // AgentMetrics calls AgentMetricsFunc.
-func (mock *ClientMock) AgentMetrics(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsSummary, error) {
+func (mock *ClientMock) AgentMetrics(contextMoqParam context.Context, s string) (types.MetricsSummary, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   types.MetricsParams
 	}{
 		ContextMoqParam: contextMoqParam,
 		S:               s,
-		MetricsParams:   metricsParams,
 	}
 	mock.lockAgentMetrics.Lock()
 	mock.calls.AgentMetrics = append(mock.calls.AgentMetrics, callInfo)
@@ -3017,7 +2887,7 @@ func (mock *ClientMock) AgentMetrics(contextMoqParam context.Context, s string, 
 		)
 		return metricsSummaryOut, errOut
 	}
-	return mock.AgentMetricsFunc(contextMoqParam, s, metricsParams)
+	return mock.AgentMetricsFunc(contextMoqParam, s)
 }
 
 // AgentMetricsCalls gets all the calls that were made to AgentMetrics.
@@ -3027,12 +2897,10 @@ func (mock *ClientMock) AgentMetrics(contextMoqParam context.Context, s string, 
 func (mock *ClientMock) AgentMetricsCalls() []struct {
 	ContextMoqParam context.Context
 	S               string
-	MetricsParams   types.MetricsParams
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   types.MetricsParams
 	}
 	mock.lockAgentMetrics.RLock()
 	calls = mock.calls.AgentMetrics
@@ -3041,15 +2909,13 @@ func (mock *ClientMock) AgentMetricsCalls() []struct {
 }
 
 // AgentMetricsByPlugin calls AgentMetricsByPluginFunc.
-func (mock *ClientMock) AgentMetricsByPlugin(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsSummaryPlugin, error) {
+func (mock *ClientMock) AgentMetricsByPlugin(contextMoqParam context.Context, s string) (types.MetricsSummaryPlugin, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   types.MetricsParams
 	}{
 		ContextMoqParam: contextMoqParam,
 		S:               s,
-		MetricsParams:   metricsParams,
 	}
 	mock.lockAgentMetricsByPlugin.Lock()
 	mock.calls.AgentMetricsByPlugin = append(mock.calls.AgentMetricsByPlugin, callInfo)
@@ -3061,7 +2927,7 @@ func (mock *ClientMock) AgentMetricsByPlugin(contextMoqParam context.Context, s 
 		)
 		return metricsSummaryPluginOut, errOut
 	}
-	return mock.AgentMetricsByPluginFunc(contextMoqParam, s, metricsParams)
+	return mock.AgentMetricsByPluginFunc(contextMoqParam, s)
 }
 
 // AgentMetricsByPluginCalls gets all the calls that were made to AgentMetricsByPlugin.
@@ -3071,6 +2937,48 @@ func (mock *ClientMock) AgentMetricsByPlugin(contextMoqParam context.Context, s 
 func (mock *ClientMock) AgentMetricsByPluginCalls() []struct {
 	ContextMoqParam context.Context
 	S               string
+} {
+	var calls []struct {
+		ContextMoqParam context.Context
+		S               string
+	}
+	mock.lockAgentMetricsByPlugin.RLock()
+	calls = mock.calls.AgentMetricsByPlugin
+	mock.lockAgentMetricsByPlugin.RUnlock()
+	return calls
+}
+
+// AgentMetricsOverTime calls AgentMetricsOverTimeFunc.
+func (mock *ClientMock) AgentMetricsOverTime(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTime, error) {
+	callInfo := struct {
+		ContextMoqParam context.Context
+		S               string
+		MetricsParams   types.MetricsParams
+	}{
+		ContextMoqParam: contextMoqParam,
+		S:               s,
+		MetricsParams:   metricsParams,
+	}
+	mock.lockAgentMetricsOverTime.Lock()
+	mock.calls.AgentMetricsOverTime = append(mock.calls.AgentMetricsOverTime, callInfo)
+	mock.lockAgentMetricsOverTime.Unlock()
+	if mock.AgentMetricsOverTimeFunc == nil {
+		var (
+			metricsOverTimeOut types.MetricsOverTime
+			errOut             error
+		)
+		return metricsOverTimeOut, errOut
+	}
+	return mock.AgentMetricsOverTimeFunc(contextMoqParam, s, metricsParams)
+}
+
+// AgentMetricsOverTimeCalls gets all the calls that were made to AgentMetricsOverTime.
+// Check the length with:
+//
+//	len(mockedClient.AgentMetricsOverTimeCalls())
+func (mock *ClientMock) AgentMetricsOverTimeCalls() []struct {
+	ContextMoqParam context.Context
+	S               string
 	MetricsParams   types.MetricsParams
 } {
 	var calls []struct {
@@ -3078,9 +2986,9 @@ func (mock *ClientMock) AgentMetricsByPluginCalls() []struct {
 		S               string
 		MetricsParams   types.MetricsParams
 	}
-	mock.lockAgentMetricsByPlugin.RLock()
-	calls = mock.calls.AgentMetricsByPlugin
-	mock.lockAgentMetricsByPlugin.RUnlock()
+	mock.lockAgentMetricsOverTime.RLock()
+	calls = mock.calls.AgentMetricsOverTime
+	mock.lockAgentMetricsOverTime.RUnlock()
 	return calls
 }
 
@@ -3125,94 +3033,6 @@ func (mock *ClientMock) AgentMetricsOverTimeByPluginCalls() []struct {
 	mock.lockAgentMetricsOverTimeByPlugin.RLock()
 	calls = mock.calls.AgentMetricsOverTimeByPlugin
 	mock.lockAgentMetricsOverTimeByPlugin.RUnlock()
-	return calls
-}
-
-// AgentMetricsV1 calls AgentMetricsV1Func.
-func (mock *ClientMock) AgentMetricsV1(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.AgentMetrics, error) {
-	callInfo := struct {
-		ContextMoqParam context.Context
-		S               string
-		MetricsParams   types.MetricsParams
-	}{
-		ContextMoqParam: contextMoqParam,
-		S:               s,
-		MetricsParams:   metricsParams,
-	}
-	mock.lockAgentMetricsV1.Lock()
-	mock.calls.AgentMetricsV1 = append(mock.calls.AgentMetricsV1, callInfo)
-	mock.lockAgentMetricsV1.Unlock()
-	if mock.AgentMetricsV1Func == nil {
-		var (
-			agentMetricsOut types.AgentMetrics
-			errOut          error
-		)
-		return agentMetricsOut, errOut
-	}
-	return mock.AgentMetricsV1Func(contextMoqParam, s, metricsParams)
-}
-
-// AgentMetricsV1Calls gets all the calls that were made to AgentMetricsV1.
-// Check the length with:
-//
-//	len(mockedClient.AgentMetricsV1Calls())
-func (mock *ClientMock) AgentMetricsV1Calls() []struct {
-	ContextMoqParam context.Context
-	S               string
-	MetricsParams   types.MetricsParams
-} {
-	var calls []struct {
-		ContextMoqParam context.Context
-		S               string
-		MetricsParams   types.MetricsParams
-	}
-	mock.lockAgentMetricsV1.RLock()
-	calls = mock.calls.AgentMetricsV1
-	mock.lockAgentMetricsV1.RUnlock()
-	return calls
-}
-
-// AgentOverTimeMetrics calls AgentOverTimeMetricsFunc.
-func (mock *ClientMock) AgentOverTimeMetrics(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTime, error) {
-	callInfo := struct {
-		ContextMoqParam context.Context
-		S               string
-		MetricsParams   types.MetricsParams
-	}{
-		ContextMoqParam: contextMoqParam,
-		S:               s,
-		MetricsParams:   metricsParams,
-	}
-	mock.lockAgentOverTimeMetrics.Lock()
-	mock.calls.AgentOverTimeMetrics = append(mock.calls.AgentOverTimeMetrics, callInfo)
-	mock.lockAgentOverTimeMetrics.Unlock()
-	if mock.AgentOverTimeMetricsFunc == nil {
-		var (
-			metricsOverTimeOut types.MetricsOverTime
-			errOut             error
-		)
-		return metricsOverTimeOut, errOut
-	}
-	return mock.AgentOverTimeMetricsFunc(contextMoqParam, s, metricsParams)
-}
-
-// AgentOverTimeMetricsCalls gets all the calls that were made to AgentOverTimeMetrics.
-// Check the length with:
-//
-//	len(mockedClient.AgentOverTimeMetricsCalls())
-func (mock *ClientMock) AgentOverTimeMetricsCalls() []struct {
-	ContextMoqParam context.Context
-	S               string
-	MetricsParams   types.MetricsParams
-} {
-	var calls []struct {
-		ContextMoqParam context.Context
-		S               string
-		MetricsParams   types.MetricsParams
-	}
-	mock.lockAgentOverTimeMetrics.RLock()
-	calls = mock.calls.AgentOverTimeMetrics
-	mock.lockAgentOverTimeMetrics.RUnlock()
 	return calls
 }
 
@@ -3337,6 +3157,36 @@ func (mock *ClientMock) AllCoreInstanceSecretsCalls() []struct {
 	mock.lockAllCoreInstanceSecrets.RLock()
 	calls = mock.calls.AllCoreInstanceSecrets
 	mock.lockAllCoreInstanceSecrets.RUnlock()
+	return calls
+}
+
+// Clone calls CloneFunc.
+func (mock *ClientMock) Clone() *cloudclient.Client {
+	callInfo := struct {
+	}{}
+	mock.lockClone.Lock()
+	mock.calls.Clone = append(mock.calls.Clone, callInfo)
+	mock.lockClone.Unlock()
+	if mock.CloneFunc == nil {
+		var (
+			clientOut *cloudclient.Client
+		)
+		return clientOut
+	}
+	return mock.CloneFunc()
+}
+
+// CloneCalls gets all the calls that were made to Clone.
+// Check the length with:
+//
+//	len(mockedClient.CloneCalls())
+func (mock *ClientMock) CloneCalls() []struct {
+} {
+	var calls []struct {
+	}
+	mock.lockClone.RLock()
+	calls = mock.calls.Clone
+	mock.lockClone.RUnlock()
 	return calls
 }
 
@@ -3753,15 +3603,13 @@ func (mock *ClientMock) CoreInstanceFilesCalls() []struct {
 }
 
 // CoreInstanceMetrics calls CoreInstanceMetricsFunc.
-func (mock *ClientMock) CoreInstanceMetrics(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsSummary, error) {
+func (mock *ClientMock) CoreInstanceMetrics(contextMoqParam context.Context, s string) (types.MetricsSummary, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   types.MetricsParams
 	}{
 		ContextMoqParam: contextMoqParam,
 		S:               s,
-		MetricsParams:   metricsParams,
 	}
 	mock.lockCoreInstanceMetrics.Lock()
 	mock.calls.CoreInstanceMetrics = append(mock.calls.CoreInstanceMetrics, callInfo)
@@ -3773,7 +3621,7 @@ func (mock *ClientMock) CoreInstanceMetrics(contextMoqParam context.Context, s s
 		)
 		return metricsSummaryOut, errOut
 	}
-	return mock.CoreInstanceMetricsFunc(contextMoqParam, s, metricsParams)
+	return mock.CoreInstanceMetricsFunc(contextMoqParam, s)
 }
 
 // CoreInstanceMetricsCalls gets all the calls that were made to CoreInstanceMetrics.
@@ -3783,12 +3631,10 @@ func (mock *ClientMock) CoreInstanceMetrics(contextMoqParam context.Context, s s
 func (mock *ClientMock) CoreInstanceMetricsCalls() []struct {
 	ContextMoqParam context.Context
 	S               string
-	MetricsParams   types.MetricsParams
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   types.MetricsParams
 	}
 	mock.lockCoreInstanceMetrics.RLock()
 	calls = mock.calls.CoreInstanceMetrics
@@ -3797,15 +3643,13 @@ func (mock *ClientMock) CoreInstanceMetricsCalls() []struct {
 }
 
 // CoreInstanceMetricsByPlugin calls CoreInstanceMetricsByPluginFunc.
-func (mock *ClientMock) CoreInstanceMetricsByPlugin(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsSummaryPlugin, error) {
+func (mock *ClientMock) CoreInstanceMetricsByPlugin(contextMoqParam context.Context, s string) (types.MetricsSummaryPlugin, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   types.MetricsParams
 	}{
 		ContextMoqParam: contextMoqParam,
 		S:               s,
-		MetricsParams:   metricsParams,
 	}
 	mock.lockCoreInstanceMetricsByPlugin.Lock()
 	mock.calls.CoreInstanceMetricsByPlugin = append(mock.calls.CoreInstanceMetricsByPlugin, callInfo)
@@ -3817,7 +3661,7 @@ func (mock *ClientMock) CoreInstanceMetricsByPlugin(contextMoqParam context.Cont
 		)
 		return metricsSummaryPluginOut, errOut
 	}
-	return mock.CoreInstanceMetricsByPluginFunc(contextMoqParam, s, metricsParams)
+	return mock.CoreInstanceMetricsByPluginFunc(contextMoqParam, s)
 }
 
 // CoreInstanceMetricsByPluginCalls gets all the calls that were made to CoreInstanceMetricsByPlugin.
@@ -3827,6 +3671,48 @@ func (mock *ClientMock) CoreInstanceMetricsByPlugin(contextMoqParam context.Cont
 func (mock *ClientMock) CoreInstanceMetricsByPluginCalls() []struct {
 	ContextMoqParam context.Context
 	S               string
+} {
+	var calls []struct {
+		ContextMoqParam context.Context
+		S               string
+	}
+	mock.lockCoreInstanceMetricsByPlugin.RLock()
+	calls = mock.calls.CoreInstanceMetricsByPlugin
+	mock.lockCoreInstanceMetricsByPlugin.RUnlock()
+	return calls
+}
+
+// CoreInstanceMetricsOverTime calls CoreInstanceMetricsOverTimeFunc.
+func (mock *ClientMock) CoreInstanceMetricsOverTime(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTime, error) {
+	callInfo := struct {
+		ContextMoqParam context.Context
+		S               string
+		MetricsParams   types.MetricsParams
+	}{
+		ContextMoqParam: contextMoqParam,
+		S:               s,
+		MetricsParams:   metricsParams,
+	}
+	mock.lockCoreInstanceMetricsOverTime.Lock()
+	mock.calls.CoreInstanceMetricsOverTime = append(mock.calls.CoreInstanceMetricsOverTime, callInfo)
+	mock.lockCoreInstanceMetricsOverTime.Unlock()
+	if mock.CoreInstanceMetricsOverTimeFunc == nil {
+		var (
+			metricsOverTimeOut types.MetricsOverTime
+			errOut             error
+		)
+		return metricsOverTimeOut, errOut
+	}
+	return mock.CoreInstanceMetricsOverTimeFunc(contextMoqParam, s, metricsParams)
+}
+
+// CoreInstanceMetricsOverTimeCalls gets all the calls that were made to CoreInstanceMetricsOverTime.
+// Check the length with:
+//
+//	len(mockedClient.CoreInstanceMetricsOverTimeCalls())
+func (mock *ClientMock) CoreInstanceMetricsOverTimeCalls() []struct {
+	ContextMoqParam context.Context
+	S               string
 	MetricsParams   types.MetricsParams
 } {
 	var calls []struct {
@@ -3834,9 +3720,9 @@ func (mock *ClientMock) CoreInstanceMetricsByPluginCalls() []struct {
 		S               string
 		MetricsParams   types.MetricsParams
 	}
-	mock.lockCoreInstanceMetricsByPlugin.RLock()
-	calls = mock.calls.CoreInstanceMetricsByPlugin
-	mock.lockCoreInstanceMetricsByPlugin.RUnlock()
+	mock.lockCoreInstanceMetricsOverTime.RLock()
+	calls = mock.calls.CoreInstanceMetricsOverTime
+	mock.lockCoreInstanceMetricsOverTime.RUnlock()
 	return calls
 }
 
@@ -3881,94 +3767,6 @@ func (mock *ClientMock) CoreInstanceMetricsOverTimeByPluginCalls() []struct {
 	mock.lockCoreInstanceMetricsOverTimeByPlugin.RLock()
 	calls = mock.calls.CoreInstanceMetricsOverTimeByPlugin
 	mock.lockCoreInstanceMetricsOverTimeByPlugin.RUnlock()
-	return calls
-}
-
-// CoreInstanceMetricsV1 calls CoreInstanceMetricsV1Func.
-func (mock *ClientMock) CoreInstanceMetricsV1(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.CoreInstanceMetricsV1, error) {
-	callInfo := struct {
-		ContextMoqParam context.Context
-		S               string
-		MetricsParams   types.MetricsParams
-	}{
-		ContextMoqParam: contextMoqParam,
-		S:               s,
-		MetricsParams:   metricsParams,
-	}
-	mock.lockCoreInstanceMetricsV1.Lock()
-	mock.calls.CoreInstanceMetricsV1 = append(mock.calls.CoreInstanceMetricsV1, callInfo)
-	mock.lockCoreInstanceMetricsV1.Unlock()
-	if mock.CoreInstanceMetricsV1Func == nil {
-		var (
-			coreInstanceMetricsV1Out types.CoreInstanceMetricsV1
-			errOut                   error
-		)
-		return coreInstanceMetricsV1Out, errOut
-	}
-	return mock.CoreInstanceMetricsV1Func(contextMoqParam, s, metricsParams)
-}
-
-// CoreInstanceMetricsV1Calls gets all the calls that were made to CoreInstanceMetricsV1.
-// Check the length with:
-//
-//	len(mockedClient.CoreInstanceMetricsV1Calls())
-func (mock *ClientMock) CoreInstanceMetricsV1Calls() []struct {
-	ContextMoqParam context.Context
-	S               string
-	MetricsParams   types.MetricsParams
-} {
-	var calls []struct {
-		ContextMoqParam context.Context
-		S               string
-		MetricsParams   types.MetricsParams
-	}
-	mock.lockCoreInstanceMetricsV1.RLock()
-	calls = mock.calls.CoreInstanceMetricsV1
-	mock.lockCoreInstanceMetricsV1.RUnlock()
-	return calls
-}
-
-// CoreInstanceOverTimeMetrics calls CoreInstanceOverTimeMetricsFunc.
-func (mock *ClientMock) CoreInstanceOverTimeMetrics(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTime, error) {
-	callInfo := struct {
-		ContextMoqParam context.Context
-		S               string
-		MetricsParams   types.MetricsParams
-	}{
-		ContextMoqParam: contextMoqParam,
-		S:               s,
-		MetricsParams:   metricsParams,
-	}
-	mock.lockCoreInstanceOverTimeMetrics.Lock()
-	mock.calls.CoreInstanceOverTimeMetrics = append(mock.calls.CoreInstanceOverTimeMetrics, callInfo)
-	mock.lockCoreInstanceOverTimeMetrics.Unlock()
-	if mock.CoreInstanceOverTimeMetricsFunc == nil {
-		var (
-			metricsOverTimeOut types.MetricsOverTime
-			errOut             error
-		)
-		return metricsOverTimeOut, errOut
-	}
-	return mock.CoreInstanceOverTimeMetricsFunc(contextMoqParam, s, metricsParams)
-}
-
-// CoreInstanceOverTimeMetricsCalls gets all the calls that were made to CoreInstanceOverTimeMetrics.
-// Check the length with:
-//
-//	len(mockedClient.CoreInstanceOverTimeMetricsCalls())
-func (mock *ClientMock) CoreInstanceOverTimeMetricsCalls() []struct {
-	ContextMoqParam context.Context
-	S               string
-	MetricsParams   types.MetricsParams
-} {
-	var calls []struct {
-		ContextMoqParam context.Context
-		S               string
-		MetricsParams   types.MetricsParams
-	}
-	mock.lockCoreInstanceOverTimeMetrics.RLock()
-	calls = mock.calls.CoreInstanceOverTimeMetrics
-	mock.lockCoreInstanceOverTimeMetrics.RUnlock()
 	return calls
 }
 
@@ -4679,6 +4477,46 @@ func (mock *ClientMock) CreateInvitationCalls() []struct {
 	mock.lockCreateInvitation.RLock()
 	calls = mock.calls.CreateInvitation
 	mock.lockCreateInvitation.RUnlock()
+	return calls
+}
+
+// CreateMetrics calls CreateMetricsFunc.
+func (mock *ClientMock) CreateMetrics(contextMoqParam context.Context, createMetrics types.CreateMetrics) (types.CreatedMetrics, error) {
+	callInfo := struct {
+		ContextMoqParam context.Context
+		CreateMetrics   types.CreateMetrics
+	}{
+		ContextMoqParam: contextMoqParam,
+		CreateMetrics:   createMetrics,
+	}
+	mock.lockCreateMetrics.Lock()
+	mock.calls.CreateMetrics = append(mock.calls.CreateMetrics, callInfo)
+	mock.lockCreateMetrics.Unlock()
+	if mock.CreateMetricsFunc == nil {
+		var (
+			createdMetricsOut types.CreatedMetrics
+			errOut            error
+		)
+		return createdMetricsOut, errOut
+	}
+	return mock.CreateMetricsFunc(contextMoqParam, createMetrics)
+}
+
+// CreateMetricsCalls gets all the calls that were made to CreateMetrics.
+// Check the length with:
+//
+//	len(mockedClient.CreateMetricsCalls())
+func (mock *ClientMock) CreateMetricsCalls() []struct {
+	ContextMoqParam context.Context
+	CreateMetrics   types.CreateMetrics
+} {
+	var calls []struct {
+		ContextMoqParam context.Context
+		CreateMetrics   types.CreateMetrics
+	}
+	mock.lockCreateMetrics.RLock()
+	calls = mock.calls.CreateMetrics
+	mock.lockCreateMetrics.RUnlock()
 	return calls
 }
 
@@ -7314,15 +7152,13 @@ func (mock *ClientMock) PipelineMetadataCalls() []struct {
 }
 
 // PipelineMetrics calls PipelineMetricsFunc.
-func (mock *ClientMock) PipelineMetrics(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsSummary, error) {
+func (mock *ClientMock) PipelineMetrics(contextMoqParam context.Context, s string) (types.MetricsSummary, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   types.MetricsParams
 	}{
 		ContextMoqParam: contextMoqParam,
 		S:               s,
-		MetricsParams:   metricsParams,
 	}
 	mock.lockPipelineMetrics.Lock()
 	mock.calls.PipelineMetrics = append(mock.calls.PipelineMetrics, callInfo)
@@ -7334,7 +7170,7 @@ func (mock *ClientMock) PipelineMetrics(contextMoqParam context.Context, s strin
 		)
 		return metricsSummaryOut, errOut
 	}
-	return mock.PipelineMetricsFunc(contextMoqParam, s, metricsParams)
+	return mock.PipelineMetricsFunc(contextMoqParam, s)
 }
 
 // PipelineMetricsCalls gets all the calls that were made to PipelineMetrics.
@@ -7344,12 +7180,10 @@ func (mock *ClientMock) PipelineMetrics(contextMoqParam context.Context, s strin
 func (mock *ClientMock) PipelineMetricsCalls() []struct {
 	ContextMoqParam context.Context
 	S               string
-	MetricsParams   types.MetricsParams
 } {
 	var calls []struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   types.MetricsParams
 	}
 	mock.lockPipelineMetrics.RLock()
 	calls = mock.calls.PipelineMetrics
@@ -7358,15 +7192,13 @@ func (mock *ClientMock) PipelineMetricsCalls() []struct {
 }
 
 // PipelineMetricsByPlugin calls PipelineMetricsByPluginFunc.
-func (mock *ClientMock) PipelineMetricsByPlugin(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsSummaryPlugin, error) {
+func (mock *ClientMock) PipelineMetricsByPlugin(contextMoqParam context.Context, s string) (types.MetricsSummaryPlugin, error) {
 	callInfo := struct {
 		ContextMoqParam context.Context
 		S               string
-		MetricsParams   types.MetricsParams
 	}{
 		ContextMoqParam: contextMoqParam,
 		S:               s,
-		MetricsParams:   metricsParams,
 	}
 	mock.lockPipelineMetricsByPlugin.Lock()
 	mock.calls.PipelineMetricsByPlugin = append(mock.calls.PipelineMetricsByPlugin, callInfo)
@@ -7378,7 +7210,7 @@ func (mock *ClientMock) PipelineMetricsByPlugin(contextMoqParam context.Context,
 		)
 		return metricsSummaryPluginOut, errOut
 	}
-	return mock.PipelineMetricsByPluginFunc(contextMoqParam, s, metricsParams)
+	return mock.PipelineMetricsByPluginFunc(contextMoqParam, s)
 }
 
 // PipelineMetricsByPluginCalls gets all the calls that were made to PipelineMetricsByPlugin.
@@ -7388,6 +7220,48 @@ func (mock *ClientMock) PipelineMetricsByPlugin(contextMoqParam context.Context,
 func (mock *ClientMock) PipelineMetricsByPluginCalls() []struct {
 	ContextMoqParam context.Context
 	S               string
+} {
+	var calls []struct {
+		ContextMoqParam context.Context
+		S               string
+	}
+	mock.lockPipelineMetricsByPlugin.RLock()
+	calls = mock.calls.PipelineMetricsByPlugin
+	mock.lockPipelineMetricsByPlugin.RUnlock()
+	return calls
+}
+
+// PipelineMetricsOverTime calls PipelineMetricsOverTimeFunc.
+func (mock *ClientMock) PipelineMetricsOverTime(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTime, error) {
+	callInfo := struct {
+		ContextMoqParam context.Context
+		S               string
+		MetricsParams   types.MetricsParams
+	}{
+		ContextMoqParam: contextMoqParam,
+		S:               s,
+		MetricsParams:   metricsParams,
+	}
+	mock.lockPipelineMetricsOverTime.Lock()
+	mock.calls.PipelineMetricsOverTime = append(mock.calls.PipelineMetricsOverTime, callInfo)
+	mock.lockPipelineMetricsOverTime.Unlock()
+	if mock.PipelineMetricsOverTimeFunc == nil {
+		var (
+			metricsOverTimeOut types.MetricsOverTime
+			errOut             error
+		)
+		return metricsOverTimeOut, errOut
+	}
+	return mock.PipelineMetricsOverTimeFunc(contextMoqParam, s, metricsParams)
+}
+
+// PipelineMetricsOverTimeCalls gets all the calls that were made to PipelineMetricsOverTime.
+// Check the length with:
+//
+//	len(mockedClient.PipelineMetricsOverTimeCalls())
+func (mock *ClientMock) PipelineMetricsOverTimeCalls() []struct {
+	ContextMoqParam context.Context
+	S               string
 	MetricsParams   types.MetricsParams
 } {
 	var calls []struct {
@@ -7395,9 +7269,9 @@ func (mock *ClientMock) PipelineMetricsByPluginCalls() []struct {
 		S               string
 		MetricsParams   types.MetricsParams
 	}
-	mock.lockPipelineMetricsByPlugin.RLock()
-	calls = mock.calls.PipelineMetricsByPlugin
-	mock.lockPipelineMetricsByPlugin.RUnlock()
+	mock.lockPipelineMetricsOverTime.RLock()
+	calls = mock.calls.PipelineMetricsOverTime
+	mock.lockPipelineMetricsOverTime.RUnlock()
 	return calls
 }
 
@@ -7442,94 +7316,6 @@ func (mock *ClientMock) PipelineMetricsOverTimeByPluginCalls() []struct {
 	mock.lockPipelineMetricsOverTimeByPlugin.RLock()
 	calls = mock.calls.PipelineMetricsOverTimeByPlugin
 	mock.lockPipelineMetricsOverTimeByPlugin.RUnlock()
-	return calls
-}
-
-// PipelineMetricsV1 calls PipelineMetricsV1Func.
-func (mock *ClientMock) PipelineMetricsV1(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.AgentMetrics, error) {
-	callInfo := struct {
-		ContextMoqParam context.Context
-		S               string
-		MetricsParams   types.MetricsParams
-	}{
-		ContextMoqParam: contextMoqParam,
-		S:               s,
-		MetricsParams:   metricsParams,
-	}
-	mock.lockPipelineMetricsV1.Lock()
-	mock.calls.PipelineMetricsV1 = append(mock.calls.PipelineMetricsV1, callInfo)
-	mock.lockPipelineMetricsV1.Unlock()
-	if mock.PipelineMetricsV1Func == nil {
-		var (
-			agentMetricsOut types.AgentMetrics
-			errOut          error
-		)
-		return agentMetricsOut, errOut
-	}
-	return mock.PipelineMetricsV1Func(contextMoqParam, s, metricsParams)
-}
-
-// PipelineMetricsV1Calls gets all the calls that were made to PipelineMetricsV1.
-// Check the length with:
-//
-//	len(mockedClient.PipelineMetricsV1Calls())
-func (mock *ClientMock) PipelineMetricsV1Calls() []struct {
-	ContextMoqParam context.Context
-	S               string
-	MetricsParams   types.MetricsParams
-} {
-	var calls []struct {
-		ContextMoqParam context.Context
-		S               string
-		MetricsParams   types.MetricsParams
-	}
-	mock.lockPipelineMetricsV1.RLock()
-	calls = mock.calls.PipelineMetricsV1
-	mock.lockPipelineMetricsV1.RUnlock()
-	return calls
-}
-
-// PipelineOverTimeMetrics calls PipelineOverTimeMetricsFunc.
-func (mock *ClientMock) PipelineOverTimeMetrics(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.MetricsOverTime, error) {
-	callInfo := struct {
-		ContextMoqParam context.Context
-		S               string
-		MetricsParams   types.MetricsParams
-	}{
-		ContextMoqParam: contextMoqParam,
-		S:               s,
-		MetricsParams:   metricsParams,
-	}
-	mock.lockPipelineOverTimeMetrics.Lock()
-	mock.calls.PipelineOverTimeMetrics = append(mock.calls.PipelineOverTimeMetrics, callInfo)
-	mock.lockPipelineOverTimeMetrics.Unlock()
-	if mock.PipelineOverTimeMetricsFunc == nil {
-		var (
-			metricsOverTimeOut types.MetricsOverTime
-			errOut             error
-		)
-		return metricsOverTimeOut, errOut
-	}
-	return mock.PipelineOverTimeMetricsFunc(contextMoqParam, s, metricsParams)
-}
-
-// PipelineOverTimeMetricsCalls gets all the calls that were made to PipelineOverTimeMetrics.
-// Check the length with:
-//
-//	len(mockedClient.PipelineOverTimeMetricsCalls())
-func (mock *ClientMock) PipelineOverTimeMetricsCalls() []struct {
-	ContextMoqParam context.Context
-	S               string
-	MetricsParams   types.MetricsParams
-} {
-	var calls []struct {
-		ContextMoqParam context.Context
-		S               string
-		MetricsParams   types.MetricsParams
-	}
-	mock.lockPipelineOverTimeMetrics.RLock()
-	calls = mock.calls.PipelineOverTimeMetrics
-	mock.lockPipelineOverTimeMetrics.RUnlock()
 	return calls
 }
 
@@ -7785,50 +7571,6 @@ func (mock *ClientMock) PipelinesCalls() []struct {
 	return calls
 }
 
-// PipelinesMetricsV1 calls PipelinesMetricsV1Func.
-func (mock *ClientMock) PipelinesMetricsV1(contextMoqParam context.Context, s string, pipelinesMetricsParams types.PipelinesMetricsParams) (types.PipelinesMetrics, error) {
-	callInfo := struct {
-		ContextMoqParam        context.Context
-		S                      string
-		PipelinesMetricsParams types.PipelinesMetricsParams
-	}{
-		ContextMoqParam:        contextMoqParam,
-		S:                      s,
-		PipelinesMetricsParams: pipelinesMetricsParams,
-	}
-	mock.lockPipelinesMetricsV1.Lock()
-	mock.calls.PipelinesMetricsV1 = append(mock.calls.PipelinesMetricsV1, callInfo)
-	mock.lockPipelinesMetricsV1.Unlock()
-	if mock.PipelinesMetricsV1Func == nil {
-		var (
-			pipelinesMetricsOut types.PipelinesMetrics
-			errOut              error
-		)
-		return pipelinesMetricsOut, errOut
-	}
-	return mock.PipelinesMetricsV1Func(contextMoqParam, s, pipelinesMetricsParams)
-}
-
-// PipelinesMetricsV1Calls gets all the calls that were made to PipelinesMetricsV1.
-// Check the length with:
-//
-//	len(mockedClient.PipelinesMetricsV1Calls())
-func (mock *ClientMock) PipelinesMetricsV1Calls() []struct {
-	ContextMoqParam        context.Context
-	S                      string
-	PipelinesMetricsParams types.PipelinesMetricsParams
-} {
-	var calls []struct {
-		ContextMoqParam        context.Context
-		S                      string
-		PipelinesMetricsParams types.PipelinesMetricsParams
-	}
-	mock.lockPipelinesMetricsV1.RLock()
-	calls = mock.calls.PipelinesMetricsV1
-	mock.lockPipelinesMetricsV1.RUnlock()
-	return calls
-}
-
 // PreviewProcessingRule calls PreviewProcessingRuleFunc.
 func (mock *ClientMock) PreviewProcessingRule(contextMoqParam context.Context, previewProcessingRule types.PreviewProcessingRule) ([]types.FluentBitLog, error) {
 	callInfo := struct {
@@ -8026,50 +7768,6 @@ func (mock *ClientMock) ProjectCalls() []struct {
 	mock.lockProject.RLock()
 	calls = mock.calls.Project
 	mock.lockProject.RUnlock()
-	return calls
-}
-
-// ProjectMetricsV1 calls ProjectMetricsV1Func.
-func (mock *ClientMock) ProjectMetricsV1(contextMoqParam context.Context, s string, metricsParams types.MetricsParams) (types.ProjectMetrics, error) {
-	callInfo := struct {
-		ContextMoqParam context.Context
-		S               string
-		MetricsParams   types.MetricsParams
-	}{
-		ContextMoqParam: contextMoqParam,
-		S:               s,
-		MetricsParams:   metricsParams,
-	}
-	mock.lockProjectMetricsV1.Lock()
-	mock.calls.ProjectMetricsV1 = append(mock.calls.ProjectMetricsV1, callInfo)
-	mock.lockProjectMetricsV1.Unlock()
-	if mock.ProjectMetricsV1Func == nil {
-		var (
-			projectMetricsOut types.ProjectMetrics
-			errOut            error
-		)
-		return projectMetricsOut, errOut
-	}
-	return mock.ProjectMetricsV1Func(contextMoqParam, s, metricsParams)
-}
-
-// ProjectMetricsV1Calls gets all the calls that were made to ProjectMetricsV1.
-// Check the length with:
-//
-//	len(mockedClient.ProjectMetricsV1Calls())
-func (mock *ClientMock) ProjectMetricsV1Calls() []struct {
-	ContextMoqParam context.Context
-	S               string
-	MetricsParams   types.MetricsParams
-} {
-	var calls []struct {
-		ContextMoqParam context.Context
-		S               string
-		MetricsParams   types.MetricsParams
-	}
-	mock.lockProjectMetricsV1.RLock()
-	calls = mock.calls.ProjectMetricsV1
-	mock.lockProjectMetricsV1.RUnlock()
 	return calls
 }
 
