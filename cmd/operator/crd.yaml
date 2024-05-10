@@ -63,7 +63,7 @@ spec:
               config:
                 type: string
               fluentBitImage:
-                default: ghcr.io/calyptia/core/calyptia-fluent-bit:24.5.1
+                default: ghcr.io/calyptia/core/calyptia-fluent-bit:24.5.2
                 type: string
               ingestCheckSidecarImage:
                 default: ghcr.io/calyptia/core/ingest-check:v0.0.7
@@ -285,7 +285,7 @@ spec:
                 default: ghcr.io/calyptia/configmap-reload:v0.11.1
                 type: string
               image:
-                default: ghcr.io/calyptia/core/calyptia-fluent-bit:24.5.1
+                default: ghcr.io/calyptia/core/calyptia-fluent-bit:24.5.2
                 type: string
               kind:
                 description: Enums
@@ -435,6 +435,9 @@ spec:
                       - type
                       type: object
                     type: array
+                    x-kubernetes-list-map-keys:
+                    - type
+                    x-kubernetes-list-type: map
                   currentNumberScheduled:
                     description: |-
                       The number of nodes that are running at least 1
@@ -543,6 +546,9 @@ spec:
                       - type
                       type: object
                     type: array
+                    x-kubernetes-list-map-keys:
+                    - type
+                    x-kubernetes-list-type: map
                   observedGeneration:
                     description: The generation observed by the deployment controller.
                     format: int64
@@ -721,6 +727,7 @@ spec:
                                 x-kubernetes-list-type: atomic
                             type: object
                           type: array
+                          x-kubernetes-list-type: atomic
                       type: object
                   type: object
                 type: object
