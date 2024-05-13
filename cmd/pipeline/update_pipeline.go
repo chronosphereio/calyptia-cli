@@ -128,12 +128,25 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 				Files:                     updatePipelineFiles,
 				Metadata:                  metadata,
 			}
+			ports, err := config.Cloud.PipelinePorts(config.Ctx, pipelineID, cloud.PipelinePortsParams{})
+			if err != nil {
+				return fmt.Errorf("could not update pipeline: %w", err)
+			}
+
+			var currentPortKind string
+			if len(ports.Items) > 0 {
+				currentPortKind = string(ports.Items[0].Kind)
+
+			}
 
 			if portsServiceType != "" {
 				if !coreinstance.ValidPipelinePortKind(portsServiceType) {
 					return fmt.Errorf("invalid provided service type %s, options are: %s", portsServiceType, coreinstance.AllValidPortKinds())
 				}
 				k := cloud.PipelinePortKind(portsServiceType)
+				update.PortKind = &k
+			} else {
+				k := cloud.PipelinePortKind(currentPortKind)
 				update.PortKind = &k
 			}
 
