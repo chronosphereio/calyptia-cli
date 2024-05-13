@@ -12,7 +12,7 @@ replace (
 require (
 	code.cloudfoundry.org/bytefmt v0.0.0-20240423163756-f0951006707a
 	github.com/Masterminds/sprig/v3 v3.2.3
-	github.com/alecthomas/assert/v2 v2.8.1
+	github.com/alecthomas/assert/v2 v2.9.0
 	github.com/calyptia/api v1.8.0
 	github.com/calyptia/cli/k8s v0.0.0-20240424103931-e5102e920dca
 	github.com/calyptia/core-images-index/go-index v0.0.0-20240423130833-a87a7fb66960
@@ -115,7 +115,7 @@ require (
 	golang.org/x/crypto v0.22.0 // indirect
 	golang.org/x/mod v0.17.0 // indirect
 	golang.org/x/net v0.24.0 // indirect
-	golang.org/x/oauth2 v0.19.0 // indirect
+	golang.org/x/oauth2 v0.20.0 // indirect
 	golang.org/x/sys v0.19.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
@@ -128,7 +128,7 @@ require (
 	k8s.io/kube-openapi v0.0.0-20240423202451-8948a665c108 // indirect
 	k8s.io/metrics v0.30.0 // indirect
 	k8s.io/utils v0.0.0-20240423183400-0849a56e8f22 // indirect
-	sigs.k8s.io/controller-runtime v0.18.0 // indirect
+	sigs.k8s.io/controller-runtime v0.18.1 // indirect
 	sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd // indirect
 	sigs.k8s.io/kustomize/api v0.17.1 // indirect
 	sigs.k8s.io/kustomize/kustomize/v5 v5.4.1 // indirect

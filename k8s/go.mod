@@ -21,7 +21,7 @@ require (
 	k8s.io/client-go v0.30.0
 	k8s.io/component-base v0.30.0
 	k8s.io/kubectl v0.30.0
-	sigs.k8s.io/controller-runtime v0.18.0
+	sigs.k8s.io/controller-runtime v0.18.1
 )
 
 require (
@@ -86,7 +86,7 @@ require (
 	go.starlark.net v0.0.0-20240411212711-9b43f0afd521 // indirect
 	golang.org/x/exp v0.0.0-20240416160154-fe59bbe5cc7f // indirect
 	golang.org/x/net v0.24.0 // indirect
-	golang.org/x/oauth2 v0.19.0 // indirect
+	golang.org/x/oauth2 v0.20.0 // indirect
 	golang.org/x/sync v0.7.0 // indirect
 	golang.org/x/sys v0.19.0 // indirect
 	golang.org/x/term v0.19.0 // indirect
