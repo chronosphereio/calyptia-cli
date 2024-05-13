@@ -136,7 +136,6 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 			var currentPortKind string
 			if len(ports.Items) > 0 {
 				currentPortKind = string(ports.Items[0].Kind)
-
 			}
 
 			if portsServiceType != "" {
@@ -145,7 +144,7 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 				}
 				k := cloud.PipelinePortKind(portsServiceType)
 				update.PortKind = &k
-			} else {
+			} else if currentPortKind != "" {
 				k := cloud.PipelinePortKind(currentPortKind)
 				update.PortKind = &k
 			}
