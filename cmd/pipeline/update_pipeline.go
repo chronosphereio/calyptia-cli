@@ -189,7 +189,7 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 				if scaleUpType != "" {
 					update.ScaleUpType = &sut
 					update.ScaleUpValue = &scaleUpValue
-					update.ScaleUpPeriodSeconds = &scaleDownPeriodSeconds
+					update.ScaleUpPeriodSeconds = &scaleUpPeriodSeconds
 				}
 			}
 
