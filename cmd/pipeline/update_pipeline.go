@@ -158,17 +158,33 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 				ConfigFormat:              &format,
 				Secrets:                   secrets,
 				Files:                     updatePipelineFiles,
-				Metadata:                  metadata,
-				MinReplicas:               &minReplicas,
-				ScaleUpType:               &sut,
-				ScaleUpValue:              &scaleUpValue,
-				ScaleUpPeriodSeconds:      &scaleDownPeriodSeconds,
-				ScaleDownType:             &sdt,
-				ScaleDownValue:            &scaleDownValue,
-				ScaleDownPeriodSeconds:    &scaleDownPeriodSeconds,
-				UtilizationCPUAverage:     &utilizationCPUAverage,
-				UtilizationMemoryAverage:  &utilizationMemoryAverage,
+				Metadata:                  metadata,			
 			}
+
+			if minReplicas > 0 {
+				update.MinReplicas = &minReplicas
+			}
+
+			if scaleUpType != "" {
+				update.ScaleUpType = &sut
+				update.ScaleUpValue = &scaleUpValue
+				update.ScaleUpPeriodSeconds = &scaleDownPeriodSeconds
+			}
+
+			if scaleDownType != "" {
+				update.ScaleDownType = &sdt
+				update.ScaleDownValue = &scaleUpValue
+				update.ScaleDownPeriodSeconds = &scaleDownPeriodSeconds
+			}
+
+			if utilizationCPUAverage > 0 {
+				update.UtilizationCPUAverage = &utilizationCPUAverage
+			}
+
+			if utilizationMemoryAverage > 0 {
+				update.UtilizationMemoryAverage = &utilizationMemoryAverage
+			}
+
 			ports, err := config.Cloud.PipelinePorts(config.Ctx, pipelineID, cloud.PipelinePortsParams{})
 			if err != nil {
 				return fmt.Errorf("could not update pipeline: %w", err)
