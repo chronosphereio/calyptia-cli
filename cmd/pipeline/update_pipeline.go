@@ -39,6 +39,15 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 	var providedConfigFormat string
 	var deploymentStrategy string
 	var portsServiceType string
+	var minReplicas int32
+	var scaleUpType string
+	var scaleUpValue int32
+	var scaleUpPeriodSeconds int32
+	var scaleDownType string
+	var scaleDownValue int32
+	var scaleDownPeriodSeconds int32
+	var utilizationCPUAverage int32
+	var utilizationMemoryAverage int32
 
 	completer := completer.Completer{Config: config}
 
@@ -47,7 +56,47 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 		Short:             "Update a single pipeline by ID or name",
 		Args:              cobra.ExactArgs(1),
 		ValidArgsFunction: completer.CompletePipelines,
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			fs := cmd.Flags()
+			if fs.Changed("scale-up-type") {
+				if scaleUpType != "" {
+					if scaleUpPeriodSeconds == 0 {
+						return fmt.Errorf("invalid scale up policy - scale-up-period-seconds must be greater than zero")
+					}
+					if scaleUpValue == 0 {
+						return fmt.Errorf("invalid scale up policy - scale-up-value must be greater than zero")
+					}
+				}
+			}
+
+			if fs.Changed("scale-down-type") {
+				if scaleDownType != "" {
+					if scaleDownPeriodSeconds == 0 {
+						return fmt.Errorf("invalid scale down policy - scale-down-period-seconds must be greater than zero")
+					}
+					if scaleDownValue == 0 {
+						return fmt.Errorf("invalid scale down policy - scale-down-value must be greater than zero")
+					}
+				}
+			}
+
+			if fs.Changed("utilization-cpu-average") {
+				if utilizationCPUAverage <= 0 {
+					return fmt.Errorf("utilization-cpu-average must be greater than zero")
+				}
+			}
+
+			if fs.Changed("utilization-memory-average") {
+				if utilizationMemoryAverage <= 0 {
+					return fmt.Errorf("utilization-memory-average must be greater than zero")
+				}
+			}
+
+			return nil
+		},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			fs := cmd.Flags()
+
 			var rawConfig string
 			if newConfigFile != "" {
 				b, err := cfg.ReadFile(newConfigFile)
@@ -120,6 +169,9 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 				format = cloud.ConfigFormatINI
 			}
 
+			sut := cloud.HPAScalingPolicyType(scaleUpType)
+			sdt := cloud.HPAScalingPolicyType(scaleDownType)
+
 			update := cloud.UpdatePipeline{
 				AutoCreatePortsFromConfig: &autoCreatePortsFromConfig,
 				SkipConfigValidation:      skipConfigValidation,
@@ -128,6 +180,39 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 				Files:                     updatePipelineFiles,
 				Metadata:                  metadata,
 			}
+
+			if fs.Changed("min-replicas") {
+				update.MinReplicas = &minReplicas
+			}
+
+			if fs.Changed("scale-up-type") {
+				if scaleUpType != "" {
+					update.ScaleUpType = &sut
+					update.ScaleUpValue = &scaleUpValue
+					update.ScaleUpPeriodSeconds = &scaleUpPeriodSeconds
+				}
+			}
+
+			if fs.Changed("scale-down-type") {
+				if scaleDownType != "" {
+					update.ScaleDownType = &sdt
+					update.ScaleDownValue = &scaleDownValue
+					update.ScaleDownPeriodSeconds = &scaleDownPeriodSeconds
+				}
+			}
+
+			if fs.Changed("utilization-cpu-average") {
+				if utilizationCPUAverage > 0 {
+					update.UtilizationCPUAverage = &utilizationCPUAverage
+				}
+			}
+
+			if fs.Changed("utilization-memory-average") {
+				if utilizationMemoryAverage > 0 {
+					update.UtilizationMemoryAverage = &utilizationMemoryAverage
+				}
+			}
+
 			ports, err := config.Cloud.PipelinePorts(config.Ctx, pipelineID, cloud.PipelinePortsParams{})
 			if err != nil {
 				return fmt.Errorf("could not update pipeline: %w", err)
@@ -225,6 +310,17 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 	fs.StringVar(&metadataFile, "metadata-file", "", "Metadata JSON file to attach to the pipeline intead of passing multiple --metadata flags")
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
+
+	// HPA parameters
+	fs.Int32Var(&minReplicas, "min-replicas", 0, "Minimum replicas count for HPA")
+	fs.StringVar(&scaleUpType, "scale-up-type", "", "The type of the policy which could be used while making scaling decisions. Accepted values Pods or Percent")
+	fs.Int32Var(&scaleUpValue, "scale-up-value", 0, "Value contains the amount of change which is permitted by the scale up policy. Must be greater than 0")
+	fs.Int32Var(&scaleUpPeriodSeconds, "scale-up-period-seconds", 0, "PeriodSeconds specifies the window of time for which the scale up policy should hold true.")
+	fs.StringVar(&scaleDownType, "scale-down-type", "", "The type of the policy which could be used while making scaling decisions. Accepted values Pods or Percent")
+	fs.Int32Var(&scaleDownValue, "scale-down-value", 0, "Value contains the amount of change which is permitted by the scale down policy. Must be greater than 0")
+	fs.Int32Var(&scaleDownPeriodSeconds, "scale-down-period-seconds", 0, "PeriodSeconds specifies the window of time for which the scale down policy should hold true.")
+	fs.Int32Var(&utilizationCPUAverage, "utilization-cpu-average", 0, "UtilizationCPUAverage defines the target percentage value for average CPU utilization.")
+	fs.Int32Var(&utilizationMemoryAverage, "utilization-memory-average", 0, "UtilizationCPUAverage defines the target percentage value for average memory utilization.")
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 

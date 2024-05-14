@@ -44,6 +44,15 @@ func NewCmdCreatePipeline(config *cfg.Config) *cobra.Command {
 	var hotReload bool
 	var rawConfig []byte
 	var portsServiceType string
+	var minReplicas int32
+	var scaleUpType string
+	var scaleUpValue int32
+	var scaleUpPeriodSeconds int32
+	var scaleDownType string
+	var scaleDownValue int32
+	var scaleDownPeriodSeconds int32
+	var utilizationCPUAverage int32
+	var utilizationMemoryAverage int32
 
 	completer := completer.Completer{Config: config}
 
@@ -56,6 +65,25 @@ func NewCmdCreatePipeline(config *cfg.Config) *cobra.Command {
 			if err != nil {
 				return err
 			}
+
+			if scaleUpType != "" {
+				if scaleUpPeriodSeconds == 0 {
+					return fmt.Errorf("invalid scale up policy - scale-up-period-seconds must be greater than zero")
+				}
+				if scaleUpValue == 0 {
+					return fmt.Errorf("invalid scale up policy - scale-up-value must be greater than zero")
+				}
+			}
+
+			if scaleDownType != "" {
+				if scaleDownPeriodSeconds == 0 {
+					return fmt.Errorf("invalid scale down policy - scale-down-period-seconds must be greater than zero")
+				}
+				if scaleDownValue == 0 {
+					return fmt.Errorf("invalid scale down policy - scale-down-value must be greater than zero")
+				}
+			}
+
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -154,6 +182,15 @@ func NewCmdCreatePipeline(config *cfg.Config) *cobra.Command {
 				Files:                     addFilesPayload,
 				Metadata:                  metadata,
 				DeploymentStrategy:        strategy,
+				MinReplicas:               minReplicas,
+				ScaleUpType:               cloud.HPAScalingPolicyType(scaleUpType),
+				ScaleUpValue:              scaleUpValue,
+				ScaleUpPeriodSeconds:      scaleUpPeriodSeconds,
+				ScaleDownType:             cloud.HPAScalingPolicyType(scaleDownType),
+				ScaleDownValue:            scaleDownValue,
+				ScaleDownPeriodSeconds:    scaleDownPeriodSeconds,
+				UtilizationCPUAverage:     utilizationCPUAverage,
+				UtilizationMemoryAverage:  utilizationMemoryAverage,
 			}
 
 			if portsServiceType != "" {
@@ -219,6 +256,17 @@ func NewCmdCreatePipeline(config *cfg.Config) *cobra.Command {
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
+	
+	// HPA parameters
+	fs.Int32Var(&minReplicas, "min-replicas", 0, "Minimum replicas count for HPA")
+	fs.StringVar(&scaleUpType, "scale-up-type", "", "The type of the policy which could be used while making scaling decisions. Accepted values Pods or Percent")
+	fs.Int32Var(&scaleUpValue, "scale-up-value", 0, "Value contains the amount of change which is permitted by the scale up policy. Must be greater than 0")
+	fs.Int32Var(&scaleUpPeriodSeconds, "scale-up-period-seconds", 0, "PeriodSeconds specifies the window of time for which the scale up policy should hold true.")
+	fs.StringVar(&scaleDownType, "scale-down-type", "", "The type of the policy which could be used while making scaling decisions. Accepted values Pods or Percent")
+	fs.Int32Var(&scaleDownValue, "scale-down-value", 0, "Value contains the amount of change which is permitted by the scale down policy. Must be greater than 0")
+	fs.Int32Var(&scaleDownPeriodSeconds, "scale-down-period-seconds", 0, "PeriodSeconds specifies the window of time for which the scale down policy should hold true.")
+	fs.Int32Var(&utilizationCPUAverage, "utilization-cpu-average", 0, "UtilizationCPUAverage defines the target percentage value for average CPU utilization.")
+	fs.Int32Var(&utilizationMemoryAverage, "utilization-memory-average", 0, "UtilizationCPUAverage defines the target percentage value for average memory utilization.")
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", completer.CompleteEnvironments)
 	_ = cmd.RegisterFlagCompletionFunc("core-instance", completer.CompleteCoreInstances)
