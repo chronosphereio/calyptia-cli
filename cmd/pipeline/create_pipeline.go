@@ -256,8 +256,9 @@ func NewCmdCreatePipeline(config *cfg.Config) *cobra.Command {
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
-	fs.Int32Var(&minReplicas, "min-replicas", 0, "Minimum replicas count for HPA")
+	
 	// HPA parameters
+	fs.Int32Var(&minReplicas, "min-replicas", 0, "Minimum replicas count for HPA")
 	fs.StringVar(&scaleUpType, "scale-up-type", "", "The type of the policy which could be used while making scaling decisions. Accepted values Pods or Percent")
 	fs.Int32Var(&scaleUpValue, "scale-up-value", 0, "Value contains the amount of change which is permitted by the scale up policy. Must be greater than 0")
 	fs.Int32Var(&scaleUpPeriodSeconds, "scale-up-period-seconds", 0, "PeriodSeconds specifies the window of time for which the scale up policy should hold true.")
