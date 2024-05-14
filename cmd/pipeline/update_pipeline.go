@@ -57,26 +57,46 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 		Args:              cobra.ExactArgs(1),
 		ValidArgsFunction: completer.CompletePipelines,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			if scaleUpType != "" {
-				if scaleUpPeriodSeconds == 0 {
-					return fmt.Errorf("invalid scale up policy - scale-up-period-seconds must be greater than zero")
-				}
-				if scaleUpValue == 0 {
-					return fmt.Errorf("invalid scale up policy - scale-up-value must be greater than zero")
+			fs := cmd.Flags()
+			if fs.Changed("scale-up-type") {
+				if scaleUpType != "" {
+					if scaleUpPeriodSeconds == 0 {
+						return fmt.Errorf("invalid scale up policy - scale-up-period-seconds must be greater than zero")
+					}
+					if scaleUpValue == 0 {
+						return fmt.Errorf("invalid scale up policy - scale-up-value must be greater than zero")
+					}
 				}
 			}
 
-			if scaleDownType != "" {
-				if scaleDownPeriodSeconds == 0 {
-					return fmt.Errorf("invalid scale down policy - scale-down-period-seconds must be greater than zero")
-				}
-				if scaleDownValue == 0 {
-					return fmt.Errorf("invalid scale down policy - scale-down-value must be greater than zero")
+			if fs.Changed("scale-down-type") {
+				if scaleDownType != "" {
+					if scaleDownPeriodSeconds == 0 {
+						return fmt.Errorf("invalid scale down policy - scale-down-period-seconds must be greater than zero")
+					}
+					if scaleDownValue == 0 {
+						return fmt.Errorf("invalid scale down policy - scale-down-value must be greater than zero")
+					}
 				}
 			}
+
+			if fs.Changed("utilization-cpu-average") {
+				if !(utilizationCPUAverage > 0) {
+					return fmt.Errorf("utilizationCPUAverage - scale-down-value must be greater than zero")
+				}
+			}
+
+			if fs.Changed("utilization-memory-average") {
+				if !(utilizationMemoryAverage > 0) {
+					return fmt.Errorf("utilizationMemoryAverage - scale-down-value must be greater than zero")
+				}
+			}
+
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			fs := cmd.Flags()
+
 			var rawConfig string
 			if newConfigFile != "" {
 				b, err := cfg.ReadFile(newConfigFile)
@@ -158,31 +178,39 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 				ConfigFormat:              &format,
 				Secrets:                   secrets,
 				Files:                     updatePipelineFiles,
-				Metadata:                  metadata,			
+				Metadata:                  metadata,
 			}
 
-			if minReplicas > 0 {
+			if fs.Changed("min-replicas") {
 				update.MinReplicas = &minReplicas
 			}
 
-			if scaleUpType != "" {
-				update.ScaleUpType = &sut
-				update.ScaleUpValue = &scaleUpValue
-				update.ScaleUpPeriodSeconds = &scaleDownPeriodSeconds
+			if fs.Changed("scale-up-type") {
+				if scaleUpType != "" {
+					update.ScaleUpType = &sut
+					update.ScaleUpValue = &scaleUpValue
+					update.ScaleUpPeriodSeconds = &scaleDownPeriodSeconds
+				}
 			}
 
-			if scaleDownType != "" {
-				update.ScaleDownType = &sdt
-				update.ScaleDownValue = &scaleUpValue
-				update.ScaleDownPeriodSeconds = &scaleDownPeriodSeconds
+			if fs.Changed("scale-down-type") {
+				if scaleDownType != "" {
+					update.ScaleDownType = &sdt
+					update.ScaleDownValue = &scaleUpValue
+					update.ScaleDownPeriodSeconds = &scaleDownPeriodSeconds
+				}
 			}
 
-			if utilizationCPUAverage > 0 {
-				update.UtilizationCPUAverage = &utilizationCPUAverage
+			if fs.Changed("utilization-cpu-average") {
+				if utilizationCPUAverage > 0 {
+					update.UtilizationCPUAverage = &utilizationCPUAverage
+				}
 			}
 
-			if utilizationMemoryAverage > 0 {
-				update.UtilizationMemoryAverage = &utilizationMemoryAverage
+			if fs.Changed("utilization-memory-average") {
+				if utilizationMemoryAverage > 0 {
+					update.UtilizationMemoryAverage = &utilizationMemoryAverage
+				}
 			}
 
 			ports, err := config.Cloud.PipelinePorts(config.Ctx, pipelineID, cloud.PipelinePortsParams{})
