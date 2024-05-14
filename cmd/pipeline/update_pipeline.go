@@ -196,7 +196,7 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 			if fs.Changed("scale-down-type") {
 				if scaleDownType != "" {
 					update.ScaleDownType = &sdt
-					update.ScaleDownValue = &scaleUpValue
+					update.ScaleDownValue = &scaleDownValue
 					update.ScaleDownPeriodSeconds = &scaleDownPeriodSeconds
 				}
 			}
