@@ -82,7 +82,7 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 
 			if fs.Changed("utilization-cpu-average") {
 				if utilizationCPUAverage <= 0 {
-					return fmt.Errorf("utilizationCPUAverage - scale-down-value must be greater than zero")
+					return fmt.Errorf("utilization-cpu-average must be greater than zero")
 				}
 			}
 
