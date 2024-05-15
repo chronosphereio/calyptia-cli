@@ -140,7 +140,7 @@ func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 
 				label := fmt.Sprintf("%s=%s", k8s.LabelInstance, coreInstanceKey)
 				cmd.Printf("Waiting for core-instance to update...\n")
-				if err := k8sClient.UpdateSyncDeploymentByLabel(ctx, label, newVersion, strconv.FormatBool(!noTLSVerify), verbose, waitTimeout); err != nil {
+				if err := k8sClient.UpdateSyncDeploymentByLabel(ctx, label, newVersion, strconv.FormatBool(!noTLSVerify), skipServiceCreation, verbose, waitTimeout); err != nil {
 					if !verbose {
 						return fmt.Errorf("could not update core-instance to version %s for extra details use --verbose flag", newVersion)
 					}
