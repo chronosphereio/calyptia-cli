@@ -504,7 +504,7 @@ func (client *Client) UpdateDeploymentByLabel(ctx context.Context, label, newIma
 	return nil
 }
 
-func (client *Client) UpdateSyncDeploymentByLabel(ctx context.Context, label, newImage, tlsVerify string, verbose bool, waitTimeout time.Duration) error {
+func (client *Client) UpdateSyncDeploymentByLabel(ctx context.Context, label, newImage, tlsVerify string, skipServiceCreation, verbose bool, waitTimeout time.Duration) error {
 	deploymentList, err := client.FindDeploymentByLabel(ctx, label)
 	if err != nil {
 		return err
@@ -525,6 +525,13 @@ func (client *Client) UpdateSyncDeploymentByLabel(ctx context.Context, label, ne
 		if strings.Contains(container.Name, "from-cloud") {
 			deployment.Spec.Template.Spec.Containers[i].Image = fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorFromCloudDockerImage, newImage)
 			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, tlsVerify)
+			if skipServiceCreation {
+				deployment.Spec.Template.Spec.Containers[i].Env = append(deployment.Spec.Template.Spec.Containers[i].Env, corev1.EnvVar{
+					Name:  "SKIP_SERVICE_CREATION",
+					Value: strconv.FormatBool(true),
+				})
+
+			}
 		}
 	}
 
@@ -615,7 +622,7 @@ func (client *Client) FindDeploymentByLabel(ctx context.Context, label string) (
 	return client.AppsV1().Deployments(client.Namespace).List(ctx, metav1.ListOptions{LabelSelector: label})
 }
 
-func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, fromCloudImage, toCloudImage string, metricsPort string, memoryLimit string, annotations string, tolerations string, noTLSVerify bool, httpProxy, httpsProxy string, coreInstance cloud.CreatedCoreInstance, serviceAccount string) (*appsv1.Deployment, error) {
+func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, fromCloudImage, toCloudImage string, metricsPort string, memoryLimit string, annotations string, tolerations string, skipServiceCreation, noTLSVerify bool, httpProxy, httpsProxy string, coreInstance cloud.CreatedCoreInstance, serviceAccount string) (*appsv1.Deployment, error) {
 	podTolerations, err := validateTolerations(tolerations)
 	if err != nil {
 		return nil, err
@@ -667,6 +674,13 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, 
 			Name:  "TOLERATIONS",
 			Value: tolerations,
 		},
+	}
+
+	if skipServiceCreation {
+		env = append(env, corev1.EnvVar{
+			Name:  "SKIP_SERVICE_CREATION",
+			Value: strconv.FormatBool(true),
+		})
 	}
 	toCloud := corev1.Container{
 		Name:            coreInstance.Name + "-sync-to-cloud",
