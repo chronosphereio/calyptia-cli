@@ -13,6 +13,7 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 
 	"github.com/calyptia/cli/cmd/utils"
+	"github.com/calyptia/cli/confirm"
 	"github.com/calyptia/core-images-index/go-index"
 
 	semver "github.com/hashicorp/go-version"
@@ -43,6 +44,31 @@ func NewCmdUpdate() *cobra.Command {
 		Aliases: []string{"opr"},
 		Short:   "Update core operator",
 		PreRunE: func(cmd *cobra.Command, args []string) error {
+
+			operatorIndex, err := index.NewOperator()
+			if err != nil {
+				return err
+			}
+
+			laststr, _ := operatorIndex.Last(cmd.Context())
+			last, _ := semver.NewSemver(laststr)
+			current, _ := semver.NewSemver(utils.DefaultCoreOperatorDockerImageTag)
+
+			if current.LessThan(last) {
+				cmd.Printf("Warning: Current version %s is less than the latest version %s\n", current.String(), last.String())
+				cmd.Printf("To ensure that the operator functions as intended please install latest version of the CLI, and run %q\n", "calyptia update operator")
+				cmd.Printf("Do you want to proceed with update? (y/N)\n")
+				confirmed, err := confirm.Read(cmd.InOrStdin())
+				if err != nil {
+					return err
+				}
+
+				if !confirmed {
+					return fmt.Errorf("Aborted")
+				}
+
+			}
+
 			if coreOperatorVersion == "" {
 				return nil
 			}
@@ -50,11 +76,6 @@ func NewCmdUpdate() *cobra.Command {
 				coreOperatorVersion = fmt.Sprintf("v%s", coreOperatorVersion)
 			}
 			if _, err := semver.NewSemver(coreOperatorVersion); err != nil {
-				return err
-			}
-
-			operatorIndex, err := index.NewOperator()
-			if err != nil {
 				return err
 			}
 
