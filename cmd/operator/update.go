@@ -34,6 +34,7 @@ func NewCmdUpdate() *cobra.Command {
 		waitTimeout                time.Duration
 		verbose                    bool
 		externalTrafficPolicyLocal bool
+		force                      bool
 	)
 
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
@@ -50,23 +51,25 @@ func NewCmdUpdate() *cobra.Command {
 				return err
 			}
 
-			laststr, _ := operatorIndex.Last(cmd.Context())
-			last, _ := semver.NewSemver(laststr)
-			current, _ := semver.NewSemver(utils.DefaultCoreOperatorDockerImageTag)
+			if !force {
+				laststr, _ := operatorIndex.Last(cmd.Context())
+				last, _ := semver.NewSemver(laststr)
+				current, _ := semver.NewSemver(utils.DefaultCoreOperatorDockerImageTag)
 
-			if current.LessThan(last) {
-				cmd.Printf("Warning: Current version %s is less than the latest version %s\n", current.String(), last.String())
-				cmd.Printf("To ensure that the operator functions as intended please install latest version of the CLI, and run %q\n", "calyptia update operator")
-				cmd.Printf("Do you want to proceed with update? (y/N)\n")
-				confirmed, err := confirm.Read(cmd.InOrStdin())
-				if err != nil {
-					return err
+				if current.LessThan(last) && coreOperatorVersion == "" {
+					var err error
+					cmd.Printf("Warning: Current version %s is less than the latest version %s\n", current.String(), last.String())
+					cmd.Printf("To ensure that the operator functions as intended please install latest version of the CLI, and run %q\n", "calyptia update operator")
+					cmd.Printf("Do you want to proceed with update? (y/N)\n")
+					force, err = confirm.Read(cmd.InOrStdin())
+					if err != nil {
+						return err
+					}
+
+					if !force {
+						return fmt.Errorf("Aborted")
+					}
 				}
-
-				if !confirmed {
-					return fmt.Errorf("Aborted")
-				}
-
 			}
 
 			if coreOperatorVersion == "" {
@@ -159,6 +162,7 @@ func NewCmdUpdate() *cobra.Command {
 
 	fs := cmd.Flags()
 
+	fs.BoolVarP(&force, "force", "f", false, "Confirm installation if previous installation found")
 	fs.BoolVar(&waitReady, "wait", false, "Wait for the core instance to be ready before returning")
 	fs.DurationVar(&waitTimeout, "timeout", defaultWaitTimeout, "Wait timeout")
 	fs.BoolVar(&verbose, "verbose", false, "Print verbose command output")
