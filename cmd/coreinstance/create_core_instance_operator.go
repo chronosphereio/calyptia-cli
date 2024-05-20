@@ -43,7 +43,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 		waitTimeout                    time.Duration
 		noTLSVerify                    bool
 		metricsPort                    string
-		httpProxy, httpsProxy          string
+		httpProxy, httpsProxy, noProxy string
 		memoryLimit                    string
 		annotations                    string
 		tolerations                    string
@@ -280,7 +280,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				}
 				coreDockerFromCloudImage = fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorFromCloudDockerImage, coreDockerFromCloudImageTag)
 			}
-			syncDeployment, err := k8sClient.DeployCoreOperatorSync(ctx, coreCloudURL, coreDockerFromCloudImage, coreDockerToCloudImage, metricsPort, memoryLimit, annotations, tolerations, skipServiceCreation, !noTLSVerify, httpProxy, httpsProxy, created, serviceAccount.Name)
+			syncDeployment, err := k8sClient.DeployCoreOperatorSync(ctx, coreCloudURL, coreDockerFromCloudImage, coreDockerToCloudImage, metricsPort, memoryLimit, annotations, tolerations, skipServiceCreation, !noTLSVerify, httpProxy, httpsProxy, noProxy, created, serviceAccount.Name)
 			if err != nil {
 				if err := config.Cloud.DeleteCoreInstance(ctx, created.ID); err != nil {
 					return fmt.Errorf("failed to rollback created core instance %v", err)
@@ -353,7 +353,8 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 	fs.StringVar(&memoryLimit, "memory-limit", "512Mi", "Minimum memory required")
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 	fs.StringVar(&httpProxy, "http-proxy", "", "http proxy to use on this core instance")
-	fs.StringVar(&httpsProxy, "https-proxy", "", "http proxy to use on this core instance")
+	fs.StringVar(&noProxy, "no-proxy", "", "no proxy to use on this core instance")
+	fs.StringVar(&httpsProxy, "https-proxy", "", "https proxy to use on this core instance")
 	fs.StringVar(&annotations, "annotations", "", "Custom annotations for pipelines. Format should be 'annotation1=value1,annotation2=value2'")
 	fs.StringVar(&tolerations, "tolerations", "", `Custom tolerations for pipelines. Format should be 'key1=Equal:value1:Execute:3600,key2=Exists:value2:NoExecute`)
 

@@ -37,7 +37,6 @@ func NewCmdUpdate() *cobra.Command {
 
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	configOverrides := &clientcmd.ConfigOverrides{}
-
 	cmd := &cobra.Command{
 		Use:     "operator",
 		Aliases: []string{"opr"},

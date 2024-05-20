@@ -13,6 +13,7 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 
 	cloud "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/cmd/utils"
 	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/k8s"
@@ -22,12 +23,13 @@ import (
 func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernetes.Interface) *cobra.Command {
 	var newVersion, newName, environment string
 	var (
-		disableClusterLogging bool
-		enableClusterLogging  bool
-		noTLSVerify           bool
-		skipServiceCreation   bool
-		verbose               bool
-		waitTimeout           time.Duration
+		disableClusterLogging          bool
+		enableClusterLogging           bool
+		noTLSVerify                    bool
+		skipServiceCreation            bool
+		httpProxy, httpsProxy, noProxy string
+		verbose                        bool
+		waitTimeout                    time.Duration
 	)
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	configOverrides := &clientcmd.ConfigOverrides{}
@@ -109,50 +111,50 @@ func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				configOverrides.Context.Namespace = apiv1.NamespaceDefault
 			}
 
-			if newVersion != "" {
-				var clientSet kubernetes.Interface
-				if testClientSet != nil {
-					clientSet = testClientSet
-				} else {
-					kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
-					kubeClientConfig, err := kubeConfig.ClientConfig()
-					if err != nil {
-						return err
-					}
-
-					clientSet, err = kubernetes.NewForConfig(kubeClientConfig)
-					if err != nil {
-						return err
-					}
-
-				}
-
-				k8sClient := &k8s.Client{
-					Interface:    clientSet,
-					Namespace:    configOverrides.Context.Namespace,
-					ProjectToken: config.ProjectToken,
-					CloudBaseURL: config.BaseURL,
-				}
-
-				if err := k8sClient.EnsureOwnNamespace(ctx); err != nil {
-					return fmt.Errorf("could not ensure kubernetes namespace exists: %w", err)
-				}
-
-				label := fmt.Sprintf("%s=%s", k8s.LabelInstance, coreInstanceKey)
-				cmd.Printf("Waiting for core-instance to update...\n")
-				if err := k8sClient.UpdateSyncDeploymentByLabel(ctx, label, newVersion, strconv.FormatBool(!noTLSVerify), skipServiceCreation, verbose, waitTimeout); err != nil {
-					if !verbose {
-						return fmt.Errorf("could not update core-instance to version %s for extra details use --verbose flag", newVersion)
-					}
-					return fmt.Errorf("could not update core-instance: to version %s %w", newVersion, err)
-				}
-
+			if newVersion == "" {
+				newVersion = utils.DefaultCoreOperatorFromCloudDockerImageTag
+			}
+			var clientSet kubernetes.Interface
+			if testClientSet != nil {
+				clientSet = testClientSet
+			} else {
+				kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
+				kubeClientConfig, err := kubeConfig.ClientConfig()
 				if err != nil {
 					return err
 				}
-				cmd.Printf("calyptia-core instance version updated to version %s\n", newVersion)
+
+				clientSet, err = kubernetes.NewForConfig(kubeClientConfig)
+				if err != nil {
+					return err
+				}
 
 			}
+
+			k8sClient := &k8s.Client{
+				Interface:    clientSet,
+				Namespace:    configOverrides.Context.Namespace,
+				ProjectToken: config.ProjectToken,
+				CloudBaseURL: config.BaseURL,
+			}
+
+			if err := k8sClient.EnsureOwnNamespace(ctx); err != nil {
+				return fmt.Errorf("could not ensure kubernetes namespace exists: %w", err)
+			}
+
+			label := fmt.Sprintf("%s=%s", k8s.LabelInstance, coreInstanceKey)
+			cmd.Printf("Waiting for core-instance to update...\n")
+			if err := k8sClient.UpdateSyncDeploymentByLabel(ctx, label, newVersion, strconv.FormatBool(!noTLSVerify), skipServiceCreation, verbose, httpProxy, httpsProxy, noProxy, waitTimeout); err != nil {
+				if !verbose {
+					return fmt.Errorf("could not update core-instance to version %s for extra details use --verbose flag", newVersion)
+				}
+				return fmt.Errorf("could not update core-instance: to version %s %w", newVersion, err)
+			}
+
+			if err != nil {
+				return err
+			}
+			cmd.Printf("calyptia-core instance version updated to version %s\n", newVersion)
 
 			return nil
 		},
@@ -164,6 +166,9 @@ func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 	fs.BoolVar(&enableClusterLogging, "enable-cluster-logging", false, "Enable cluster logging functionality")
 	fs.BoolVar(&disableClusterLogging, "disable-cluster-logging", false, "Disable cluster logging functionality")
 	fs.BoolVar(&noTLSVerify, "no-tls-verify", false, "Disable TLS verification when connecting to Calyptia Cloud API.")
+	fs.StringVar(&noProxy, "no-proxy", "", "http proxy to use on this core instance")
+	fs.StringVar(&httpProxy, "http-proxy", "", "no proxy to use on this core instance")
+	fs.StringVar(&httpsProxy, "https-proxy", "", "https proxy to use on this core instance")
 	fs.BoolVar(&verbose, "verbose", false, "Print verbose command output")
 	fs.DurationVar(&waitTimeout, "timeout", time.Second*30, "Wait timeout")
 	fs.BoolVar(&skipServiceCreation, "skip-service-creation", false, "Skip the creation of kubernetes services for any pipeline under this core instance.")
