@@ -23,13 +23,13 @@ import (
 func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernetes.Interface) *cobra.Command {
 	var newVersion, newName, environment string
 	var (
-		disableClusterLogging          bool
-		enableClusterLogging           bool
-		noTLSVerify                    bool
-		skipServiceCreation            bool
-		httpProxy, httpsProxy, noProxy string
-		verbose                        bool
-		waitTimeout                    time.Duration
+		disableClusterLogging                      bool
+		enableClusterLogging                       bool
+		noTLSVerify                                bool
+		skipServiceCreation                        bool
+		cloudProxy, httpProxy, httpsProxy, noProxy string
+		verbose                                    bool
+		waitTimeout                                time.Duration
 	)
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	configOverrides := &clientcmd.ConfigOverrides{}
@@ -144,7 +144,7 @@ func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 
 			label := fmt.Sprintf("%s=%s", k8s.LabelInstance, coreInstanceKey)
 			cmd.Printf("Waiting for core-instance to update...\n")
-			if err := k8sClient.UpdateSyncDeploymentByLabel(ctx, label, newVersion, strconv.FormatBool(!noTLSVerify), skipServiceCreation, verbose, httpProxy, httpsProxy, noProxy, waitTimeout); err != nil {
+			if err := k8sClient.UpdateSyncDeploymentByLabel(ctx, label, newVersion, strconv.FormatBool(!noTLSVerify), skipServiceCreation, verbose, cloudProxy, httpProxy, httpsProxy, noProxy, waitTimeout); err != nil {
 				if !verbose {
 					return fmt.Errorf("could not update core-instance to version %s for extra details use --verbose flag", newVersion)
 				}
@@ -167,6 +167,7 @@ func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 	fs.BoolVar(&disableClusterLogging, "disable-cluster-logging", false, "Disable cluster logging functionality")
 	fs.BoolVar(&noTLSVerify, "no-tls-verify", false, "Disable TLS verification when connecting to Calyptia Cloud API.")
 	fs.StringVar(&noProxy, "no-proxy", "", "http proxy to use on this core instance")
+	fs.StringVar(&cloudProxy, "cloud-proxy", "", "proxy for cloud api client to use on this core instance")
 	fs.StringVar(&httpProxy, "http-proxy", "", "no proxy to use on this core instance")
 	fs.StringVar(&httpsProxy, "https-proxy", "", "https proxy to use on this core instance")
 	fs.BoolVar(&verbose, "verbose", false, "Print verbose command output")

@@ -52,6 +52,7 @@ const (
 	syncHttpProxy                 string     = "HTTP_PROXY"
 	syncHttpsProxy                string     = "HTTPS_PROXY"
 	syncNoProxy                   string     = "NO_PROXY"
+	syncCloudProxy                string     = "CLOUD_PROXY"
 	coreSkipServiceCreationEnvVar string     = "CORE_INSTANCE_SKIP_SERVICE_CREATION"
 	defaultOperatorNamespace                 = "calyptia-core"
 	noContainersErrString                    = "no containers found in deployment %s"
@@ -507,7 +508,7 @@ func (client *Client) UpdateDeploymentByLabel(ctx context.Context, label, newIma
 	return nil
 }
 
-func (client *Client) UpdateSyncDeploymentByLabel(ctx context.Context, label, newImage, tlsVerify string, skipServiceCreation, verbose bool, httpProxy, httpsProxy, noProxy string, waitTimeout time.Duration) error {
+func (client *Client) UpdateSyncDeploymentByLabel(ctx context.Context, label, newImage, tlsVerify string, skipServiceCreation, verbose bool, cloudProxy, httpProxy, httpsProxy, noProxy string, waitTimeout time.Duration) error {
 	deploymentList, err := client.FindDeploymentByLabel(ctx, label)
 	if err != nil {
 		return err
@@ -524,6 +525,7 @@ func (client *Client) UpdateSyncDeploymentByLabel(ctx context.Context, label, ne
 		if strings.Contains(container.Name, "to-cloud") {
 			deployment.Spec.Template.Spec.Containers[i].Image = fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorToCloudDockerImage, newImage)
 			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncTLSVerifyEnvVar, tlsVerify)
+			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncCloudProxy, cloudProxy)
 			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncNoProxy, noProxy)
 			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncHttpProxy, httpProxy)
 			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncHttpsProxy, httpsProxy)
@@ -531,6 +533,7 @@ func (client *Client) UpdateSyncDeploymentByLabel(ctx context.Context, label, ne
 		if strings.Contains(container.Name, "from-cloud") {
 			deployment.Spec.Template.Spec.Containers[i].Image = fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorFromCloudDockerImage, newImage)
 			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncTLSVerifyEnvVar, tlsVerify)
+			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncCloudProxy, cloudProxy)
 			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncNoProxy, noProxy)
 			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncHttpProxy, httpProxy)
 			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncHttpsProxy, httpsProxy)
@@ -631,7 +634,7 @@ func (client *Client) FindDeploymentByLabel(ctx context.Context, label string) (
 	return client.AppsV1().Deployments(client.Namespace).List(ctx, metav1.ListOptions{LabelSelector: label})
 }
 
-func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, fromCloudImage, toCloudImage string, metricsPort string, memoryLimit string, annotations string, tolerations string, skipServiceCreation, noTLSVerify bool, httpProxy, httpsProxy, noProxy string, coreInstance cloud.CreatedCoreInstance, serviceAccount string) (*appsv1.Deployment, error) {
+func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, fromCloudImage, toCloudImage string, metricsPort string, memoryLimit string, annotations string, tolerations string, skipServiceCreation, noTLSVerify bool, cloudProxy, httpProxy, httpsProxy, noProxy string, coreInstance cloud.CreatedCoreInstance, serviceAccount string) (*appsv1.Deployment, error) {
 	podTolerations, err := validateTolerations(tolerations)
 	if err != nil {
 		return nil, err
@@ -666,6 +669,10 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, 
 		{
 			Name:  "METRICS_PORT",
 			Value: metricsPort,
+		},
+		{
+			Name:  "CLOUD_PROXY",
+			Value: cloudProxy,
 		},
 		{
 			Name:  "NO_PROXY",
