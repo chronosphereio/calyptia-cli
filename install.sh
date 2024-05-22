@@ -111,8 +111,8 @@ _download_binary() {
   fi
 
   # If we do not have it yet then use the arch version
-  echo "Downloading from URL:  ${_download_url_prefix}${_download_trailedVersion}_${_download_os}_${_download_arch}.tar.gz"
-  curl  --progress-bar --output "$_download_output_dir"/cli.tar.gz -SLf "${_download_url_prefix}${_download_trailedVersion}_${_download_os}_${_download_arch}.tar.gz"
+  echo "Downloading from URL:  $_url"
+  curl  --progress-bar --output "$_download_output_dir"/cli.tar.gz -SLf "$_url"
   tar -C "$_download_output_dir" -xzf cli.tar.gz calyptia
   rm -f "$_download_output_dir"/cli.tar.gz
 }
