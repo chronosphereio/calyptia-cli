@@ -1645,7 +1645,7 @@ spec:
       - args: []
         command:
         - /manager
-        image: ghcr.io/calyptia/core-operator:v2.12.4
+        image: ghcr.io/calyptia/core-operator:v2.12.5
         livenessProbe:
           httpGet:
             path: /healthz
