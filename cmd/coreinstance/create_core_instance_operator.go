@@ -26,27 +26,27 @@ import (
 
 func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernetes.Interface) *cobra.Command {
 	var (
-		coreInstanceName               string
-		coreCloudURL                   string
-		coreFluentBitDockerImage       string
-		coreDockerToCloudImage         string
-		coreDockerFromCloudImage       string
-		noHealthCheckPipeline          bool
-		healthCheckPipelinePort        string
-		healthCheckPipelineServiceType string
-		enableClusterLogging           bool
-		skipServiceCreation            bool
-		environment                    string
-		tags                           []string
-		dryRun                         bool
-		waitReady                      bool
-		waitTimeout                    time.Duration
-		noTLSVerify                    bool
-		metricsPort                    string
-		httpProxy, httpsProxy          string
-		memoryLimit                    string
-		annotations                    string
-		tolerations                    string
+		coreInstanceName                           string
+		coreCloudURL                               string
+		coreFluentBitDockerImage                   string
+		coreDockerToCloudImage                     string
+		coreDockerFromCloudImage                   string
+		noHealthCheckPipeline                      bool
+		healthCheckPipelinePort                    string
+		healthCheckPipelineServiceType             string
+		enableClusterLogging                       bool
+		skipServiceCreation                        bool
+		environment                                string
+		tags                                       []string
+		dryRun                                     bool
+		waitReady                                  bool
+		waitTimeout                                time.Duration
+		noTLSVerify                                bool
+		metricsPort                                string
+		cloudProxy, httpProxy, httpsProxy, noProxy string
+		memoryLimit                                string
+		annotations                                string
+		tolerations                                string
 	)
 
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
@@ -280,7 +280,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				}
 				coreDockerFromCloudImage = fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorFromCloudDockerImage, coreDockerFromCloudImageTag)
 			}
-			syncDeployment, err := k8sClient.DeployCoreOperatorSync(ctx, coreCloudURL, coreDockerFromCloudImage, coreDockerToCloudImage, metricsPort, memoryLimit, annotations, tolerations, skipServiceCreation, !noTLSVerify, httpProxy, httpsProxy, created, serviceAccount.Name)
+			syncDeployment, err := k8sClient.DeployCoreOperatorSync(ctx, coreCloudURL, coreDockerFromCloudImage, coreDockerToCloudImage, metricsPort, memoryLimit, annotations, tolerations, skipServiceCreation, !noTLSVerify, cloudProxy, httpProxy, httpsProxy, noProxy, created, serviceAccount.Name)
 			if err != nil {
 				if err := config.Cloud.DeleteCoreInstance(ctx, created.ID); err != nil {
 					return fmt.Errorf("failed to rollback created core instance %v", err)
@@ -352,8 +352,10 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 	fs.StringVar(&metricsPort, "metrics-port", "15334", "Port for metrics endpoint.")
 	fs.StringVar(&memoryLimit, "memory-limit", "512Mi", "Minimum memory required")
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
+	fs.StringVar(&cloudProxy, "cloud-proxy", "", "proxy for cloud api client to use on this core instance")
 	fs.StringVar(&httpProxy, "http-proxy", "", "http proxy to use on this core instance")
-	fs.StringVar(&httpsProxy, "https-proxy", "", "http proxy to use on this core instance")
+	fs.StringVar(&noProxy, "no-proxy", "", "no proxy to use on this core instance")
+	fs.StringVar(&httpsProxy, "https-proxy", "", "https proxy to use on this core instance")
 	fs.StringVar(&annotations, "annotations", "", "Custom annotations for pipelines. Format should be 'annotation1=value1,annotation2=value2'")
 	fs.StringVar(&tolerations, "tolerations", "", `Custom tolerations for pipelines. Format should be 'key1=Equal:value1:Execute:3600,key2=Exists:value2:NoExecute`)
 

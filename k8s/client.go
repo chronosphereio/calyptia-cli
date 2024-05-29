@@ -49,6 +49,10 @@ const (
 	serviceAccountObjectType      objectType = "service-account"
 	coreTLSVerifyEnvVar           string     = "CORE_TLS_VERIFY"
 	syncTLSVerifyEnvVar           string     = "NO_TLS_VERIFY"
+	syncHttpProxy                 string     = "HTTP_PROXY"
+	syncHttpsProxy                string     = "HTTPS_PROXY"
+	syncNoProxy                   string     = "NO_PROXY"
+	syncCloudProxy                string     = "CLOUD_PROXY"
 	coreSkipServiceCreationEnvVar string     = "CORE_INSTANCE_SKIP_SERVICE_CREATION"
 	defaultOperatorNamespace                 = "calyptia-core"
 	noContainersErrString                    = "no containers found in deployment %s"
@@ -504,7 +508,7 @@ func (client *Client) UpdateDeploymentByLabel(ctx context.Context, label, newIma
 	return nil
 }
 
-func (client *Client) UpdateSyncDeploymentByLabel(ctx context.Context, label, newImage, tlsVerify string, skipServiceCreation, verbose bool, waitTimeout time.Duration) error {
+func (client *Client) UpdateSyncDeploymentByLabel(ctx context.Context, label, newImage, tlsVerify string, skipServiceCreation, verbose bool, cloudProxy, httpProxy, httpsProxy, noProxy string, waitTimeout time.Duration) error {
 	deploymentList, err := client.FindDeploymentByLabel(ctx, label)
 	if err != nil {
 		return err
@@ -520,11 +524,19 @@ func (client *Client) UpdateSyncDeploymentByLabel(ctx context.Context, label, ne
 	for i, container := range deployment.Spec.Template.Spec.Containers {
 		if strings.Contains(container.Name, "to-cloud") {
 			deployment.Spec.Template.Spec.Containers[i].Image = fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorToCloudDockerImage, newImage)
-			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, tlsVerify)
+			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncTLSVerifyEnvVar, tlsVerify)
+			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncCloudProxy, cloudProxy)
+			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncNoProxy, noProxy)
+			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncHttpProxy, httpProxy)
+			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncHttpsProxy, httpsProxy)
 		}
 		if strings.Contains(container.Name, "from-cloud") {
 			deployment.Spec.Template.Spec.Containers[i].Image = fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorFromCloudDockerImage, newImage)
-			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, tlsVerify)
+			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncTLSVerifyEnvVar, tlsVerify)
+			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncCloudProxy, cloudProxy)
+			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncNoProxy, noProxy)
+			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncHttpProxy, httpProxy)
+			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncHttpsProxy, httpsProxy)
 			if skipServiceCreation {
 				deployment.Spec.Template.Spec.Containers[i].Env = append(deployment.Spec.Template.Spec.Containers[i].Env, corev1.EnvVar{
 					Name:  "SKIP_SERVICE_CREATION",
@@ -560,12 +572,12 @@ func (client *Client) rolloutDeployment(ctx context.Context, namespace, deployme
 	return err
 }
 
-func (client *Client) updateEnvVars(envVars []corev1.EnvVar, tlsVerify string) []corev1.EnvVar {
+func (client *Client) updateEnvVars(envVars []corev1.EnvVar, key, value string) []corev1.EnvVar {
 	found := false
 	for idx, envVar := range envVars {
-		if envVar.Name == syncTLSVerifyEnvVar {
-			if envVar.Value != tlsVerify {
-				envVars[idx].Value = tlsVerify
+		if envVar.Name == key {
+			if envVar.Value != value {
+				envVars[idx].Value = value
 			}
 			found = true
 		}
@@ -573,8 +585,8 @@ func (client *Client) updateEnvVars(envVars []corev1.EnvVar, tlsVerify string) [
 
 	if !found {
 		envVars = append(envVars, corev1.EnvVar{
-			Name:  coreTLSVerifyEnvVar,
-			Value: tlsVerify,
+			Name:  key,
+			Value: value,
 		})
 	}
 
@@ -622,7 +634,7 @@ func (client *Client) FindDeploymentByLabel(ctx context.Context, label string) (
 	return client.AppsV1().Deployments(client.Namespace).List(ctx, metav1.ListOptions{LabelSelector: label})
 }
 
-func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, fromCloudImage, toCloudImage string, metricsPort string, memoryLimit string, annotations string, tolerations string, skipServiceCreation, noTLSVerify bool, httpProxy, httpsProxy string, coreInstance cloud.CreatedCoreInstance, serviceAccount string) (*appsv1.Deployment, error) {
+func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, fromCloudImage, toCloudImage string, metricsPort string, memoryLimit string, annotations string, tolerations string, skipServiceCreation, noTLSVerify bool, cloudProxy, httpProxy, httpsProxy, noProxy string, coreInstance cloud.CreatedCoreInstance, serviceAccount string) (*appsv1.Deployment, error) {
 	podTolerations, err := validateTolerations(tolerations)
 	if err != nil {
 		return nil, err
@@ -657,6 +669,14 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, 
 		{
 			Name:  "METRICS_PORT",
 			Value: metricsPort,
+		},
+		{
+			Name:  "CLOUD_PROXY",
+			Value: cloudProxy,
+		},
+		{
+			Name:  "NO_PROXY",
+			Value: noProxy,
 		},
 		{
 			Name:  "HTTP_PROXY",
