@@ -43,6 +43,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 		waitTimeout                                time.Duration
 		noTLSVerify                                bool
 		metricsPort                                string
+		metrics                                    bool
 		cloudProxy, httpProxy, httpsProxy, noProxy string
 		memoryLimit                                string
 		annotations                                string
@@ -280,7 +281,27 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				}
 				coreDockerFromCloudImage = fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorFromCloudDockerImage, coreDockerFromCloudImageTag)
 			}
-			syncDeployment, err := k8sClient.DeployCoreOperatorSync(ctx, coreCloudURL, coreDockerFromCloudImage, coreDockerToCloudImage, metricsPort, memoryLimit, annotations, tolerations, skipServiceCreation, !noTLSVerify, cloudProxy, httpProxy, httpsProxy, noProxy, created, serviceAccount.Name)
+
+			syncParams := k8s.DeployCoreOperatorSyncParams{
+				CoreCloudURL:        coreCloudURL,
+				FromCloudImage:      coreDockerFromCloudImage,
+				ToCloudImage:        coreDockerToCloudImage,
+				Metrics:             metrics,
+				MetricsPort:         metricsPort,
+				MemoryLimit:         memoryLimit,
+				Annotations:         annotations,
+				Tolerations:         tolerations,
+				SkipServiceCreation: skipServiceCreation,
+				NoTLSVerify:         !noTLSVerify,
+				CloudProxy:          cloudProxy,
+				HttpProxy:           httpProxy,
+				HttpsProxy:          httpsProxy,
+				NoProxy:             noProxy,
+				CoreInstance:        created,
+				ServiceAccount:      serviceAccount.Name,
+			}
+
+			syncDeployment, err := k8sClient.DeployCoreOperatorSync(ctx, syncParams)
 			if err != nil {
 				if err := config.Cloud.DeleteCoreInstance(ctx, created.ID); err != nil {
 					return fmt.Errorf("failed to rollback created core instance %v", err)
@@ -350,6 +371,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 	fs.BoolVar(&dryRun, "dry-run", false, "Passing this value will skip creation of any Kubernetes resources and it will return resources as YAML manifest")
 	fs.BoolVar(&noTLSVerify, "no-tls-verify", false, "Disable TLS verification when connecting to Calyptia Cloud API.")
 	fs.StringVar(&metricsPort, "metrics-port", "15334", "Port for metrics endpoint.")
+	fs.BoolVar(&metrics, "metrics", false, "enable pipeline metrics")
 	fs.StringVar(&memoryLimit, "memory-limit", "512Mi", "Minimum memory required")
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 	fs.StringVar(&cloudProxy, "cloud-proxy", "", "proxy for cloud api client to use on this core instance")
