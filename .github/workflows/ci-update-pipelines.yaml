@@ -97,7 +97,7 @@ jobs:
                 OLD_IMAGE: ${{ steps.current.outputs.CURRENT_IMAGE }}
 
             - name: Update all pipeline images to a new version
-              run: ./update-all-pipeline-images "$NEW_IMAGE"
+              run: ./update-all-pipeline-images.sh "$NEW_IMAGE"
               shell: bash
 
             - name: Wait for new pipelines to be running and dump debug

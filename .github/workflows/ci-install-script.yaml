@@ -27,6 +27,7 @@ jobs:
             - name: Test Apt install
               run: |
                 docker run -t -v $PWD/install.sh:/install.sh:ro ${{ matrix.container-image }} \
+                    -e GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} \
                     bash -c 'apt-get update && apt-get install -y curl && /install.sh && calyptia version'
               shell: bash
 
@@ -49,6 +50,7 @@ jobs:
             - name: Test Yum install
               run: |
                 docker run -t -v $PWD/install.sh:/install.sh:ro ${{ matrix.container-image }} \
+                    -e GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} \
                     bash -c 'yum install --allowerasing -y curl && /install.sh && calyptia version'
               shell: bash
 
@@ -70,6 +72,8 @@ jobs:
             - name: Install
               run: ./install.sh
               shell: bash
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Check version
               run: ./calyptia.exe version
@@ -91,6 +95,8 @@ jobs:
 
             - name: Install
               run: ./install.sh
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Check version
               run: calyptia version
