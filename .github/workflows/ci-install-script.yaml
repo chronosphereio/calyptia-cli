@@ -28,6 +28,20 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v4
 
+            - name: Test Apt install
+              if: ${{ startsWith('ubuntu', matrix.container-image) || startsWith('debian', matrix.container-image) }}
+              run: |
+                docker run -it -v $PWD/install.sh:/install.sh:ro ${{ matrix.container-image }} \
+                    bash -c 'apt-get update && apt-get install -y curl && /install.sh && calyptia version'
+              shell: bash
+
+            - name: Test Yum install
+              if: ${{ ! (startsWith('ubuntu', matrix.container-image) || startsWith('debian', matrix.container-image)) }}
+              run: |
+                docker run -it -v $PWD/install.sh:/install.sh:ro ${{ matrix.container-image }} \
+                    bash -c 'yum install -y curl && /install.sh && calyptia version'
+              shell: bash
+
     test-windows:
         name: Test Windows install
         runs-on: windows-latest
@@ -35,7 +49,9 @@ jobs:
             contents: read
         steps:
             - name: Debug
-              run: uname -a
+              run: |
+                uname
+                uname -a
               shell: bash
 
             - name: Checkout code
@@ -56,7 +72,9 @@ jobs:
             contents: read
         steps:
             - name: Debug
-              run: uname -a
+              run: |
+                uname
+                uname -a
 
             - name: Checkout code
               uses: actions/checkout@v4
