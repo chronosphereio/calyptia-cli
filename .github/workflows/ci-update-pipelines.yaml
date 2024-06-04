@@ -1,0 +1,135 @@
+name: Update pipelines script test
+on:
+    workflow_dispatch:
+    pull_request:
+        branches:
+            - main
+# We use the same token for all tests so need to ensure we do not run in parallel
+concurrency:
+    group: ${{ github.workflow }}
+    cancel-in-progress: true
+jobs:
+    test-linux:
+        name: Test we can update all pipelines for all instances
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            packages: read
+        env:
+            NEW_IMAGE: testimage:1.2.3
+        steps:
+            - name: Set up KIND
+              uses: helm/kind-action@v1.10.0
+
+            - name: Login to GitHub Container Registry
+              uses: docker/login-action@v3
+              with:
+                registry: ghcr.io
+                username: ${{ github.actor }}
+                password: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Install CLI
+              run: ./install.sh
+              shell: bash
+
+            - name: Set up CLI
+              run: |
+                calyptia version
+                calyptia config set_token '${{ secrets.CALYPTIA_CORE_PROJECT_TOKEN }}'
+              shell: bash
+
+            - name: Clean up all instances
+              continue-on-error: true
+              run: |
+                calyptia delete core_instances --yes
+              shell: bash
+
+            - name: Create two instances each with pipelines
+              run: |
+                calyptia install operator
+                calyptia create core_instance operator
+                calyptia create core_instance operator
+                cat > fluent-bit.yaml <<EOF
+                pipeline:
+                    inputs:
+                      - name: dummy
+                        samples: 10
+                    outputs:
+                      - name: stdout
+                        match: "*"
+                EOF
+
+                cat fluent-bit.yaml
+
+                for instance in $(calyptia get core_instances -o json | jq -cr '.[].id')
+                do
+                    echo "Creating pipeline for instance: $instance"
+                    calyptia create pipeline --core-instance "$instance" --config-file ./fluent-bit.yaml
+                done
+              shell: bash
+
+            - name: Wait for pipelines to be running and dump debug
+              timeout-minutes: 5
+              id: current
+              run: |
+                kubectl wait --for=condition=ready pod -A -l core-pipeline --timeout=5m
+                CURRENT_IMAGE=$(kubectl get pods -A -l core-pipeline -o jsonpath='{.items[0].spec.containers..image}')
+                echo "CURRENT_IMAGE=$CURRENT_IMAGE"
+                echo "CURRENT_IMAGE=$CURRENT_IMAGE" >> $GITHUB_OUTPUT
+              shell: bash
+
+            - name: Re-tag current image as new image
+              run: |
+                docker pull "$OLD_IMAGE"
+                docker tag "$OLD_IMAGE" "$NEW_IMAGE"
+                kind load docker-image "$NEW_IMAGE"
+              shell: bash
+              env:
+                OLD_IMAGE: ${{ steps.current.outputs.CURRENT_IMAGE }}
+
+            - name: Update all pipeline images to a new version
+              run: ./update-all-pipeline-images "$NEW_IMAGE"
+              shell: bash
+
+            - name: Wait for new pipelines to be running and dump debug
+              timeout-minutes: 5
+              run: |
+                sleep 30
+                kubectl wait --for=condition=ready pod -A -l core-pipeline --timeout=5m
+                kubectl get pods -A -l core-pipeline -o jsonpath='{.items[0].spec.containers..image}'
+                CURRENT_IMAGE=$(kubectl get pods -A -l core-pipeline -o jsonpath='{.items[0].spec.containers..image}')
+                echo "CURRENT_IMAGE=$CURRENT_IMAGE"
+                [[ "$CURRENT_IMAGE" == "$NEW_IMAGE" ]]
+              shell: bash
+
+            - name: Dump current pipeline pods debug
+              continue-on-error: true
+              if: always()
+              run: |
+                kubectl get pods -A -l core-pipeline -o jsonpath='{.items[0].spec.containers..image}'
+              shell: bash
+
+            - name: list images in cluster
+              # Useful to ensure we grab everything
+              continue-on-error: true
+              if: always()
+              # https://kubernetes.io/docs/tasks/access-application-cluster/list-all-running-container-images/
+              run: |
+                docker images
+                echo '-------------------------------------------------------------------------------'
+                kubectl get pods --all-namespaces -o jsonpath="{.items[*].spec.containers[*].image}" |\
+                  tr -s '[[:space:]]' '\n' |\
+                  sort |\
+                  uniq -c
+                echo '-------------------------------------------------------------------------------'
+              shell: bash
+
+            - name: Clean up all instances
+              if: always()
+              continue-on-error: true
+              run: |
+                calyptia delete core_instances --yes
+              shell: bash
