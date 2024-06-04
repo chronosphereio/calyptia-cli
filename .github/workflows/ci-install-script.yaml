@@ -49,7 +49,7 @@ jobs:
             - name: Test Yum install
               run: |
                 docker run -t -v $PWD/install.sh:/install.sh:ro ${{ matrix.container-image }} \
-                    bash -c 'yum install -y curl && /install.sh && calyptia version'
+                    bash -c 'yum install --allowerasing -y curl && /install.sh && calyptia version'
               shell: bash
 
     test-windows:
@@ -72,7 +72,7 @@ jobs:
               shell: bash
 
             - name: Check version
-              run: calyptia version
+              run: ./calyptia.exe version
               shell: bash
 
     test-macos:
