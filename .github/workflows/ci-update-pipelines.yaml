@@ -75,6 +75,10 @@ jobs:
               timeout-minutes: 5
               id: current
               run: |
+                until kubectl get pod -A -l core-pipeline | grep -vq 'No resources found'
+                do
+                  sleep 1
+                done
                 kubectl wait --for=condition=ready pod -A -l core-pipeline --timeout=5m
                 CURRENT_IMAGE=$(kubectl get pods -A -l core-pipeline -o jsonpath='{.items[0].spec.containers..image}')
                 echo "CURRENT_IMAGE=$CURRENT_IMAGE"
