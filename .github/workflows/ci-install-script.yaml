@@ -1,0 +1,79 @@
+name: Test any changes to the install script
+on:
+    workflow_dispatch:
+    pull_request:
+        branches:
+            - main
+jobs:
+    test-linux:
+        name: Test Linux install
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+        strategy:
+            fail-fast: true
+            matrix:
+                container-image:
+                    - ubuntu:24.04
+                    - ubuntu:22.04
+                    - ubuntu:20.04
+                    - debian:bookworm-slim
+                    - debian:buster-slim
+                    - debian:bullseye-slim
+                    - centos:8
+                    - quay.io/centos/centos:stream9
+                    - rockylinux:8
+                    - rockylinux:9
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+    test-windows:
+        name: Test Windows install
+        runs-on: windows-latest
+        permissions:
+            contents: read
+        steps:
+            - name: Debug
+              run: uname -a
+              shell: bash
+
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Install
+              run: ./install.sh
+              shell: bash
+
+            - name: Check version
+              run: calyptia version
+              shell: bash
+
+    test-macos:
+        name: Test macOS install
+        runs-on: macos-latest
+        permissions:
+            contents: read
+        steps:
+            - name: Debug
+              run: uname -a
+
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Install
+              run: ./install.sh
+
+            - name: Check version
+              run: calyptia version
+
+    test-complete:
+        name: Install script tests complete
+        needs:
+            - test-linux
+            - test-windows
+            - test-macos
+        permissions: {}
+        runs-on: ubuntu-latest
+        steps:
+            - run: echo "Tests complete"
