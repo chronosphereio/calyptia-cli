@@ -73,6 +73,11 @@ _detect_os() {
   esac
 }
 
+_binary_name="calyptia"
+if [ "$(detect_os)" = "windows" ]; then
+  _binary_name="calyptia.exe"
+fi
+
 _download_binary() {
   _download_arch="$(_detect_arch)"
   _download_os="$(_detect_os)"
@@ -116,16 +121,16 @@ _download_binary() {
   # If we do not have it yet then use the arch version
   echo "Downloading from URL:  $_url"
   curl  --progress-bar --output "$_download_output_dir"/cli.tar.gz -SLf "$_url"
-  tar -C "$_download_output_dir" -xzf cli.tar.gz calyptia
+  tar -C "$_download_output_dir" -xzf cli.tar.gz "$_binary_name"
   rm -f "$_download_output_dir"/cli.tar.gz
 }
 
 _download_binary
 
 if [ -w "${install_dir}" ]; then
-  mv "${_download_output_dir}/calyptia" "${install_dir}/calyptia"
+  mv "${_download_output_dir}/$_binary_name" "${install_dir}/$_binary_name"
 else
   echo "Sudo rights are needed to move the binary to ${install_dir}, please type your password when asked"
-  sudo mv "${_download_output_dir}/calyptia" "${install_dir}/calyptia"
+  sudo mv "${_download_output_dir}/$_binary_name" "${install_dir}/$_binary_name"
 fi
-echo "Calyptia CLI installed in ${install_dir}"
+echo "Calyptia CLI installed to ${install_dir}/$_binary_name"

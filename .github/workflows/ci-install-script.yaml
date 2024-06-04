@@ -31,14 +31,14 @@ jobs:
             - name: Test Apt install
               if: ${{ startsWith('ubuntu', matrix.container-image) || startsWith('debian', matrix.container-image) }}
               run: |
-                docker run -it -v $PWD/install.sh:/install.sh:ro ${{ matrix.container-image }} \
+                docker run -t -v $PWD/install.sh:/install.sh:ro ${{ matrix.container-image }} \
                     bash -c 'apt-get update && apt-get install -y curl && /install.sh && calyptia version'
               shell: bash
 
             - name: Test Yum install
               if: ${{ ! (startsWith('ubuntu', matrix.container-image) || startsWith('debian', matrix.container-image)) }}
               run: |
-                docker run -it -v $PWD/install.sh:/install.sh:ro ${{ matrix.container-image }} \
+                docker run -t -v $PWD/install.sh:/install.sh:ro ${{ matrix.container-image }} \
                     bash -c 'yum install -y curl && /install.sh && calyptia version'
               shell: bash
 
