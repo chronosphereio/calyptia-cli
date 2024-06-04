@@ -26,9 +26,10 @@ jobs:
 
             - name: Test Apt install
               run: |
-                docker run -t -v $PWD/install.sh:/install.sh:ro ${{ matrix.container-image }} \
+                docker run -t -v $PWD/install.sh:/install.sh:ro \
                     -e GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} \
-                    bash -c 'apt-get update && apt-get install -y curl && /install.sh && calyptia version'
+                    ${{ matrix.container-image }} \
+                        bash -c 'apt-get update && apt-get install -y curl && /install.sh && calyptia version'
               shell: bash
 
     test-linux-yum:
@@ -49,9 +50,10 @@ jobs:
 
             - name: Test Yum install
               run: |
-                docker run -t -v $PWD/install.sh:/install.sh:ro ${{ matrix.container-image }} \
+                docker run -t -v $PWD/install.sh:/install.sh:ro \
                     -e GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} \
-                    bash -c 'yum install --allowerasing -y curl && /install.sh && calyptia version'
+                    ${{ matrix.container-image }} \
+                        bash -c 'yum install --allowerasing -y curl && /install.sh && calyptia version'
               shell: bash
 
     test-windows:
