@@ -64,9 +64,12 @@ _detect_os() {
     Darwin)
       echo "darwin"
       ;;
-    Windows)
+    MINGW64*|Windows)
       echo "windows"
       ;;
+    *)
+      echo "Unknown OS: $(uname)"
+      exit 1
   esac
 }
 
