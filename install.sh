@@ -74,7 +74,7 @@ _detect_os() {
 }
 
 _binary_name="calyptia"
-if [ "$(detect_os)" = "windows" ]; then
+if [ "$(_detect_os)" = "windows" ]; then
   _binary_name="calyptia.exe"
 fi
 
