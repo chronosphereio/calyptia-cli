@@ -5,8 +5,8 @@ on:
         branches:
             - main
 jobs:
-    test-linux:
-        name: Test Linux install
+    test-linux-apt:
+        name: Test Apt Linux install
         runs-on: ubuntu-latest
         permissions:
             contents: read
@@ -20,6 +20,25 @@ jobs:
                     - debian:bookworm-slim
                     - debian:buster-slim
                     - debian:bullseye-slim
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Test Apt install
+              run: |
+                docker run -t -v $PWD/install.sh:/install.sh:ro ${{ matrix.container-image }} \
+                    bash -c 'apt-get update && apt-get install -y curl && /install.sh && calyptia version'
+              shell: bash
+
+    test-linux-yum:
+        name: Test Yum Linux install
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+        strategy:
+            fail-fast: true
+            matrix:
+                container-image:
                     - centos:8
                     - quay.io/centos/centos:stream9
                     - rockylinux:8
@@ -28,15 +47,7 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v4
 
-            - name: Test Apt install
-              if: ${{ startsWith('ubuntu', matrix.container-image) || startsWith('debian', matrix.container-image) }}
-              run: |
-                docker run -t -v $PWD/install.sh:/install.sh:ro ${{ matrix.container-image }} \
-                    bash -c 'apt-get update && apt-get install -y curl && /install.sh && calyptia version'
-              shell: bash
-
             - name: Test Yum install
-              if: ${{ ! (startsWith('ubuntu', matrix.container-image) || startsWith('debian', matrix.container-image)) }}
               run: |
                 docker run -t -v $PWD/install.sh:/install.sh:ro ${{ matrix.container-image }} \
                     bash -c 'yum install -y curl && /install.sh && calyptia version'
@@ -88,7 +99,8 @@ jobs:
     test-complete:
         name: Install script tests complete
         needs:
-            - test-linux
+            - test-linux-apt
+            - test-linux-yum
             - test-windows
             - test-macos
         permissions: {}
