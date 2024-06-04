@@ -1,0 +1,108 @@
+name: Test any changes to the install script
+on:
+    workflow_dispatch:
+    pull_request:
+        branches:
+            - main
+jobs:
+    test-linux-apt:
+        name: Test Apt Linux install
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+        strategy:
+            fail-fast: true
+            matrix:
+                container-image:
+                    - ubuntu:24.04
+                    - ubuntu:22.04
+                    - ubuntu:20.04
+                    - debian:bookworm-slim
+                    - debian:buster-slim
+                    - debian:bullseye-slim
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Test Apt install
+              run: |
+                docker run -t -v $PWD/install.sh:/install.sh:ro ${{ matrix.container-image }} \
+                    bash -c 'apt-get update && apt-get install -y curl && /install.sh && calyptia version'
+              shell: bash
+
+    test-linux-yum:
+        name: Test Yum Linux install
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+        strategy:
+            fail-fast: true
+            matrix:
+                container-image:
+                    - quay.io/centos/centos:stream9
+                    - rockylinux:8
+                    - rockylinux:9
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Test Yum install
+              run: |
+                docker run -t -v $PWD/install.sh:/install.sh:ro ${{ matrix.container-image }} \
+                    bash -c 'yum install --allowerasing -y curl && /install.sh && calyptia version'
+              shell: bash
+
+    test-windows:
+        name: Test Windows install
+        runs-on: windows-latest
+        permissions:
+            contents: read
+        steps:
+            - name: Debug
+              run: |
+                uname
+                uname -a
+              shell: bash
+
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Install
+              run: ./install.sh
+              shell: bash
+
+            - name: Check version
+              run: ./calyptia.exe version
+              shell: bash
+
+    test-macos:
+        name: Test macOS install
+        runs-on: macos-latest
+        permissions:
+            contents: read
+        steps:
+            - name: Debug
+              run: |
+                uname
+                uname -a
+
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Install
+              run: ./install.sh
+
+            - name: Check version
+              run: calyptia version
+
+    test-complete:
+        name: Install script tests complete
+        needs:
+            - test-linux-apt
+            - test-linux-yum
+            - test-windows
+            - test-macos
+        permissions: {}
+        runs-on: ubuntu-latest
+        steps:
+            - run: echo "Tests complete"
