@@ -76,6 +76,7 @@ _detect_os() {
 _binary_name="calyptia"
 if [ "$(_detect_os)" = "windows" ]; then
   _binary_name="calyptia.exe"
+  install_dir=$PWD
 fi
 
 _download_binary() {

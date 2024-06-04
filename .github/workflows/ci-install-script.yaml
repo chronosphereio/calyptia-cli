@@ -39,7 +39,6 @@ jobs:
             fail-fast: true
             matrix:
                 container-image:
-                    - centos:8
                     - quay.io/centos/centos:stream9
                     - rockylinux:8
                     - rockylinux:9
