@@ -103,7 +103,7 @@ jobs:
             - name: Wait for new pipelines to be running and dump debug
               timeout-minutes: 5
               run: |
-                sleep 30
+                sleep 45
                 kubectl wait --for=condition=ready pod -A -l core-pipeline --timeout=5m
                 kubectl get pods -A -l core-pipeline -o jsonpath='{.items[0].spec.containers..image}'
                 CURRENT_IMAGE=$(kubectl get pods -A -l core-pipeline -o jsonpath='{.items[0].spec.containers..image}')
