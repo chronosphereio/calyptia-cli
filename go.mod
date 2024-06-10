@@ -19,7 +19,7 @@ require (
 	github.com/calyptia/go-fluentbit-config/v2 v2.2.0
 	github.com/go-logfmt/logfmt v0.6.0
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
-	github.com/hashicorp/go-version v1.6.0
+	github.com/hashicorp/go-version v1.7.0
 	github.com/joho/godotenv v1.5.1
 	github.com/matryer/moq v0.3.4
 	github.com/pkg/errors v0.9.1
