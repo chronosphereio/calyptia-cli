@@ -254,7 +254,7 @@ jobs:
         run: echo 'goreleaser-flags=--skip=publish --skip=sign --skip=sbom --snapshot' >> $GITHUB_ENV
 
       - name: Run GoReleaser with flags
-        uses: goreleaser/goreleaser-action@v4
+        uses: goreleaser/goreleaser-action@v6
         with:
           version: latest
           distribution: goreleaser-pro
