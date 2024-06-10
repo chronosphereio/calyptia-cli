@@ -12,7 +12,7 @@ replace (
 require (
 	github.com/calyptia/api v1.8.2
 	github.com/calyptia/cli v1.17.3
-	github.com/hashicorp/go-version v1.6.0
+	github.com/hashicorp/go-version v1.7.0
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/pflag v1.0.5
 	k8s.io/api v0.30.1
