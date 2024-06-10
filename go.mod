@@ -12,7 +12,7 @@ replace (
 require (
 	code.cloudfoundry.org/bytefmt v0.0.0-20240423163756-f0951006707a
 	github.com/Masterminds/sprig/v3 v3.2.3
-	github.com/alecthomas/assert/v2 v2.9.0
+	github.com/alecthomas/assert/v2 v2.10.0
 	github.com/calyptia/api v1.8.2
 	github.com/calyptia/cli/k8s v0.0.0-20240424103931-e5102e920dca
 	github.com/calyptia/core-images-index/go-index v0.0.0-20240423130833-a87a7fb66960
