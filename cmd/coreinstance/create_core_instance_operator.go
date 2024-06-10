@@ -282,7 +282,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				coreDockerFromCloudImage = fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorFromCloudDockerImage, coreDockerFromCloudImageTag)
 			}
 
-			syncParams := k8s.DeployCoreOperatorSyncParams{
+			syncParams := k8s.DeployCoreOperatorSync{
 				CoreCloudURL:        coreCloudURL,
 				FromCloudImage:      coreDockerFromCloudImage,
 				ToCloudImage:        coreDockerToCloudImage,

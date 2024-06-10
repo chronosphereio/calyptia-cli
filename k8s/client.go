@@ -634,7 +634,7 @@ func (client *Client) FindDeploymentByLabel(ctx context.Context, label string) (
 	return client.AppsV1().Deployments(client.Namespace).List(ctx, metav1.ListOptions{LabelSelector: label})
 }
 
-type DeployCoreOperatorSyncParams struct {
+type DeployCoreOperatorSync struct {
 	CoreCloudURL        string
 	FromCloudImage      string
 	ToCloudImage        string
@@ -653,7 +653,7 @@ type DeployCoreOperatorSyncParams struct {
 	ServiceAccount      string
 }
 
-func (client *Client) DeployCoreOperatorSync(ctx context.Context, params DeployCoreOperatorSyncParams) (*appsv1.Deployment, error) {
+func (client *Client) DeployCoreOperatorSync(ctx context.Context, params DeployCoreOperatorSync) (*appsv1.Deployment, error) {
 	podTolerations, err := validateTolerations(params.Tolerations)
 	if err != nil {
 		return nil, err
