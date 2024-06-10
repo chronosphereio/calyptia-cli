@@ -292,7 +292,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				Annotations:         annotations,
 				Tolerations:         tolerations,
 				SkipServiceCreation: skipServiceCreation,
-				NoTLSVerify:         !noTLSVerify,
+				NoTLSVerify:         noTLSVerify,
 				CloudProxy:          cloudProxy,
 				HttpProxy:           httpProxy,
 				HttpsProxy:          httpsProxy,

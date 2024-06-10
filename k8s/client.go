@@ -683,7 +683,7 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, params DeployC
 		},
 		{
 			Name:  "NO_TLS_VERIFY",
-			Value: strconv.FormatBool(params.NoTLSVerify),
+			Value: strconv.FormatBool(!params.NoTLSVerify),
 		},
 		{
 			Name:  "METRICS_PORT",
