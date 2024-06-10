@@ -634,8 +634,27 @@ func (client *Client) FindDeploymentByLabel(ctx context.Context, label string) (
 	return client.AppsV1().Deployments(client.Namespace).List(ctx, metav1.ListOptions{LabelSelector: label})
 }
 
-func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, fromCloudImage, toCloudImage string, metricsPort string, memoryLimit string, annotations string, tolerations string, skipServiceCreation, noTLSVerify bool, cloudProxy, httpProxy, httpsProxy, noProxy string, coreInstance cloud.CreatedCoreInstance, serviceAccount string) (*appsv1.Deployment, error) {
-	podTolerations, err := validateTolerations(tolerations)
+type DeployCoreOperatorSync struct {
+	CoreCloudURL        string
+	FromCloudImage      string
+	ToCloudImage        string
+	Metrics             bool
+	MetricsPort         string
+	MemoryLimit         string
+	Annotations         string
+	Tolerations         string
+	SkipServiceCreation bool
+	NoTLSVerify         bool
+	CloudProxy          string
+	HttpProxy           string
+	HttpsProxy          string
+	NoProxy             string
+	CoreInstance        cloud.CreatedCoreInstance
+	ServiceAccount      string
+}
+
+func (client *Client) DeployCoreOperatorSync(ctx context.Context, params DeployCoreOperatorSync) (*appsv1.Deployment, error) {
+	podTolerations, err := validateTolerations(params.Tolerations)
 	if err != nil {
 		return nil, err
 	}
@@ -644,7 +663,7 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, 
 	env := []corev1.EnvVar{
 		{
 			Name:  "CORE_INSTANCE",
-			Value: coreInstance.Name,
+			Value: params.CoreInstance.Name,
 		},
 		{
 			Name:  "NAMESPACE",
@@ -652,7 +671,7 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, 
 		},
 		{
 			Name:  "CLOUD_URL",
-			Value: coreCloudURL,
+			Value: params.CoreCloudURL,
 		},
 		{
 			Name:  "TOKEN",
@@ -664,47 +683,51 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, 
 		},
 		{
 			Name:  "NO_TLS_VERIFY",
-			Value: strconv.FormatBool(noTLSVerify),
+			Value: strconv.FormatBool(!params.NoTLSVerify),
 		},
 		{
 			Name:  "METRICS_PORT",
-			Value: metricsPort,
+			Value: params.MetricsPort,
+		},
+		{
+			Name:  "METRICS",
+			Value: strconv.FormatBool(params.Metrics),
 		},
 		{
 			Name:  "CLOUD_PROXY",
-			Value: cloudProxy,
+			Value: params.CloudProxy,
 		},
 		{
 			Name:  "NO_PROXY",
-			Value: noProxy,
+			Value: params.NoProxy,
 		},
 		{
 			Name:  "HTTP_PROXY",
-			Value: httpProxy,
+			Value: params.HttpProxy,
 		},
 		{
 			Name:  "HTTPS_PROXY",
-			Value: httpsProxy,
+			Value: params.HttpsProxy,
 		},
 		{
 			Name:  "ANNOTATIONS",
-			Value: annotations,
+			Value: params.Annotations,
 		},
 		{
 			Name:  "TOLERATIONS",
-			Value: tolerations,
+			Value: params.Tolerations,
 		},
 	}
 
-	if skipServiceCreation {
+	if params.SkipServiceCreation {
 		env = append(env, corev1.EnvVar{
 			Name:  "SKIP_SERVICE_CREATION",
 			Value: strconv.FormatBool(true),
 		})
 	}
 	toCloud := corev1.Container{
-		Name:            coreInstance.Name + "-sync-to-cloud",
-		Image:           toCloudImage,
+		Name:            params.CoreInstance.Name + "-sync-to-cloud",
+		Image:           params.ToCloudImage,
 		ImagePullPolicy: corev1.PullAlways,
 		Env:             env,
 	}
@@ -713,7 +736,7 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, 
 		Limits: corev1.ResourceList{},
 	}
 
-	ml, err := resource.ParseQuantity(memoryLimit)
+	ml, err := resource.ParseQuantity(params.MemoryLimit)
 	if err == nil {
 		resources.Limits = corev1.ResourceList{
 			"memory": ml,
@@ -723,8 +746,8 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, 
 	toCloud.Resources = resources
 
 	fromCloud := corev1.Container{
-		Name:            coreInstance.Name + "-sync-from-cloud",
-		Image:           fromCloudImage,
+		Name:            params.CoreInstance.Name + "-sync-from-cloud",
+		Image:           params.FromCloudImage,
 		ImagePullPolicy: corev1.PullAlways,
 		Env:             env,
 		Resources:       resources,
@@ -736,7 +759,7 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, 
 			APIVersion: "apps/v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      FormatResourceName(coreInstance.Name, coreInstance.EnvironmentName, "sync"),
+			Name:      FormatResourceName(params.CoreInstance.Name, params.CoreInstance.EnvironmentName, "sync"),
 			Namespace: client.Namespace,
 			Labels:    labels,
 		},
@@ -750,7 +773,7 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, coreCloudURL, 
 					Labels: labels,
 				},
 				Spec: corev1.PodSpec{
-					ServiceAccountName: serviceAccount,
+					ServiceAccountName: params.ServiceAccount,
 					Containers:         []corev1.Container{fromCloud, toCloud},
 					Tolerations:        podTolerations,
 				},
