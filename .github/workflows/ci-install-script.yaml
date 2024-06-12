@@ -29,7 +29,7 @@ jobs:
                 docker run -t -v $PWD/install.sh:/install.sh:ro \
                     -e GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} \
                     ${{ matrix.container-image }} \
-                        bash -c 'apt-get update && apt-get install -y curl && /install.sh && calyptia version'
+                        bash -c 'apt-get update && apt-get install -y curl && cli_VERSION=v1.19.1 /install.sh && calyptia version'
               shell: bash
 
     test-linux-yum:
@@ -72,7 +72,7 @@ jobs:
               uses: actions/checkout@v4
 
             - name: Install
-              run: ./install.sh
+              run: cli_VERSION=v1.19.1 ./install.sh
               shell: bash
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
