@@ -34,7 +34,7 @@ jobs:
               uses: actions/checkout@v4
 
             - name: Install CLI
-              run: cli_VERSION=v1.19.1 ./install.sh
+              run: ./install.sh
               shell: bash
 
             - name: Set up CLI
