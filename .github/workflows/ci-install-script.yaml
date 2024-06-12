@@ -53,7 +53,7 @@ jobs:
                 docker run -t -v $PWD/install.sh:/install.sh:ro \
                     -e GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} \
                     ${{ matrix.container-image }} \
-                        bash -c 'yum install --allowerasing -y curl && /install.sh && calyptia version'
+                        bash -c 'yum install --allowerasing -y curl && cli_VERSION=v1.19.1 /install.sh && calyptia version'
               shell: bash
 
     test-windows:
