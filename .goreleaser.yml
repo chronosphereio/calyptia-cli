@@ -1,9 +1,12 @@
+# yaml-language-server: $schema=https://goreleaser.com/static/schema-pro.json
+
+version: 2
+
 upx:
-  -
-    ids: [ calyptia ]
+  - ids: [calyptia]
     enabled: true
-    goos: [ linux, windows ] # skip darwin (macOS 13.x Ventura is not support now)
-    goarch: [ amd64, arm64 ]
+    goos: [linux, windows] # skip darwin (macOS 13.x Ventura is not support now)
+    goarch: [amd64, arm64]
 
 builds:
   - main: .
@@ -41,4 +44,4 @@ brews:
     directory: Formula
     license: Apache-2.0
     test: |
-          system "#{bin}/calyptia version"
+      system "#{bin}/calyptia version"
