@@ -132,7 +132,7 @@ spec:
 		}
 
 		// Test the prepareManifest function
-		resultFile, err := prepareInstallManifest(coreInstanceVersion, coreDockerImage, namespace, false, enableExternalTrafficPolicyLocal)
+		resultFile, err := prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace, false, enableExternalTrafficPolicyLocal)
 		// Verify the results
 		if err != nil {
 			t.Errorf("Expected no error, but got: %v", err)
