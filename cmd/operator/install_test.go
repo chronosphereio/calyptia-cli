@@ -3,8 +3,9 @@ package operator
 import (
 	"fmt"
 	"os"
-	"strings"
 	"testing"
+
+	"github.com/alecthomas/assert/v2"
 
 	"github.com/calyptia/cli/k8s"
 )
@@ -141,15 +142,9 @@ spec:
 		actualFileContents, _ := os.ReadFile(resultFile)
 
 		result := string(actualFileContents)
-		if strings.Contains(result, fmt.Sprintf("image: %s:%s", coreDockerImage, coreInstanceVersion)) == false {
-			t.Errorf("Expected image: %s:%s, but got: %s", coreDockerImage, coreInstanceVersion, result)
-		}
-		if strings.Contains(result, fmt.Sprintf("namespace: %s", namespace)) == false {
-			t.Errorf("Expected namespace: %s, but got: %s", namespace, result)
-		}
-		if strings.Contains(result, "args: ['"+EnableExternalTrafficPolicyLocal+"']") == false {
-			t.Errorf("Expected args: %s, but got: %s", EnableExternalTrafficPolicyLocal, result)
-		}
+		assert.Contains(t, result, fmt.Sprintf("image: %s:%s", coreDockerImage, coreInstanceVersion))
+		assert.Contains(t, result, fmt.Sprintf("namespace: %s", namespace))
+		assert.Contains(t, result, "args: ['"+EnableExternalTrafficPolicyLocal+"']")
 
 		// Clean up the temporary file
 		os.Remove(resultFile)
