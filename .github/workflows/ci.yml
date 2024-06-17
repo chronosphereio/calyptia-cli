@@ -82,7 +82,7 @@ jobs:
 
       - name: Build and push by digest the standard production image
         id: production
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           # Use path context rather than Git context as we want local files
           context: .
