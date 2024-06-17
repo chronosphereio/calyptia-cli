@@ -7,6 +7,7 @@ import (
 	"context"
 	cloudclient "github.com/calyptia/api/client"
 	"github.com/calyptia/api/types"
+	"github.com/calyptia/api/types/legacy"
 	"github.com/calyptia/go-fluentbit-config/v2"
 	"net/url"
 	"sync"
@@ -187,11 +188,17 @@ var _ Client = &ClientMock{}
 //			CreateProcessingRuleTemplateFunc: func(contextMoqParam context.Context, createProcessingRuleTemplate types.CreateProcessingRuleTemplate) (types.Created, error) {
 //				panic("mock out the CreateProcessingRuleTemplate method")
 //			},
+//			CreateProcessingRuleV1Func: func(contextMoqParam context.Context, createProcessingRule legacy.CreateProcessingRule) (legacy.CreatedProcessingRule, error) {
+//				panic("mock out the CreateProcessingRuleV1 method")
+//			},
 //			CreateProjectFunc: func(contextMoqParam context.Context, createProject types.CreateProject) (types.CreatedProject, error) {
 //				panic("mock out the CreateProject method")
 //			},
 //			CreateResourceProfileFunc: func(contextMoqParam context.Context, s string, createResourceProfile types.CreateResourceProfile) (types.Created, error) {
 //				panic("mock out the CreateResourceProfile method")
+//			},
+//			CreateSAMLMappingFunc: func(contextMoqParam context.Context, createSAMLMapping types.CreateSAMLMapping) (types.Created, error) {
+//				panic("mock out the CreateSAMLMapping method")
 //			},
 //			CreateTokenFunc: func(contextMoqParam context.Context, s string, createToken types.CreateToken) (types.Token, error) {
 //				panic("mock out the CreateToken method")
@@ -277,11 +284,17 @@ var _ Client = &ClientMock{}
 //			DeleteProcessingRuleTemplateFunc: func(contextMoqParam context.Context, s string) (types.Deleted, error) {
 //				panic("mock out the DeleteProcessingRuleTemplate method")
 //			},
+//			DeleteProcessingRuleV1Func: func(contextMoqParam context.Context, s string) error {
+//				panic("mock out the DeleteProcessingRuleV1 method")
+//			},
 //			DeleteProjectFunc: func(contextMoqParam context.Context, s string) (types.Deleted, error) {
 //				panic("mock out the DeleteProject method")
 //			},
 //			DeleteResourceProfileFunc: func(contextMoqParam context.Context, s string) error {
 //				panic("mock out the DeleteResourceProfile method")
+//			},
+//			DeleteSAMLMappingFunc: func(contextMoqParam context.Context, s string) (types.Deleted, error) {
+//				panic("mock out the DeleteSAMLMapping method")
 //			},
 //			DeleteTokenFunc: func(contextMoqParam context.Context, s string) error {
 //				panic("mock out the DeleteToken method")
@@ -388,14 +401,26 @@ var _ Client = &ClientMock{}
 //			PreviewProcessingRuleFunc: func(contextMoqParam context.Context, previewProcessingRule types.PreviewProcessingRule) ([]types.FluentBitLog, error) {
 //				panic("mock out the PreviewProcessingRule method")
 //			},
+//			PreviewProcessingRuleV1Func: func(contextMoqParam context.Context, previewProcessingRule legacy.PreviewProcessingRule) ([]types.FluentBitLog, error) {
+//				panic("mock out the PreviewProcessingRuleV1 method")
+//			},
 //			ProcessingRuleFunc: func(contextMoqParam context.Context, s string) (types.ProcessingRule, error) {
 //				panic("mock out the ProcessingRule method")
+//			},
+//			ProcessingRuleTemplateFunc: func(contextMoqParam context.Context, s string) (types.ProcessingRuleTemplate, error) {
+//				panic("mock out the ProcessingRuleTemplate method")
 //			},
 //			ProcessingRuleTemplatesFunc: func(contextMoqParam context.Context, listProcessingRuleTemplates types.ListProcessingRuleTemplates) (types.ProcessingRuleTemplates, error) {
 //				panic("mock out the ProcessingRuleTemplates method")
 //			},
+//			ProcessingRuleV1Func: func(contextMoqParam context.Context, s string) (legacy.ProcessingRule, error) {
+//				panic("mock out the ProcessingRuleV1 method")
+//			},
 //			ProcessingRulesFunc: func(contextMoqParam context.Context, processingRulesParams types.ProcessingRulesParams) (types.ProcessingRules, error) {
 //				panic("mock out the ProcessingRules method")
+//			},
+//			ProcessingRulesV1Func: func(contextMoqParam context.Context, processingRulesParams legacy.ProcessingRulesParams) (legacy.ProcessingRules, error) {
+//				panic("mock out the ProcessingRulesV1 method")
 //			},
 //			ProjectFunc: func(contextMoqParam context.Context, s string) (types.Project, error) {
 //				panic("mock out the Project method")
@@ -414,6 +439,9 @@ var _ Client = &ClientMock{}
 //			},
 //			ResourceProfilesFunc: func(contextMoqParam context.Context, s string, resourceProfilesParams types.ResourceProfilesParams) (types.ResourceProfiles, error) {
 //				panic("mock out the ResourceProfiles method")
+//			},
+//			SAMLMappingsFunc: func(contextMoqParam context.Context, listSAMLMappings types.ListSAMLMappings) (types.SAMLMappings, error) {
+//				panic("mock out the SAMLMappings method")
 //			},
 //			SearchFunc: func(contextMoqParam context.Context, searchQuery types.SearchQuery) ([]types.SearchResult, error) {
 //				panic("mock out the Search method")
@@ -523,11 +551,17 @@ var _ Client = &ClientMock{}
 //			UpdateProcessingRuleTemplateFunc: func(contextMoqParam context.Context, updateProcessingRuleTemplate types.UpdateProcessingRuleTemplate) (types.Updated, error) {
 //				panic("mock out the UpdateProcessingRuleTemplate method")
 //			},
+//			UpdateProcessingRuleV1Func: func(contextMoqParam context.Context, updateProcessingRule legacy.UpdateProcessingRule) (types.Updated, error) {
+//				panic("mock out the UpdateProcessingRuleV1 method")
+//			},
 //			UpdateProjectFunc: func(contextMoqParam context.Context, s string, updateProject types.UpdateProject) error {
 //				panic("mock out the UpdateProject method")
 //			},
 //			UpdateResourceProfileFunc: func(contextMoqParam context.Context, s string, updateResourceProfile types.UpdateResourceProfile) error {
 //				panic("mock out the UpdateResourceProfile method")
+//			},
+//			UpdateSAMLMappingFunc: func(contextMoqParam context.Context, updateSAMLMapping types.UpdateSAMLMapping) (types.Updated, error) {
+//				panic("mock out the UpdateSAMLMapping method")
 //			},
 //			UpdateTokenFunc: func(contextMoqParam context.Context, updateToken types.UpdateToken) error {
 //				panic("mock out the UpdateToken method")
@@ -535,11 +569,8 @@ var _ Client = &ClientMock{}
 //			UpdateTraceSessionFunc: func(contextMoqParam context.Context, s string, updateTraceSession types.UpdateTraceSession) (types.Updated, error) {
 //				panic("mock out the UpdateTraceSession method")
 //			},
-//			ValidateConfigFunc: func(contextMoqParam context.Context, agentType types.AgentType, validatingConfig types.ValidatingConfig) (types.ValidatedConfig, error) {
-//				panic("mock out the ValidateConfig method")
-//			},
-//			ValidateConfigV2Func: func(contextMoqParam context.Context, validatingConfig types.ValidatingConfig) (types.ValidatedConfigV2, error) {
-//				panic("mock out the ValidateConfigV2 method")
+//			ValidateFluentbitConfigFunc: func(contextMoqParam context.Context, validateFluentbitConfig types.ValidateFluentbitConfig) error {
+//				panic("mock out the ValidateFluentbitConfig method")
 //			},
 //		}
 //
@@ -713,11 +744,17 @@ type ClientMock struct {
 	// CreateProcessingRuleTemplateFunc mocks the CreateProcessingRuleTemplate method.
 	CreateProcessingRuleTemplateFunc func(contextMoqParam context.Context, createProcessingRuleTemplate types.CreateProcessingRuleTemplate) (types.Created, error)
 
+	// CreateProcessingRuleV1Func mocks the CreateProcessingRuleV1 method.
+	CreateProcessingRuleV1Func func(contextMoqParam context.Context, createProcessingRule legacy.CreateProcessingRule) (legacy.CreatedProcessingRule, error)
+
 	// CreateProjectFunc mocks the CreateProject method.
 	CreateProjectFunc func(contextMoqParam context.Context, createProject types.CreateProject) (types.CreatedProject, error)
 
 	// CreateResourceProfileFunc mocks the CreateResourceProfile method.
 	CreateResourceProfileFunc func(contextMoqParam context.Context, s string, createResourceProfile types.CreateResourceProfile) (types.Created, error)
+
+	// CreateSAMLMappingFunc mocks the CreateSAMLMapping method.
+	CreateSAMLMappingFunc func(contextMoqParam context.Context, createSAMLMapping types.CreateSAMLMapping) (types.Created, error)
 
 	// CreateTokenFunc mocks the CreateToken method.
 	CreateTokenFunc func(contextMoqParam context.Context, s string, createToken types.CreateToken) (types.Token, error)
@@ -803,11 +840,17 @@ type ClientMock struct {
 	// DeleteProcessingRuleTemplateFunc mocks the DeleteProcessingRuleTemplate method.
 	DeleteProcessingRuleTemplateFunc func(contextMoqParam context.Context, s string) (types.Deleted, error)
 
+	// DeleteProcessingRuleV1Func mocks the DeleteProcessingRuleV1 method.
+	DeleteProcessingRuleV1Func func(contextMoqParam context.Context, s string) error
+
 	// DeleteProjectFunc mocks the DeleteProject method.
 	DeleteProjectFunc func(contextMoqParam context.Context, s string) (types.Deleted, error)
 
 	// DeleteResourceProfileFunc mocks the DeleteResourceProfile method.
 	DeleteResourceProfileFunc func(contextMoqParam context.Context, s string) error
+
+	// DeleteSAMLMappingFunc mocks the DeleteSAMLMapping method.
+	DeleteSAMLMappingFunc func(contextMoqParam context.Context, s string) (types.Deleted, error)
 
 	// DeleteTokenFunc mocks the DeleteToken method.
 	DeleteTokenFunc func(contextMoqParam context.Context, s string) error
@@ -914,14 +957,26 @@ type ClientMock struct {
 	// PreviewProcessingRuleFunc mocks the PreviewProcessingRule method.
 	PreviewProcessingRuleFunc func(contextMoqParam context.Context, previewProcessingRule types.PreviewProcessingRule) ([]types.FluentBitLog, error)
 
+	// PreviewProcessingRuleV1Func mocks the PreviewProcessingRuleV1 method.
+	PreviewProcessingRuleV1Func func(contextMoqParam context.Context, previewProcessingRule legacy.PreviewProcessingRule) ([]types.FluentBitLog, error)
+
 	// ProcessingRuleFunc mocks the ProcessingRule method.
 	ProcessingRuleFunc func(contextMoqParam context.Context, s string) (types.ProcessingRule, error)
+
+	// ProcessingRuleTemplateFunc mocks the ProcessingRuleTemplate method.
+	ProcessingRuleTemplateFunc func(contextMoqParam context.Context, s string) (types.ProcessingRuleTemplate, error)
 
 	// ProcessingRuleTemplatesFunc mocks the ProcessingRuleTemplates method.
 	ProcessingRuleTemplatesFunc func(contextMoqParam context.Context, listProcessingRuleTemplates types.ListProcessingRuleTemplates) (types.ProcessingRuleTemplates, error)
 
+	// ProcessingRuleV1Func mocks the ProcessingRuleV1 method.
+	ProcessingRuleV1Func func(contextMoqParam context.Context, s string) (legacy.ProcessingRule, error)
+
 	// ProcessingRulesFunc mocks the ProcessingRules method.
 	ProcessingRulesFunc func(contextMoqParam context.Context, processingRulesParams types.ProcessingRulesParams) (types.ProcessingRules, error)
+
+	// ProcessingRulesV1Func mocks the ProcessingRulesV1 method.
+	ProcessingRulesV1Func func(contextMoqParam context.Context, processingRulesParams legacy.ProcessingRulesParams) (legacy.ProcessingRules, error)
 
 	// ProjectFunc mocks the Project method.
 	ProjectFunc func(contextMoqParam context.Context, s string) (types.Project, error)
@@ -940,6 +995,9 @@ type ClientMock struct {
 
 	// ResourceProfilesFunc mocks the ResourceProfiles method.
 	ResourceProfilesFunc func(contextMoqParam context.Context, s string, resourceProfilesParams types.ResourceProfilesParams) (types.ResourceProfiles, error)
+
+	// SAMLMappingsFunc mocks the SAMLMappings method.
+	SAMLMappingsFunc func(contextMoqParam context.Context, listSAMLMappings types.ListSAMLMappings) (types.SAMLMappings, error)
 
 	// SearchFunc mocks the Search method.
 	SearchFunc func(contextMoqParam context.Context, searchQuery types.SearchQuery) ([]types.SearchResult, error)
@@ -1049,11 +1107,17 @@ type ClientMock struct {
 	// UpdateProcessingRuleTemplateFunc mocks the UpdateProcessingRuleTemplate method.
 	UpdateProcessingRuleTemplateFunc func(contextMoqParam context.Context, updateProcessingRuleTemplate types.UpdateProcessingRuleTemplate) (types.Updated, error)
 
+	// UpdateProcessingRuleV1Func mocks the UpdateProcessingRuleV1 method.
+	UpdateProcessingRuleV1Func func(contextMoqParam context.Context, updateProcessingRule legacy.UpdateProcessingRule) (types.Updated, error)
+
 	// UpdateProjectFunc mocks the UpdateProject method.
 	UpdateProjectFunc func(contextMoqParam context.Context, s string, updateProject types.UpdateProject) error
 
 	// UpdateResourceProfileFunc mocks the UpdateResourceProfile method.
 	UpdateResourceProfileFunc func(contextMoqParam context.Context, s string, updateResourceProfile types.UpdateResourceProfile) error
+
+	// UpdateSAMLMappingFunc mocks the UpdateSAMLMapping method.
+	UpdateSAMLMappingFunc func(contextMoqParam context.Context, updateSAMLMapping types.UpdateSAMLMapping) (types.Updated, error)
 
 	// UpdateTokenFunc mocks the UpdateToken method.
 	UpdateTokenFunc func(contextMoqParam context.Context, updateToken types.UpdateToken) error
@@ -1061,11 +1125,8 @@ type ClientMock struct {
 	// UpdateTraceSessionFunc mocks the UpdateTraceSession method.
 	UpdateTraceSessionFunc func(contextMoqParam context.Context, s string, updateTraceSession types.UpdateTraceSession) (types.Updated, error)
 
-	// ValidateConfigFunc mocks the ValidateConfig method.
-	ValidateConfigFunc func(contextMoqParam context.Context, agentType types.AgentType, validatingConfig types.ValidatingConfig) (types.ValidatedConfig, error)
-
-	// ValidateConfigV2Func mocks the ValidateConfigV2 method.
-	ValidateConfigV2Func func(contextMoqParam context.Context, validatingConfig types.ValidatingConfig) (types.ValidatedConfigV2, error)
+	// ValidateFluentbitConfigFunc mocks the ValidateFluentbitConfig method.
+	ValidateFluentbitConfigFunc func(contextMoqParam context.Context, validateFluentbitConfig types.ValidateFluentbitConfig) error
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -1496,6 +1557,13 @@ type ClientMock struct {
 			// CreateProcessingRuleTemplate is the createProcessingRuleTemplate argument value.
 			CreateProcessingRuleTemplate types.CreateProcessingRuleTemplate
 		}
+		// CreateProcessingRuleV1 holds details about calls to the CreateProcessingRuleV1 method.
+		CreateProcessingRuleV1 []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// CreateProcessingRule is the createProcessingRule argument value.
+			CreateProcessingRule legacy.CreateProcessingRule
+		}
 		// CreateProject holds details about calls to the CreateProject method.
 		CreateProject []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
@@ -1511,6 +1579,13 @@ type ClientMock struct {
 			S string
 			// CreateResourceProfile is the createResourceProfile argument value.
 			CreateResourceProfile types.CreateResourceProfile
+		}
+		// CreateSAMLMapping holds details about calls to the CreateSAMLMapping method.
+		CreateSAMLMapping []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// CreateSAMLMapping is the createSAMLMapping argument value.
+			CreateSAMLMapping types.CreateSAMLMapping
 		}
 		// CreateToken holds details about calls to the CreateToken method.
 		CreateToken []struct {
@@ -1722,6 +1797,13 @@ type ClientMock struct {
 			// S is the s argument value.
 			S string
 		}
+		// DeleteProcessingRuleV1 holds details about calls to the DeleteProcessingRuleV1 method.
+		DeleteProcessingRuleV1 []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// S is the s argument value.
+			S string
+		}
 		// DeleteProject holds details about calls to the DeleteProject method.
 		DeleteProject []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
@@ -1731,6 +1813,13 @@ type ClientMock struct {
 		}
 		// DeleteResourceProfile holds details about calls to the DeleteResourceProfile method.
 		DeleteResourceProfile []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// S is the s argument value.
+			S string
+		}
+		// DeleteSAMLMapping holds details about calls to the DeleteSAMLMapping method.
+		DeleteSAMLMapping []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// S is the s argument value.
@@ -2011,8 +2100,22 @@ type ClientMock struct {
 			// PreviewProcessingRule is the previewProcessingRule argument value.
 			PreviewProcessingRule types.PreviewProcessingRule
 		}
+		// PreviewProcessingRuleV1 holds details about calls to the PreviewProcessingRuleV1 method.
+		PreviewProcessingRuleV1 []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// PreviewProcessingRule is the previewProcessingRule argument value.
+			PreviewProcessingRule legacy.PreviewProcessingRule
+		}
 		// ProcessingRule holds details about calls to the ProcessingRule method.
 		ProcessingRule []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// S is the s argument value.
+			S string
+		}
+		// ProcessingRuleTemplate holds details about calls to the ProcessingRuleTemplate method.
+		ProcessingRuleTemplate []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// S is the s argument value.
@@ -2025,12 +2128,26 @@ type ClientMock struct {
 			// ListProcessingRuleTemplates is the listProcessingRuleTemplates argument value.
 			ListProcessingRuleTemplates types.ListProcessingRuleTemplates
 		}
+		// ProcessingRuleV1 holds details about calls to the ProcessingRuleV1 method.
+		ProcessingRuleV1 []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// S is the s argument value.
+			S string
+		}
 		// ProcessingRules holds details about calls to the ProcessingRules method.
 		ProcessingRules []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
 			// ProcessingRulesParams is the processingRulesParams argument value.
 			ProcessingRulesParams types.ProcessingRulesParams
+		}
+		// ProcessingRulesV1 holds details about calls to the ProcessingRulesV1 method.
+		ProcessingRulesV1 []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// ProcessingRulesParams is the processingRulesParams argument value.
+			ProcessingRulesParams legacy.ProcessingRulesParams
 		}
 		// Project holds details about calls to the Project method.
 		Project []struct {
@@ -2075,6 +2192,13 @@ type ClientMock struct {
 			S string
 			// ResourceProfilesParams is the resourceProfilesParams argument value.
 			ResourceProfilesParams types.ResourceProfilesParams
+		}
+		// SAMLMappings holds details about calls to the SAMLMappings method.
+		SAMLMappings []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// ListSAMLMappings is the listSAMLMappings argument value.
+			ListSAMLMappings types.ListSAMLMappings
 		}
 		// Search holds details about calls to the Search method.
 		Search []struct {
@@ -2356,6 +2480,13 @@ type ClientMock struct {
 			// UpdateProcessingRuleTemplate is the updateProcessingRuleTemplate argument value.
 			UpdateProcessingRuleTemplate types.UpdateProcessingRuleTemplate
 		}
+		// UpdateProcessingRuleV1 holds details about calls to the UpdateProcessingRuleV1 method.
+		UpdateProcessingRuleV1 []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// UpdateProcessingRule is the updateProcessingRule argument value.
+			UpdateProcessingRule legacy.UpdateProcessingRule
+		}
 		// UpdateProject holds details about calls to the UpdateProject method.
 		UpdateProject []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
@@ -2374,6 +2505,13 @@ type ClientMock struct {
 			// UpdateResourceProfile is the updateResourceProfile argument value.
 			UpdateResourceProfile types.UpdateResourceProfile
 		}
+		// UpdateSAMLMapping holds details about calls to the UpdateSAMLMapping method.
+		UpdateSAMLMapping []struct {
+			// ContextMoqParam is the contextMoqParam argument value.
+			ContextMoqParam context.Context
+			// UpdateSAMLMapping is the updateSAMLMapping argument value.
+			UpdateSAMLMapping types.UpdateSAMLMapping
+		}
 		// UpdateToken holds details about calls to the UpdateToken method.
 		UpdateToken []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
@@ -2390,21 +2528,12 @@ type ClientMock struct {
 			// UpdateTraceSession is the updateTraceSession argument value.
 			UpdateTraceSession types.UpdateTraceSession
 		}
-		// ValidateConfig holds details about calls to the ValidateConfig method.
-		ValidateConfig []struct {
+		// ValidateFluentbitConfig holds details about calls to the ValidateFluentbitConfig method.
+		ValidateFluentbitConfig []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
 			ContextMoqParam context.Context
-			// AgentType is the agentType argument value.
-			AgentType types.AgentType
-			// ValidatingConfig is the validatingConfig argument value.
-			ValidatingConfig types.ValidatingConfig
-		}
-		// ValidateConfigV2 holds details about calls to the ValidateConfigV2 method.
-		ValidateConfigV2 []struct {
-			// ContextMoqParam is the contextMoqParam argument value.
-			ContextMoqParam context.Context
-			// ValidatingConfig is the validatingConfig argument value.
-			ValidatingConfig types.ValidatingConfig
+			// ValidateFluentbitConfig is the validateFluentbitConfig argument value.
+			ValidateFluentbitConfig types.ValidateFluentbitConfig
 		}
 	}
 	lockAWSCustomerRedirect                        sync.RWMutex
@@ -2462,8 +2591,10 @@ type ClientMock struct {
 	lockCreatePipelineSecret                       sync.RWMutex
 	lockCreateProcessingRule                       sync.RWMutex
 	lockCreateProcessingRuleTemplate               sync.RWMutex
+	lockCreateProcessingRuleV1                     sync.RWMutex
 	lockCreateProject                              sync.RWMutex
 	lockCreateResourceProfile                      sync.RWMutex
+	lockCreateSAMLMapping                          sync.RWMutex
 	lockCreateToken                                sync.RWMutex
 	lockCreateTraceRecord                          sync.RWMutex
 	lockCreateTraceSession                         sync.RWMutex
@@ -2492,8 +2623,10 @@ type ClientMock struct {
 	lockDeletePipelines                            sync.RWMutex
 	lockDeleteProcessingRule                       sync.RWMutex
 	lockDeleteProcessingRuleTemplate               sync.RWMutex
+	lockDeleteProcessingRuleV1                     sync.RWMutex
 	lockDeleteProject                              sync.RWMutex
 	lockDeleteResourceProfile                      sync.RWMutex
+	lockDeleteSAMLMapping                          sync.RWMutex
 	lockDeleteToken                                sync.RWMutex
 	lockDismissAgentError                          sync.RWMutex
 	lockEnvironments                               sync.RWMutex
@@ -2529,15 +2662,20 @@ type ClientMock struct {
 	lockPipelineStatusHistory                      sync.RWMutex
 	lockPipelines                                  sync.RWMutex
 	lockPreviewProcessingRule                      sync.RWMutex
+	lockPreviewProcessingRuleV1                    sync.RWMutex
 	lockProcessingRule                             sync.RWMutex
+	lockProcessingRuleTemplate                     sync.RWMutex
 	lockProcessingRuleTemplates                    sync.RWMutex
+	lockProcessingRuleV1                           sync.RWMutex
 	lockProcessingRules                            sync.RWMutex
+	lockProcessingRulesV1                          sync.RWMutex
 	lockProject                                    sync.RWMutex
 	lockProjects                                   sync.RWMutex
 	lockPushAWSMarketplaceSubscriptionNotification sync.RWMutex
 	lockRegisterAgent                              sync.RWMutex
 	lockResourceProfile                            sync.RWMutex
 	lockResourceProfiles                           sync.RWMutex
+	lockSAMLMappings                               sync.RWMutex
 	lockSearch                                     sync.RWMutex
 	lockSendVerificationEmail                      sync.RWMutex
 	lockSetAgentToken                              sync.RWMutex
@@ -2574,12 +2712,13 @@ type ClientMock struct {
 	lockUpdatePipelineSecret                       sync.RWMutex
 	lockUpdateProcessingRule                       sync.RWMutex
 	lockUpdateProcessingRuleTemplate               sync.RWMutex
+	lockUpdateProcessingRuleV1                     sync.RWMutex
 	lockUpdateProject                              sync.RWMutex
 	lockUpdateResourceProfile                      sync.RWMutex
+	lockUpdateSAMLMapping                          sync.RWMutex
 	lockUpdateToken                                sync.RWMutex
 	lockUpdateTraceSession                         sync.RWMutex
-	lockValidateConfig                             sync.RWMutex
-	lockValidateConfigV2                           sync.RWMutex
+	lockValidateFluentbitConfig                    sync.RWMutex
 }
 
 // AWSCustomerRedirect calls AWSCustomerRedirectFunc.
@@ -4860,6 +4999,46 @@ func (mock *ClientMock) CreateProcessingRuleTemplateCalls() []struct {
 	return calls
 }
 
+// CreateProcessingRuleV1 calls CreateProcessingRuleV1Func.
+func (mock *ClientMock) CreateProcessingRuleV1(contextMoqParam context.Context, createProcessingRule legacy.CreateProcessingRule) (legacy.CreatedProcessingRule, error) {
+	callInfo := struct {
+		ContextMoqParam      context.Context
+		CreateProcessingRule legacy.CreateProcessingRule
+	}{
+		ContextMoqParam:      contextMoqParam,
+		CreateProcessingRule: createProcessingRule,
+	}
+	mock.lockCreateProcessingRuleV1.Lock()
+	mock.calls.CreateProcessingRuleV1 = append(mock.calls.CreateProcessingRuleV1, callInfo)
+	mock.lockCreateProcessingRuleV1.Unlock()
+	if mock.CreateProcessingRuleV1Func == nil {
+		var (
+			createdProcessingRuleOut legacy.CreatedProcessingRule
+			errOut                   error
+		)
+		return createdProcessingRuleOut, errOut
+	}
+	return mock.CreateProcessingRuleV1Func(contextMoqParam, createProcessingRule)
+}
+
+// CreateProcessingRuleV1Calls gets all the calls that were made to CreateProcessingRuleV1.
+// Check the length with:
+//
+//	len(mockedClient.CreateProcessingRuleV1Calls())
+func (mock *ClientMock) CreateProcessingRuleV1Calls() []struct {
+	ContextMoqParam      context.Context
+	CreateProcessingRule legacy.CreateProcessingRule
+} {
+	var calls []struct {
+		ContextMoqParam      context.Context
+		CreateProcessingRule legacy.CreateProcessingRule
+	}
+	mock.lockCreateProcessingRuleV1.RLock()
+	calls = mock.calls.CreateProcessingRuleV1
+	mock.lockCreateProcessingRuleV1.RUnlock()
+	return calls
+}
+
 // CreateProject calls CreateProjectFunc.
 func (mock *ClientMock) CreateProject(contextMoqParam context.Context, createProject types.CreateProject) (types.CreatedProject, error) {
 	callInfo := struct {
@@ -4941,6 +5120,46 @@ func (mock *ClientMock) CreateResourceProfileCalls() []struct {
 	mock.lockCreateResourceProfile.RLock()
 	calls = mock.calls.CreateResourceProfile
 	mock.lockCreateResourceProfile.RUnlock()
+	return calls
+}
+
+// CreateSAMLMapping calls CreateSAMLMappingFunc.
+func (mock *ClientMock) CreateSAMLMapping(contextMoqParam context.Context, createSAMLMapping types.CreateSAMLMapping) (types.Created, error) {
+	callInfo := struct {
+		ContextMoqParam   context.Context
+		CreateSAMLMapping types.CreateSAMLMapping
+	}{
+		ContextMoqParam:   contextMoqParam,
+		CreateSAMLMapping: createSAMLMapping,
+	}
+	mock.lockCreateSAMLMapping.Lock()
+	mock.calls.CreateSAMLMapping = append(mock.calls.CreateSAMLMapping, callInfo)
+	mock.lockCreateSAMLMapping.Unlock()
+	if mock.CreateSAMLMappingFunc == nil {
+		var (
+			createdOut types.Created
+			errOut     error
+		)
+		return createdOut, errOut
+	}
+	return mock.CreateSAMLMappingFunc(contextMoqParam, createSAMLMapping)
+}
+
+// CreateSAMLMappingCalls gets all the calls that were made to CreateSAMLMapping.
+// Check the length with:
+//
+//	len(mockedClient.CreateSAMLMappingCalls())
+func (mock *ClientMock) CreateSAMLMappingCalls() []struct {
+	ContextMoqParam   context.Context
+	CreateSAMLMapping types.CreateSAMLMapping
+} {
+	var calls []struct {
+		ContextMoqParam   context.Context
+		CreateSAMLMapping types.CreateSAMLMapping
+	}
+	mock.lockCreateSAMLMapping.RLock()
+	calls = mock.calls.CreateSAMLMapping
+	mock.lockCreateSAMLMapping.RUnlock()
 	return calls
 }
 
@@ -6073,6 +6292,45 @@ func (mock *ClientMock) DeleteProcessingRuleTemplateCalls() []struct {
 	return calls
 }
 
+// DeleteProcessingRuleV1 calls DeleteProcessingRuleV1Func.
+func (mock *ClientMock) DeleteProcessingRuleV1(contextMoqParam context.Context, s string) error {
+	callInfo := struct {
+		ContextMoqParam context.Context
+		S               string
+	}{
+		ContextMoqParam: contextMoqParam,
+		S:               s,
+	}
+	mock.lockDeleteProcessingRuleV1.Lock()
+	mock.calls.DeleteProcessingRuleV1 = append(mock.calls.DeleteProcessingRuleV1, callInfo)
+	mock.lockDeleteProcessingRuleV1.Unlock()
+	if mock.DeleteProcessingRuleV1Func == nil {
+		var (
+			errOut error
+		)
+		return errOut
+	}
+	return mock.DeleteProcessingRuleV1Func(contextMoqParam, s)
+}
+
+// DeleteProcessingRuleV1Calls gets all the calls that were made to DeleteProcessingRuleV1.
+// Check the length with:
+//
+//	len(mockedClient.DeleteProcessingRuleV1Calls())
+func (mock *ClientMock) DeleteProcessingRuleV1Calls() []struct {
+	ContextMoqParam context.Context
+	S               string
+} {
+	var calls []struct {
+		ContextMoqParam context.Context
+		S               string
+	}
+	mock.lockDeleteProcessingRuleV1.RLock()
+	calls = mock.calls.DeleteProcessingRuleV1
+	mock.lockDeleteProcessingRuleV1.RUnlock()
+	return calls
+}
+
 // DeleteProject calls DeleteProjectFunc.
 func (mock *ClientMock) DeleteProject(contextMoqParam context.Context, s string) (types.Deleted, error) {
 	callInfo := struct {
@@ -6149,6 +6407,46 @@ func (mock *ClientMock) DeleteResourceProfileCalls() []struct {
 	mock.lockDeleteResourceProfile.RLock()
 	calls = mock.calls.DeleteResourceProfile
 	mock.lockDeleteResourceProfile.RUnlock()
+	return calls
+}
+
+// DeleteSAMLMapping calls DeleteSAMLMappingFunc.
+func (mock *ClientMock) DeleteSAMLMapping(contextMoqParam context.Context, s string) (types.Deleted, error) {
+	callInfo := struct {
+		ContextMoqParam context.Context
+		S               string
+	}{
+		ContextMoqParam: contextMoqParam,
+		S:               s,
+	}
+	mock.lockDeleteSAMLMapping.Lock()
+	mock.calls.DeleteSAMLMapping = append(mock.calls.DeleteSAMLMapping, callInfo)
+	mock.lockDeleteSAMLMapping.Unlock()
+	if mock.DeleteSAMLMappingFunc == nil {
+		var (
+			deletedOut types.Deleted
+			errOut     error
+		)
+		return deletedOut, errOut
+	}
+	return mock.DeleteSAMLMappingFunc(contextMoqParam, s)
+}
+
+// DeleteSAMLMappingCalls gets all the calls that were made to DeleteSAMLMapping.
+// Check the length with:
+//
+//	len(mockedClient.DeleteSAMLMappingCalls())
+func (mock *ClientMock) DeleteSAMLMappingCalls() []struct {
+	ContextMoqParam context.Context
+	S               string
+} {
+	var calls []struct {
+		ContextMoqParam context.Context
+		S               string
+	}
+	mock.lockDeleteSAMLMapping.RLock()
+	calls = mock.calls.DeleteSAMLMapping
+	mock.lockDeleteSAMLMapping.RUnlock()
 	return calls
 }
 
@@ -7611,6 +7909,46 @@ func (mock *ClientMock) PreviewProcessingRuleCalls() []struct {
 	return calls
 }
 
+// PreviewProcessingRuleV1 calls PreviewProcessingRuleV1Func.
+func (mock *ClientMock) PreviewProcessingRuleV1(contextMoqParam context.Context, previewProcessingRule legacy.PreviewProcessingRule) ([]types.FluentBitLog, error) {
+	callInfo := struct {
+		ContextMoqParam       context.Context
+		PreviewProcessingRule legacy.PreviewProcessingRule
+	}{
+		ContextMoqParam:       contextMoqParam,
+		PreviewProcessingRule: previewProcessingRule,
+	}
+	mock.lockPreviewProcessingRuleV1.Lock()
+	mock.calls.PreviewProcessingRuleV1 = append(mock.calls.PreviewProcessingRuleV1, callInfo)
+	mock.lockPreviewProcessingRuleV1.Unlock()
+	if mock.PreviewProcessingRuleV1Func == nil {
+		var (
+			fluentBitLogsOut []types.FluentBitLog
+			errOut           error
+		)
+		return fluentBitLogsOut, errOut
+	}
+	return mock.PreviewProcessingRuleV1Func(contextMoqParam, previewProcessingRule)
+}
+
+// PreviewProcessingRuleV1Calls gets all the calls that were made to PreviewProcessingRuleV1.
+// Check the length with:
+//
+//	len(mockedClient.PreviewProcessingRuleV1Calls())
+func (mock *ClientMock) PreviewProcessingRuleV1Calls() []struct {
+	ContextMoqParam       context.Context
+	PreviewProcessingRule legacy.PreviewProcessingRule
+} {
+	var calls []struct {
+		ContextMoqParam       context.Context
+		PreviewProcessingRule legacy.PreviewProcessingRule
+	}
+	mock.lockPreviewProcessingRuleV1.RLock()
+	calls = mock.calls.PreviewProcessingRuleV1
+	mock.lockPreviewProcessingRuleV1.RUnlock()
+	return calls
+}
+
 // ProcessingRule calls ProcessingRuleFunc.
 func (mock *ClientMock) ProcessingRule(contextMoqParam context.Context, s string) (types.ProcessingRule, error) {
 	callInfo := struct {
@@ -7648,6 +7986,46 @@ func (mock *ClientMock) ProcessingRuleCalls() []struct {
 	mock.lockProcessingRule.RLock()
 	calls = mock.calls.ProcessingRule
 	mock.lockProcessingRule.RUnlock()
+	return calls
+}
+
+// ProcessingRuleTemplate calls ProcessingRuleTemplateFunc.
+func (mock *ClientMock) ProcessingRuleTemplate(contextMoqParam context.Context, s string) (types.ProcessingRuleTemplate, error) {
+	callInfo := struct {
+		ContextMoqParam context.Context
+		S               string
+	}{
+		ContextMoqParam: contextMoqParam,
+		S:               s,
+	}
+	mock.lockProcessingRuleTemplate.Lock()
+	mock.calls.ProcessingRuleTemplate = append(mock.calls.ProcessingRuleTemplate, callInfo)
+	mock.lockProcessingRuleTemplate.Unlock()
+	if mock.ProcessingRuleTemplateFunc == nil {
+		var (
+			processingRuleTemplateOut types.ProcessingRuleTemplate
+			errOut                    error
+		)
+		return processingRuleTemplateOut, errOut
+	}
+	return mock.ProcessingRuleTemplateFunc(contextMoqParam, s)
+}
+
+// ProcessingRuleTemplateCalls gets all the calls that were made to ProcessingRuleTemplate.
+// Check the length with:
+//
+//	len(mockedClient.ProcessingRuleTemplateCalls())
+func (mock *ClientMock) ProcessingRuleTemplateCalls() []struct {
+	ContextMoqParam context.Context
+	S               string
+} {
+	var calls []struct {
+		ContextMoqParam context.Context
+		S               string
+	}
+	mock.lockProcessingRuleTemplate.RLock()
+	calls = mock.calls.ProcessingRuleTemplate
+	mock.lockProcessingRuleTemplate.RUnlock()
 	return calls
 }
 
@@ -7691,6 +8069,46 @@ func (mock *ClientMock) ProcessingRuleTemplatesCalls() []struct {
 	return calls
 }
 
+// ProcessingRuleV1 calls ProcessingRuleV1Func.
+func (mock *ClientMock) ProcessingRuleV1(contextMoqParam context.Context, s string) (legacy.ProcessingRule, error) {
+	callInfo := struct {
+		ContextMoqParam context.Context
+		S               string
+	}{
+		ContextMoqParam: contextMoqParam,
+		S:               s,
+	}
+	mock.lockProcessingRuleV1.Lock()
+	mock.calls.ProcessingRuleV1 = append(mock.calls.ProcessingRuleV1, callInfo)
+	mock.lockProcessingRuleV1.Unlock()
+	if mock.ProcessingRuleV1Func == nil {
+		var (
+			processingRuleOut legacy.ProcessingRule
+			errOut            error
+		)
+		return processingRuleOut, errOut
+	}
+	return mock.ProcessingRuleV1Func(contextMoqParam, s)
+}
+
+// ProcessingRuleV1Calls gets all the calls that were made to ProcessingRuleV1.
+// Check the length with:
+//
+//	len(mockedClient.ProcessingRuleV1Calls())
+func (mock *ClientMock) ProcessingRuleV1Calls() []struct {
+	ContextMoqParam context.Context
+	S               string
+} {
+	var calls []struct {
+		ContextMoqParam context.Context
+		S               string
+	}
+	mock.lockProcessingRuleV1.RLock()
+	calls = mock.calls.ProcessingRuleV1
+	mock.lockProcessingRuleV1.RUnlock()
+	return calls
+}
+
 // ProcessingRules calls ProcessingRulesFunc.
 func (mock *ClientMock) ProcessingRules(contextMoqParam context.Context, processingRulesParams types.ProcessingRulesParams) (types.ProcessingRules, error) {
 	callInfo := struct {
@@ -7728,6 +8146,46 @@ func (mock *ClientMock) ProcessingRulesCalls() []struct {
 	mock.lockProcessingRules.RLock()
 	calls = mock.calls.ProcessingRules
 	mock.lockProcessingRules.RUnlock()
+	return calls
+}
+
+// ProcessingRulesV1 calls ProcessingRulesV1Func.
+func (mock *ClientMock) ProcessingRulesV1(contextMoqParam context.Context, processingRulesParams legacy.ProcessingRulesParams) (legacy.ProcessingRules, error) {
+	callInfo := struct {
+		ContextMoqParam       context.Context
+		ProcessingRulesParams legacy.ProcessingRulesParams
+	}{
+		ContextMoqParam:       contextMoqParam,
+		ProcessingRulesParams: processingRulesParams,
+	}
+	mock.lockProcessingRulesV1.Lock()
+	mock.calls.ProcessingRulesV1 = append(mock.calls.ProcessingRulesV1, callInfo)
+	mock.lockProcessingRulesV1.Unlock()
+	if mock.ProcessingRulesV1Func == nil {
+		var (
+			processingRulesOut legacy.ProcessingRules
+			errOut             error
+		)
+		return processingRulesOut, errOut
+	}
+	return mock.ProcessingRulesV1Func(contextMoqParam, processingRulesParams)
+}
+
+// ProcessingRulesV1Calls gets all the calls that were made to ProcessingRulesV1.
+// Check the length with:
+//
+//	len(mockedClient.ProcessingRulesV1Calls())
+func (mock *ClientMock) ProcessingRulesV1Calls() []struct {
+	ContextMoqParam       context.Context
+	ProcessingRulesParams legacy.ProcessingRulesParams
+} {
+	var calls []struct {
+		ContextMoqParam       context.Context
+		ProcessingRulesParams legacy.ProcessingRulesParams
+	}
+	mock.lockProcessingRulesV1.RLock()
+	calls = mock.calls.ProcessingRulesV1
+	mock.lockProcessingRulesV1.RUnlock()
 	return calls
 }
 
@@ -7971,6 +8429,46 @@ func (mock *ClientMock) ResourceProfilesCalls() []struct {
 	mock.lockResourceProfiles.RLock()
 	calls = mock.calls.ResourceProfiles
 	mock.lockResourceProfiles.RUnlock()
+	return calls
+}
+
+// SAMLMappings calls SAMLMappingsFunc.
+func (mock *ClientMock) SAMLMappings(contextMoqParam context.Context, listSAMLMappings types.ListSAMLMappings) (types.SAMLMappings, error) {
+	callInfo := struct {
+		ContextMoqParam  context.Context
+		ListSAMLMappings types.ListSAMLMappings
+	}{
+		ContextMoqParam:  contextMoqParam,
+		ListSAMLMappings: listSAMLMappings,
+	}
+	mock.lockSAMLMappings.Lock()
+	mock.calls.SAMLMappings = append(mock.calls.SAMLMappings, callInfo)
+	mock.lockSAMLMappings.Unlock()
+	if mock.SAMLMappingsFunc == nil {
+		var (
+			sAMLMappingsOut types.SAMLMappings
+			errOut          error
+		)
+		return sAMLMappingsOut, errOut
+	}
+	return mock.SAMLMappingsFunc(contextMoqParam, listSAMLMappings)
+}
+
+// SAMLMappingsCalls gets all the calls that were made to SAMLMappings.
+// Check the length with:
+//
+//	len(mockedClient.SAMLMappingsCalls())
+func (mock *ClientMock) SAMLMappingsCalls() []struct {
+	ContextMoqParam  context.Context
+	ListSAMLMappings types.ListSAMLMappings
+} {
+	var calls []struct {
+		ContextMoqParam  context.Context
+		ListSAMLMappings types.ListSAMLMappings
+	}
+	mock.lockSAMLMappings.RLock()
+	calls = mock.calls.SAMLMappings
+	mock.lockSAMLMappings.RUnlock()
 	return calls
 }
 
@@ -9438,6 +9936,46 @@ func (mock *ClientMock) UpdateProcessingRuleTemplateCalls() []struct {
 	return calls
 }
 
+// UpdateProcessingRuleV1 calls UpdateProcessingRuleV1Func.
+func (mock *ClientMock) UpdateProcessingRuleV1(contextMoqParam context.Context, updateProcessingRule legacy.UpdateProcessingRule) (types.Updated, error) {
+	callInfo := struct {
+		ContextMoqParam      context.Context
+		UpdateProcessingRule legacy.UpdateProcessingRule
+	}{
+		ContextMoqParam:      contextMoqParam,
+		UpdateProcessingRule: updateProcessingRule,
+	}
+	mock.lockUpdateProcessingRuleV1.Lock()
+	mock.calls.UpdateProcessingRuleV1 = append(mock.calls.UpdateProcessingRuleV1, callInfo)
+	mock.lockUpdateProcessingRuleV1.Unlock()
+	if mock.UpdateProcessingRuleV1Func == nil {
+		var (
+			updatedOut types.Updated
+			errOut     error
+		)
+		return updatedOut, errOut
+	}
+	return mock.UpdateProcessingRuleV1Func(contextMoqParam, updateProcessingRule)
+}
+
+// UpdateProcessingRuleV1Calls gets all the calls that were made to UpdateProcessingRuleV1.
+// Check the length with:
+//
+//	len(mockedClient.UpdateProcessingRuleV1Calls())
+func (mock *ClientMock) UpdateProcessingRuleV1Calls() []struct {
+	ContextMoqParam      context.Context
+	UpdateProcessingRule legacy.UpdateProcessingRule
+} {
+	var calls []struct {
+		ContextMoqParam      context.Context
+		UpdateProcessingRule legacy.UpdateProcessingRule
+	}
+	mock.lockUpdateProcessingRuleV1.RLock()
+	calls = mock.calls.UpdateProcessingRuleV1
+	mock.lockUpdateProcessingRuleV1.RUnlock()
+	return calls
+}
+
 // UpdateProject calls UpdateProjectFunc.
 func (mock *ClientMock) UpdateProject(contextMoqParam context.Context, s string, updateProject types.UpdateProject) error {
 	callInfo := struct {
@@ -9524,6 +10062,46 @@ func (mock *ClientMock) UpdateResourceProfileCalls() []struct {
 	return calls
 }
 
+// UpdateSAMLMapping calls UpdateSAMLMappingFunc.
+func (mock *ClientMock) UpdateSAMLMapping(contextMoqParam context.Context, updateSAMLMapping types.UpdateSAMLMapping) (types.Updated, error) {
+	callInfo := struct {
+		ContextMoqParam   context.Context
+		UpdateSAMLMapping types.UpdateSAMLMapping
+	}{
+		ContextMoqParam:   contextMoqParam,
+		UpdateSAMLMapping: updateSAMLMapping,
+	}
+	mock.lockUpdateSAMLMapping.Lock()
+	mock.calls.UpdateSAMLMapping = append(mock.calls.UpdateSAMLMapping, callInfo)
+	mock.lockUpdateSAMLMapping.Unlock()
+	if mock.UpdateSAMLMappingFunc == nil {
+		var (
+			updatedOut types.Updated
+			errOut     error
+		)
+		return updatedOut, errOut
+	}
+	return mock.UpdateSAMLMappingFunc(contextMoqParam, updateSAMLMapping)
+}
+
+// UpdateSAMLMappingCalls gets all the calls that were made to UpdateSAMLMapping.
+// Check the length with:
+//
+//	len(mockedClient.UpdateSAMLMappingCalls())
+func (mock *ClientMock) UpdateSAMLMappingCalls() []struct {
+	ContextMoqParam   context.Context
+	UpdateSAMLMapping types.UpdateSAMLMapping
+} {
+	var calls []struct {
+		ContextMoqParam   context.Context
+		UpdateSAMLMapping types.UpdateSAMLMapping
+	}
+	mock.lockUpdateSAMLMapping.RLock()
+	calls = mock.calls.UpdateSAMLMapping
+	mock.lockUpdateSAMLMapping.RUnlock()
+	return calls
+}
+
 // UpdateToken calls UpdateTokenFunc.
 func (mock *ClientMock) UpdateToken(contextMoqParam context.Context, updateToken types.UpdateToken) error {
 	callInfo := struct {
@@ -9607,86 +10185,41 @@ func (mock *ClientMock) UpdateTraceSessionCalls() []struct {
 	return calls
 }
 
-// ValidateConfig calls ValidateConfigFunc.
-func (mock *ClientMock) ValidateConfig(contextMoqParam context.Context, agentType types.AgentType, validatingConfig types.ValidatingConfig) (types.ValidatedConfig, error) {
+// ValidateFluentbitConfig calls ValidateFluentbitConfigFunc.
+func (mock *ClientMock) ValidateFluentbitConfig(contextMoqParam context.Context, validateFluentbitConfig types.ValidateFluentbitConfig) error {
 	callInfo := struct {
-		ContextMoqParam  context.Context
-		AgentType        types.AgentType
-		ValidatingConfig types.ValidatingConfig
+		ContextMoqParam         context.Context
+		ValidateFluentbitConfig types.ValidateFluentbitConfig
 	}{
-		ContextMoqParam:  contextMoqParam,
-		AgentType:        agentType,
-		ValidatingConfig: validatingConfig,
+		ContextMoqParam:         contextMoqParam,
+		ValidateFluentbitConfig: validateFluentbitConfig,
 	}
-	mock.lockValidateConfig.Lock()
-	mock.calls.ValidateConfig = append(mock.calls.ValidateConfig, callInfo)
-	mock.lockValidateConfig.Unlock()
-	if mock.ValidateConfigFunc == nil {
+	mock.lockValidateFluentbitConfig.Lock()
+	mock.calls.ValidateFluentbitConfig = append(mock.calls.ValidateFluentbitConfig, callInfo)
+	mock.lockValidateFluentbitConfig.Unlock()
+	if mock.ValidateFluentbitConfigFunc == nil {
 		var (
-			validatedConfigOut types.ValidatedConfig
-			errOut             error
+			errOut error
 		)
-		return validatedConfigOut, errOut
+		return errOut
 	}
-	return mock.ValidateConfigFunc(contextMoqParam, agentType, validatingConfig)
+	return mock.ValidateFluentbitConfigFunc(contextMoqParam, validateFluentbitConfig)
 }
 
-// ValidateConfigCalls gets all the calls that were made to ValidateConfig.
+// ValidateFluentbitConfigCalls gets all the calls that were made to ValidateFluentbitConfig.
 // Check the length with:
 //
-//	len(mockedClient.ValidateConfigCalls())
-func (mock *ClientMock) ValidateConfigCalls() []struct {
-	ContextMoqParam  context.Context
-	AgentType        types.AgentType
-	ValidatingConfig types.ValidatingConfig
+//	len(mockedClient.ValidateFluentbitConfigCalls())
+func (mock *ClientMock) ValidateFluentbitConfigCalls() []struct {
+	ContextMoqParam         context.Context
+	ValidateFluentbitConfig types.ValidateFluentbitConfig
 } {
 	var calls []struct {
-		ContextMoqParam  context.Context
-		AgentType        types.AgentType
-		ValidatingConfig types.ValidatingConfig
+		ContextMoqParam         context.Context
+		ValidateFluentbitConfig types.ValidateFluentbitConfig
 	}
-	mock.lockValidateConfig.RLock()
-	calls = mock.calls.ValidateConfig
-	mock.lockValidateConfig.RUnlock()
-	return calls
-}
-
-// ValidateConfigV2 calls ValidateConfigV2Func.
-func (mock *ClientMock) ValidateConfigV2(contextMoqParam context.Context, validatingConfig types.ValidatingConfig) (types.ValidatedConfigV2, error) {
-	callInfo := struct {
-		ContextMoqParam  context.Context
-		ValidatingConfig types.ValidatingConfig
-	}{
-		ContextMoqParam:  contextMoqParam,
-		ValidatingConfig: validatingConfig,
-	}
-	mock.lockValidateConfigV2.Lock()
-	mock.calls.ValidateConfigV2 = append(mock.calls.ValidateConfigV2, callInfo)
-	mock.lockValidateConfigV2.Unlock()
-	if mock.ValidateConfigV2Func == nil {
-		var (
-			validatedConfigV2Out types.ValidatedConfigV2
-			errOut               error
-		)
-		return validatedConfigV2Out, errOut
-	}
-	return mock.ValidateConfigV2Func(contextMoqParam, validatingConfig)
-}
-
-// ValidateConfigV2Calls gets all the calls that were made to ValidateConfigV2.
-// Check the length with:
-//
-//	len(mockedClient.ValidateConfigV2Calls())
-func (mock *ClientMock) ValidateConfigV2Calls() []struct {
-	ContextMoqParam  context.Context
-	ValidatingConfig types.ValidatingConfig
-} {
-	var calls []struct {
-		ContextMoqParam  context.Context
-		ValidatingConfig types.ValidatingConfig
-	}
-	mock.lockValidateConfigV2.RLock()
-	calls = mock.calls.ValidateConfigV2
-	mock.lockValidateConfigV2.RUnlock()
+	mock.lockValidateFluentbitConfig.RLock()
+	calls = mock.calls.ValidateFluentbitConfig
+	mock.lockValidateFluentbitConfig.RUnlock()
 	return calls
 }

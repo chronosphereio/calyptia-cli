@@ -6,6 +6,7 @@ import (
 	"context"
 	"github.com/calyptia/api/client"
 	"github.com/calyptia/api/types"
+	"github.com/calyptia/api/types/legacy"
 	"github.com/calyptia/go-fluentbit-config/v2"
 	"net/url"
 )
@@ -67,8 +68,10 @@ type Client interface {
 	CreatePipelineSecret(context.Context, string, types.CreatePipelineSecret) (types.Created, error)
 	CreateProcessingRule(context.Context, types.CreateProcessingRule) (types.CreatedProcessingRule, error)
 	CreateProcessingRuleTemplate(context.Context, types.CreateProcessingRuleTemplate) (types.Created, error)
+	CreateProcessingRuleV1(context.Context, legacy.CreateProcessingRule) (legacy.CreatedProcessingRule, error)
 	CreateProject(context.Context, types.CreateProject) (types.CreatedProject, error)
 	CreateResourceProfile(context.Context, string, types.CreateResourceProfile) (types.Created, error)
+	CreateSAMLMapping(context.Context, types.CreateSAMLMapping) (types.Created, error)
 	CreateToken(context.Context, string, types.CreateToken) (types.Token, error)
 	CreateTraceRecord(context.Context, string, types.CreateTraceRecord) (types.CreatedTraceRecord, error)
 	CreateTraceSession(context.Context, string, types.CreateTraceSession) (types.Created, error)
@@ -97,8 +100,10 @@ type Client interface {
 	DeletePipelines(context.Context, string, ...string) error
 	DeleteProcessingRule(context.Context, string) error
 	DeleteProcessingRuleTemplate(context.Context, string) (types.Deleted, error)
+	DeleteProcessingRuleV1(context.Context, string) error
 	DeleteProject(context.Context, string) (types.Deleted, error)
 	DeleteResourceProfile(context.Context, string) error
+	DeleteSAMLMapping(context.Context, string) (types.Deleted, error)
 	DeleteToken(context.Context, string) error
 	DismissAgentError(context.Context, types.DismissAgentError) (types.DismissedAgentError, error)
 	Environments(context.Context, string, types.EnvironmentsParams) (types.Environments, error)
@@ -134,15 +139,20 @@ type Client interface {
 	PipelineStatusHistory(context.Context, string, types.PipelineStatusHistoryParams) (types.PipelineStatusHistory, error)
 	Pipelines(context.Context, types.PipelinesParams) (types.Pipelines, error)
 	PreviewProcessingRule(context.Context, types.PreviewProcessingRule) ([]types.FluentBitLog, error)
+	PreviewProcessingRuleV1(context.Context, legacy.PreviewProcessingRule) ([]types.FluentBitLog, error)
 	ProcessingRule(context.Context, string) (types.ProcessingRule, error)
+	ProcessingRuleTemplate(context.Context, string) (types.ProcessingRuleTemplate, error)
 	ProcessingRuleTemplates(context.Context, types.ListProcessingRuleTemplates) (types.ProcessingRuleTemplates, error)
+	ProcessingRuleV1(context.Context, string) (legacy.ProcessingRule, error)
 	ProcessingRules(context.Context, types.ProcessingRulesParams) (types.ProcessingRules, error)
+	ProcessingRulesV1(context.Context, legacy.ProcessingRulesParams) (legacy.ProcessingRules, error)
 	Project(context.Context, string) (types.Project, error)
 	Projects(context.Context, types.ProjectsParams) (types.Projects, error)
 	PushAWSMarketplaceSubscriptionNotification(context.Context, types.AWSMarketplaceSubscriptionNotification) error
 	RegisterAgent(context.Context, types.RegisterAgent) (types.RegisteredAgent, error)
 	ResourceProfile(context.Context, string) (types.ResourceProfile, error)
 	ResourceProfiles(context.Context, string, types.ResourceProfilesParams) (types.ResourceProfiles, error)
+	SAMLMappings(context.Context, types.ListSAMLMappings) (types.SAMLMappings, error)
 	Search(context.Context, types.SearchQuery) ([]types.SearchResult, error)
 	SendVerificationEmail(context.Context) error
 	SetAgentToken(string)
@@ -179,10 +189,11 @@ type Client interface {
 	UpdatePipelineSecret(context.Context, string, types.UpdatePipelineSecret) error
 	UpdateProcessingRule(context.Context, types.UpdateProcessingRule) (types.Updated, error)
 	UpdateProcessingRuleTemplate(context.Context, types.UpdateProcessingRuleTemplate) (types.Updated, error)
+	UpdateProcessingRuleV1(context.Context, legacy.UpdateProcessingRule) (types.Updated, error)
 	UpdateProject(context.Context, string, types.UpdateProject) error
 	UpdateResourceProfile(context.Context, string, types.UpdateResourceProfile) error
+	UpdateSAMLMapping(context.Context, types.UpdateSAMLMapping) (types.Updated, error)
 	UpdateToken(context.Context, types.UpdateToken) error
 	UpdateTraceSession(context.Context, string, types.UpdateTraceSession) (types.Updated, error)
-	ValidateConfig(context.Context, types.AgentType, types.ValidatingConfig) (types.ValidatedConfig, error)
-	ValidateConfigV2(context.Context, types.ValidatingConfig) (types.ValidatedConfigV2, error)
+	ValidateFluentbitConfig(context.Context, types.ValidateFluentbitConfig) error
 }
