@@ -55,11 +55,11 @@ jobs:
         id: cpr
         uses: peter-evans/create-pull-request@v6
         with:
-          commit-message: 'ci: update to latest Core Operator version'
+          commit-message: "ci: update to latest Core Operator version"
           signoff: true
           branch: ci_update_core_operator_version
           delete-branch: true
-          title: 'ci: update to latest Core Operator version'
+          title: "ci: update to latest Core Operator version"
           token: ${{ secrets.token }}
           labels: ci,automerge
           body: |
