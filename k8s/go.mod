@@ -11,7 +11,7 @@ require (
 	github.com/calyptia/api v1.10.0
 	github.com/calyptia/cli v0.0.0-00010101000000-000000000000
 	github.com/hashicorp/go-version v1.7.0
-	github.com/spf13/cobra v1.8.0
+	github.com/spf13/cobra v1.8.1
 	github.com/spf13/pflag v1.0.5
 	k8s.io/api v0.30.2
 	k8s.io/apimachinery v0.30.2
