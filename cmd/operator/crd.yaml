@@ -63,7 +63,7 @@ spec:
               config:
                 type: string
               fluentBitImage:
-                default: ghcr.io/calyptia/core/calyptia-fluent-bit:24.6.6
+                default: ghcr.io/calyptia/core/calyptia-fluent-bit:24.6.8
                 type: string
               ingestCheckSidecarImage:
                 default: ghcr.io/calyptia/core/ingest-check:v0.0.7
@@ -929,7 +929,7 @@ spec:
                 - scaleTargetRef
                 type: object
               image:
-                default: ghcr.io/calyptia/core/calyptia-fluent-bit:24.6.6
+                default: ghcr.io/calyptia/core/calyptia-fluent-bit:24.6.8
                 type: string
               kind:
                 description: Enums
