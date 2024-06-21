@@ -51,6 +51,7 @@ const (
 	syncTLSVerifyEnvVar           string     = "NO_TLS_VERIFY"
 	syncHttpProxy                 string     = "HTTP_PROXY"
 	syncHttpsProxy                string     = "HTTPS_PROXY"
+	metrics                       string     = "METRICS"
 	syncNoProxy                   string     = "NO_PROXY"
 	syncCloudProxy                string     = "CLOUD_PROXY"
 	coreSkipServiceCreationEnvVar string     = "CORE_INSTANCE_SKIP_SERVICE_CREATION"
@@ -508,7 +509,7 @@ func (client *Client) UpdateDeploymentByLabel(ctx context.Context, label, newIma
 	return nil
 }
 
-func (client *Client) UpdateSyncDeploymentByLabel(ctx context.Context, label, newImage, tlsVerify string, skipServiceCreation, verbose bool, cloudProxy, httpProxy, httpsProxy, noProxy string, waitTimeout time.Duration) error {
+func (client *Client) UpdateSyncDeploymentByLabel(ctx context.Context, label string, params UpdateCoreOperatorSync, verbose bool, waitTimeout time.Duration) error {
 	deploymentList, err := client.FindDeploymentByLabel(ctx, label)
 	if err != nil {
 		return err
@@ -523,21 +524,23 @@ func (client *Client) UpdateSyncDeploymentByLabel(ctx context.Context, label, ne
 
 	for i, container := range deployment.Spec.Template.Spec.Containers {
 		if strings.Contains(container.Name, "to-cloud") {
-			deployment.Spec.Template.Spec.Containers[i].Image = fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorToCloudDockerImage, newImage)
-			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncTLSVerifyEnvVar, tlsVerify)
-			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncCloudProxy, cloudProxy)
-			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncNoProxy, noProxy)
-			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncHttpProxy, httpProxy)
-			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncHttpsProxy, httpsProxy)
+			deployment.Spec.Template.Spec.Containers[i].Image = fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorToCloudDockerImage, params.Image)
+			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncTLSVerifyEnvVar, strconv.FormatBool(!params.NoTLSVerify))
+			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncCloudProxy, params.CloudProxy)
+			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncNoProxy, params.NoProxy)
+			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncHttpProxy, params.HttpProxy)
+			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncHttpsProxy, params.HttpsProxy)
+			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, metrics, strconv.FormatBool(params.Metrics))
 		}
 		if strings.Contains(container.Name, "from-cloud") {
-			deployment.Spec.Template.Spec.Containers[i].Image = fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorFromCloudDockerImage, newImage)
-			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncTLSVerifyEnvVar, tlsVerify)
-			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncCloudProxy, cloudProxy)
-			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncNoProxy, noProxy)
-			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncHttpProxy, httpProxy)
-			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncHttpsProxy, httpsProxy)
-			if skipServiceCreation {
+			deployment.Spec.Template.Spec.Containers[i].Image = fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorFromCloudDockerImage, params.Image)
+			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncTLSVerifyEnvVar, strconv.FormatBool(!params.NoTLSVerify))
+			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncCloudProxy, params.CloudProxy)
+			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncNoProxy, params.NoProxy)
+			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncHttpProxy, params.HttpProxy)
+			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncHttpsProxy, params.HttpsProxy)
+			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, metrics, strconv.FormatBool(params.Metrics))
+			if params.SkipServiceCreation {
 				deployment.Spec.Template.Spec.Containers[i].Env = append(deployment.Spec.Template.Spec.Containers[i].Env, corev1.EnvVar{
 					Name:  "SKIP_SERVICE_CREATION",
 					Value: strconv.FormatBool(true),
@@ -651,6 +654,23 @@ type DeployCoreOperatorSync struct {
 	NoProxy             string
 	CoreInstance        cloud.CreatedCoreInstance
 	ServiceAccount      string
+}
+
+type UpdateCoreOperatorSync struct {
+	Metrics             bool
+	MetricsPort         string
+	MemoryLimit         string
+	Annotations         string
+	Tolerations         string
+	SkipServiceCreation bool
+	NoTLSVerify         bool
+	CloudProxy          string
+	HttpProxy           string
+	HttpsProxy          string
+	NoProxy             string
+	CoreInstance        cloud.CreatedCoreInstance
+	ServiceAccount      string
+	Image               string
 }
 
 func (client *Client) DeployCoreOperatorSync(ctx context.Context, params DeployCoreOperatorSync) (*appsv1.Deployment, error) {
