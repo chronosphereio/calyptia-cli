@@ -286,8 +286,16 @@ func TestUpdateSyncDeploymentByLabel(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
 			label := fmt.Sprintf("%s=%s,%s=%s,%s=%s", LabelComponent, "operator", LabelCreatedBy, "calyptia-cli", LabelAggregatorID, tc.aggID)
-
-			if err := tc.client.UpdateSyncDeploymentByLabel(context.TODO(), label, fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorDockerImage, "1234"), "true", false, false, "", "", "", "", time.Minute); err != nil && !tc.expectErr {
+			params := UpdateCoreOperatorSync{
+				CloudProxy:          "",
+				HttpProxy:           "",
+				HttpsProxy:          "",
+				NoProxy:             "",
+				Image:               fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorDockerImage, "1234"),
+				NoTLSVerify:         true,
+				SkipServiceCreation: false,
+			}
+			if err := tc.client.UpdateSyncDeploymentByLabel(context.TODO(), label, params, false, time.Minute); err != nil && !tc.expectErr {
 				t.Errorf("failed to find deployment by label %s", err)
 			}
 		})

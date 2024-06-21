@@ -3,7 +3,6 @@ package coreinstance
 import (
 	"context"
 	"fmt"
-	"strconv"
 	"strings"
 	"time"
 
@@ -28,6 +27,7 @@ func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 		noTLSVerify                                bool
 		skipServiceCreation                        bool
 		cloudProxy, httpProxy, httpsProxy, noProxy string
+		metrics                                    bool
 		verbose                                    bool
 		waitTimeout                                time.Duration
 	)
@@ -144,7 +144,19 @@ func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 
 			label := fmt.Sprintf("%s=%s", k8s.LabelInstance, coreInstanceKey)
 			cmd.Printf("Waiting for core-instance to update...\n")
-			if err := k8sClient.UpdateSyncDeploymentByLabel(ctx, label, newVersion, strconv.FormatBool(!noTLSVerify), skipServiceCreation, verbose, cloudProxy, httpProxy, httpsProxy, noProxy, waitTimeout); err != nil {
+
+			fmt.Println("METRICS", metrics)
+			syncParams := k8s.UpdateCoreOperatorSync{
+				Metrics:             metrics,
+				SkipServiceCreation: skipServiceCreation,
+				NoTLSVerify:         noTLSVerify,
+				CloudProxy:          cloudProxy,
+				HttpProxy:           httpProxy,
+				HttpsProxy:          httpsProxy,
+				NoProxy:             noProxy,
+				Image:               newVersion,
+			}
+			if err := k8sClient.UpdateSyncDeploymentByLabel(ctx, label, syncParams, verbose, waitTimeout); err != nil {
 				if !verbose {
 					return fmt.Errorf("could not update core-instance to version %s for extra details use --verbose flag", newVersion)
 				}
@@ -173,6 +185,7 @@ func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 	fs.BoolVar(&verbose, "verbose", false, "Print verbose command output")
 	fs.DurationVar(&waitTimeout, "timeout", time.Second*30, "Wait timeout")
 	fs.BoolVar(&skipServiceCreation, "skip-service-creation", false, "Skip the creation of kubernetes services for any pipeline under this core instance.")
+	fs.BoolVar(&metrics, "metrics", false, "flag to enable/disable core instance metrics")
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", completer.CompleteEnvironments)
 	_ = cmd.RegisterFlagCompletionFunc("version", completer.CompleteCoreOperatorVersion)
