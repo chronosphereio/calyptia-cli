@@ -14,7 +14,7 @@ require (
 	github.com/calyptia/api v1.10.0
 	github.com/calyptia/cli/k8s v0.0.0-00010101000000-000000000000
 	github.com/calyptia/core-images-index/go-index v0.0.0-20240613181808-0c0b87d87c7e
-	github.com/calyptia/go-fluentbit-config/v2 v2.3.0
+	github.com/calyptia/go-fluentbit-config/v2 v2.3.1
 	github.com/go-logfmt/logfmt v0.6.0
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
 	github.com/hashicorp/go-version v1.7.0
