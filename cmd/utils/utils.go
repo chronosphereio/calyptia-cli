@@ -9,11 +9,7 @@ import (
 )
 
 const (
-	LatestVersion = "latest"
-	//nolint: gosec // this is not a secret leak, it's just a format declaration.
-	DefaultCoreDockerImage    = "ghcr.io/calyptia/core"
-	DefaultCoreDockerImageTag = LatestVersion
-
+	LatestVersion                  = "latest"
 	DefaultCoreOperatorDockerImage = "ghcr.io/calyptia/core-operator"
 	// DefaultCoreOperatorDockerImageTag not manually modified, CI should switch this version on every new release.
 	DefaultCoreOperatorDockerImageTag = "v2.14.0"
