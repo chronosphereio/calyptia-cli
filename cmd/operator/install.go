@@ -251,7 +251,7 @@ func solveNamespaceCreationForDelete(fullFile string, namespace string) string {
 
 func addImage(coreDockerImage, coreInstanceVersion, file string) (string, error) {
 	if coreInstanceVersion != "" {
-		const pattern string = `image:\s*ghcr\.io/chronosphereio/core-operator:[^\n\r]*`
+		const pattern string = `image:\s*ghcr\.io/calyptia/core-operator:[^\n\r]*`
 		reImagePattern := regexp.MustCompile(pattern)
 		match := reImagePattern.FindString(file)
 		if match == "" {
