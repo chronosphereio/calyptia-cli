@@ -196,7 +196,6 @@ func prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace stri
 
 	withImage, err := addImage(coreDockerImage, coreInstanceVersion, withNamespace)
 	if err != nil {
-		fmt.Println("!!!!")
 		return "", err
 	}
 	fullManifest := injectArguments(withImage, externalTrafficPolicyLocal)
