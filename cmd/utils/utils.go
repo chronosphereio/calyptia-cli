@@ -10,7 +10,7 @@ import (
 
 const (
 	LatestVersion                  = "latest"
-	DefaultCoreOperatorDockerImage = "ghcr.io/chronoshpereio/core-operator"
+	DefaultCoreOperatorDockerImage = "ghcr.io/calyptia/core-operator"
 	// DefaultCoreOperatorDockerImageTag not manually modified, CI should switch this version on every new release.
 	DefaultCoreOperatorDockerImageTag = "v2.14.0"
 
