@@ -6,12 +6,12 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
 
-	cmd "github.com/calyptia/cli/commands"
+	"github.com/calyptia/cli/commands"
 )
 
 func main() {
 	_ = godotenv.Load()
 
-	cmd := cmd.NewRootCmd(context.Background())
-	cobra.CheckErr(cmd.Execute())
+	root := commands.NewRootCmd(context.Background())
+	cobra.CheckErr(root.Execute())
 }
