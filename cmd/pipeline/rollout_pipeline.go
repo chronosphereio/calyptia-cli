@@ -7,7 +7,7 @@ import (
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 
 	cloud "github.com/calyptia/api/types"
 	"github.com/calyptia/cli/completer"
@@ -18,7 +18,7 @@ import (
 func NewCmdRolloutPipeline(config *cfg.Config) *cobra.Command {
 	var stepsBack uint
 	var toConfigID string
-	var autoCreatePortsFromConfig, skipConfigValidation bool
+	var noAutoCreateEndpointsFromConfig, skipConfigValidation bool
 	var outputFormat, goTemplate string
 	completer := completer.Completer{Config: config}
 
@@ -69,15 +69,15 @@ func NewCmdRolloutPipeline(config *cfg.Config) *cobra.Command {
 			}
 
 			updated, err := config.Cloud.UpdatePipeline(config.Ctx, pipelineID, cloud.UpdatePipeline{
-				RawConfig:                 &rawConfig,
-				AutoCreatePortsFromConfig: &autoCreatePortsFromConfig,
-				SkipConfigValidation:      skipConfigValidation,
+				RawConfig:                       &rawConfig,
+				NoAutoCreateEndpointsFromConfig: noAutoCreateEndpointsFromConfig,
+				SkipConfigValidation:            skipConfigValidation,
 			})
 			if err != nil {
 				return err
 			}
 
-			if autoCreatePortsFromConfig && len(updated.AddedPorts) != 0 {
+			if noAutoCreateEndpointsFromConfig && len(updated.AddedPorts) != 0 {
 				if strings.HasPrefix(outputFormat, "go-template") {
 					return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, updated)
 				}
@@ -106,7 +106,7 @@ func NewCmdRolloutPipeline(config *cfg.Config) *cobra.Command {
 	fs := cmd.Flags()
 	fs.UintVar(&stepsBack, "steps-back", 1, "Steps back to rollout")
 	fs.StringVar(&toConfigID, "to-config-id", "", "Configuration ID to rollout to. It overrides steps-back")
-	fs.BoolVar(&autoCreatePortsFromConfig, "auto-create-ports", true, "Automatically create pipeline ports from config")
+	fs.BoolVar(&noAutoCreateEndpointsFromConfig, "disable-auto-ports", false, "Disables automatically creating ports from the config file")
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 	fs.BoolVar(&skipConfigValidation, "skip-config-validation", false, "Opt-in to skip config validation (Use with caution as this option might be removed soon)")

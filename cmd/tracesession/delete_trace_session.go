@@ -9,7 +9,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 
 	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
