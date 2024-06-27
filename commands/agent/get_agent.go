@@ -12,7 +12,7 @@ import (
 	"gopkg.in/yaml.v3"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/cmd/utils"
+	"github.com/calyptia/cli/commands/utils"
 	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"

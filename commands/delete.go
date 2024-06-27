@@ -1,17 +1,17 @@
-package cmd
+package commands
 
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/calyptia/cli/cmd/agent"
-	cnfg "github.com/calyptia/cli/cmd/config"
-	"github.com/calyptia/cli/cmd/coreinstance"
-	"github.com/calyptia/cli/cmd/endpoint"
-	"github.com/calyptia/cli/cmd/environment"
-	"github.com/calyptia/cli/cmd/fleet"
-	"github.com/calyptia/cli/cmd/ingestcheck"
-	"github.com/calyptia/cli/cmd/pipeline"
-	"github.com/calyptia/cli/cmd/tracesession"
+	"github.com/calyptia/cli/commands/agent"
+	cnfg "github.com/calyptia/cli/commands/config"
+	"github.com/calyptia/cli/commands/coreinstance"
+	"github.com/calyptia/cli/commands/endpoint"
+	"github.com/calyptia/cli/commands/environment"
+	"github.com/calyptia/cli/commands/fleet"
+	"github.com/calyptia/cli/commands/ingestcheck"
+	"github.com/calyptia/cli/commands/pipeline"
+	"github.com/calyptia/cli/commands/tracesession"
 	cfg "github.com/calyptia/cli/config"
 )
 

@@ -34,7 +34,7 @@ import (
 	k8sclient "sigs.k8s.io/controller-runtime/pkg/client"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/cmd/utils"
+	"github.com/calyptia/cli/commands/utils"
 )
 
 type objectType string

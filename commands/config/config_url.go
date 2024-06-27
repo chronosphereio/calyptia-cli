@@ -7,7 +7,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/calyptia/cli/cmd/version"
+	"github.com/calyptia/cli/commands/version"
 	cfg "github.com/calyptia/cli/config"
 )
 

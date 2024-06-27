@@ -1,21 +1,21 @@
-package cmd
+package commands
 
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/calyptia/cli/cmd/agent"
-	"github.com/calyptia/cli/cmd/clusterobject"
-	cnfg "github.com/calyptia/cli/cmd/config"
-	"github.com/calyptia/cli/cmd/coreinstance"
-	"github.com/calyptia/cli/cmd/endpoint"
-	"github.com/calyptia/cli/cmd/environment"
-	"github.com/calyptia/cli/cmd/fleet"
-	"github.com/calyptia/cli/cmd/ingestcheck"
-	"github.com/calyptia/cli/cmd/members"
-	"github.com/calyptia/cli/cmd/pipeline"
-	"github.com/calyptia/cli/cmd/resourceprofile"
-	"github.com/calyptia/cli/cmd/tracerecord"
-	"github.com/calyptia/cli/cmd/tracesession"
+	"github.com/calyptia/cli/commands/agent"
+	"github.com/calyptia/cli/commands/clusterobject"
+	cnfg "github.com/calyptia/cli/commands/config"
+	"github.com/calyptia/cli/commands/coreinstance"
+	"github.com/calyptia/cli/commands/endpoint"
+	"github.com/calyptia/cli/commands/environment"
+	"github.com/calyptia/cli/commands/fleet"
+	"github.com/calyptia/cli/commands/ingestcheck"
+	"github.com/calyptia/cli/commands/members"
+	"github.com/calyptia/cli/commands/pipeline"
+	"github.com/calyptia/cli/commands/resourceprofile"
+	"github.com/calyptia/cli/commands/tracerecord"
+	"github.com/calyptia/cli/commands/tracesession"
 	cfg "github.com/calyptia/cli/config"
 )
 

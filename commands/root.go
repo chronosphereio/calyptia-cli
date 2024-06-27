@@ -1,4 +1,4 @@
-package cmd
+package commands
 
 import (
 	"context"
@@ -12,8 +12,8 @@ import (
 	"github.com/spf13/cobra"
 
 	cloudclient "github.com/calyptia/api/client"
-	cnfg "github.com/calyptia/cli/cmd/config"
-	"github.com/calyptia/cli/cmd/version"
+	cnfg "github.com/calyptia/cli/commands/config"
+	"github.com/calyptia/cli/commands/version"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/localdata"
 )

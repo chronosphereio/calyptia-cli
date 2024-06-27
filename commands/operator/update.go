@@ -12,7 +12,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 
-	"github.com/calyptia/cli/cmd/utils"
+	"github.com/calyptia/cli/commands/utils"
 	"github.com/calyptia/core-images-index/go-index"
 
 	semver "github.com/hashicorp/go-version"

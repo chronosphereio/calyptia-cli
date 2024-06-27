@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/calyptia/cli/cmd/coreinstance"
+	"github.com/calyptia/cli/commands/coreinstance"
 
 	"github.com/spf13/cobra"
 

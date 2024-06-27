@@ -8,7 +8,7 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/calyptia/cli/cmd/coreinstance"
+	"github.com/calyptia/cli/commands/coreinstance"
 
 	"github.com/joho/godotenv"
 	"github.com/pkg/errors"
@@ -16,7 +16,7 @@ import (
 	"gopkg.in/yaml.v3"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/cmd/utils"
+	"github.com/calyptia/cli/commands/utils"
 	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"

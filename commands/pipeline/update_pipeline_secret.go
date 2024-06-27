@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/cobra"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/cmd/utils"
+	"github.com/calyptia/cli/commands/utils"
 	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 )

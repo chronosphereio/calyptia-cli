@@ -17,7 +17,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 
-	"github.com/calyptia/cli/cmd/utils"
+	"github.com/calyptia/cli/commands/utils"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"

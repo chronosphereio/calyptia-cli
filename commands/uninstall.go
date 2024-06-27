@@ -1,9 +1,9 @@
-package cmd
+package commands
 
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/calyptia/cli/cmd/operator"
+	"github.com/calyptia/cli/commands/operator"
 )
 
 func newCmdUninstall() *cobra.Command {

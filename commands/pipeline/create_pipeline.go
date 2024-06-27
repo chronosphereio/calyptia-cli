@@ -10,7 +10,7 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/calyptia/cli/cmd/coreinstance"
+	"github.com/calyptia/cli/commands/coreinstance"
 
 	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"

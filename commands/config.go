@@ -1,9 +1,9 @@
-package cmd
+package commands
 
 import (
 	"github.com/spf13/cobra"
 
-	cnfg "github.com/calyptia/cli/cmd/config"
+	cnfg "github.com/calyptia/cli/commands/config"
 	cfg "github.com/calyptia/cli/config"
 )
 

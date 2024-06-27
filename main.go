@@ -6,7 +6,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
 
-	cmd "github.com/calyptia/cli/cmd"
+	cmd "github.com/calyptia/cli/commands"
 )
 
 func main() {
