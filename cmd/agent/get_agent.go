@@ -9,7 +9,7 @@ import (
 
 	"github.com/hako/durafmt"
 	"github.com/spf13/cobra"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 
 	cloud "github.com/calyptia/api/types"
 	"github.com/calyptia/cli/cmd/utils"

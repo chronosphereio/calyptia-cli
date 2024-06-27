@@ -8,7 +8,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 
 	cloud "github.com/calyptia/api/types"
 	"github.com/calyptia/cli/completer"

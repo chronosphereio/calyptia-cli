@@ -14,7 +14,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 
 	cloud "github.com/calyptia/api/types"
 	"github.com/calyptia/cli/completer"
@@ -32,7 +32,7 @@ func NewCmdCreatePipeline(config *cfg.Config) *cobra.Command {
 	var files []string
 	var encryptFiles bool
 	var image string
-	var autoCreatePortsFromConfig bool
+	var noAutoCreateEndpointsFromConfig bool
 	var skipConfigValidation bool
 	var resourceProfileName string
 	var outputFormat, goTemplate string
@@ -171,26 +171,26 @@ func NewCmdCreatePipeline(config *cfg.Config) *cobra.Command {
 			}
 
 			in := cloud.CreatePipeline{
-				Name:                      name,
-				ReplicasCount:             replicasCount,
-				RawConfig:                 string(rawConfig),
-				ConfigFormat:              format,
-				Secrets:                   secrets,
-				AutoCreatePortsFromConfig: autoCreatePortsFromConfig,
-				SkipConfigValidation:      skipConfigValidation,
-				ResourceProfileName:       resourceProfileName,
-				Files:                     addFilesPayload,
-				Metadata:                  metadata,
-				DeploymentStrategy:        strategy,
-				MinReplicas:               minReplicas,
-				ScaleUpType:               cloud.HPAScalingPolicyType(scaleUpType),
-				ScaleUpValue:              scaleUpValue,
-				ScaleUpPeriodSeconds:      scaleUpPeriodSeconds,
-				ScaleDownType:             cloud.HPAScalingPolicyType(scaleDownType),
-				ScaleDownValue:            scaleDownValue,
-				ScaleDownPeriodSeconds:    scaleDownPeriodSeconds,
-				UtilizationCPUAverage:     utilizationCPUAverage,
-				UtilizationMemoryAverage:  utilizationMemoryAverage,
+				Name:                            name,
+				ReplicasCount:                   replicasCount,
+				RawConfig:                       string(rawConfig),
+				ConfigFormat:                    format,
+				Secrets:                         secrets,
+				NoAutoCreateEndpointsFromConfig: noAutoCreateEndpointsFromConfig,
+				SkipConfigValidation:            skipConfigValidation,
+				ResourceProfileName:             resourceProfileName,
+				Files:                           addFilesPayload,
+				Metadata:                        metadata,
+				DeploymentStrategy:              strategy,
+				MinReplicas:                     minReplicas,
+				ScaleUpType:                     cloud.HPAScalingPolicyType(scaleUpType),
+				ScaleUpValue:                    scaleUpValue,
+				ScaleUpPeriodSeconds:            scaleUpPeriodSeconds,
+				ScaleDownType:                   cloud.HPAScalingPolicyType(scaleDownType),
+				ScaleDownValue:                  scaleDownValue,
+				ScaleDownPeriodSeconds:          scaleDownPeriodSeconds,
+				UtilizationCPUAverage:           utilizationCPUAverage,
+				UtilizationMemoryAverage:        utilizationMemoryAverage,
 			}
 
 			if portsServiceType != "" {
@@ -247,7 +247,7 @@ func NewCmdCreatePipeline(config *cfg.Config) *cobra.Command {
 	fs.StringVar(&deploymentStrategy, "deployment-strategy", "", "The deployment strategy to use when deploying this pipeline in cluster (hotReload or recreate (default)).")
 	fs.BoolVar(&hotReload, "hot-reload", false, "Use the hotReload deployment strategy when deploying the pipeline to the cluster, (mutually exclusive with deployment-strategy)")
 	fs.StringVar(&image, "image", "", "Fluent-bit docker image")
-	fs.BoolVar(&autoCreatePortsFromConfig, "auto-create-ports", true, "Automatically create pipeline ports from config")
+	fs.BoolVar(&noAutoCreateEndpointsFromConfig, "disable-auto-ports", false, "Disables automatically creating ports from the config file")
 	fs.StringVar(&portsServiceType, "service-type", "", fmt.Sprintf("Service type to use for all ports that are auto-created on this pipeline, options are: %s", coreinstance.AllValidPortKinds()))
 	fs.BoolVar(&skipConfigValidation, "skip-config-validation", false, "Opt-in to skip config validation (Use with caution as this option might be removed soon)")
 	fs.StringVar(&resourceProfileName, "resource-profile", cloud.DefaultResourceProfileName, "Resource profile name")
@@ -256,7 +256,7 @@ func NewCmdCreatePipeline(config *cfg.Config) *cobra.Command {
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
-	
+
 	// HPA parameters
 	fs.Int32Var(&minReplicas, "min-replicas", 0, "Minimum replicas count for HPA")
 	fs.StringVar(&scaleUpType, "scale-up-type", "", "The type of the policy which could be used while making scaling decisions. Accepted values Pods or Percent")

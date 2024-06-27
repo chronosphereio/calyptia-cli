@@ -13,7 +13,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 
 	cloud "github.com/calyptia/api/types"
 	"github.com/calyptia/cli/cmd/utils"
@@ -26,7 +26,7 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 	var newName string
 	var newConfigFile string
 	var newReplicasCount int
-	var autoCreatePortsFromConfig bool
+	var noAutoCreateEndpointsFromConfig bool
 	var skipConfigValidation bool
 	var secretsFile string
 	var secretsFormat string
@@ -173,12 +173,12 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 			sdt := cloud.HPAScalingPolicyType(scaleDownType)
 
 			update := cloud.UpdatePipeline{
-				AutoCreatePortsFromConfig: &autoCreatePortsFromConfig,
-				SkipConfigValidation:      skipConfigValidation,
-				ConfigFormat:              &format,
-				Secrets:                   secrets,
-				Files:                     updatePipelineFiles,
-				Metadata:                  metadata,
+				NoAutoCreateEndpointsFromConfig: noAutoCreateEndpointsFromConfig,
+				SkipConfigValidation:            skipConfigValidation,
+				ConfigFormat:                    &format,
+				Secrets:                         secrets,
+				Files:                           updatePipelineFiles,
+				Metadata:                        metadata,
 			}
 
 			if fs.Changed("min-replicas") {
@@ -266,7 +266,7 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 				return fmt.Errorf("could not update pipeline: %w", err)
 			}
 
-			if autoCreatePortsFromConfig && len(updated.AddedPorts) != 0 {
+			if noAutoCreateEndpointsFromConfig && len(updated.AddedPorts) != 0 {
 				if strings.HasPrefix(outputFormat, "go-template") {
 					return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, updated)
 				}
@@ -297,7 +297,7 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 	fs.StringVar(&newConfigFile, "config-file", "", "New Fluent Bit config file used by pipeline")
 	fs.StringVar(&providedConfigFormat, "config-format", "", "Default configuration format to use (yaml, ini(deprecated))")
 	fs.IntVar(&newReplicasCount, "replicas", -1, "New pipeline replica size")
-	fs.BoolVar(&autoCreatePortsFromConfig, "auto-create-ports", true, "Automatically create pipeline ports from config if updated")
+	fs.BoolVar(&noAutoCreateEndpointsFromConfig, "disable-auto-ports", false, "Disables automatically creating ports from the config file if updated")
 	fs.StringVar(&portsServiceType, "service-type", "", fmt.Sprintf("Service type to use for all ports that are auto-created on this pipeline, options are: %s", coreinstance.AllValidPortKinds()))
 	fs.BoolVar(&skipConfigValidation, "skip-config-validation", false, "Opt-in to skip config validation (Use with caution as this option might be removed soon)")
 	fs.StringVar(&secretsFile, "secrets-file", "", "Optional file containing a full definition of all secrets.\nThe format is derived either from the extension or the --secrets-format argument.\nThese can be referenced in pipeline files as such:\n{{ secrets.name }}\nThe prefix is the same for all secrets, the name is defined in the secrets file.")
