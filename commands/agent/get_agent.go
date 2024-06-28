@@ -12,9 +12,9 @@ import (
 	"gopkg.in/yaml.v3"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/commands/utils"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
+	"github.com/calyptia/cli/pointer"
 )
 
 func NewCmdGetAgents(config *cfg.Config) *cobra.Command {
@@ -74,7 +74,7 @@ func NewCmdGetAgents(config *cfg.Config) *cobra.Command {
 					if showIDs {
 						fmt.Fprintf(tw, "%s\t", a.ID)
 					}
-					fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\t%s\t%s\n", a.Name, a.Type, a.EnvironmentName, utils.ZeroOfPtr(a.FleetID), a.Version, status, formatters.FmtTime(a.CreatedAt))
+					fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\t%s\t%s\n", a.Name, a.Type, a.EnvironmentName, pointer.OrZero(a.FleetID), a.Version, status, formatters.FmtTime(a.CreatedAt))
 				}
 				tw.Flush()
 			case "json":
@@ -156,7 +156,7 @@ func NewCmdGetAgent(config *cfg.Config) *cobra.Command {
 				if showIDs {
 					fmt.Fprintf(tw, "%s\t", agent.ID)
 				}
-				fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\t%s\t%s\n", agent.Name, agent.Type, agent.EnvironmentName, utils.ZeroOfPtr(agent.FleetID), agent.Version, status, formatters.FmtTime(agent.CreatedAt))
+				fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\t%s\t%s\n", agent.Name, agent.Type, agent.EnvironmentName, pointer.OrZero(agent.FleetID), agent.Version, status, formatters.FmtTime(agent.CreatedAt))
 				tw.Flush()
 			case "json":
 				return json.NewEncoder(cmd.OutOrStdout()).Encode(agent)

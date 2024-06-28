@@ -6,8 +6,8 @@ import (
 	"github.com/spf13/cobra"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/commands/utils"
 	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/pointer"
 )
 
 func NewCmdUpdatePipelineSecret(config *cfg.Config) *cobra.Command {
@@ -22,7 +22,7 @@ func NewCmdUpdatePipelineSecret(config *cfg.Config) *cobra.Command {
 			// TODO: update secret by its key. The key is unique per pipeline.
 			secretID, value := args[0], args[1]
 			err := config.Cloud.UpdatePipelineSecret(ctx, secretID, cloud.UpdatePipelineSecret{
-				Value: utils.PtrBytes([]byte(value)),
+				Value: pointer.From([]byte(value)),
 			})
 			if err != nil {
 				return fmt.Errorf("could not update pipeline secret: %w", err)

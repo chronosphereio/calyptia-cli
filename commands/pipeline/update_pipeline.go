@@ -17,7 +17,6 @@ import (
 	"gopkg.in/yaml.v3"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/commands/utils"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
@@ -361,7 +360,7 @@ func parseUpdatePipelineSecrets(file, format string) ([]cloud.UpdatePipelineSecr
 		for k, v := range m {
 			secrets = append(secrets, cloud.UpdatePipelineSecret{
 				Key:   &k,
-				Value: utils.PtrBytes([]byte(v)),
+				Value: pointer.From([]byte(v)),
 			})
 		}
 	case "json":
@@ -374,7 +373,7 @@ func parseUpdatePipelineSecrets(file, format string) ([]cloud.UpdatePipelineSecr
 		for k, v := range m {
 			secrets = append(secrets, cloud.UpdatePipelineSecret{
 				Key:   &k,
-				Value: utils.PtrBytes([]byte(fmt.Sprintf("%v", v))),
+				Value: pointer.From([]byte(fmt.Sprintf("%v", v))),
 			})
 		}
 	case "yml", "yaml":
@@ -387,7 +386,7 @@ func parseUpdatePipelineSecrets(file, format string) ([]cloud.UpdatePipelineSecr
 		for k, v := range m {
 			secrets = append(secrets, cloud.UpdatePipelineSecret{
 				Key:   &k,
-				Value: utils.PtrBytes([]byte(fmt.Sprintf("%v", v))),
+				Value: pointer.From([]byte(fmt.Sprintf("%v", v))),
 			})
 		}
 	}

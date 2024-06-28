@@ -69,15 +69,3 @@ type Rates struct {
 func (rates Rates) OK() bool {
 	return rates.InputBytes != nil || rates.InputRecords != nil || rates.OutputBytes != nil || rates.OutputRecords != nil
 }
-
-func ZeroOfPtr[T comparable](v *T) T {
-	var zero T
-	if v == nil {
-		return zero
-	}
-	return *v
-}
-
-func PtrBytes(v []byte) *[]byte {
-	return &v
-}
