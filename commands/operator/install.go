@@ -51,6 +51,7 @@ func NewCmdInstall() *cobra.Command {
 		Aliases: []string{"opr"},
 		Short:   "Setup a new core operator instance",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
 			var namespace string
 
 			kubeNamespaceFlag := cmd.Flag("kube-namespace")
@@ -89,7 +90,11 @@ func NewCmdInstall() *cobra.Command {
 				Config:    kubeClientConfig,
 			}
 			if !confirmed {
-				isInstalled, err := k.IsOperatorInstalled(cmd.Context())
+				isInstalled, err := k.IsOperatorInstalled(ctx)
+				if err != nil {
+					return err
+				}
+
 				if isInstalled {
 					var e *k8s.OperatorIncompleteError
 					if errors.As(err, &e) {
@@ -177,7 +182,7 @@ func extractDeployment(yml string) (string, error) {
 	return deployName, nil
 }
 
-func prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace string, createNamespace bool, externalTrafficPolicyLocal bool) (string, error) {
+func prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace string, createNamespace, externalTrafficPolicyLocal bool) (string, error) {
 	solveNamespace := solveNamespaceCreation(createNamespace, manifestYAML, namespace)
 	withNamespace := injectNamespace(solveNamespace, namespace)
 
@@ -205,7 +210,7 @@ func prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace stri
 	return temp.Name(), err
 }
 
-func solveNamespaceCreation(createNamespace bool, fullFile string, namespace string) string {
+func solveNamespaceCreation(createNamespace bool, fullFile, namespace string) string {
 	if !createNamespace {
 		splitFile := strings.Split(fullFile, "---\n")
 		return strings.Join(splitFile[1:], "---\n")
@@ -217,23 +222,11 @@ func solveNamespaceCreation(createNamespace bool, fullFile string, namespace str
 		fullFile = strings.Join(splitFile, "---\n")
 	}
 	if _, err := strconv.Atoi(namespace); err == nil {
-		namespace = fmt.Sprintf(`"%s"`, namespace)
+		namespace = fmt.Sprintf("%q", namespace)
 	}
 
 	out := strings.ReplaceAll(fullFile, "namespace: calyptia-core", fmt.Sprintf("namespace: %s", namespace))
 	return out
-}
-
-func solveNamespaceCreationForDelete(fullFile string, namespace string) string {
-	if namespace == "" {
-		splitFile := strings.Split(fullFile, "---\n")
-		return strings.Join(splitFile[1:], "---\n")
-	}
-	if _, err := strconv.Atoi(namespace); err == nil {
-		namespace = fmt.Sprintf(`"%s"`, namespace)
-	}
-	temp := strings.ReplaceAll(fullFile, "serviceAccountName: calyptia-core", fmt.Sprintf("serviceAccountName: %s", namespace))
-	return strings.ReplaceAll(temp, "name: calyptia-core", fmt.Sprintf("name: %s", namespace))
 }
 
 func addImage(coreDockerImage, coreInstanceVersion, file string) (string, error) {
@@ -250,12 +243,12 @@ func addImage(coreDockerImage, coreInstanceVersion, file string) (string, error)
 	return file, nil
 }
 
-func injectNamespace(s string, namespace string) string {
+func injectNamespace(s, namespace string) string {
 	if namespace == "" {
 		namespace = "default"
 	}
 	if _, err := strconv.Atoi(namespace); err == nil {
-		namespace = fmt.Sprintf(`"%s"`, namespace)
+		namespace = fmt.Sprintf("%q", namespace)
 	}
 	return strings.ReplaceAll(s, "namespace: calyptia-core", fmt.Sprintf("namespace: %s", namespace))
 }
@@ -314,7 +307,7 @@ func newKubectlCmd() *cobra.Command {
 	return kubectlCmd
 }
 
-func installManifest(namespace, coreDockerImage, coreInstanceVersion string, createNamespace bool, externalTrafficPolicyLocal bool) (string, error) {
+func installManifest(namespace, coreDockerImage, coreInstanceVersion string, createNamespace, externalTrafficPolicyLocal bool) (string, error) {
 	kctl := newKubectlCmd()
 
 	manifest, err := prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace, createNamespace, externalTrafficPolicyLocal)

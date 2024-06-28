@@ -95,7 +95,7 @@ func completeConfigFormat(*cobra.Command, []string, string) ([]string, cobra.She
 }
 
 func getFormat(configFile, configFormat string) cloudtypes.ConfigFormat {
-	if configFormat == "" || strings.ToLower(configFormat) == "auto" {
+	if configFormat == "" || strings.EqualFold(configFormat, "auto") {
 		return cloudtypes.ConfigFormat(strings.TrimPrefix(filepath.Ext(configFile), "."))
 	}
 	return cloudtypes.ConfigFormat(configFormat)

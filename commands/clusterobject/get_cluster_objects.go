@@ -53,20 +53,18 @@ func NewCmdGetClusterObjects(cfg *config.Config) *cobra.Command {
 
 			switch outputFormat {
 			case "table":
-				{
-					tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
-					if showIDs {
-						fmt.Fprintf(tw, "ID\t")
-					}
-					fmt.Fprintln(tw, "NAME\tKIND\tCREATED AT")
-					for _, c := range co.Items {
-						if showIDs {
-							fmt.Fprintf(tw, "%s\t", c.ID)
-						}
-						fmt.Fprintf(tw, "%s\t%s\t%s\n", c.Name, string(c.Kind), formatters.FmtTime(c.CreatedAt))
-					}
-					tw.Flush()
+				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
+				if showIDs {
+					fmt.Fprintf(tw, "ID\t")
 				}
+				fmt.Fprintln(tw, "NAME\tKIND\tCREATED AT")
+				for _, c := range co.Items {
+					if showIDs {
+						fmt.Fprintf(tw, "%s\t", c.ID)
+					}
+					fmt.Fprintf(tw, "%s\t%s\t%s\n", c.Name, string(c.Kind), formatters.FmtTime(c.CreatedAt))
+				}
+				return tw.Flush()
 			case "json":
 				return json.NewEncoder(cmd.OutOrStdout()).Encode(co.Items)
 			case "yml", "yaml":

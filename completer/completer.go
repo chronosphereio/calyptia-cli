@@ -223,7 +223,7 @@ func (c *Completer) CompleteTraceSessions(cmd *cobra.Command, args []string, toC
 	return out, cobra.ShellCompDirectiveNoFileComp
 }
 
-func (c *Completer) LoadCoreInstanceID(ctx context.Context, key string, environmentID string) (string, error) {
+func (c *Completer) LoadCoreInstanceID(ctx context.Context, key, environmentID string) (string, error) {
 	params := cloudtypes.CoreInstancesParams{
 		Name: &key,
 		Last: pointer.From(uint(2)),
@@ -532,7 +532,7 @@ func (c *Completer) LoadFleetID(ctx context.Context, key string) (string, error)
 	return key, nil
 }
 
-func (c *Completer) LoadAgentID(ctx context.Context, agentKey string, environmentID string) (string, error) {
+func (c *Completer) LoadAgentID(ctx context.Context, agentKey, environmentID string) (string, error) {
 	var err error
 
 	var params cloudtypes.AgentsParams
@@ -563,7 +563,7 @@ func (c *Completer) LoadAgentID(ctx context.Context, agentKey string, environmen
 	return agentKey, nil
 }
 
-func (c *Completer) LoadClusterObjectID(ctx context.Context, key string, environmentID string) (string, error) {
+func (c *Completer) LoadClusterObjectID(ctx context.Context, key, environmentID string) (string, error) {
 	aa, err := c.FetchAllClusterObjects(ctx)
 	if err != nil {
 		return "", err

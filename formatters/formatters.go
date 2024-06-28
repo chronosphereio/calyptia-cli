@@ -34,10 +34,10 @@ func (o OutputFormat) String() string {
 	return string(o)
 }
 
-func ShouldApplyTemplating(fmt OutputFormat) (func(w io.Writer, tmpl string, data any) error, bool) {
+func ShouldApplyTemplating(format OutputFormat) (func(w io.Writer, tmpl string, data any) error, bool) {
 	return func(w io.Writer, tmpl string, data any) error {
-		return ApplyGoTemplate(w, fmt.String(), tmpl, data)
-	}, fmt == OutputFormatGoTmpl || fmt == OutputFormatGoTmplFile
+		return ApplyGoTemplate(w, format.String(), tmpl, data)
+	}, format == OutputFormatGoTmpl || format == OutputFormatGoTmplFile
 }
 
 func RenderWithTemplating(w io.Writer, format OutputFormat, tmpl string, data any) error {

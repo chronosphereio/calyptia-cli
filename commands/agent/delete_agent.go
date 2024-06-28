@@ -77,7 +77,7 @@ func NewCmdDeleteAgent(cfg *config.Config) *cobra.Command {
 	return cmd
 }
 
-func NewCmdDeleteAgents(config *config.Config) *cobra.Command {
+func NewCmdDeleteAgents(cfg *config.Config) *cobra.Command {
 	var inactive bool
 	var confirmed bool
 
@@ -86,7 +86,7 @@ func NewCmdDeleteAgents(config *config.Config) *cobra.Command {
 		Short: "Delete many agents from a project",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			aa, err := config.Cloud.Agents(ctx, config.ProjectID, cloudtypes.AgentsParams{
+			aa, err := cfg.Cloud.Agents(ctx, cfg.ProjectID, cloudtypes.AgentsParams{
 				Last: pointer.From(uint(0)),
 			})
 			if err != nil {
@@ -127,7 +127,7 @@ func NewCmdDeleteAgents(config *config.Config) *cobra.Command {
 				agentIDs[i] = a.ID
 			}
 
-			err = config.Cloud.DeleteAgents(ctx, config.ProjectID, agentIDs...)
+			err = cfg.Cloud.DeleteAgents(ctx, cfg.ProjectID, agentIDs...)
 			if err != nil {
 				return fmt.Errorf("delete agents: %w", err)
 			}

@@ -103,7 +103,7 @@ func NewCmdGetAgents(cfg *config.Config) *cobra.Command {
 	return cmd
 }
 
-func NewCmdGetAgent(config *config.Config) *cobra.Command {
+func NewCmdGetAgent(cfg *config.Config) *cobra.Command {
 	var outputFormat, goTemplate string
 	var showIDs bool
 	var onlyConfig bool
@@ -113,25 +113,25 @@ func NewCmdGetAgent(config *config.Config) *cobra.Command {
 		Use:               "agent AGENT",
 		Short:             "Display a specific agent",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.Completer.CompleteAgents,
+		ValidArgsFunction: cfg.Completer.CompleteAgents,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = config.Completer.LoadEnvironmentID(ctx, environment)
+				environmentID, err = cfg.Completer.LoadEnvironmentID(ctx, environment)
 				if err != nil {
 					return err
 				}
 			}
 
 			agentKey := args[0]
-			agentID, err := config.Completer.LoadAgentID(ctx, agentKey, environmentID)
+			agentID, err := cfg.Completer.LoadAgentID(ctx, agentKey, environmentID)
 			if err != nil {
 				return err
 			}
 
-			agent, err := config.Cloud.Agent(ctx, agentID)
+			agent, err := cfg.Cloud.Agent(ctx, agentID)
 			if err != nil {
 				return fmt.Errorf("could not fetch your agent: %w", err)
 			}
@@ -177,7 +177,7 @@ func NewCmdGetAgent(config *config.Config) *cobra.Command {
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
-	_ = cmd.RegisterFlagCompletionFunc("environment", config.Completer.CompleteEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("environment", cfg.Completer.CompleteEnvironments)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
 	return cmd

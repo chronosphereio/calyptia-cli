@@ -389,7 +389,7 @@ func newCmdCreateCoreInstanceOperator(cfg *config.Config, testClientSet kubernet
 	return cmd
 }
 
-func addToRollBack(err error, name string, namespace string, resource string, resourcesCreated *[]k8s.ResourceRollBack) error {
+func addToRollBack(err error, name, namespace, resource string, resourcesCreated *[]k8s.ResourceRollBack) error {
 	if err != nil {
 		return err
 	}
@@ -405,10 +405,10 @@ func addToRollBack(err error, name string, namespace string, resource string, re
 	return nil
 }
 
-func getCoreInstanceMetadata(k8s *k8s.Client) (cloudtypes.CoreInstanceMetadata, error) {
+func getCoreInstanceMetadata(kclient *k8s.Client) (cloudtypes.CoreInstanceMetadata, error) {
 	var metadata cloudtypes.CoreInstanceMetadata
 
-	info, err := k8s.GetClusterInfo()
+	info, err := kclient.GetClusterInfo()
 	if err != nil {
 		return metadata, err
 	}

@@ -3,6 +3,7 @@ package k8s
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -569,7 +570,7 @@ func (client *Client) UpdateSyncDeploymentByLabel(ctx context.Context, label str
 }
 
 func (client *Client) rolloutDeployment(ctx context.Context, namespace, deployment string) error {
-	data := fmt.Sprintf(`{"spec": {"template": {"metadata": {"annotations": {"kubectl.kubernetes.io/restartedAt": "%s"}}}}}`, time.Now().Format("20060102150405"))
+	data := fmt.Sprintf(`{"spec": {"template": {"metadata": {"annotations": {"kubectl.kubernetes.io/restartedAt": %q}}}}}`, time.Now().Format("20060102150405"))
 	_, err := client.AppsV1().Deployments(namespace).Patch(ctx, deployment, types.StrategicMergePatchType, []byte(data), metav1.PatchOptions{})
 
 	return err
@@ -596,7 +597,7 @@ func (client *Client) updateEnvVars(envVars []corev1.EnvVar, key, value string) 
 	return envVars
 }
 
-func (client *Client) UpdateOperatorDeploymentByLabel(ctx context.Context, label string, newImage string, verbose bool, waitTimeout time.Duration) error {
+func (client *Client) UpdateOperatorDeploymentByLabel(ctx context.Context, label, newImage string, verbose bool, waitTimeout time.Duration) error {
 	deploymentList, err := client.FindDeploymentByLabel(ctx, label)
 	if err != nil {
 		return err
@@ -832,11 +833,11 @@ func (client *Client) DeleteResources(ctx context.Context, resources []ResourceR
 	}
 
 	if len(errs) > 0 {
-		errStr := ""
+		var err error
 		for _, e := range errs {
-			errStr += e.Error()
+			err = errors.Join(err, e)
 		}
-		return nil, fmt.Errorf(errStr)
+		return nil, err
 	}
 	return deletedResources, nil
 }
@@ -926,11 +927,11 @@ func GetCurrentContextNamespace() (string, error) {
 	if currentContext == "" {
 		return "", ErrNoContext
 	}
-	context := config.Contexts[currentContext]
-	if context == nil {
+	foundContext, ok := config.Contexts[currentContext]
+	if !ok || foundContext == nil {
 		return "", ErrNoContext
 	}
-	return context.Namespace, nil
+	return foundContext.Namespace, nil
 }
 
 func (client *Client) WaitReady(ctx context.Context, namespace, name string, verbose bool, waitTimeout time.Duration) error {
@@ -1162,16 +1163,25 @@ func (client *Client) IsOperatorInstalled(ctx context.Context) (bool, error) {
 	}
 
 	scheme := runtime.NewScheme()
-	appsv1.AddToScheme(scheme)
-	rbacv1.AddToScheme(scheme)
-	corev1.AddToScheme(scheme)
+	if err := appsv1.AddToScheme(scheme); err != nil {
+		return false, err
+	}
+
+	if err := rbacv1.AddToScheme(scheme); err != nil {
+		return false, err
+	}
+
+	if err := corev1.AddToScheme(scheme); err != nil {
+		return false, err
+	}
+
 	k8sc, err := k8sclient.New(client.Config, k8sclient.Options{Scheme: scheme})
 	if err != nil {
-		panic(err)
+		return false, err
 	}
 	deploymentList := &appsv1.DeploymentList{}
 	if err := k8sc.List(context.Background(), deploymentList, &k8sclient.ListOptions{}); err != nil {
-		panic(err)
+		return false, err
 	}
 	for _, i := range deploymentList.Items {
 		if i.Name == operatorDeploymentName {
@@ -1181,7 +1191,7 @@ func (client *Client) IsOperatorInstalled(ctx context.Context) (bool, error) {
 
 	clusterRoles := &rbacv1.ClusterRoleList{}
 	if err := k8sc.List(context.Background(), clusterRoles, &k8sclient.ListOptions{}); err != nil {
-		panic(err)
+		return false, err
 	}
 	for _, i := range clusterRoles.Items {
 		if i.Name == "calyptia-core-manager-role" {
@@ -1214,7 +1224,7 @@ func (client *Client) IsOperatorInstalled(ctx context.Context) (bool, error) {
 
 	saList := &corev1.ServiceAccountList{}
 	if err := k8sc.List(context.Background(), saList, &k8sclient.ListOptions{}); err != nil {
-		panic(err)
+		return false, err
 	}
 
 	for _, i := range saList.Items {
@@ -1226,6 +1236,7 @@ func (client *Client) IsOperatorInstalled(ctx context.Context) (bool, error) {
 	if len(operatorIncomplete.Errors) > 0 {
 		return true, &operatorIncomplete
 	}
+
 	return false, nil
 }
 

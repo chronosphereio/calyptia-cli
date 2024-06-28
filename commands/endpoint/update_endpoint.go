@@ -84,10 +84,5 @@ func NewCmdUpdateEndpoint(cfg *config.Config) *cobra.Command {
 
 	_ = fs.MarkDeprecated("service-type", "service kind is set at the pipeline level")
 
-	// _ = cmd.RegisterFlagCompletionFunc("output-format", completeOutputFormat)
-	// _ = cmd.RegisterFlagCompletionFunc("pipeline", config.completePipelines)
-
-	_ = cmd.MarkFlagRequired("pipeline") // TODO: use default pipeline key from config cmd.
-
 	return cmd
 }
