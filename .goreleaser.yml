@@ -15,7 +15,7 @@ builds:
       - CGO_ENABLED=0
     binary: calyptia
     ldflags:
-      - -s -w -X github.com/calyptia/cli/cmd/version.Version={{.Version}}
+      - -s -w -X github.com/calyptia/cli/commands/version.Version={{.Version}}
     gcflags:
       - all=-C -l -B
     targets:
