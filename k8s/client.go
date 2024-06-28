@@ -2,10 +2,8 @@ package k8s
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
-	"net/http"
 	"os"
 	"strconv"
 	"strings"
@@ -839,54 +837,6 @@ func (client *Client) DeleteResources(ctx context.Context, resources []ResourceR
 		return nil, err
 	}
 	return deletedResources, nil
-}
-
-func getOperatorDownloadURL(version string) (string, error) {
-	const operatorReleases = "https://api.github.com/repos/chronosphereio/calyptia-core-operator-releases/releases"
-	type Release struct {
-		TagName string `json:"tag_name"`
-		Assets  []struct {
-			BrowserDownloadUrl string `json:"browser_download_url"`
-		} `json:"assets"`
-	}
-
-	resp, err := http.Get(operatorReleases)
-	if err != nil {
-		return "", fmt.Errorf("failed to get releases: %w", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("unexpected HTTP status: %d", resp.StatusCode)
-	}
-
-	var releases []Release
-	err = json.NewDecoder(resp.Body).Decode(&releases)
-	if err != nil {
-		return "", fmt.Errorf("failed to decode releases: %w", err)
-	}
-
-	if len(releases) == 0 {
-		return "", fmt.Errorf("no releases found")
-	}
-
-	if version == "" {
-		if len(releases[0].Assets) == 0 {
-			return "", fmt.Errorf("no assets found for the latest release")
-		}
-		return releases[0].Assets[0].BrowserDownloadUrl, nil
-	}
-
-	for _, release := range releases {
-		if release.TagName == version {
-			if len(release.Assets) == 0 {
-				return "", fmt.Errorf("no assets found for the version: %s", version)
-			}
-			return release.Assets[0].BrowserDownloadUrl, nil
-		}
-	}
-
-	return "", fmt.Errorf("version %s not found", version)
 }
 
 func GetCurrentContextNamespace() (string, error) {

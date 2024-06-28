@@ -210,28 +210,49 @@ func NewCmdGetPipeline(cfg *config.Config) *cobra.Command {
 				{
 					tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
 					if showIDs {
-						fmt.Fprint(tw, "ID\t")
+						if _, err := fmt.Fprint(tw, "ID\t"); err != nil {
+							return err
+						}
 					}
-					fmt.Fprintln(tw, "NAME\tREPLICAS\tSTATUS\tSTRATEGY\tAGE")
+					if _, err := fmt.Fprintln(tw, "NAME\tREPLICAS\tSTATUS\tSTRATEGY\tAGE"); err != nil {
+						return err
+					}
 					if showIDs {
-						fmt.Fprintf(tw, "%s\t", pip.ID)
+						if _, err := fmt.Fprintf(tw, "%s\t", pip.ID); err != nil {
+							return err
+						}
 					}
-					fmt.Fprintf(tw, "%s\t%d\t%s\t%s\t%s\n", pip.Name, pip.ReplicasCount, pip.Status.Status, string(pip.DeploymentStrategy), formatters.FmtTime(pip.CreatedAt))
+					_, err := fmt.Fprintf(tw, "%s\t%d\t%s\t%s\t%s\n", pip.Name, pip.ReplicasCount, pip.Status.Status, string(pip.DeploymentStrategy), formatters.FmtTime(pip.CreatedAt))
+					if err != nil {
+						return err
+					}
 					if err := tw.Flush(); err != nil {
 						return err
 					}
 				}
 				if includeEndpoints {
-					fmt.Fprintln(cmd.OutOrStdout(), "\n## Endpoints")
-					formatters.RenderEndpointsTable(cmd.OutOrStdout(), ports, showIDs)
+					if _, err := fmt.Fprintln(cmd.OutOrStdout(), "\n## Endpoints"); err != nil {
+						return err
+					}
+					if err := formatters.RenderEndpointsTable(cmd.OutOrStdout(), ports, showIDs); err != nil {
+						return err
+					}
 				}
 				if includeConfigHistory {
-					fmt.Fprintln(cmd.OutOrStdout(), "\n## Configuration History")
-					renderPipelineConfigHistory(cmd.OutOrStdout(), configHistory)
+					if _, err := fmt.Fprintln(cmd.OutOrStdout(), "\n## Configuration History"); err != nil {
+						return err
+					}
+					if err := renderPipelineConfigHistory(cmd.OutOrStdout(), configHistory); err != nil {
+						return err
+					}
 				}
 				if includeSecrets {
-					fmt.Fprintln(cmd.OutOrStdout(), "\n## Secrets")
-					renderPipelineSecrets(cmd.OutOrStdout(), secrets, showIDs)
+					if _, err := fmt.Fprintln(cmd.OutOrStdout(), "\n## Secrets"); err != nil {
+						return err
+					}
+					if err := renderPipelineSecrets(cmd.OutOrStdout(), secrets, showIDs); err != nil {
+						return err
+					}
 				}
 
 				return nil
