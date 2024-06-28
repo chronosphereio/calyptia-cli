@@ -132,6 +132,8 @@ jobs:
           echo '-------------------------------------------------------------------------------'
           kubectl describe deployments -A -l core-pipeline
           echo '-------------------------------------------------------------------------------'
+          kubectl logs deployment/calyptia-core-controller-manager
+          echo '-------------------------------------------------------------------------------'
         shell: bash
 
       - name: list images in cluster
