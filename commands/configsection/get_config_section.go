@@ -1,4 +1,4 @@
-package config
+package configsection
 
 import (
 	"bytes"
@@ -13,11 +13,11 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/calyptia/api/types"
-	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
 
-func NewCmdGetConfigSections(config *cfg.Config) *cobra.Command {
+func NewCmdGetConfigSections(cfg *config.Config) *cobra.Command {
 	var last uint
 	var before string
 	var outputFormat, goTemplate string
@@ -37,7 +37,7 @@ func NewCmdGetConfigSections(config *cfg.Config) *cobra.Command {
 			if before != "" {
 				params.Before = &before
 			}
-			cc, err := config.Cloud.ConfigSections(ctx, config.ProjectID, params)
+			cc, err := cfg.Cloud.ConfigSections(ctx, cfg.ProjectID, params)
 			if err != nil {
 				return fmt.Errorf("cloud: %w", err)
 			}

@@ -1,4 +1,4 @@
-package config
+package configsection
 
 import (
 	"fmt"
@@ -7,11 +7,11 @@ import (
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
 
-	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/confirm"
 )
 
-func NewCmdDeleteConfigSection(config *cfg.Config) *cobra.Command {
+func NewCmdDeleteConfigSection(cfg *config.Config) *cobra.Command {
 	var confirmed bool
 
 	cmd := &cobra.Command{
@@ -19,7 +19,7 @@ func NewCmdDeleteConfigSection(config *cfg.Config) *cobra.Command {
 		Short:             "Delete config section",
 		Long:              "Delete a config section by either the plugin kind:name or ID",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.Completer.CompleteConfigSections,
+		ValidArgsFunction: cfg.Completer.CompleteConfigSections,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			configSectionKey := args[0]
 
@@ -37,12 +37,12 @@ func NewCmdDeleteConfigSection(config *cfg.Config) *cobra.Command {
 			}
 
 			ctx := cmd.Context()
-			configSectionID, err := config.Completer.LoadConfigSectionID(ctx, configSectionKey)
+			configSectionID, err := cfg.Completer.LoadConfigSectionID(ctx, configSectionKey)
 			if err != nil {
 				return fmt.Errorf("load config section ID from key: %w", err)
 			}
 
-			err = config.Cloud.DeleteConfigSection(ctx, configSectionID)
+			err = cfg.Cloud.DeleteConfigSection(ctx, configSectionID)
 			if err != nil {
 				return fmt.Errorf("cloud: %w", err)
 			}

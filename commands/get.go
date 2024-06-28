@@ -5,7 +5,7 @@ import (
 
 	"github.com/calyptia/cli/commands/agent"
 	"github.com/calyptia/cli/commands/clusterobject"
-	cnfg "github.com/calyptia/cli/commands/config"
+	"github.com/calyptia/cli/commands/configsection"
 	"github.com/calyptia/cli/commands/coreinstance"
 	"github.com/calyptia/cli/commands/endpoint"
 	"github.com/calyptia/cli/commands/environment"
@@ -49,7 +49,7 @@ func newCmdGet(config *cfg.Config) *cobra.Command {
 		tracesession.NewCmdGetTraceSessions(config),
 		tracesession.NewCmdGetTraceSession(config),
 		tracerecord.NewCmdGetTraceRecords(config),
-		cnfg.NewCmdGetConfigSections(config),
+		configsection.NewCmdGetConfigSections(config),
 		ingestcheck.NewCmdGetIngestChecks(config),
 		ingestcheck.NewCmdGetIngestCheck(config),
 		ingestcheck.NewCmdGetIngestCheckLogs(config),

@@ -4,7 +4,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/calyptia/cli/commands/agent"
-	cnfg "github.com/calyptia/cli/commands/config"
+	"github.com/calyptia/cli/commands/configsection"
 	"github.com/calyptia/cli/commands/coreinstance"
 	"github.com/calyptia/cli/commands/endpoint"
 	"github.com/calyptia/cli/commands/environment"
@@ -37,8 +37,8 @@ func newCmdUpdate(config *cfg.Config) *cobra.Command {
 		coreinstance.NewCmdUpdateCoreInstanceFile(config),
 		coreinstance.NewCmdUpdateCoreInstanceSecret(config),
 		environment.NewCmdUpdateEnvironment(config),
-		cnfg.NewCmdUpdateConfigSection(config),
-		cnfg.NewCmdUpdateConfigSectionSet(config),
+		configsection.NewCmdUpdateConfigSection(config),
+		configsection.NewCmdUpdateConfigSectionSet(config),
 		operator.NewCmdUpdate(),
 	)
 

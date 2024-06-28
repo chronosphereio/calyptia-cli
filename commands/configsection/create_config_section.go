@@ -1,4 +1,4 @@
-package config
+package configsection
 
 import (
 	"encoding/json"
@@ -12,11 +12,11 @@ import (
 
 	"github.com/calyptia/api/types"
 	"github.com/calyptia/cli/completer"
-	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
 
-func NewCmdCreateConfigSection(config *cfg.Config) *cobra.Command {
+func NewCmdCreateConfigSection(cfg *config.Config) *cobra.Command {
 	var kind string
 	var name string
 	var propsSlice []string
@@ -33,7 +33,7 @@ func NewCmdCreateConfigSection(config *cfg.Config) *cobra.Command {
 			}, props...)
 
 			ctx := cmd.Context()
-			created, err := config.Cloud.CreateConfigSection(ctx, config.ProjectID, types.CreateConfigSection{
+			created, err := cfg.Cloud.CreateConfigSection(ctx, cfg.ProjectID, types.CreateConfigSection{
 				Kind:       types.ConfigSectionKind(kind),
 				Properties: props,
 			})
@@ -67,7 +67,7 @@ func NewCmdCreateConfigSection(config *cfg.Config) *cobra.Command {
 
 	_ = cmd.RegisterFlagCompletionFunc("kind", completer.CompletePluginKinds)
 	_ = cmd.RegisterFlagCompletionFunc("name", completer.CompletePluginNames)
-	_ = cmd.RegisterFlagCompletionFunc("prop", config.Completer.CompletePluginProps)
+	_ = cmd.RegisterFlagCompletionFunc("prop", cfg.Completer.CompletePluginProps)
 
 	return cmd
 }

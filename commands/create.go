@@ -3,7 +3,7 @@ package commands
 import (
 	"github.com/spf13/cobra"
 
-	cnfg "github.com/calyptia/cli/commands/config"
+	"github.com/calyptia/cli/commands/configsection"
 	"github.com/calyptia/cli/commands/coreinstance"
 	"github.com/calyptia/cli/commands/environment"
 	"github.com/calyptia/cli/commands/fleet"
@@ -32,7 +32,7 @@ func newCmdCreate(config *cfg.Config) *cobra.Command {
 		pipeline.NewCmdCreatePipelineLog(config),
 		environment.NewCmdCreateEnvironment(config),
 		tracesession.NewCmdCreateTraceSession(config),
-		cnfg.NewCmdCreateConfigSection(config),
+		configsection.NewCmdCreateConfigSection(config),
 		ingestcheck.NewCmdCreateIngestCheck(config),
 		fleet.NewCmdCreateFleet(config),
 		fleet.NewCmdCreateFleetFile(config),

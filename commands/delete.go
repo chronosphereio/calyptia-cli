@@ -4,7 +4,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/calyptia/cli/commands/agent"
-	cnfg "github.com/calyptia/cli/commands/config"
+	"github.com/calyptia/cli/commands/configsection"
 	"github.com/calyptia/cli/commands/coreinstance"
 	"github.com/calyptia/cli/commands/endpoint"
 	"github.com/calyptia/cli/commands/environment"
@@ -38,7 +38,7 @@ func newCmdDelete(config *cfg.Config) *cobra.Command {
 		coreinstance.NewCmdDeleteCoreInstances(config),
 		environment.NewCmdDeleteEnvironment(config),
 		tracesession.NewCmdDeleteTraceSession(config),
-		cnfg.NewCmdDeleteConfigSection(config),
+		configsection.NewCmdDeleteConfigSection(config),
 		ingestcheck.NewCmdDeleteIngestCheck(config),
 	)
 
