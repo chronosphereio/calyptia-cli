@@ -66,9 +66,8 @@ func NewCmdGetIngestCheck(cfg *config.Config) *cobra.Command {
 
 func NewCmdGetIngestChecks(cfg *config.Config) *cobra.Command {
 	var (
-		showIDs     bool
-		last        uint
-		environment string
+		showIDs bool
+		last    uint
 	)
 
 	cmd := &cobra.Command{
@@ -78,15 +77,7 @@ func NewCmdGetIngestChecks(cfg *config.Config) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			id := args[0]
-			var environmentID string
-			if environment != "" {
-				var err error
-				environmentID, err = cfg.Completer.LoadEnvironmentID(ctx, environment)
-				if err != nil {
-					return err
-				}
-			}
-			aggregatorID, err := cfg.Completer.LoadCoreInstanceID(ctx, id, environmentID)
+			aggregatorID, err := cfg.Completer.LoadCoreInstanceID(ctx, id)
 			if err != nil {
 				return err
 			}
@@ -129,7 +120,6 @@ func NewCmdGetIngestChecks(cfg *config.Config) *cobra.Command {
 	fs := cmd.Flags()
 	fs.UintVarP(&last, "last", "l", 0, "Last `N` members. 0 means no limit")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include member IDs in table output")
-	fs.StringVar(&environment, "environment", "default", "Environment name")
 	formatters.BindFormatFlags(cmd)
 	return cmd
 }

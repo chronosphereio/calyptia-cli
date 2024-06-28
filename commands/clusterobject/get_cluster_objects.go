@@ -16,7 +16,6 @@ import (
 func NewCmdGetClusterObjects(cfg *config.Config) *cobra.Command {
 	var coreInstanceKey string
 	var last uint
-	var environment string
 	var showIDs bool
 
 	cmd := &cobra.Command{
@@ -24,16 +23,7 @@ func NewCmdGetClusterObjects(cfg *config.Config) *cobra.Command {
 		Short: "Get cluster objects",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			var environmentID string
-			if environment != "" {
-				var err error
-				environmentID, err = cfg.Completer.LoadEnvironmentID(ctx, environment)
-				if err != nil {
-					return err
-				}
-			}
-
-			coreInstanceID, err := cfg.Completer.LoadCoreInstanceID(ctx, coreInstanceKey, environmentID)
+			coreInstanceID, err := cfg.Completer.LoadCoreInstanceID(ctx, coreInstanceKey)
 			if err != nil {
 				return err
 			}

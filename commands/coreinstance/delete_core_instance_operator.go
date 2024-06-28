@@ -13,14 +13,14 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 
 	"github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/confirm"
 	"github.com/calyptia/cli/k8s"
 )
 
 func NewCmdDeleteCoreInstanceOperator(cfg *config.Config, testClientSet kubernetes.Interface) *cobra.Command {
 	var (
-		confirmed   bool
-		environment string
-		wait        bool
+		confirmed bool
+		wait      bool
 	)
 	configOverrides := &clientcmd.ConfigOverrides{}
 
@@ -33,18 +33,21 @@ func NewCmdDeleteCoreInstanceOperator(cfg *config.Config, testClientSet kubernet
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-
-			// delete the core instance on the cloud
-			var environmentID string
-			if environment != "" {
-				var err error
-				environmentID, err = cfg.Completer.LoadEnvironmentID(ctx, environment)
+			if !confirmed {
+				cmd.Printf("Are you sure you want to delete core instance %q? (y/N) ", args[0])
+				confirmed, err := confirm.Read(cmd.InOrStdin())
 				if err != nil {
 					return err
 				}
+
+				if !confirmed {
+					cmd.Println("Aborted")
+					return nil
+				}
 			}
+
 			coreInstanceKey := args[0]
-			coreInstanceID, err := cfg.Completer.LoadCoreInstanceID(ctx, coreInstanceKey, environmentID)
+			coreInstanceID, err := cfg.Completer.LoadCoreInstanceID(ctx, coreInstanceKey)
 			if err != nil {
 				return err
 			}
@@ -116,7 +119,6 @@ func NewCmdDeleteCoreInstanceOperator(cfg *config.Config, testClientSet kubernet
 	isNonInteractive := os.Stdin == nil || !term.IsTerminal(int(os.Stdin.Fd()))
 	fs := cmd.Flags()
 	fs.BoolVarP(&confirmed, "yes", "y", isNonInteractive, "Confirm deletion")
-	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 	fs.BoolVar(&wait, "wait", false, "Wait for the core instance to be deleted")
 	return cmd
 }

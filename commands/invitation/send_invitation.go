@@ -4,6 +4,7 @@ import (
 	"github.com/spf13/cobra"
 
 	cloudtypes "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/completer"
 	"github.com/calyptia/cli/config"
 )
 
@@ -47,7 +48,7 @@ func NewCmdSendInvitation(cfg *config.Config) *cobra.Command {
 	fs.StringVar(&redirectURI, "redirect-uri", redirectURI, "Redirect URI for the invitation, it should point to the Calyptia UI.")
 	fs.StringSliceVar(&permissions, "permissions", []string{cloudtypes.PermReadAll}, "Permissions to grant to the invited user.")
 
-	_ = cmd.RegisterFlagCompletionFunc("permissions", cfg.Completer.CompletePermissions)
+	_ = cmd.RegisterFlagCompletionFunc("permissions", completer.CompletePermissions)
 
 	return cmd
 }

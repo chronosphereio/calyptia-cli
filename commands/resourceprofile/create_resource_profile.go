@@ -17,7 +17,6 @@ func NewCmdCreateResourceProfile(cfg *config.Config) *cobra.Command {
 	var coreInstanceKey string
 	var name string
 	var specFile string
-	var environment string
 
 	cmd := &cobra.Command{
 		Use:   "resource_profile",
@@ -35,16 +34,7 @@ func NewCmdCreateResourceProfile(cfg *config.Config) *cobra.Command {
 				return fmt.Errorf("could not parse json spec: %w", err)
 			}
 
-			var environmentID string
-			if environment != "" {
-				var err error
-				environmentID, err = cfg.Completer.LoadEnvironmentID(ctx, environment)
-				if err != nil {
-					return err
-				}
-			}
-
-			aggregatorID, err := cfg.Completer.LoadCoreInstanceID(ctx, coreInstanceKey, environmentID)
+			aggregatorID, err := cfg.Completer.LoadCoreInstanceID(ctx, coreInstanceKey)
 			if err != nil {
 				return err
 			}
@@ -87,7 +77,6 @@ func NewCmdCreateResourceProfile(cfg *config.Config) *cobra.Command {
 	fs.StringVar(&coreInstanceKey, "core-instance", "", "Parent core-instance ID or name")
 	fs.StringVar(&name, "name", "", "Resource profile name")
 	fs.StringVar(&specFile, "spec", "", "Take spec from JSON file. Example:\n"+resourceProfileSpecExample)
-	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 	formatters.BindFormatFlags(cmd)
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", cfg.Completer.CompleteEnvironments)

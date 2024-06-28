@@ -96,10 +96,6 @@ func (c *Completer) CompleteMembers(cmd *cobra.Command, args []string, toComplet
 	return out, cobra.ShellCompDirectiveNoFileComp
 }
 
-func (c *Completer) CompletePermissions(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	return cloudtypes.AllPermissions(), cobra.ShellCompDirectiveNoFileComp
-}
-
 func (c *Completer) CompleteEnvironments(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	ctx := cmd.Context()
 	aa, err := c.Cloud.Environments(ctx, c.ProjectID, cloudtypes.EnvironmentsParams{})
@@ -223,31 +219,26 @@ func (c *Completer) CompleteTraceSessions(cmd *cobra.Command, args []string, toC
 	return out, cobra.ShellCompDirectiveNoFileComp
 }
 
-func (c *Completer) LoadCoreInstanceID(ctx context.Context, key, environmentID string) (string, error) {
-	params := cloudtypes.CoreInstancesParams{
-		Name: &key,
-		Last: pointer.From(uint(2)),
-	}
-
-	if environmentID != "" {
-		params.EnvironmentID = &environmentID
-	}
-
-	aa, err := c.Cloud.CoreInstances(ctx, c.ProjectID, params)
+func (c *Completer) LoadCoreInstanceID(ctx context.Context, key string) (string, error) {
+	result, err := c.Cloud.Search(ctx, cloudtypes.SearchQuery{
+		ProjectID: c.ProjectID,
+		Resource:  cloudtypes.SearchResourceCoreInstance,
+		Term:      key,
+	})
 	if err != nil {
 		return "", err
 	}
 
-	if len(aa.Items) != 1 && !uuid.Valid(key) {
-		if len(aa.Items) != 0 {
-			return "", fmt.Errorf("ambiguous core instance name %q, use ID instead", key)
-		}
-
+	if len(result) == 0 {
 		return "", fmt.Errorf("could not find core instance %q", key)
 	}
 
-	if len(aa.Items) == 1 {
-		return aa.Items[0].ID, nil
+	if len(result) != 1 && !uuid.Valid(key) {
+		return "", fmt.Errorf("ambiguous core instance name %q, use ID instead", key)
+	}
+
+	if len(result) == 1 {
+		return result[0].ID, nil
 	}
 
 	return key, nil
@@ -882,6 +873,10 @@ func CompleteResourceProfiles(cmd *cobra.Command, args []string, toComplete stri
 
 func CompleteOutputFormat(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
 	return []string{"table", "json", "yaml", "go-template"}, cobra.ShellCompDirectiveNoFileComp
+}
+
+func CompletePermissions(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	return cloudtypes.AllPermissions(), cobra.ShellCompDirectiveNoFileComp
 }
 
 // pluginProps -

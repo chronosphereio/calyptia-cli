@@ -17,23 +17,13 @@ func NewCmdGetResourceProfiles(cfg *config.Config) *cobra.Command {
 	var coreInstanceKey string
 	var last uint
 	var showIDs bool
-	var environment string
 
 	cmd := &cobra.Command{
 		Use:   "resource_profiles",
 		Short: "Display latest resource profiles from an aggregator",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			var environmentID string
-			if environment != "" {
-				var err error
-				environmentID, err = cfg.Completer.LoadEnvironmentID(ctx, environment)
-				if err != nil {
-					return err
-				}
-			}
-
-			coreInstanceID, err := cfg.Completer.LoadCoreInstanceID(ctx, coreInstanceKey, environmentID)
+			coreInstanceID, err := cfg.Completer.LoadCoreInstanceID(ctx, coreInstanceKey)
 			if err != nil {
 				return err
 			}
@@ -77,7 +67,6 @@ func NewCmdGetResourceProfiles(cfg *config.Config) *cobra.Command {
 	fs.StringVar(&coreInstanceKey, "core-instance", "", "Parent core-instance ID or name")
 	fs.UintVarP(&last, "last", "l", 0, "Last `N` pipelines. 0 means no limit")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include resource profile IDs in table output")
-	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 	formatters.BindFormatFlags(cmd)
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", cfg.Completer.CompleteEnvironments)

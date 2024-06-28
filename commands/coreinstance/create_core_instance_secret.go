@@ -36,7 +36,7 @@ func NewCmdCreateCoreInstanceSecret(cfg *config.Config) *cobra.Command {
 				cmd.Println()
 			}
 
-			instanceID, err := cfg.Completer.LoadCoreInstanceID(ctx, instanceKey, "")
+			instanceID, err := cfg.Completer.LoadCoreInstanceID(ctx, instanceKey)
 			if err != nil {
 				return err
 			}

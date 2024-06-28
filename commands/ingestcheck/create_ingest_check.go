@@ -14,7 +14,6 @@ func NewCmdCreateIngestCheck(cfg *config.Config) *cobra.Command {
 		retries         uint
 		configSectionID string
 		status          string
-		environment     string
 		collectLogs     bool
 	)
 
@@ -42,15 +41,7 @@ func NewCmdCreateIngestCheck(cfg *config.Config) *cobra.Command {
 				return fmt.Errorf("invalid check status")
 			}
 
-			var environmentID string
-			if environment != "" {
-				var err error
-				environmentID, err = cfg.Completer.LoadEnvironmentID(ctx, environment)
-				if err != nil {
-					return err
-				}
-			}
-			coreInstanceID, err := cfg.Completer.LoadCoreInstanceID(ctx, coreInstance, environmentID)
+			coreInstanceID, err := cfg.Completer.LoadCoreInstanceID(ctx, coreInstance)
 			if err != nil {
 				return err
 			}
@@ -68,6 +59,5 @@ func NewCmdCreateIngestCheck(cfg *config.Config) *cobra.Command {
 	flags.StringVar(&configSectionID, "config-section-id", "", "config section ID")
 	flags.StringVar(&status, "status", "", "status")
 	flags.BoolVar(&collectLogs, "collect-logs", false, "Collect logs from the kubernetes pods once the job is finished")
-	flags.StringVar(&environment, "environment", "default", "calyptia environment name")
 	return cmd
 }

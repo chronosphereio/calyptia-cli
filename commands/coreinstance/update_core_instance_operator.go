@@ -19,7 +19,7 @@ import (
 )
 
 func NewCmdUpdateCoreInstanceOperator(cfg *config.Config, testClientSet kubernetes.Interface) *cobra.Command {
-	var newVersion, newName, environment string
+	var newVersion, newName string
 	var (
 		disableClusterLogging                      bool
 		enableClusterLogging                       bool
@@ -62,15 +62,7 @@ func NewCmdUpdateCoreInstanceOperator(cfg *config.Config, testClientSet kubernet
 			ctx := context.Background()
 			coreInstanceKey := args[0]
 
-			var environmentID string
-			if environment != "" {
-				var err error
-				environmentID, err = cfg.Completer.LoadEnvironmentID(ctx, environment)
-				if err != nil {
-					return err
-				}
-			}
-			coreInstanceID, err := cfg.Completer.LoadCoreInstanceID(ctx, coreInstanceKey, environmentID)
+			coreInstanceID, err := cfg.Completer.LoadCoreInstanceID(ctx, coreInstanceKey)
 			if err != nil {
 				return err
 			}
@@ -169,7 +161,6 @@ func NewCmdUpdateCoreInstanceOperator(cfg *config.Config, testClientSet kubernet
 	fs := cmd.Flags()
 	fs.StringVar(&newVersion, "version", "", "New version of the calyptia-core instance")
 	fs.StringVar(&newName, "name", "", "New core instance name")
-	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 	fs.BoolVar(&enableClusterLogging, "enable-cluster-logging", false, "Enable cluster logging functionality")
 	fs.BoolVar(&disableClusterLogging, "disable-cluster-logging", false, "Disable cluster logging functionality")
 	fs.BoolVar(&noTLSVerify, "no-tls-verify", false, "Disable TLS verification when connecting to Calyptia Cloud API.")

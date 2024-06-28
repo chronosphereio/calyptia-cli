@@ -35,7 +35,6 @@ func NewCmdCreatePipeline(cfg *config.Config) *cobra.Command {
 	var resourceProfileName string
 	var metadataPairs []string
 	var metadataFile string
-	var environment string
 	var providedConfigFormat string
 	var deploymentStrategy string
 	var hotReload bool
@@ -127,16 +126,7 @@ func NewCmdCreatePipeline(cfg *config.Config) *cobra.Command {
 				})
 			}
 
-			var environmentID string
-			if environment != "" {
-				var err error
-				environmentID, err = cfg.Completer.LoadEnvironmentID(ctx, environment)
-				if err != nil {
-					return err
-				}
-			}
-
-			coreInstanceID, err := cfg.Completer.LoadCoreInstanceID(ctx, coreInstanceKey, environmentID)
+			coreInstanceID, err := cfg.Completer.LoadCoreInstanceID(ctx, coreInstanceKey)
 			if err != nil {
 				return err
 			}
@@ -249,7 +239,6 @@ func NewCmdCreatePipeline(cfg *config.Config) *cobra.Command {
 	fs.StringVar(&resourceProfileName, "resource-profile", cloudtypes.DefaultResourceProfileName, "Resource profile name")
 	fs.StringSliceVar(&metadataPairs, "metadata", nil, "Metadata to attach to the pipeline in the form of key:value. You could instead use a file with the --metadata-file option")
 	fs.StringVar(&metadataFile, "metadata-file", "", "Metadata JSON file to attach to the pipeline intead of passing multiple --metadata flags")
-	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 	formatters.BindFormatFlags(cmd)
 
 	// HPA parameters

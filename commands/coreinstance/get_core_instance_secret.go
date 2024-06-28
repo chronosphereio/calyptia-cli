@@ -24,7 +24,7 @@ func NewCmdGetCoreInstanceSecrets(cfg *config.Config) *cobra.Command {
 		Long:  "List secrets from a core instance with backward pagination",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			instanceID, err := cfg.Completer.LoadCoreInstanceID(ctx, instanceKey, "")
+			instanceID, err := cfg.Completer.LoadCoreInstanceID(ctx, instanceKey)
 			if err != nil {
 				return err
 			}

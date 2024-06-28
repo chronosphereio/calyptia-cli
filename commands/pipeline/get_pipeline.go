@@ -20,7 +20,6 @@ func NewCmdGetPipelines(cfg *config.Config) *cobra.Command {
 	var last uint
 	var configFormat string
 	var showIDs bool
-	var environment string
 	var renderWithConfigSections bool
 
 	cmd := &cobra.Command{
@@ -28,15 +27,7 @@ func NewCmdGetPipelines(cfg *config.Config) *cobra.Command {
 		Short: "Display latest pipelines from a core-instance",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			var environmentID string
-			if environment != "" {
-				var err error
-				environmentID, err = cfg.Completer.LoadEnvironmentID(ctx, environment)
-				if err != nil {
-					return err
-				}
-			}
-			coreInstanceID, err := cfg.Completer.LoadCoreInstanceID(ctx, coreInstanceKey, environmentID)
+			coreInstanceID, err := cfg.Completer.LoadCoreInstanceID(ctx, coreInstanceKey)
 			if err != nil {
 				return err
 			}
@@ -88,10 +79,9 @@ func NewCmdGetPipelines(cfg *config.Config) *cobra.Command {
 	fs.StringVar(&coreInstanceKey, "core-instance", "", "Parent core-instance ID or name")
 	fs.UintVarP(&last, "last", "l", 0, "Last `N` pipelines. 0 means no limit")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include pipeline IDs in table output")
-	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 	fs.BoolVar(&renderWithConfigSections, "render-with-config-sections", false, "Render the pipeline config with the attached config sections; if any")
-	formatters.BindFormatFlags(cmd)
 	fs.StringVar(&configFormat, "config-format", string(cloudtypes.ConfigFormatYAML), "Format to get the configuration file from the API (yaml/json/ini).")
+	formatters.BindFormatFlags(cmd)
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", cfg.Completer.CompleteEnvironments)
 	_ = cmd.RegisterFlagCompletionFunc("core-instance", cfg.Completer.CompleteCoreInstances)

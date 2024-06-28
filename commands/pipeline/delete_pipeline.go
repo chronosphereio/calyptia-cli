@@ -62,23 +62,13 @@ func NewCmdDeletePipeline(cfg *config.Config) *cobra.Command {
 func NewCmdDeletePipelines(cfg *config.Config) *cobra.Command {
 	var confirmed bool
 	var coreInstanceKey string
-	var environmentKey string
 
 	cmd := &cobra.Command{
 		Use:   "pipelines",
 		Short: "Delete many pipelines from a core instance",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			var environmentID string
-			if environmentKey != "" {
-				var err error
-				environmentID, err = cfg.Completer.LoadEnvironmentID(ctx, environmentKey)
-				if err != nil {
-					return err
-				}
-			}
-
-			coreInstanceID, err := cfg.Completer.LoadCoreInstanceID(ctx, coreInstanceKey, environmentID)
+			coreInstanceID, err := cfg.Completer.LoadCoreInstanceID(ctx, coreInstanceKey)
 			if err != nil {
 				return err
 			}
@@ -130,7 +120,6 @@ func NewCmdDeletePipelines(cfg *config.Config) *cobra.Command {
 	fs := cmd.Flags()
 	fs.BoolVarP(&confirmed, "yes", "y", isNonInteractive, "Confirm installation if previous installation found")
 	fs.StringVar(&coreInstanceKey, "core-instance", "", "Parent core-instance ID or name")
-	fs.StringVar(&environmentKey, "environment", "", "Calyptia environment ID or name")
 
 	_ = cmd.RegisterFlagCompletionFunc("core-instance", cfg.Completer.CompleteCoreInstances)
 	_ = cmd.RegisterFlagCompletionFunc("environment", cfg.Completer.CompleteEnvironments)

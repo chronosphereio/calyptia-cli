@@ -32,7 +32,7 @@ func NewCmdCreateCoreInstanceFile(cfg *config.Config) *cobra.Command {
 				return err
 			}
 
-			instanceID, err := cfg.Completer.LoadCoreInstanceID(ctx, instanceKey, "")
+			instanceID, err := cfg.Completer.LoadCoreInstanceID(ctx, instanceKey)
 			if err != nil {
 				return err
 			}
