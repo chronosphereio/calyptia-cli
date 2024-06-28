@@ -15,7 +15,6 @@ import (
 	"github.com/calyptia/api/types"
 	"github.com/calyptia/cli/formatters"
 	"github.com/calyptia/cli/pointer"
-	"github.com/calyptia/cli/slice"
 	"github.com/calyptia/cli/uuid"
 	"github.com/calyptia/core-images-index/go-index"
 	fluentbitconfig "github.com/calyptia/go-fluentbit-config/v2"
@@ -819,7 +818,8 @@ func pluginNames(kind string) []string {
 		}
 	}
 
-	return slice.Unique(out)
+	slices.Sort(out)
+	return slices.Compact(out)
 }
 
 // CoreInstanceKeys returns unique aggregator names first and then IDs.
@@ -931,6 +931,5 @@ func pluginProps(kind, name string) []string {
 	}
 
 	slices.Sort(out)
-	out = slices.Compact(out)
-	return slice.Unique(out)
+	return slices.Compact(out)
 }
