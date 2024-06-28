@@ -115,7 +115,17 @@ jobs:
         continue-on-error: true
         if: always()
         run: |
-          kubectl get pods -A -l core-pipeline -o jsonpath='{.items[0].spec.containers..image}'
+          kubectl get pods -A -l core-pipeline -o jsonpath='{.items[*].spec.containers..image}'
+        shell: bash
+
+      - name: Dump debug
+        continue-on-error: true
+        if: always()
+        run: |
+          kubectl get events -A
+          kubectl get pods -A
+          kubectl get deployments -A
+          kubectl describe pods -A -l core-pipeline
         shell: bash
 
       - name: list images in cluster
