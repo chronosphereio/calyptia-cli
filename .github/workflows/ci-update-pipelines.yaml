@@ -123,8 +123,8 @@ jobs:
         if: always()
         run: |
           kubectl get events -A
-          kubectl get pods -A
-          kubectl get deployments -A
+          kubectl get pods -A --show-labels
+          kubectl get deployments -A --show-labels
           kubectl describe pods -A -l core-pipeline
         shell: bash
 
