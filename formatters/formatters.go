@@ -18,7 +18,6 @@ import (
 	"github.com/spf13/pflag"
 
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/helpers"
 )
 
 type OutputFormat string
@@ -124,7 +123,7 @@ func BindFormatFlags(cmd *cobra.Command) {
 }
 
 func ConfigSectionKindName(cs types.ConfigSection) string {
-	return fmt.Sprintf("%s:%s", cs.Kind, helpers.PairsName(cs.Properties))
+	return fmt.Sprintf("%s:%s", cs.Kind, PairsName(cs.Properties))
 }
 
 func RenderEndpointsTable(w io.Writer, pp []types.PipelinePort, showIDs bool) {
@@ -261,4 +260,11 @@ func FmtTime(t time.Time) string {
 
 func FmtDuration(d time.Duration) string {
 	return durafmt.ParseShort(d).LimitFirstN(1).String()
+}
+
+func PairsName(pp types.Pairs) string {
+	if v, ok := pp.Get("Name"); ok {
+		return fmt.Sprintf("%v", v)
+	}
+	return ""
 }

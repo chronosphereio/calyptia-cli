@@ -11,7 +11,6 @@ import (
 	"github.com/calyptia/api/types"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
-	"github.com/calyptia/cli/helpers"
 )
 
 func NewCmdUpdateConfigSection(config *cfg.Config) *cobra.Command {
@@ -39,7 +38,7 @@ func NewCmdUpdateConfigSection(config *cfg.Config) *cobra.Command {
 
 			props := propsFromSlice(propsSlice)
 			props = append(types.Pairs{
-				{Key: "name", Value: helpers.PairsName(cs.Properties)},
+				{Key: "name", Value: formatters.PairsName(cs.Properties)},
 			}, props...)
 
 			updated, err := config.Cloud.UpdateConfigSection(ctx, configSectionID, types.UpdateConfigSection{

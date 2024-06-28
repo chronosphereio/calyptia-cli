@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"slices"
 	"strings"
 	"sync"
 
@@ -13,7 +14,6 @@ import (
 	cloudclient "github.com/calyptia/api/client"
 	"github.com/calyptia/api/types"
 	"github.com/calyptia/cli/formatters"
-	"github.com/calyptia/cli/helpers"
 	"github.com/calyptia/cli/pointer"
 	"github.com/calyptia/cli/slice"
 	"github.com/calyptia/cli/uuid"
@@ -45,7 +45,7 @@ func (c *Completer) CompletePluginProps(cmd *cobra.Command, args []string, toCom
 		}
 
 		kind = string(cs.Kind)
-		name = helpers.PairsName(cs.Properties)
+		name = formatters.PairsName(cs.Properties)
 	} else {
 		var err error
 		kind, err = cmd.Flags().GetString("kind")
@@ -59,7 +59,7 @@ func (c *Completer) CompletePluginProps(cmd *cobra.Command, args []string, toCom
 		}
 	}
 
-	return helpers.PluginProps(kind, name), cobra.ShellCompDirectiveNoFileComp
+	return pluginProps(kind, name), cobra.ShellCompDirectiveNoFileComp
 }
 
 func (c *Completer) CompleteConfigSections(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -882,4 +882,55 @@ func CompleteResourceProfiles(cmd *cobra.Command, args []string, toComplete stri
 
 func CompleteOutputFormat(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
 	return []string{"table", "json", "yaml", "go-template"}, cobra.ShellCompDirectiveNoFileComp
+}
+
+// pluginProps -
+// TODO: exclude already defined property.
+func pluginProps(kind, name string) []string {
+	if kind == "" || name == "" {
+		return nil
+	}
+
+	var out []string
+	add := func(sec fluentbitconfig.SchemaSection) {
+		if !strings.EqualFold(sec.Name, name) {
+			return
+		}
+
+		for _, p := range sec.Properties.Options {
+			out = append(out, p.Name)
+		}
+		for _, p := range sec.Properties.Networking {
+			out = append(out, p.Name)
+		}
+		for _, p := range sec.Properties.NetworkTLS {
+			out = append(out, p.Name)
+		}
+	}
+	switch kind {
+	case "input":
+		for _, in := range fluentbitconfig.DefaultSchema.Inputs {
+			add(in)
+		}
+	case "filter":
+		for _, f := range fluentbitconfig.DefaultSchema.Filters {
+			add(f)
+		}
+	case "output":
+		for _, o := range fluentbitconfig.DefaultSchema.Outputs {
+			add(o)
+		}
+	}
+
+	// common properties that are not in the schema.
+	out = append(out, "Alias")
+	if kind == "input" {
+		out = append(out, "Tag")
+	} else if kind == "filter" || kind == "output" {
+		out = append(out, "Match", "Match_Regex")
+	}
+
+	slices.Sort(out)
+	out = slices.Compact(out)
+	return slice.Unique(out)
 }
