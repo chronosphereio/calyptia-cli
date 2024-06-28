@@ -237,18 +237,6 @@ func solveNamespaceCreation(createNamespace bool, fullFile string, namespace str
 	return out
 }
 
-func solveNamespaceCreationForDelete(fullFile string, namespace string) string {
-	if namespace == "" {
-		splitFile := strings.Split(fullFile, "---\n")
-		return strings.Join(splitFile[1:], "---\n")
-	}
-	if _, err := strconv.Atoi(namespace); err == nil {
-		namespace = fmt.Sprintf(`"%s"`, namespace)
-	}
-	temp := strings.ReplaceAll(fullFile, "serviceAccountName: calyptia-core", fmt.Sprintf("serviceAccountName: %s", namespace))
-	return strings.ReplaceAll(temp, "name: calyptia-core", fmt.Sprintf("name: %s", namespace))
-}
-
 func addImage(coreDockerImage, coreInstanceVersion, file string) (string, error) {
 	if coreInstanceVersion != "" {
 		const pattern string = `image:\s*ghcr\.io/calyptia/core-operator:[^\n\r]*`
