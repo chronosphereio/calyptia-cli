@@ -25,6 +25,41 @@ type Completer struct {
 	ProjectID string
 }
 
+func (c *Completer) complete(resource cloudtypes.SearchResource, cmd *cobra.Command, _ []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	ctx := cmd.Context()
+	results, err := c.Cloud.Search(ctx, cloudtypes.SearchQuery{
+		ProjectID: c.ProjectID,
+		Resource:  resource,
+		Term:      toComplete,
+	})
+	if err != nil {
+		cobra.CompErrorln(err.Error())
+		return nil, cobra.ShellCompDirectiveError
+	}
+
+	return searchResultsNames(results), cobra.ShellCompDirectiveNoFileComp
+}
+
+func (c *Completer) CompleteAgents(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	return c.complete(cloudtypes.SearchResourceAgent, cmd, args, toComplete)
+}
+
+func (c *Completer) CompleteFleets(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	return c.complete(cloudtypes.SearchResourceFleet, cmd, args, toComplete)
+}
+
+func (c *Completer) CompleteCoreInstances(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	return c.complete(cloudtypes.SearchResourceCoreInstance, cmd, args, toComplete)
+}
+
+func (c *Completer) CompletePipelines(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	return c.complete(cloudtypes.SearchResourcePipeline, cmd, args, toComplete)
+}
+
+func (c *Completer) CompleteClusterObjects(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	return c.complete(cloudtypes.SearchResourceClusterObject, cmd, args, toComplete)
+}
+
 func (c *Completer) CompletePluginProps(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	var kind, name string
 
@@ -33,13 +68,13 @@ func (c *Completer) CompletePluginProps(cmd *cobra.Command, args []string, toCom
 		key := args[0]
 		id, err := c.LoadConfigSectionID(ctx, key)
 		if err != nil {
-			cobra.CompError(err.Error())
+			cobra.CompErrorln(err.Error())
 			return nil, cobra.ShellCompDirectiveError
 		}
 
 		cs, err := c.Cloud.ConfigSection(ctx, id)
 		if err != nil {
-			cobra.CompError(fmt.Sprintf("cloud: %v", err))
+			cobra.CompErrorln(err.Error())
 			return nil, cobra.ShellCompDirectiveError
 		}
 
@@ -65,7 +100,7 @@ func (c *Completer) CompleteConfigSections(cmd *cobra.Command, args []string, to
 	ctx := cmd.Context()
 	cc, err := c.Cloud.ConfigSections(ctx, c.ProjectID, cloudtypes.ConfigSectionsParams{})
 	if err != nil {
-		cobra.CompErrorln(fmt.Sprintf("cloud: %v", err))
+		cobra.CompErrorln(err.Error())
 		return nil, cobra.ShellCompDirectiveError
 	}
 
@@ -80,7 +115,7 @@ func (c *Completer) CompleteMembers(cmd *cobra.Command, args []string, toComplet
 	ctx := cmd.Context()
 	mm, err := c.Cloud.Members(ctx, c.ProjectID, cloudtypes.MembersParams{})
 	if err != nil {
-		cmd.PrintErrf("fetch members: %v\n", err)
+		cobra.CompErrorln(err.Error())
 		return nil, cobra.ShellCompDirectiveError
 	}
 
@@ -100,6 +135,7 @@ func (c *Completer) CompleteEnvironments(cmd *cobra.Command, args []string, toCo
 	ctx := cmd.Context()
 	aa, err := c.Cloud.Environments(ctx, c.ProjectID, cloudtypes.EnvironmentsParams{})
 	if err != nil {
+		cobra.CompErrorln(err.Error())
 		return nil, cobra.ShellCompDirectiveError
 	}
 
@@ -110,45 +146,17 @@ func (c *Completer) CompleteEnvironments(cmd *cobra.Command, args []string, toCo
 	return environmentNames(aa.Items), cobra.ShellCompDirectiveNoFileComp
 }
 
-func (c *Completer) CompleteFleets(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	ctx := cmd.Context()
-	ff, err := c.Cloud.Fleets(ctx, cloudtypes.FleetsParams{
-		ProjectID: c.ProjectID,
-	})
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
-
-	if len(ff.Items) == 0 {
-		return nil, cobra.ShellCompDirectiveNoFileComp
-	}
-
-	return fleetKeys(ff.Items), cobra.ShellCompDirectiveNoFileComp
-}
-
-func (c *Completer) CompleteCoreInstances(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	ctx := cmd.Context()
-	aa, err := c.Cloud.CoreInstances(ctx, c.ProjectID, cloudtypes.CoreInstancesParams{})
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
-
-	if len(aa.Items) == 0 {
-		return nil, cobra.ShellCompDirectiveNoFileComp
-	}
-
-	return CoreInstanceKeys(aa.Items), cobra.ShellCompDirectiveNoFileComp
-}
-
 func (c *Completer) CompleteCoreContainerVersion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	ctx := cmd.Context()
 	containerIndex, err := index.NewContainer()
 	if err != nil {
+		cobra.CompErrorln(err.Error())
 		return nil, cobra.ShellCompDirectiveError
 	}
 
 	vv, err := containerIndex.All(ctx)
 	if err != nil {
+		cobra.CompErrorln(err.Error())
 		return nil, cobra.ShellCompDirectiveError
 	}
 
@@ -159,51 +167,24 @@ func (c *Completer) CompleteCoreOperatorVersion(cmd *cobra.Command, args []strin
 	ctx := cmd.Context()
 	operatorIndex, err := index.NewOperator()
 	if err != nil {
+		cobra.CompErrorln(err.Error())
 		return nil, cobra.ShellCompDirectiveError
 	}
 
 	vv, err := operatorIndex.All(ctx)
 	if err != nil {
+		cobra.CompErrorln(err.Error())
 		return nil, cobra.ShellCompDirectiveError
 	}
 
 	return vv, cobra.ShellCompDirectiveNoFileComp
 }
 
-func (c *Completer) CompletePipelines(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	ctx := cmd.Context()
-	pp, err := c.FetchAllPipelines(ctx)
-	if err != nil {
-		cobra.CompError(err.Error())
-		return nil, cobra.ShellCompDirectiveError
-	}
-
-	if pp == nil {
-		return nil, cobra.ShellCompDirectiveNoFileComp
-	}
-
-	return PipelinesKeys(pp), cobra.ShellCompDirectiveNoFileComp
-}
-
-func (c *Completer) CompleteClusterObjects(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	ctx := cmd.Context()
-	pp, err := c.FetchAllClusterObjects(ctx)
-	if err != nil {
-		cobra.CompError(err.Error())
-		return nil, cobra.ShellCompDirectiveError
-	}
-
-	if pp == nil {
-		return nil, cobra.ShellCompDirectiveNoFileComp
-	}
-
-	return clusterObjectsKeys(pp), cobra.ShellCompDirectiveNoFileComp
-}
-
 func (c *Completer) CompleteTraceSessions(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	ctx := cmd.Context()
 	ss, err := c.fetchAllTraceSessions(ctx)
 	if err != nil {
+		cobra.CompErrorln(err.Error())
 		return nil, cobra.ShellCompDirectiveError
 	}
 
@@ -245,12 +226,15 @@ func (c *Completer) LoadCoreInstanceID(ctx context.Context, key string) (string,
 }
 
 func (c *Completer) fetchAllTraceSessions(ctx context.Context) ([]cloudtypes.TraceSession, error) {
-	pp, err := c.FetchAllPipelines(ctx)
+	pipelines, err := c.Cloud.Search(ctx, cloudtypes.SearchQuery{
+		ProjectID: c.ProjectID,
+		Resource:  cloudtypes.SearchResourcePipeline,
+	})
 	if err != nil {
 		return nil, err
 	}
 
-	if len(pp) == 0 {
+	if len(pipelines) == 0 {
 		return nil, nil
 	}
 
@@ -258,7 +242,7 @@ func (c *Completer) fetchAllTraceSessions(ctx context.Context) ([]cloudtypes.Tra
 	var mu sync.Mutex
 
 	g, gctx := errgroup.WithContext(ctx)
-	for _, pip := range pp {
+	for _, pip := range pipelines {
 		a := pip
 		g.Go(func() error {
 			got, err := c.Cloud.TraceSessions(gctx, a.ID, cloudtypes.TraceSessionsParams{})
@@ -284,16 +268,19 @@ func (c *Completer) fetchAllTraceSessions(ctx context.Context) ([]cloudtypes.Tra
 func (c *Completer) CompletePipelinePlugins(ctx context.Context, pipelineKey string, cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	pipelineID, err := c.LoadPipelineID(ctx, pipelineKey)
 	if err != nil {
+		cobra.CompErrorln(err.Error())
 		return nil, cobra.ShellCompDirectiveError
 	}
 
 	pipeline, err := c.Cloud.Pipeline(ctx, pipelineID, cloudtypes.PipelineParams{})
 	if err != nil {
+		cobra.CompErrorln(err.Error())
 		return nil, cobra.ShellCompDirectiveError
 	}
 
 	conf, err := fluentbitconfig.ParseAs(pipeline.Config.RawConfig, fluentbitconfig.Format(pipeline.Config.ConfigFormat))
 	if err != nil {
+		cobra.CompErrorln(err.Error())
 		return nil, cobra.ShellCompDirectiveError
 	}
 
@@ -315,24 +302,14 @@ func (c *Completer) CompletePipelinePlugins(ctx context.Context, pipelineKey str
 	return out, cobra.ShellCompDirectiveNoFileComp
 }
 
-func (c *Completer) CompleteAgents(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	ctx := cmd.Context()
-	aa, err := c.Cloud.Agents(ctx, c.ProjectID, cloudtypes.AgentsParams{})
-	if err != nil {
-		return nil, cobra.ShellCompDirectiveError
-	}
-
-	if len(aa.Items) == 0 {
-		return nil, cobra.ShellCompDirectiveNoFileComp
-	}
-
-	return AgentsKeys(aa.Items), cobra.ShellCompDirectiveNoFileComp
-}
-
 func (c *Completer) CompleteSecretIDs(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	ctx := cmd.Context()
-	pipelines, err := c.FetchAllPipelines(ctx)
+	pipelines, err := c.Cloud.Search(ctx, cloudtypes.SearchQuery{
+		ProjectID: c.ProjectID,
+		Resource:  cloudtypes.SearchResourcePipeline,
+	})
 	if err != nil {
+		cobra.CompErrorln(err.Error())
 		return nil, cobra.ShellCompDirectiveError
 	}
 
@@ -356,6 +333,7 @@ func (c *Completer) CompleteSecretIDs(cmd *cobra.Command, args []string, toCompl
 	}
 
 	if err := g.Wait(); err != nil {
+		cobra.CompErrorln(err.Error())
 		return nil, cobra.ShellCompDirectiveError
 	}
 
@@ -374,7 +352,7 @@ func (c *Completer) CompleteSecretIDs(cmd *cobra.Command, args []string, toCompl
 func (c *Completer) LoadConfigSectionID(ctx context.Context, key string) (string, error) {
 	cc, err := c.Cloud.ConfigSections(ctx, c.ProjectID, cloudtypes.ConfigSectionsParams{})
 	if err != nil {
-		return "", fmt.Errorf("cloud: %w", err)
+		return "", err
 	}
 
 	if len(cc.Items) == 0 {
@@ -426,229 +404,106 @@ func (c *Completer) LoadEnvironmentID(ctx context.Context, environmentName strin
 }
 
 func (c *Completer) LoadPipelineID(ctx context.Context, pipelineKey string) (string, error) {
-	pp, err := c.Cloud.Pipelines(ctx, cloudtypes.PipelinesParams{
-		Name:      &pipelineKey,
-		Last:      pointer.From(uint(2)),
-		ProjectID: &c.ProjectID,
+	results, err := c.Cloud.Search(ctx, cloudtypes.SearchQuery{
+		ProjectID: c.ProjectID,
+		Resource:  cloudtypes.SearchResourcePipeline,
+		Term:      pipelineKey,
 	})
 	if err != nil {
 		return "", err
 	}
 
-	if len(pp.Items) != 1 && !uuid.Valid(pipelineKey) {
-		if len(pp.Items) != 0 {
-			return "", fmt.Errorf("ambiguous pipeline name %q, use ID instead", pipelineKey)
-		}
-
+	if len(results) == 0 {
 		return "", fmt.Errorf("could not find pipeline %q", pipelineKey)
 	}
 
-	if len(pp.Items) == 1 {
-		return pp.Items[0].ID, nil
+	if len(results) != 1 && !uuid.Valid(pipelineKey) {
+		return "", fmt.Errorf("ambiguous pipeline name %q, use ID instead", pipelineKey)
+	}
+
+	if len(results) == 1 {
+		return results[0].ID, nil
 	}
 
 	return pipelineKey, nil
 }
 
-func (c *Completer) FetchAllPipelines(ctx context.Context) ([]cloudtypes.Pipeline, error) {
-	aa, err := c.Cloud.CoreInstances(ctx, c.ProjectID, cloudtypes.CoreInstancesParams{})
-	if err != nil {
-		return nil, fmt.Errorf("could not prefetch core-instances: %w", err)
-	}
-
-	if len(aa.Items) == 0 {
-		return nil, nil
-	}
-
-	var pipelines []cloudtypes.Pipeline
-	var mu sync.Mutex
-
-	g, gctx := errgroup.WithContext(ctx)
-	for _, a := range aa.Items {
-		a := a
-		g.Go(func() error {
-			got, err := c.Cloud.Pipelines(gctx, cloudtypes.PipelinesParams{
-				CoreInstanceID: &a.ID,
-			})
-			if err != nil {
-				return err
-			}
-
-			mu.Lock()
-			pipelines = append(pipelines, got.Items...)
-			mu.Unlock()
-
-			return nil
-		})
-	}
-
-	if err := g.Wait(); err != nil {
-		return nil, err
-	}
-
-	var uniquePipelines []cloudtypes.Pipeline
-	pipelineIDs := map[string]struct{}{}
-	for _, pip := range pipelines {
-		if _, ok := pipelineIDs[pip.ID]; !ok {
-			uniquePipelines = append(uniquePipelines, pip)
-			pipelineIDs[pip.ID] = struct{}{}
-		}
-	}
-
-	return uniquePipelines, nil
-}
-
 func (c *Completer) LoadFleetID(ctx context.Context, key string) (string, error) {
-	ff, err := c.Cloud.Fleets(ctx, cloudtypes.FleetsParams{
+	results, err := c.Cloud.Search(ctx, cloudtypes.SearchQuery{
 		ProjectID: c.ProjectID,
-		Name:      &key,
-		Last:      pointer.From(uint(1)),
+		Resource:  cloudtypes.SearchResourceFleet,
+		Term:      key,
 	})
 	if err != nil {
-		if strings.Contains(err.Error(), "invalid fleet name") && uuid.Valid(key) {
-			return key, nil
-		}
-
 		return "", err
 	}
 
-	if len(ff.Items) == 1 {
-		return ff.Items[0].ID, nil
+	if len(results) == 0 {
+		return "", fmt.Errorf("could not find fleet %q", key)
 	}
 
-	if !uuid.Valid(key) {
-		return "", fmt.Errorf("could not find fleet %q", key)
+	if len(results) != 1 && !uuid.Valid(key) {
+		return "", fmt.Errorf("ambiguous fleet name %q, use ID instead", key)
+	}
+
+	if len(results) == 1 {
+		return results[0].ID, nil
 	}
 
 	return key, nil
 }
 
-func (c *Completer) LoadAgentID(ctx context.Context, agentKey, environmentID string) (string, error) {
-	var err error
-
-	var params cloudtypes.AgentsParams
-
-	params.Last = pointer.From(uint(2))
-	params.Name = &agentKey
-
-	if environmentID != "" {
-		params.EnvironmentID = &environmentID
-	}
-
-	aa, err := c.Cloud.Agents(ctx, c.ProjectID, params)
+func (c *Completer) LoadAgentID(ctx context.Context, agentKey string) (string, error) {
+	results, err := c.Cloud.Search(ctx, cloudtypes.SearchQuery{
+		ProjectID: c.ProjectID,
+		Resource:  cloudtypes.SearchResourceAgent,
+		Term:      agentKey,
+	})
 	if err != nil {
 		return "", err
 	}
 
-	if len(aa.Items) != 1 && !uuid.Valid(agentKey) {
-		if len(aa.Items) != 0 {
-			return "", fmt.Errorf("ambiguous agent name %q, use ID instead", agentKey)
-		}
+	if len(results) == 0 {
 		return "", fmt.Errorf("could not find agent %q", agentKey)
 	}
 
-	if len(aa.Items) == 1 {
-		return aa.Items[0].ID, nil
+	if len(results) != 1 && !uuid.Valid(agentKey) {
+		return "", fmt.Errorf("ambiguous agent name %q, use ID instead", agentKey)
+	}
+
+	if len(results) == 1 {
+		return results[0].ID, nil
 	}
 
 	return agentKey, nil
 }
 
-func (c *Completer) LoadClusterObjectID(ctx context.Context, key, environmentID string) (string, error) {
-	aa, err := c.FetchAllClusterObjects(ctx)
+func (c *Completer) LoadClusterObjectID(ctx context.Context, key string) (string, error) {
+	results, err := c.Cloud.Search(ctx, cloudtypes.SearchQuery{
+		ProjectID: c.ProjectID,
+		Resource:  cloudtypes.SearchResourceClusterObject,
+		Term:      key,
+	})
 	if err != nil {
 		return "", err
 	}
 
-	objs := clusterObjectsUniqueByName(aa)
-
-	if uuid.Valid(key) {
-		for _, obj := range objs {
-			if obj.ID == key {
-				return obj.ID, nil
-			}
-		}
+	if len(results) == 0 {
+		return "", fmt.Errorf("could not find cluster object %q", key)
 	}
 
-	for _, obj := range objs {
-		if obj.Name == key {
-			return obj.ID, nil
-		}
+	if len(results) != 1 && !uuid.Valid(key) {
+		return "", fmt.Errorf("ambiguous cluster object name %q, use ID instead", key)
 	}
 
-	return "", fmt.Errorf("unable to find unique key")
+	if len(results) == 1 {
+		return results[0].ID, nil
+	}
+
+	return key, nil
 }
 
-func (c *Completer) FetchAllClusterObjects(ctx context.Context) ([]cloudtypes.ClusterObject, error) {
-	aa, err := c.Cloud.CoreInstances(ctx, c.ProjectID, cloudtypes.CoreInstancesParams{})
-	if err != nil {
-		return nil, fmt.Errorf("could not prefetch core-instances: %w", err)
-	}
-
-	if len(aa.Items) == 0 {
-		return nil, nil
-	}
-
-	var clusterobjects []cloudtypes.ClusterObject
-	var mu sync.Mutex
-
-	g, gctx := errgroup.WithContext(ctx)
-	for _, a := range aa.Items {
-		a := a
-		g.Go(func() error {
-			objects, err := c.Cloud.ClusterObjects(gctx, a.ID,
-				cloudtypes.ClusterObjectParams{})
-			if err != nil {
-				return err
-			}
-
-			mu.Lock()
-			clusterobjects = append(clusterobjects, objects.Items...)
-			mu.Unlock()
-
-			return nil
-		})
-	}
-
-	if err := g.Wait(); err != nil {
-		return nil, err
-	}
-
-	var uniqueClusterObjects []cloudtypes.ClusterObject
-	clusterObjectIDs := map[string]struct{}{}
-	for _, coid := range clusterobjects {
-		if _, ok := clusterObjectIDs[coid.ID]; !ok {
-			uniqueClusterObjects = append(uniqueClusterObjects, coid)
-			clusterObjectIDs[coid.ID] = struct{}{}
-		}
-	}
-
-	return uniqueClusterObjects, nil
-}
-
-// ClusterObjectsUnique returns unique cluster object names.
-func clusterObjectsUniqueByName(aa []cloudtypes.ClusterObject) []cloudtypes.ClusterObject {
-	namesCount := map[string]int{}
-	for _, a := range aa {
-		if _, ok := namesCount[a.Name]; !ok {
-			namesCount[a.Name] = 0
-		}
-		namesCount[a.Name]++
-	}
-
-	var out []cloudtypes.ClusterObject
-	for _, a := range aa {
-		for name, count := range namesCount {
-			if a.Name == name && count == 1 {
-				out = append(out, a)
-				break
-			}
-		}
-	}
-	return out
-}
-
-// agentsKeys returns unique agent names first and then IDs.
+// AgentsKeys returns unique agent names first and then IDs.
 func AgentsKeys(aa []cloudtypes.Agent) []string {
 	namesCount := map[string]int{}
 	for _, a := range aa {
@@ -679,40 +534,7 @@ func AgentsKeys(aa []cloudtypes.Agent) []string {
 	return out
 }
 
-// ClusterObjectsKeys returns unique cluster object names first and then IDs.
-func clusterObjectsKeys(aa []cloudtypes.ClusterObject) []string {
-	namesCount := map[string]int{}
-	for _, a := range aa {
-		if _, ok := namesCount[a.Name]; ok {
-			namesCount[a.Name] += 1
-			continue
-		}
-
-		namesCount[a.Name] = 1
-	}
-
-	var out []string
-
-	for _, a := range aa {
-		var nameIsUnique bool
-		for name, count := range namesCount {
-			if a.Name == name && count == 1 {
-				nameIsUnique = true
-				break
-			}
-		}
-		if nameIsUnique {
-			out = append(out, a.Name)
-			continue
-		}
-
-		out = append(out, a.ID)
-	}
-
-	return out
-}
-
-// pipelinesKeys returns unique pipeline names first and then IDs.
+// PipelinesKeys returns unique pipeline names first and then IDs.
 func PipelinesKeys(aa []cloudtypes.Pipeline) []string {
 	namesCount := map[string]int{}
 	for _, a := range aa {
@@ -745,10 +567,10 @@ func PipelinesKeys(aa []cloudtypes.Pipeline) []string {
 	return out
 }
 
-func fleetKeys(ff []cloudtypes.Fleet) []string {
+func searchResultsNames(rr []cloudtypes.SearchResult) []string {
 	var out []string
-	for _, f := range ff {
-		out = append(out, f.Name)
+	for _, r := range rr {
+		out = append(out, r.Name)
 	}
 	return out
 }
@@ -863,16 +685,11 @@ func CompletePluginNames(cmd *cobra.Command, args []string, toComplete string) (
 }
 
 func CompleteResourceProfiles(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	// TODO: complete resource profiles.
 	return []string{
 		cloudtypes.ResourceProfileHighPerformanceGuaranteedDelivery,
 		cloudtypes.ResourceProfileHighPerformanceOptimalThroughput,
 		cloudtypes.ResourceProfileBestEffortLowResource,
 	}, cobra.ShellCompDirectiveNoFileComp
-}
-
-func CompleteOutputFormat(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
-	return []string{"table", "json", "yaml", "go-template"}, cobra.ShellCompDirectiveNoFileComp
 }
 
 func CompletePermissions(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

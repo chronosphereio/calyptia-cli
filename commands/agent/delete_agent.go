@@ -18,7 +18,6 @@ import (
 
 func NewCmdDeleteAgent(cfg *config.Config) *cobra.Command {
 	var confirmed bool
-	var environment string
 
 	cmd := &cobra.Command{
 		Use:               "agent AGENT",
@@ -28,16 +27,7 @@ func NewCmdDeleteAgent(cfg *config.Config) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			agentKey := args[0]
-			var environmentID string
-			if environment != "" {
-				var err error
-				environmentID, err = cfg.Completer.LoadEnvironmentID(ctx, environment)
-				if err != nil {
-					return err
-				}
-			}
-
-			agentID, err := cfg.Completer.LoadAgentID(ctx, agentKey, environmentID)
+			agentID, err := cfg.Completer.LoadAgentID(ctx, agentKey)
 			if err != nil {
 				return err
 			}
@@ -70,9 +60,6 @@ func NewCmdDeleteAgent(cfg *config.Config) *cobra.Command {
 
 	fs := cmd.Flags()
 	fs.BoolVarP(&confirmed, "yes", "y", isNonInteractive, "Confirm deletion")
-	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
-
-	_ = cmd.RegisterFlagCompletionFunc("environment", cfg.Completer.CompleteEnvironments)
 
 	return cmd
 }

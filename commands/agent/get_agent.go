@@ -101,7 +101,6 @@ func NewCmdGetAgents(cfg *config.Config) *cobra.Command {
 func NewCmdGetAgent(cfg *config.Config) *cobra.Command {
 	var showIDs bool
 	var onlyConfig bool
-	var environment string
 
 	cmd := &cobra.Command{
 		Use:               "agent AGENT",
@@ -110,17 +109,8 @@ func NewCmdGetAgent(cfg *config.Config) *cobra.Command {
 		ValidArgsFunction: cfg.Completer.CompleteAgents,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			var environmentID string
-			if environment != "" {
-				var err error
-				environmentID, err = cfg.Completer.LoadEnvironmentID(ctx, environment)
-				if err != nil {
-					return err
-				}
-			}
-
 			agentKey := args[0]
-			agentID, err := cfg.Completer.LoadAgentID(ctx, agentKey, environmentID)
+			agentID, err := cfg.Completer.LoadAgentID(ctx, agentKey)
 			if err != nil {
 				return err
 			}
@@ -165,7 +155,6 @@ func NewCmdGetAgent(cfg *config.Config) *cobra.Command {
 	fs := cmd.Flags()
 	fs.BoolVar(&onlyConfig, "only-config", false, "Only show the agent configuration")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include agent IDs in table output")
-	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 	formatters.BindFormatFlags(cmd)
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", cfg.Completer.CompleteEnvironments)

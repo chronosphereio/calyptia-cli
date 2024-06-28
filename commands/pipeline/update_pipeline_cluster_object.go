@@ -10,7 +10,6 @@ import (
 func NewCmdUpdatePipelineClusterObject(cfg *config.Config) *cobra.Command {
 	var pipelineKey string
 	var clusterObjectKey string
-	var environment string
 	var encrypt bool
 
 	cmd := &cobra.Command{
@@ -18,21 +17,12 @@ func NewCmdUpdatePipelineClusterObject(cfg *config.Config) *cobra.Command {
 		Short: "Update a cluster object from a pipeline by its name or ID.",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			var environmentID string
-			if environment != "" {
-				var err error
-				environmentID, err = cfg.Completer.LoadEnvironmentID(ctx, environment)
-				if err != nil {
-					return err
-				}
-			}
-
 			pipelineID, err := cfg.Completer.LoadPipelineID(ctx, pipelineKey)
 			if err != nil {
 				return err
 			}
 
-			clusterObjectID, err := cfg.Completer.LoadClusterObjectID(ctx, clusterObjectKey, environmentID)
+			clusterObjectID, err := cfg.Completer.LoadClusterObjectID(ctx, clusterObjectKey)
 			if err != nil {
 				return err
 			}

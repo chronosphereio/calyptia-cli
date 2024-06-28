@@ -22,7 +22,7 @@ func NewCmdUpdateAgent(cfg *config.Config) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			agentKey := args[0]
-			agentID, err := cfg.Completer.LoadAgentID(ctx, agentKey, "")
+			agentID, err := cfg.Completer.LoadAgentID(ctx, agentKey)
 			if err != nil {
 				return err
 			}
