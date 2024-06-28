@@ -13,7 +13,6 @@ import (
 	"github.com/calyptia/cli/pointer"
 
 	"github.com/joho/godotenv"
-	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 
@@ -345,7 +344,7 @@ func parseUpdatePipelineSecrets(file, format string) ([]cloud.UpdatePipelineSecr
 		case ".yaml", ".yml":
 			format = "yaml"
 		default:
-			return nil, errors.Errorf("could not determine secrets format: %q", file)
+			return nil, fmt.Errorf("could not determine secrets format: %q", file)
 		}
 	}
 
