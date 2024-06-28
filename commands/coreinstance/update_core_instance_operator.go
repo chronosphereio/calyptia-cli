@@ -161,9 +161,6 @@ func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				return fmt.Errorf("could not update core-instance: to version %s %w", newVersion, err)
 			}
 
-			if err != nil {
-				return err
-			}
 			cmd.Printf("calyptia-core instance version updated to version %s\n", newVersion)
 
 			return nil

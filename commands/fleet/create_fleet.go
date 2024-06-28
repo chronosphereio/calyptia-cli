@@ -3,6 +3,7 @@ package fleet
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"path/filepath"
 	"strings"
 	"text/tabwriter"
@@ -89,7 +90,7 @@ func NewCmdCreateFleet(config *cfg.Config) *cobra.Command {
 }
 
 func readConfig(filename string) (string, error) {
-	out, err := cfg.ReadFile(filename)
+	out, err := os.ReadFile(filename)
 	if err != nil {
 		return "", err
 	}

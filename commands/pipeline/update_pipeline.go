@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"os"
 	"path/filepath"
 	"strings"
 	"text/tabwriter"
@@ -97,7 +98,7 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 
 			var rawConfig string
 			if newConfigFile != "" {
-				b, err := cfg.ReadFile(newConfigFile)
+				b, err := os.ReadFile(newConfigFile)
 				if err != nil {
 					return fmt.Errorf("could not read config file: %w", err)
 				}
@@ -119,7 +120,7 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 				name := filepath.Base(f)
 				name = strings.TrimSuffix(name, filepath.Ext(name))
 				// TODO: better sanitize file name.
-				contents, err := cfg.ReadFile(f)
+				contents, err := os.ReadFile(f)
 				if err != nil {
 					return fmt.Errorf("coult not read file %q: %w", f, err)
 				}
@@ -133,7 +134,7 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 
 			var metadata *json.RawMessage
 			if metadataFile != "" {
-				b, err := cfg.ReadFile(metadataFile)
+				b, err := os.ReadFile(metadataFile)
 				if err != nil {
 					return fmt.Errorf("could not read metadata file: %w", err)
 				}

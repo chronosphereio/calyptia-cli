@@ -2,6 +2,7 @@ package pipeline
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -21,7 +22,7 @@ func NewCmdUpdatePipelineFile(config *cfg.Config) *cobra.Command {
 		Short: "Update a file from a pipeline by its name",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			contents, err := cfg.ReadFile(file)
+			contents, err := os.ReadFile(file)
 			if err != nil {
 				return err
 			}

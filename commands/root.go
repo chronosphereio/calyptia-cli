@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"cmp"
 	"errors"
 	"fmt"
 	"net/http"
@@ -93,8 +94,8 @@ func NewRootCmd() *cobra.Command {
 	cmd.SetOut(os.Stdout)
 
 	fs := cmd.PersistentFlags()
-	fs.StringVar(&cloudURLStr, "cloud-url", config.Env("CALYPTIA_CLOUD_URL", cloudURLStr), "Calyptia Cloud URL")
-	fs.StringVar(&token, "token", config.Env("CALYPTIA_CLOUD_TOKEN", token), "Calyptia Cloud Project token")
+	fs.StringVar(&cloudURLStr, "cloud-url", cmp.Or(os.Getenv("CALYPTIA_CLOUD_URL"), cloudURLStr), "Calyptia Cloud URL")
+	fs.StringVar(&token, "token", cmp.Or(os.Getenv("CALYPTIA_CLOUD_TOKEN"), token), "Calyptia Cloud Project token")
 	fs.Lookup("token").DefValue = "check with the 'calyptia config current_token' command"
 
 	cmd.AddCommand(

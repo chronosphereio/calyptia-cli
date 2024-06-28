@@ -3,6 +3,7 @@ package pipeline
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"path/filepath"
 	"strings"
 	"text/tabwriter"
@@ -29,7 +30,7 @@ func NewCmdCreatePipelineFile(config *cfg.Config) *cobra.Command {
 			name := filepath.Base(file)
 			name = strings.TrimSuffix(name, filepath.Ext(name))
 
-			contents, err := cfg.ReadFile(file)
+			contents, err := os.ReadFile(file)
 			if err != nil {
 				return err
 			}

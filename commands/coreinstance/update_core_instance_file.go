@@ -3,6 +3,7 @@ package coreinstance
 import (
 	"encoding/json"
 	"errors"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -27,7 +28,7 @@ func NewCmdUpdateCoreInstanceFile(config *cfg.Config) *cobra.Command {
 			ctx := cmd.Context()
 			name := filepath.Base(file)
 			name = strings.TrimSuffix(name, filepath.Ext(name))
-			contents, err := cfg.ReadFile(file)
+			contents, err := os.ReadFile(file)
 			if err != nil {
 				return err
 			}

@@ -3,6 +3,7 @@ package resourceprofile
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"strings"
 	"text/tabwriter"
 
@@ -56,7 +57,7 @@ func NewCmdCreateResourceProfile(config *cfg.Config) *cobra.Command {
 		Short: "Create a new resource profile attached to a core-instance",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			rawSpec, err := cfg.ReadFile(specFile)
+			rawSpec, err := os.ReadFile(specFile)
 			if err != nil {
 				return fmt.Errorf("could not read spec file: %w", err)
 			}

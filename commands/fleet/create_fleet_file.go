@@ -3,6 +3,7 @@ package fleet
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"path/filepath"
 	"strings"
 	"text/tabwriter"
@@ -27,7 +28,7 @@ func NewCmdCreateFleetFile(config *cfg.Config) *cobra.Command {
 			ctx := cmd.Context()
 			name := filepath.Base(file)
 
-			contents, err := cfg.ReadFile(file)
+			contents, err := os.ReadFile(file)
 			if err != nil {
 				return err
 			}

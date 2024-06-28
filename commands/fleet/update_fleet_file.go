@@ -2,6 +2,7 @@ package fleet
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 
 	"github.com/spf13/cobra"
@@ -19,7 +20,7 @@ func NewCmdUpdateFleetFile(config *cfg.Config) *cobra.Command {
 		Short: "Update a file from a fleet by its name",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			contents, err := cfg.ReadFile(file)
+			contents, err := os.ReadFile(file)
 			if err != nil {
 				return err
 			}
