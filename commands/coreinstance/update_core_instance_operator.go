@@ -12,8 +12,8 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/commands/utils"
 	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/coreversions"
 	"github.com/calyptia/cli/k8s"
 	"github.com/calyptia/core-images-index/go-index"
 )
@@ -110,7 +110,7 @@ func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 			}
 
 			if newVersion == "" {
-				newVersion = utils.DefaultCoreOperatorFromCloudDockerImageTag
+				newVersion = coreversions.DefaultCoreOperatorFromCloudDockerImageTag
 			}
 			var clientSet kubernetes.Interface
 			if testClientSet != nil {

@@ -34,7 +34,7 @@ import (
 	k8sclient "sigs.k8s.io/controller-runtime/pkg/client"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/commands/utils"
+	"github.com/calyptia/cli/coreversions"
 )
 
 type objectType string
@@ -524,7 +524,7 @@ func (client *Client) UpdateSyncDeploymentByLabel(ctx context.Context, label str
 
 	for i, container := range deployment.Spec.Template.Spec.Containers {
 		if strings.Contains(container.Name, "to-cloud") {
-			deployment.Spec.Template.Spec.Containers[i].Image = fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorToCloudDockerImage, params.Image)
+			deployment.Spec.Template.Spec.Containers[i].Image = fmt.Sprintf("%s:%s", coreversions.DefaultCoreOperatorToCloudDockerImage, params.Image)
 			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncTLSVerifyEnvVar, strconv.FormatBool(!params.NoTLSVerify))
 			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncCloudProxy, params.CloudProxy)
 			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncNoProxy, params.NoProxy)
@@ -533,7 +533,7 @@ func (client *Client) UpdateSyncDeploymentByLabel(ctx context.Context, label str
 			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, metrics, strconv.FormatBool(params.Metrics))
 		}
 		if strings.Contains(container.Name, "from-cloud") {
-			deployment.Spec.Template.Spec.Containers[i].Image = fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorFromCloudDockerImage, params.Image)
+			deployment.Spec.Template.Spec.Containers[i].Image = fmt.Sprintf("%s:%s", coreversions.DefaultCoreOperatorFromCloudDockerImage, params.Image)
 			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncTLSVerifyEnvVar, strconv.FormatBool(!params.NoTLSVerify))
 			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncCloudProxy, params.CloudProxy)
 			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncNoProxy, params.NoProxy)

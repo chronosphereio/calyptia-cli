@@ -17,9 +17,9 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/commands/utils"
 	"github.com/calyptia/cli/commands/version"
 	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/coreversions"
 	"github.com/calyptia/cli/k8s"
 )
 
@@ -169,7 +169,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 
 			// Only set the version if != latest, otherwise use the default value
 			// for registering this core instance.
-			if operatorVersion != utils.LatestVersion {
+			if operatorVersion != coreversions.Latest {
 				coreInstanceParams.Version = operatorVersion
 			}
 
@@ -265,19 +265,19 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 			}
 
 			if coreDockerToCloudImage == "" {
-				coreDockerToCloudImageTag := utils.DefaultCoreOperatorToCloudDockerImageTag
+				coreDockerToCloudImageTag := coreversions.DefaultCoreOperatorToCloudDockerImageTag
 				if operatorVersion != "" {
 					coreDockerToCloudImageTag = operatorVersion
 				}
-				coreDockerToCloudImage = fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorToCloudDockerImage, coreDockerToCloudImageTag)
+				coreDockerToCloudImage = fmt.Sprintf("%s:%s", coreversions.DefaultCoreOperatorToCloudDockerImage, coreDockerToCloudImageTag)
 			}
 
 			if coreDockerFromCloudImage == "" {
-				coreDockerFromCloudImageTag := utils.DefaultCoreOperatorFromCloudDockerImageTag
+				coreDockerFromCloudImageTag := coreversions.DefaultCoreOperatorFromCloudDockerImageTag
 				if operatorVersion != "" {
 					coreDockerFromCloudImageTag = operatorVersion
 				}
-				coreDockerFromCloudImage = fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorFromCloudDockerImage, coreDockerFromCloudImageTag)
+				coreDockerFromCloudImage = fmt.Sprintf("%s:%s", coreversions.DefaultCoreOperatorFromCloudDockerImage, coreDockerFromCloudImageTag)
 			}
 
 			syncParams := k8s.DeployCoreOperatorSync{

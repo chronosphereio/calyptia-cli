@@ -12,21 +12,19 @@ import (
 	"strings"
 	"time"
 
-	"gopkg.in/yaml.v3"
-	k8serrors "k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/tools/clientcmd"
-
-	"github.com/calyptia/cli/commands/utils"
-	"github.com/calyptia/cli/confirm"
-
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
+	"gopkg.in/yaml.v3"
 	apiv1 "k8s.io/api/core/v1"
+	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/component-base/logs"
 	kubectl "k8s.io/kubectl/pkg/cmd"
 
+	"github.com/calyptia/cli/confirm"
+	"github.com/calyptia/cli/coreversions"
 	"github.com/calyptia/cli/k8s"
 )
 
@@ -148,7 +146,7 @@ func NewCmdInstall() *cobra.Command {
 	fs.BoolVar(&waitReady, "wait", false, "Wait for the core instance to be ready before returning")
 	fs.DurationVar(&waitTimeout, "timeout", time.Second*30, "Wait timeout")
 	fs.StringVar(&coreInstanceVersion, "version", "", "Core instance version")
-	fs.StringVar(&coreDockerImage, "image", utils.DefaultCoreOperatorDockerImage, "Calyptia core manager docker image to use (fully composed docker image).")
+	fs.StringVar(&coreDockerImage, "image", coreversions.DefaultCoreOperatorDockerImage, "Calyptia core manager docker image to use (fully composed docker image).")
 	fs.BoolVar(&externalTrafficPolicyLocal, "external-traffic-policy-local", false, "Set ExternalTrafficPolicy to local for all services used by core operator pipelines.")
 	_ = cmd.Flags().MarkHidden("image")
 	clientcmd.BindOverrideFlags(configOverrides, fs, clientcmd.RecommendedConfigOverrideFlags("kube-"))

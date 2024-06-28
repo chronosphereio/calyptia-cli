@@ -23,7 +23,6 @@ require (
 )
 
 require (
-	code.cloudfoundry.org/bytefmt v0.0.0-20240625174231-fca5dc407bce // indirect
 	github.com/Azure/go-ansiterm v0.0.0-20230124172434-306776ec8161 // indirect
 	github.com/MakeNowJust/heredoc v1.0.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect

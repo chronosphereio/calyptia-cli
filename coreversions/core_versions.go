@@ -1,7 +1,7 @@
-package utils
+package coreversions
 
 const (
-	LatestVersion                  = "latest"
+	Latest                         = "latest"
 	DefaultCoreOperatorDockerImage = "ghcr.io/calyptia/core-operator"
 	// DefaultCoreOperatorDockerImageTag not manually modified, CI should switch this version on every new release.
 	DefaultCoreOperatorDockerImageTag = "v2.14.0"

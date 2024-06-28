@@ -8,18 +8,16 @@ import (
 	"strings"
 	"time"
 
+	semver "github.com/hashicorp/go-version"
+	"github.com/spf13/cobra"
+	apiv1 "k8s.io/api/core/v1"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 
-	"github.com/calyptia/cli/commands/utils"
-	"github.com/calyptia/core-images-index/go-index"
-
-	semver "github.com/hashicorp/go-version"
-	"github.com/spf13/cobra"
-	apiv1 "k8s.io/api/core/v1"
-
+	"github.com/calyptia/cli/coreversions"
 	"github.com/calyptia/cli/k8s"
+	"github.com/calyptia/core-images-index/go-index"
 )
 
 const (
@@ -106,10 +104,10 @@ func NewCmdUpdate() *cobra.Command {
 			}
 
 			if coreOperatorVersion == "" {
-				coreOperatorVersion = utils.DefaultCoreOperatorDockerImageTag
+				coreOperatorVersion = coreversions.DefaultCoreOperatorDockerImageTag
 			}
 
-			manifest, err := installManifest(namespace, utils.DefaultCoreOperatorDockerImage, coreOperatorVersion, k8serrors.IsNotFound(err), externalTrafficPolicyLocal)
+			manifest, err := installManifest(namespace, coreversions.DefaultCoreOperatorDockerImage, coreOperatorVersion, k8serrors.IsNotFound(err), externalTrafficPolicyLocal)
 			if err != nil {
 				return err
 			}
