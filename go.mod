@@ -2,16 +2,12 @@ module github.com/calyptia/cli
 
 go 1.22.4
 
-replace (
-	github.com/calyptia/cli/k8s => ./k8s
-	github.com/imdario/mergo => github.com/imdario/mergo v0.3.16
-)
+replace github.com/imdario/mergo => github.com/imdario/mergo v0.3.16
 
 require (
 	github.com/Masterminds/sprig/v3 v3.2.3
 	github.com/alecthomas/assert/v2 v2.10.0
 	github.com/calyptia/api v1.10.1
-	github.com/calyptia/cli/k8s v0.0.0-00010101000000-000000000000
 	github.com/calyptia/core-images-index/go-index v0.0.0-20240627094651-315344183af5
 	github.com/calyptia/go-fluentbit-config/v2 v2.3.1
 	github.com/go-logfmt/logfmt v0.6.0
@@ -30,6 +26,7 @@ require (
 	k8s.io/client-go v0.30.2
 	k8s.io/component-base v0.30.2
 	k8s.io/kubectl v0.30.2
+	sigs.k8s.io/controller-runtime v0.18.4
 )
 
 require (
@@ -120,7 +117,6 @@ require (
 	k8s.io/kube-openapi v0.0.0-20240620174524-b456828f718b // indirect
 	k8s.io/metrics v0.30.2 // indirect
 	k8s.io/utils v0.0.0-20240502163921-fe8a2dddb1d0 // indirect
-	sigs.k8s.io/controller-runtime v0.18.4 // indirect
 	sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd // indirect
 	sigs.k8s.io/kustomize/api v0.17.2 // indirect
 	sigs.k8s.io/kustomize/kustomize/v5 v5.4.2 // indirect
