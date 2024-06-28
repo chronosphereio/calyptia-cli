@@ -19,7 +19,6 @@ func NewCmdGetCoreInstances(cfg *config.Config) *cobra.Command {
 	var showIDs bool
 	var showMetadata bool
 	var environment string
-	var outputFormat, goTemplate string
 
 	cmd := &cobra.Command{
 		Use:     "core_instances",
@@ -42,17 +41,23 @@ func NewCmdGetCoreInstances(cfg *config.Config) *cobra.Command {
 				params.EnvironmentID = &environmentID
 			}
 
-			aa, err := cfg.Cloud.CoreInstances(ctx, cfg.ProjectID, params)
+			out, err := cfg.Cloud.CoreInstances(ctx, cfg.ProjectID, params)
 			if err != nil {
 				return fmt.Errorf("could not fetch your core instances: %w", err)
 			}
 
-			if strings.HasPrefix(outputFormat, "go-template") {
-				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, aa.Items)
+			fs := cmd.Flags()
+			outputFormat := formatters.OutputFormatFromFlags(fs)
+			if fn, ok := formatters.ShouldApplyTemplating(outputFormat); ok {
+				return fn(cmd.OutOrStdout(), formatters.TemplateFromFlags(fs), out)
 			}
 
 			switch outputFormat {
-			case "table":
+			case formatters.OutputFormatJSON:
+				return json.NewEncoder(cmd.OutOrStdout()).Encode(out.Items)
+			case formatters.OutputFormatYAML:
+				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(out.Items)
+			default:
 				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
 				if showIDs {
 					fmt.Fprint(tw, "ID\t")
@@ -63,7 +68,7 @@ func NewCmdGetCoreInstances(cfg *config.Config) *cobra.Command {
 				} else {
 					fmt.Fprintln(tw, "")
 				}
-				for _, a := range aa.Items {
+				for _, a := range out.Items {
 					if showIDs {
 						fmt.Fprintf(tw, "%s\t", a.ID)
 					}
@@ -78,15 +83,8 @@ func NewCmdGetCoreInstances(cfg *config.Config) *cobra.Command {
 						fmt.Fprintln(tw, "")
 					}
 				}
-				tw.Flush()
-			case "json":
-				return json.NewEncoder(cmd.OutOrStdout()).Encode(aa.Items)
-			case "yml", "yaml":
-				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(aa.Items)
-			default:
-				return fmt.Errorf("unknown output format %q", outputFormat)
+				return tw.Flush()
 			}
-			return nil
 		},
 	}
 
@@ -95,11 +93,9 @@ func NewCmdGetCoreInstances(cfg *config.Config) *cobra.Command {
 	fs.BoolVar(&showIDs, "show-ids", false, "Include core instance IDs in table output")
 	fs.BoolVar(&showMetadata, "show-metadata", false, "Include core instance metadata in table output")
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name.")
-	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
-	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
+	formatters.BindFormatFlags(cmd)
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", cfg.Completer.CompleteEnvironments)
-	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
 	return cmd
 }

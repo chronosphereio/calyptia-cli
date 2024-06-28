@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"strings"
-	"text/tabwriter"
 
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
@@ -19,7 +17,6 @@ func NewCmdCreateResourceProfile(cfg *config.Config) *cobra.Command {
 	var coreInstanceKey string
 	var name string
 	var specFile string
-	var outputFormat, goTemplate string
 	var environment string
 
 	cmd := &cobra.Command{
@@ -69,24 +66,20 @@ func NewCmdCreateResourceProfile(cfg *config.Config) *cobra.Command {
 				return fmt.Errorf("could not create resource profile: %w", err)
 			}
 
-			if strings.HasPrefix(outputFormat, "go-template") {
-				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, rp)
+			fs := cmd.Flags()
+			outputFormat := formatters.OutputFormatFromFlags(fs)
+			if fn, ok := formatters.ShouldApplyTemplating(outputFormat); ok {
+				return fn(cmd.OutOrStdout(), formatters.TemplateFromFlags(fs), rp)
 			}
 
 			switch outputFormat {
-			case "table":
-				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
-				fmt.Fprintln(tw, "ID\tAGE")
-				fmt.Fprintf(tw, "%s\t%s\n", rp.ID, formatters.FmtTime(rp.CreatedAt))
-				tw.Flush()
 			case "json":
 				return json.NewEncoder(cmd.OutOrStdout()).Encode(rp)
 			case "yml", "yaml":
 				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(rp)
 			default:
-				return fmt.Errorf("unknown output format %q", outputFormat)
+				return formatters.RenderCreated(cmd.OutOrStdout(), rp)
 			}
-			return nil
 		},
 	}
 
@@ -95,12 +88,10 @@ func NewCmdCreateResourceProfile(cfg *config.Config) *cobra.Command {
 	fs.StringVar(&name, "name", "", "Resource profile name")
 	fs.StringVar(&specFile, "spec", "", "Take spec from JSON file. Example:\n"+resourceProfileSpecExample)
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
-	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
-	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
+	formatters.BindFormatFlags(cmd)
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", cfg.Completer.CompleteEnvironments)
 	_ = cmd.RegisterFlagCompletionFunc("core-instance", cfg.Completer.CompleteCoreInstances)
-	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("name", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return nil, cobra.ShellCompDirectiveNoFileComp
 	})

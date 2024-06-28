@@ -3,7 +3,6 @@ package pipeline
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
@@ -77,24 +76,24 @@ func NewCmdRolloutPipeline(cfg *config.Config) *cobra.Command {
 			}
 
 			if noAutoCreateEndpointsFromConfig && len(updated.AddedPorts) != 0 {
-				if strings.HasPrefix(outputFormat, "go-template") {
-					return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, updated)
+				fs := cmd.Flags()
+				outputFormat := formatters.OutputFormatFromFlags(fs)
+				if fn, ok := formatters.ShouldApplyTemplating(outputFormat); ok {
+					return fn(cmd.OutOrStdout(), formatters.TemplateFromFlags(fs), updated)
 				}
 
 				switch outputFormat {
-				case "table":
-					tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
-					fmt.Fprintln(tw, "PROTOCOL\tFRONTEND-PORT\tBACKEND-PORT")
-					for _, p := range updated.AddedPorts {
-						fmt.Fprintf(tw, "%s\t%d\t%d\n", p.Protocol, p.FrontendPort, p.BackendPort)
-					}
-					tw.Flush()
 				case "json":
 					return json.NewEncoder(cmd.OutOrStdout()).Encode(updated)
 				case "yml", "yaml":
 					return yaml.NewEncoder(cmd.OutOrStdout()).Encode(updated)
 				default:
-					return fmt.Errorf("unknown output format %q", outputFormat)
+					tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
+					fmt.Fprintln(tw, "PROTOCOL\tFRONTEND-PORT\tBACKEND-PORT")
+					for _, p := range updated.AddedPorts {
+						fmt.Fprintf(tw, "%s\t%d\t%d\n", p.Protocol, p.FrontendPort, p.BackendPort)
+					}
+					return tw.Flush()
 				}
 			}
 
@@ -106,11 +105,8 @@ func NewCmdRolloutPipeline(cfg *config.Config) *cobra.Command {
 	fs.UintVar(&stepsBack, "steps-back", 1, "Steps back to rollout")
 	fs.StringVar(&toConfigID, "to-config-id", "", "Configuration ID to rollout to. It overrides steps-back")
 	fs.BoolVar(&noAutoCreateEndpointsFromConfig, "disable-auto-ports", false, "Disables automatically creating ports from the config file")
-	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
-	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
+	formatters.BindFormatFlags(cmd)
 	fs.BoolVar(&skipConfigValidation, "skip-config-validation", false, "Opt-in to skip config validation (Use with caution as this option might be removed soon)")
-
-	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
 	return cmd
 }

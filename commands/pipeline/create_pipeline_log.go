@@ -2,9 +2,6 @@ package pipeline
 
 import (
 	"encoding/json"
-	"fmt"
-	"strings"
-	"text/tabwriter"
 
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
@@ -17,7 +14,6 @@ import (
 func NewCmdCreatePipelineLog(cfg *config.Config) *cobra.Command {
 	var pipelineKey string
 	var lines int
-	var outputFormat, goTemplate string
 
 	cmd := &cobra.Command{
 		Use:   "pipeline_log",
@@ -42,24 +38,19 @@ func NewCmdCreatePipelineLog(cfg *config.Config) *cobra.Command {
 				return err
 			}
 
-			if strings.HasPrefix(outputFormat, "go-template") {
-				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, out)
+			fs := cmd.Flags()
+			outputFormat := formatters.OutputFormatFromFlags(fs)
+			if fn, ok := formatters.ShouldApplyTemplating(outputFormat); ok {
+				return fn(cmd.OutOrStdout(), formatters.TemplateFromFlags(fs), out)
 			}
 
 			switch outputFormat {
-			case "table":
-				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
-				fmt.Fprintln(tw, "ID\tAGE")
-				fmt.Fprintf(tw, "%s\t%s\n", out.ID, formatters.FmtTime(out.CreatedAt))
-				tw.Flush()
-
-				return nil
 			case "json":
 				return json.NewEncoder(cmd.OutOrStdout()).Encode(out)
 			case "yml", "yaml":
 				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(out)
 			default:
-				return fmt.Errorf("unknown output format %q", outputFormat)
+				return formatters.RenderCreated(cmd.OutOrStdout(), out)
 			}
 		},
 	}
@@ -67,8 +58,7 @@ func NewCmdCreatePipelineLog(cfg *config.Config) *cobra.Command {
 	fs := cmd.Flags()
 	fs.StringVar(&pipelineKey, "pipeline", "", "Pipeline ID or name")
 	fs.IntVar(&lines, "lines", 100, "Lines of logs to retrieve from the cluster")
-	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
-	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
+	formatters.BindFormatFlags(cmd)
 
 	_ = cmd.MarkFlagRequired("pipeline")
 	_ = cmd.RegisterFlagCompletionFunc("pipeline", cfg.Completer.CompletePipelines)

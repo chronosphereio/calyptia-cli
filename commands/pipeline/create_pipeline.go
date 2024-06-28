@@ -33,7 +33,6 @@ func NewCmdCreatePipeline(cfg *config.Config) *cobra.Command {
 	var noAutoCreateEndpointsFromConfig bool
 	var skipConfigValidation bool
 	var resourceProfileName string
-	var outputFormat, goTemplate string
 	var metadataPairs []string
 	var metadataFile string
 	var environment string
@@ -211,24 +210,23 @@ func NewCmdCreatePipeline(cfg *config.Config) *cobra.Command {
 				return fmt.Errorf("could not create pipeline: %w", err)
 			}
 
-			if strings.HasPrefix(outputFormat, "go-template") {
-				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, a)
+			fs := cmd.Flags()
+			outputFormat := formatters.OutputFormatFromFlags(fs)
+			if fn, ok := formatters.ShouldApplyTemplating(outputFormat); ok {
+				return fn(cmd.OutOrStdout(), formatters.TemplateFromFlags(fs), a)
 			}
 
 			switch outputFormat {
-			case "table":
-				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
-				fmt.Fprintln(tw, "ID\tNAME\tAGE")
-				fmt.Fprintf(tw, "%s\t%s\t%s\n", a.ID, a.Name, formatters.FmtTime(a.CreatedAt))
-				tw.Flush()
 			case "json":
 				return json.NewEncoder(cmd.OutOrStdout()).Encode(a)
 			case "yml", "yaml":
 				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(a)
 			default:
-				return fmt.Errorf("unknown output format %q", outputFormat)
+				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
+				fmt.Fprintln(tw, "ID\tNAME\tAGE")
+				fmt.Fprintf(tw, "%s\t%s\t%s\n", a.ID, a.Name, formatters.FmtTime(a.CreatedAt))
+				return tw.Flush()
 			}
-			return nil
 		},
 	}
 
@@ -252,8 +250,7 @@ func NewCmdCreatePipeline(cfg *config.Config) *cobra.Command {
 	fs.StringSliceVar(&metadataPairs, "metadata", nil, "Metadata to attach to the pipeline in the form of key:value. You could instead use a file with the --metadata-file option")
 	fs.StringVar(&metadataFile, "metadata-file", "", "Metadata JSON file to attach to the pipeline intead of passing multiple --metadata flags")
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
-	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
-	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
+	formatters.BindFormatFlags(cmd)
 
 	// HPA parameters
 	fs.Int32Var(&minReplicas, "min-replicas", 0, "Minimum replicas count for HPA")
@@ -271,7 +268,6 @@ func NewCmdCreatePipeline(cfg *config.Config) *cobra.Command {
 	_ = cmd.RegisterFlagCompletionFunc("secrets-format", func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
 		return []string{"auto", "env", "json", "yaml"}, cobra.ShellCompDirectiveNoFileComp
 	})
-	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("resource-profile", completer.CompleteResourceProfiles)
 
 	_ = cmd.MarkFlagRequired("core-instance") // TODO: use default core-instance key from config cmd.

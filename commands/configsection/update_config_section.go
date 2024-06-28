@@ -3,7 +3,6 @@ package configsection
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
 
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
@@ -15,7 +14,6 @@ import (
 
 func NewCmdUpdateConfigSection(cfg *config.Config) *cobra.Command {
 	var propsSlice []string
-	var outputFormat, goTemplate string
 
 	cmd := &cobra.Command{
 		Use:               "config_section CONFIG_SECTION", // child of `update`
@@ -48,8 +46,10 @@ func NewCmdUpdateConfigSection(cfg *config.Config) *cobra.Command {
 				return fmt.Errorf("cloud: %w", err)
 			}
 
-			if strings.HasPrefix(outputFormat, "go-template") {
-				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, updated)
+			fs := cmd.Flags()
+			outputFormat := formatters.OutputFormatFromFlags(fs)
+			if fn, ok := formatters.ShouldApplyTemplating(outputFormat); ok {
+				return fn(cmd.OutOrStdout(), formatters.TemplateFromFlags(fs), updated)
 			}
 
 			switch outputFormat {
@@ -65,8 +65,7 @@ func NewCmdUpdateConfigSection(cfg *config.Config) *cobra.Command {
 
 	fs := cmd.Flags()
 	fs.StringSliceVarP(&propsSlice, "prop", "p", nil, "Additional properties; follow the format -p foo=bar -p baz=qux")
-	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
-	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
+	formatters.BindFormatFlags(cmd)
 
 	_ = cmd.RegisterFlagCompletionFunc("prop", cfg.Completer.CompletePluginProps)
 

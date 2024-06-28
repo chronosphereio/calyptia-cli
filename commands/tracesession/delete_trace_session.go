@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"strings"
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
@@ -51,8 +50,10 @@ func NewCmdDeleteTraceSession(cfg *config.Config) *cobra.Command {
 				return err
 			}
 
-			if strings.HasPrefix(outputFormat, "go-template") {
-				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, terminated)
+			fs := cmd.Flags()
+			outputFormat := formatters.OutputFormatFromFlags(fs)
+			if fn, ok := formatters.ShouldApplyTemplating(outputFormat); ok {
+				return fn(cmd.OutOrStdout(), formatters.TemplateFromFlags(fs), terminated)
 			}
 
 			switch outputFormat {
@@ -64,9 +65,7 @@ func NewCmdDeleteTraceSession(cfg *config.Config) *cobra.Command {
 				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
 				fmt.Fprintln(tw, "ID")
 				fmt.Fprintf(tw, "%s\n", terminated.ID)
-				tw.Flush()
-
-				return nil
+				return tw.Flush()
 			}
 		},
 	}
@@ -76,13 +75,11 @@ func NewCmdDeleteTraceSession(cfg *config.Config) *cobra.Command {
 	fs := cmd.Flags()
 	fs.BoolVarP(&confirmed, "yes", "y", isNonInteractive, "Confirm deletion")
 	fs.StringVar(&pipelineKey, "pipeline", "", "Parent pipeline ID or name")
-	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
-	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
+	formatters.BindFormatFlags(cmd)
 
 	_ = cmd.MarkFlagRequired("pipeline")
 
 	_ = cmd.RegisterFlagCompletionFunc("pipeline", cfg.Completer.CompletePipelines)
-	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
 	return cmd
 }

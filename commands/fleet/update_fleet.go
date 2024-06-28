@@ -2,10 +2,6 @@ package fleet
 
 import (
 	"encoding/json"
-	"fmt"
-	"strings"
-	"text/tabwriter"
-	"time"
 
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
@@ -18,7 +14,6 @@ import (
 func NewCmdUpdateFleet(cfg *config.Config) *cobra.Command {
 	var in cloudtypes.UpdateFleet
 	var configFile, configFormat string
-	var outputFormat, goTemplate string
 
 	cmd := &cobra.Command{
 		Use:               "fleet",
@@ -48,24 +43,20 @@ func NewCmdUpdateFleet(cfg *config.Config) *cobra.Command {
 				return err
 			}
 
-			if strings.HasPrefix(outputFormat, "go-template") {
-				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, updated)
+			fs := cmd.Flags()
+			outputFormat := formatters.OutputFormatFromFlags(fs)
+			if fn, ok := formatters.ShouldApplyTemplating(outputFormat); ok {
+				return fn(cmd.OutOrStdout(), formatters.TemplateFromFlags(fs), updated)
 			}
 
 			switch outputFormat {
-			case "table":
-				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
-				fmt.Fprintln(tw, "ID\tUPDATED-AT")
-				fmt.Fprintf(tw, "%s\t%s\n", "0", updated.UpdatedAt.Format(time.RFC822))
-				tw.Flush()
 			case "json":
 				return json.NewEncoder(cmd.OutOrStdout()).Encode(updated)
 			case "yml", "yaml":
 				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(updated)
 			default:
-				return fmt.Errorf("unknown output format %q", outputFormat)
+				return formatters.RenderUpdated(cmd.OutOrStdout(), updated)
 			}
-			return nil
 		},
 	}
 
@@ -73,13 +64,11 @@ func NewCmdUpdateFleet(cfg *config.Config) *cobra.Command {
 	fs.StringVar(&configFile, "config-file", "fluent-bit.yaml", "Fluent-bit config file")
 	fs.StringVar(&configFormat, "config-format", "", "Optional fluent-bit config format (classic, yaml, json)")
 	fs.BoolVar(&in.SkipConfigValidation, "skip-config-validation", false, "Option to skip fluent-bit config validation (not recommended)")
-	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
-	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
+	formatters.BindFormatFlags(cmd)
 
 	_ = cmd.MarkFlagRequired("name")
 
 	_ = cmd.RegisterFlagCompletionFunc("config-format", completeConfigFormat)
-	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
 	return cmd
 }

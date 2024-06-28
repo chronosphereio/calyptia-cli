@@ -20,7 +20,6 @@ import (
 func NewCmdCreateFleet(cfg *config.Config) *cobra.Command {
 	var in cloudtypes.CreateFleet
 	var configFile, configFormat string
-	var outputFormat, goTemplate string
 
 	cmd := &cobra.Command{
 		Use:   "fleet",
@@ -43,8 +42,10 @@ func NewCmdCreateFleet(cfg *config.Config) *cobra.Command {
 				return err
 			}
 
-			if strings.HasPrefix(outputFormat, "go-template") {
-				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, created)
+			fs := cmd.Flags()
+			outputFormat := formatters.OutputFormatFromFlags(fs)
+			if fn, ok := formatters.ShouldApplyTemplating(outputFormat); ok {
+				return fn(cmd.OutOrStdout(), formatters.TemplateFromFlags(fs), created)
 			}
 
 			switch outputFormat {
@@ -71,13 +72,11 @@ func NewCmdCreateFleet(cfg *config.Config) *cobra.Command {
 	fs.StringVar(&configFormat, "config-format", "", "Optional fluent-bit config format (classic, yaml, json)")
 	fs.StringSliceVar(&in.Tags, "tags", nil, "Optional tags for this fleet")
 	fs.BoolVar(&in.SkipConfigValidation, "skip-config-validation", false, "Option to skip fluent-bit config validation (not recommended)")
-	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
-	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
+	formatters.BindFormatFlags(cmd)
 
 	_ = cmd.MarkFlagRequired("name")
 
 	_ = cmd.RegisterFlagCompletionFunc("config-format", completeConfigFormat)
-	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
 	return cmd
 }

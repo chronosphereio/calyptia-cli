@@ -19,7 +19,6 @@ import (
 
 func NewCmdGetAgents(cfg *config.Config) *cobra.Command {
 	var last uint
-	var outputFormat, goTemplate string
 	var showIDs bool
 	var fleetKey, environment string
 
@@ -53,38 +52,36 @@ func NewCmdGetAgents(cfg *config.Config) *cobra.Command {
 				params.FleetID = &fleedID
 			}
 
-			aa, err := cfg.Cloud.Agents(ctx, cfg.ProjectID, params)
+			out, err := cfg.Cloud.Agents(ctx, cfg.ProjectID, params)
 			if err != nil {
 				return fmt.Errorf("could not fetch your agents: %w", err)
 			}
 
-			if strings.HasPrefix(outputFormat, "go-template") {
-				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, aa.Items)
+			outputFormat := formatters.OutputFormatFromFlags(fs)
+			if fn, ok := formatters.ShouldApplyTemplating(outputFormat); ok {
+				return fn(cmd.OutOrStdout(), formatters.TemplateFromFlags(fs), out)
 			}
 
 			switch outputFormat {
-			case "table":
+			case formatters.OutputFormatJSON:
+				return json.NewEncoder(cmd.OutOrStdout()).Encode(out.Items)
+			case formatters.OutputFormatYAML:
+				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(out.Items)
+			default:
 				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
 				if showIDs {
 					fmt.Fprint(tw, "ID\t")
 				}
 				fmt.Fprintln(tw, "NAME\tTYPE\tENVIRONMENT\tFLEET-ID\tVERSION\tSTATUS\tAGE")
-				for _, a := range aa.Items {
+				for _, a := range out.Items {
 					status := agentStatus(a.LastMetricsAddedAt, time.Minute*-5)
 					if showIDs {
 						fmt.Fprintf(tw, "%s\t", a.ID)
 					}
 					fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\t%s\t%s\n", a.Name, a.Type, a.EnvironmentName, pointer.OrZero(a.FleetID), a.Version, status, formatters.FmtTime(a.CreatedAt))
 				}
-				tw.Flush()
-			case "json":
-				return json.NewEncoder(cmd.OutOrStdout()).Encode(aa.Items)
-			case "yml", "yaml":
-				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(aa.Items)
-			default:
-				return fmt.Errorf("unknown output format %q", outputFormat)
+				return tw.Flush()
 			}
-			return nil
 		},
 	}
 
@@ -93,18 +90,15 @@ func NewCmdGetAgents(cfg *config.Config) *cobra.Command {
 	fs.BoolVar(&showIDs, "show-ids", false, "Include agent IDs in table output")
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 	fs.StringVar(&fleetKey, "fleet", "", "Filter agents from the following fleet only")
-	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
-	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
+	formatters.BindFormatFlags(cmd)
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", cfg.Completer.CompleteEnvironments)
 	_ = cmd.RegisterFlagCompletionFunc("fleet", cfg.Completer.CompleteFleets)
-	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
 	return cmd
 }
 
 func NewCmdGetAgent(cfg *config.Config) *cobra.Command {
-	var outputFormat, goTemplate string
 	var showIDs bool
 	var onlyConfig bool
 	var environment string
@@ -141,12 +135,18 @@ func NewCmdGetAgent(cfg *config.Config) *cobra.Command {
 				return nil
 			}
 
-			if strings.HasPrefix(outputFormat, "go-template") {
-				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, agent)
+			fs := cmd.Flags()
+			outputFormat := formatters.OutputFormatFromFlags(fs)
+			if fn, ok := formatters.ShouldApplyTemplating(outputFormat); ok {
+				return fn(cmd.OutOrStdout(), formatters.TemplateFromFlags(fs), agent)
 			}
 
 			switch outputFormat {
-			case "table":
+			case "json":
+				return json.NewEncoder(cmd.OutOrStdout()).Encode(agent)
+			case "yml", "yaml":
+				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(agent)
+			default:
 				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
 				if showIDs {
 					fmt.Fprint(tw, "ID\t")
@@ -157,16 +157,8 @@ func NewCmdGetAgent(cfg *config.Config) *cobra.Command {
 					fmt.Fprintf(tw, "%s\t", agent.ID)
 				}
 				fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\t%s\t%s\n", agent.Name, agent.Type, agent.EnvironmentName, pointer.OrZero(agent.FleetID), agent.Version, status, formatters.FmtTime(agent.CreatedAt))
-				tw.Flush()
-			case "json":
-				return json.NewEncoder(cmd.OutOrStdout()).Encode(agent)
-			case "yml", "yaml":
-				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(agent)
-			default:
-				return fmt.Errorf("unknown output format %q", outputFormat)
+				return tw.Flush()
 			}
-
-			return nil
 		},
 	}
 
@@ -174,11 +166,9 @@ func NewCmdGetAgent(cfg *config.Config) *cobra.Command {
 	fs.BoolVar(&onlyConfig, "only-config", false, "Only show the agent configuration")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include agent IDs in table output")
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
-	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
-	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
+	formatters.BindFormatFlags(cmd)
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", cfg.Completer.CompleteEnvironments)
-	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
 	return cmd
 }

@@ -18,7 +18,7 @@ import (
 func NewCmdGetPipelines(cfg *config.Config) *cobra.Command {
 	var coreInstanceKey string
 	var last uint
-	var outputFormat, goTemplate, configFormat string
+	var configFormat string
 	var showIDs bool
 	var environment string
 	var renderWithConfigSections bool
@@ -56,12 +56,18 @@ func NewCmdGetPipelines(cfg *config.Config) *cobra.Command {
 				return fmt.Errorf("could not fetch your pipelines: %w", err)
 			}
 
-			if strings.HasPrefix(outputFormat, "go-template") {
-				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, pp.Items)
+			fs := cmd.Flags()
+			outputFormat := formatters.OutputFormatFromFlags(fs)
+			if fn, ok := formatters.ShouldApplyTemplating(outputFormat); ok {
+				return fn(cmd.OutOrStdout(), formatters.TemplateFromFlags(fs), pp)
 			}
 
 			switch outputFormat {
-			case "table":
+			case "json":
+				return json.NewEncoder(cmd.OutOrStdout()).Encode(pp.Items)
+			case "yml", "yaml":
+				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(pp.Items)
+			default:
 				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
 				if showIDs {
 					fmt.Fprintf(tw, "ID\t")
@@ -73,15 +79,8 @@ func NewCmdGetPipelines(cfg *config.Config) *cobra.Command {
 					}
 					fmt.Fprintf(tw, "%s\t%d\t%s\t%s\t%s\n", p.Name, p.ReplicasCount, p.Status.Status, string(p.DeploymentStrategy), formatters.FmtTime(p.CreatedAt))
 				}
-				tw.Flush()
-			case "json":
-				return json.NewEncoder(cmd.OutOrStdout()).Encode(pp.Items)
-			case "yml", "yaml":
-				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(pp.Items)
-			default:
-				return fmt.Errorf("unknown output format %q", outputFormat)
+				return tw.Flush()
 			}
-			return nil
 		},
 	}
 
@@ -91,12 +90,10 @@ func NewCmdGetPipelines(cfg *config.Config) *cobra.Command {
 	fs.BoolVar(&showIDs, "show-ids", false, "Include pipeline IDs in table output")
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 	fs.BoolVar(&renderWithConfigSections, "render-with-config-sections", false, "Render the pipeline config with the attached config sections; if any")
-	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
-	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
+	formatters.BindFormatFlags(cmd)
 	fs.StringVar(&configFormat, "config-format", string(cloudtypes.ConfigFormatYAML), "Format to get the configuration file from the API (yaml/json/ini).")
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", cfg.Completer.CompleteEnvironments)
-	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("core-instance", cfg.Completer.CompleteCoreInstances)
 
 	_ = cmd.MarkFlagRequired("core-instance") // TODO: use default core instance ID from config cmd.
@@ -207,12 +204,18 @@ func NewCmdGetPipeline(cfg *config.Config) *cobra.Command {
 				return nil
 			}
 
-			if strings.HasPrefix(outputFormat, "go-template") {
-				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, pip)
+			fs := cmd.Flags()
+			outputFormat := formatters.OutputFormatFromFlags(fs)
+			if fn, ok := formatters.ShouldApplyTemplating(outputFormat); ok {
+				return fn(cmd.OutOrStdout(), formatters.TemplateFromFlags(fs), out)
 			}
 
 			switch outputFormat {
-			case "table":
+			case "json":
+				return json.NewEncoder(cmd.OutOrStdout()).Encode(pip)
+			case "yml", "yaml":
+				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(pip)
+			default:
 				{
 					tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
 					if showIDs {
@@ -223,7 +226,9 @@ func NewCmdGetPipeline(cfg *config.Config) *cobra.Command {
 						fmt.Fprintf(tw, "%s\t", pip.ID)
 					}
 					fmt.Fprintf(tw, "%s\t%d\t%s\t%s\t%s\n", pip.Name, pip.ReplicasCount, pip.Status.Status, string(pip.DeploymentStrategy), formatters.FmtTime(pip.CreatedAt))
-					tw.Flush()
+					if err := tw.Flush(); err != nil {
+						return err
+					}
 				}
 				if includeEndpoints {
 					fmt.Fprintln(cmd.OutOrStdout(), "\n## Endpoints")
@@ -237,14 +242,9 @@ func NewCmdGetPipeline(cfg *config.Config) *cobra.Command {
 					fmt.Fprintln(cmd.OutOrStdout(), "\n## Secrets")
 					renderPipelineSecrets(cmd.OutOrStdout(), secrets, showIDs)
 				}
-			case "json":
-				return json.NewEncoder(cmd.OutOrStdout()).Encode(pip)
-			case "yml", "yaml":
-				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(pip)
-			default:
-				return fmt.Errorf("unknown output format %q", outputFormat)
+
+				return nil
 			}
-			return nil
 		},
 	}
 
@@ -257,12 +257,9 @@ func NewCmdGetPipeline(cfg *config.Config) *cobra.Command {
 	fs.UintVar(&lastConfigHistory, "last-config-history", 0, "Last `N` pipeline config history if included. 0 means no limit")
 	fs.UintVar(&lastSecrets, "last-secrets", 0, "Last `N` pipeline secrets if included. 0 means no limit")
 	fs.BoolVar(&renderWithConfigSections, "render-with-config-sections", false, "Render the pipeline config with the attached config sections; if any")
-	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
-	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
+	formatters.BindFormatFlags(cmd)
 	fs.StringVar(&configFormat, "config-format", string(cloudtypes.ConfigFormatYAML), "Format to get the configuration file from the API (yaml/json/ini).")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include IDs in table output")
-
-	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
 	return cmd
 }

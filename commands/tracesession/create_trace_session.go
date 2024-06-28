@@ -2,9 +2,6 @@ package tracesession
 
 import (
 	"encoding/json"
-	"fmt"
-	"strings"
-	"text/tabwriter"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -43,8 +40,10 @@ func NewCmdCreateTraceSession(cfg *config.Config) *cobra.Command {
 				return err
 			}
 
-			if strings.HasPrefix(outputFormat, "go-template") {
-				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, created)
+			fs := cmd.Flags()
+			outputFormat := formatters.OutputFormatFromFlags(fs)
+			if fn, ok := formatters.ShouldApplyTemplating(outputFormat); ok {
+				return fn(cmd.OutOrStdout(), formatters.TemplateFromFlags(fs), created)
 			}
 
 			switch outputFormat {
@@ -53,12 +52,7 @@ func NewCmdCreateTraceSession(cfg *config.Config) *cobra.Command {
 			case "yml", "yaml":
 				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(created)
 			default:
-				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
-				fmt.Fprintln(tw, "ID\tAGE")
-				fmt.Fprintf(tw, "%s\t%s\n", created.ID, formatters.FmtTime(created.CreatedAt))
-				tw.Flush()
-
-				return nil
+				return formatters.RenderCreated(cmd.OutOrStdout(), created)
 			}
 		},
 	}
@@ -67,13 +61,11 @@ func NewCmdCreateTraceSession(cfg *config.Config) *cobra.Command {
 	fs.StringVar(&pipelineKey, "pipeline", "", "Parent pipeline (name or ID) in which to start the trace session")
 	fs.StringSliceVar(&plugins, "plugins", nil, "Fluent-bit plugins to trace")
 	fs.DurationVar(&lifespan, "lifespan", time.Minute*10, "Trace session lifespan")
-	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
-	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
+	formatters.BindFormatFlags(cmd)
 
 	_ = cmd.MarkFlagRequired("pipeline")
 
 	_ = cmd.RegisterFlagCompletionFunc("pipeline", cfg.Completer.CompletePipelines)
-	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("plugins", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		ctx := cmd.Context()
 		return cfg.Completer.CompletePipelinePlugins(ctx, pipelineKey, cmd, args, toComplete)

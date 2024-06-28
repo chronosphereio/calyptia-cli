@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
@@ -19,7 +18,6 @@ import (
 func NewCmdCreateFleetFile(cfg *config.Config) *cobra.Command {
 	var fleetKey string
 	var file string
-	var outputFormat, goTemplate string
 
 	cmd := &cobra.Command{
 		Use:   "fleet_file",
@@ -46,8 +44,10 @@ func NewCmdCreateFleetFile(cfg *config.Config) *cobra.Command {
 				return err
 			}
 
-			if strings.HasPrefix(outputFormat, "go-template") {
-				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, out)
+			fs := cmd.Flags()
+			outputFormat := formatters.OutputFormatFromFlags(fs)
+			if fn, ok := formatters.ShouldApplyTemplating(outputFormat); ok {
+				return fn(cmd.OutOrStdout(), formatters.TemplateFromFlags(fs), out)
 			}
 
 			switch outputFormat {
@@ -71,14 +71,12 @@ func NewCmdCreateFleetFile(cfg *config.Config) *cobra.Command {
 	fs := cmd.Flags()
 	fs.StringVar(&fleetKey, "fleet", "", "Fleet ID or name")
 	fs.StringVar(&file, "file", "", "File path. You will be able to reference the file from a fluentbit config using its base name without the extension. Ex: `some_dir/my_file.txt` will be referenced as `{{files.my_file}}`")
-	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
-	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
+	formatters.BindFormatFlags(cmd)
 
 	_ = cmd.MarkFlagRequired("fleet")
 	_ = cmd.MarkFlagRequired("file")
 
 	_ = cmd.RegisterFlagCompletionFunc("fleet", cfg.Completer.CompleteFleets)
-	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
 	return cmd
 }

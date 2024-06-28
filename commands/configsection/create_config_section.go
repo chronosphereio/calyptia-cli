@@ -20,7 +20,6 @@ func NewCmdCreateConfigSection(cfg *config.Config) *cobra.Command {
 	var kind string
 	var name string
 	var propsSlice []string
-	var outputFormat, goTemplate string
 
 	cmd := &cobra.Command{
 		Use:   "config_section", // child of `create`
@@ -41,8 +40,10 @@ func NewCmdCreateConfigSection(cfg *config.Config) *cobra.Command {
 				return fmt.Errorf("cloud: %w", err)
 			}
 
-			if strings.HasPrefix(outputFormat, "go-template") {
-				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, created)
+			fs := cmd.Flags()
+			outputFormat := formatters.OutputFormatFromFlags(fs)
+			if fn, ok := formatters.ShouldApplyTemplating(outputFormat); ok {
+				return fn(cmd.OutOrStdout(), formatters.TemplateFromFlags(fs), created)
 			}
 
 			switch outputFormat {
@@ -59,8 +60,7 @@ func NewCmdCreateConfigSection(cfg *config.Config) *cobra.Command {
 	fs.StringVar(&kind, "kind", "", "Plugin kind. Either input, filter or output")
 	fs.StringVar(&name, "name", "", "Plugin name. See\n[https://docs.fluentbit.io/manual/pipeline]")
 	fs.StringSliceVarP(&propsSlice, "prop", "p", nil, "Additional properties; follow the format -p foo=bar -p baz=qux")
-	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
-	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
+	formatters.BindFormatFlags(cmd)
 
 	_ = cmd.MarkFlagRequired("kind")
 	_ = cmd.MarkFlagRequired("name")
