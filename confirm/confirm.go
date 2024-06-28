@@ -1,3 +1,4 @@
+// Package config provides utilities ask confirmation from stdin.
 package confirm
 
 import (
@@ -6,6 +7,7 @@ import (
 	"strings"
 )
 
+// Read whether the user confirmed the action by typing "y" or "yes".
 func Read(r io.Reader) (bool, error) {
 	var answer string
 	_, err := fmt.Fscanln(r, &answer)

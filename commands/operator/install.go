@@ -18,6 +18,7 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 
 	"github.com/calyptia/cli/commands/utils"
+	"github.com/calyptia/cli/confirm"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -98,18 +99,13 @@ func NewCmdInstall() *cobra.Command {
 					if errors.As(err, &e) {
 						cmd.Printf("Previous operator installation components found:\n%s\n", e.Error())
 						cmd.Printf("Are you sure you want to proceed? (y/N) ")
-						var answer string
-						_, err := fmt.Scanln(&answer)
-						if err != nil && err.Error() == "unexpected newline" {
-							err = nil
-						}
-
+						confirmed, err := confirm.Read(cmd.InOrStdin())
 						if err != nil {
-							return fmt.Errorf("could not to read answer: %v", err)
+							return err
 						}
 
-						answer = strings.TrimSpace(strings.ToLower(answer))
-						if answer != "y" && answer != "yes" {
+						if !confirmed {
+							cmd.Println("Aborted")
 							return nil
 						}
 					}

@@ -2,11 +2,11 @@ package endpoint
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/spf13/cobra"
 
 	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/confirm"
 )
 
 func NewCmdDeleteEndpoint(config *cfg.Config) *cobra.Command {
@@ -22,18 +22,13 @@ func NewCmdDeleteEndpoint(config *cfg.Config) *cobra.Command {
 			portID := args[0]
 			if !confirmed {
 				cmd.Printf("Are you sure you want to delete %q? (y/N) ", portID)
-				var answer string
-				_, err := fmt.Scanln(&answer)
-				if err != nil && err.Error() == "unexpected newline" {
-					err = nil
-				}
-
+				confirmed, err := confirm.Read(cmd.InOrStdin())
 				if err != nil {
-					return fmt.Errorf("could not to read answer: %v", err)
+					return err
 				}
 
-				answer = strings.TrimSpace(strings.ToLower(answer))
-				if answer != "y" && answer != "yes" {
+				if !confirmed {
+					cmd.Println("Aborted")
 					return nil
 				}
 			}
