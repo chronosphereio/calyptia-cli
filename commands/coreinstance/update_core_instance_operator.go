@@ -131,9 +131,9 @@ func NewCmdUpdateCoreInstanceOperator(cfg *config.Config, testClientSet kubernet
 			}
 
 			label := fmt.Sprintf("%s=%s", k8s.LabelInstance, coreInstanceKey)
-			cmd.Printf("Waiting for core-instance to update...\n")
+			cmd.Println("Waiting for core-instance to update...")
 
-			fmt.Println("METRICS", metrics)
+			cmd.Println("METRICS", metrics)
 			syncParams := k8s.UpdateCoreOperatorSync{
 				Metrics:             metrics,
 				SkipServiceCreation: skipServiceCreation,

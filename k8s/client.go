@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"net/http"
 	"os"
 	"strconv"
@@ -840,30 +839,6 @@ func (client *Client) DeleteResources(ctx context.Context, resources []ResourceR
 		return nil, err
 	}
 	return deletedResources, nil
-}
-
-var GetOperatorManifest = func(version string) ([]byte, error) {
-	url, err := getOperatorDownloadURL(version)
-	if err != nil {
-		return nil, err
-	}
-	response, err := http.Get(url)
-	if err != nil {
-		return nil, fmt.Errorf("error downloading operator manifest: %w", err)
-	}
-	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
-			fmt.Println("Error closing response body:", err)
-		}
-	}(response.Body)
-
-	manifestBytes, err := io.ReadAll(response.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	return manifestBytes, nil
 }
 
 func getOperatorDownloadURL(version string) (string, error) {

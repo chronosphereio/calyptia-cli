@@ -1,7 +1,6 @@
 package pipeline
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -37,13 +36,13 @@ func NewCmdWatchPipelineLogs(cfg *config.Config) *cobra.Command {
 				})
 
 				if err != nil {
-					fmt.Println("Error fetching pipeline logs:", err)
+					cmd.PrintErrf("Error fetching pipeline logs: %v\n", err)
 					return
 				}
 
 				for _, log := range ff.Items {
 					if _, ok := watched[log.ID]; !ok {
-						fmt.Println(log.Logs)
+						cmd.Println(log.Logs)
 						watched[log.ID] = true
 					}
 				}

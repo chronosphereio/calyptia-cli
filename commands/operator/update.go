@@ -119,12 +119,12 @@ func NewCmdUpdate() *cobra.Command {
 					return err
 				}
 				start := time.Now()
-				fmt.Printf("Waiting for core operator manager to be updated...\n")
+				cmd.Printf("Waiting for core operator manager to be updated...\n")
 				err = k.WaitReady(ctx, namespace, deployment, false, waitTimeout)
 				if err != nil {
 					return err
 				}
-				fmt.Printf("Core operator manager is ready. Update took %s\n", time.Since(start))
+				cmd.Printf("Core operator manager is ready. Update took %s\n", time.Since(start))
 			}
 
 			cmd.Printf("Core operator manager successfully updated to version %s\n", coreOperatorVersion)

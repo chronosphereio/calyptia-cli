@@ -6,8 +6,6 @@ import (
 	"testing"
 
 	"github.com/alecthomas/assert/v2"
-
-	"github.com/calyptia/cli/k8s"
 )
 
 func TestAddImage(t *testing.T) {
@@ -127,11 +125,6 @@ spec:
 `
 
 	t.Run("Successful manifest preparation", func(t *testing.T) {
-		// Mocking k8s.GetOperatorManifest
-		k8s.GetOperatorManifest = func(version string) ([]byte, error) {
-			return []byte(deploymentManifest), nil
-		}
-
 		// Test the prepareManifest function
 		resultFile, err := prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace, false, enableExternalTrafficPolicyLocal)
 		// Verify the results

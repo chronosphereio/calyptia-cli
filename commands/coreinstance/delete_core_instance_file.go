@@ -65,7 +65,7 @@ func NewCmdDeleteCoreInstanceFile(cfg *config.Config) *cobra.Command {
 			}
 
 			if fileID == "" {
-				cmd.Println("File not found.")
+				cmd.PrintErrln("File not found")
 				return nil
 			}
 

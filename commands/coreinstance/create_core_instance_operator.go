@@ -71,7 +71,6 @@ func newCmdCreateCoreInstanceOperator(cfg *config.Config, testClientSet kubernet
 				} else {
 					configOverrides.Context.Namespace = corev1.NamespaceDefault
 				}
-
 			}
 			var clientSet kubernetes.Interface
 			var kubeClientConfig *krest.Config
@@ -125,7 +124,7 @@ func newCmdCreateCoreInstanceOperator(cfg *config.Config, testClientSet kubernet
 				return err
 			}
 
-			fmt.Printf("Found calyptia core operator installed, version: %s...\n", operatorVersion)
+			cmd.Printf("Found calyptia core operator installed, version: %s...\n", operatorVersion)
 			metadata, err := getCoreInstanceMetadata(k8sClient)
 			if err != nil {
 				return err
@@ -199,12 +198,12 @@ func newCmdCreateCoreInstanceOperator(cfg *config.Config, testClientSet kubernet
 			var resourcesCreated []k8s.ResourceRollBack
 			secret, err := k8sClient.CreateSecretOperatorRSAKey(ctx, created, dryRun)
 			if err != nil {
-				fmt.Printf("An error occurred while creating the core operator instance. %s Rolling back created resources.\n", err)
+				cmd.PrintErrf("An error occurred while creating the core operator instance. %s Rolling back created resources.\n", err)
 				resources, err := k8sClient.DeleteResources(ctx, resourcesCreated)
 				if err != nil {
 					return fmt.Errorf("could not delete resources: %w", err)
 				}
-				fmt.Printf("Rollback successful. Deleted %d resources.\n", len(resources))
+				cmd.Printf("Rollback successful. Deleted %d resources.\n", len(resources))
 			}
 
 			if secret != nil {
@@ -216,12 +215,12 @@ func newCmdCreateCoreInstanceOperator(cfg *config.Config, testClientSet kubernet
 			var clusterRoleOpts k8s.ClusterRoleOpt
 			clusterRole, err := k8sClient.CreateClusterRole(ctx, created, dryRun, clusterRoleOpts)
 			if err != nil {
-				fmt.Printf("An error occurred while creating the core operator instance. %s Rolling back created resources.\n", err)
+				cmd.PrintErrf("An error occurred while creating the core operator instance. %s Rolling back created resources.\n", err)
 				resources, err := k8sClient.DeleteResources(ctx, resourcesCreated)
 				if err != nil {
 					return fmt.Errorf("could not delete resources: %w", err)
 				}
-				fmt.Printf("Rollback successful. Deleted %d resources.\n", len(resources))
+				cmd.Printf("Rollback successful. Deleted %d resources.\n", len(resources))
 			}
 
 			if clusterRole != nil {
@@ -233,12 +232,12 @@ func newCmdCreateCoreInstanceOperator(cfg *config.Config, testClientSet kubernet
 
 			serviceAccount, err := k8sClient.CreateServiceAccount(ctx, created, dryRun)
 			if err != nil {
-				fmt.Printf("An error occurred while creating the core operator instance. %s Rolling back created resources.\n", err)
+				cmd.PrintErrf("An error occurred while creating the core operator instance. %s Rolling back created resources.\n", err)
 				resources, err := k8sClient.DeleteResources(ctx, resourcesCreated)
 				if err != nil {
 					return fmt.Errorf("could not delete resources: %w", err)
 				}
-				fmt.Printf("Rollback successful. Deleted %d resources.\n", len(resources))
+				cmd.Printf("Rollback successful. Deleted %d resources.\n", len(resources))
 			}
 
 			if serviceAccount != nil {
@@ -250,12 +249,12 @@ func newCmdCreateCoreInstanceOperator(cfg *config.Config, testClientSet kubernet
 
 			binding, err := k8sClient.CreateClusterRoleBinding(ctx, created, clusterRole, serviceAccount, dryRun)
 			if err != nil {
-				fmt.Printf("An error occurred while creating the core operator instance. %s Rolling back created resources.\n", err)
+				cmd.PrintErrf("An error occurred while creating the core operator instance. %s Rolling back created resources.\n", err)
 				resources, err := k8sClient.DeleteResources(ctx, resourcesCreated)
 				if err != nil {
 					return fmt.Errorf("could not delete resources: %w", err)
 				}
-				fmt.Printf("Rollback successful. Deleted %d resources.\n", len(resources))
+				cmd.Printf("Rollback successful. Deleted %d resources.\n", len(resources))
 			}
 
 			err = addToRollBack(err, binding.Name, configOverrides.Context.Namespace, "clusterrolebinding", &resourcesCreated)
@@ -303,23 +302,23 @@ func newCmdCreateCoreInstanceOperator(cfg *config.Config, testClientSet kubernet
 				if err := cfg.Cloud.DeleteCoreInstance(ctx, created.ID); err != nil {
 					return fmt.Errorf("failed to rollback created core instance %v", err)
 				}
-				fmt.Printf("An error occurred while creating the core operator instance. %s Rolling back created resources.\n", err)
+				cmd.PrintErrf("An error occurred while creating the core operator instance. %s Rolling back created resources.\n", err)
 
 				resources, err := k8sClient.DeleteResources(ctx, resourcesCreated)
 				if err != nil {
 					return fmt.Errorf("could not delete resources: %w", err)
 				}
-				fmt.Printf("Rollback successful. Deleted %d resources.\n", len(resources))
+				cmd.Printf("Rollback successful. Deleted %d resources.\n", len(resources))
 			}
 
 			if waitReady {
 				start := time.Now()
-				fmt.Printf("Waiting for core instance to be ready...\n")
+				cmd.Printf("Waiting for core instance to be ready...\n")
 				err := k8sClient.WaitReady(ctx, syncDeployment.Namespace, syncDeployment.Name, false, waitTimeout)
 				if err != nil {
 					return err
 				}
-				fmt.Printf("Core instance is ready. Took %s\n", time.Since(start))
+				cmd.Printf("Core instance is ready. Took %s\n", time.Since(start))
 			}
 
 			err = addToRollBack(err, syncDeployment.Name, configOverrides.Context.Namespace, "deployment", &resourcesCreated)
@@ -327,15 +326,15 @@ func newCmdCreateCoreInstanceOperator(cfg *config.Config, testClientSet kubernet
 				return err
 			}
 
-			fmt.Printf("Core instance created successfully\n")
-			fmt.Printf("Deployed images=(sync-to-cloud: %s, sync-from-cloud: %s)\n", coreDockerToCloudImage, coreDockerFromCloudImage)
-			fmt.Printf("Resources created:\n")
+			cmd.Printf("Core instance created successfully\n")
+			cmd.Printf("Deployed images=(sync-to-cloud: %s, sync-from-cloud: %s)\n", coreDockerToCloudImage, coreDockerFromCloudImage)
+			cmd.Printf("Resources created:\n")
 
-			fmt.Printf("Deployment=%s\n", syncDeployment.Name)
-			fmt.Printf("Secret=%s\n", secret.Name)
-			fmt.Printf("ClusterRole=%s\n", clusterRole.Name)
-			fmt.Printf("ClusterRoleBinding=%s\n", binding.Name)
-			fmt.Printf("ServiceAccount=%s\n", serviceAccount.Name)
+			cmd.Printf("Deployment=%s\n", syncDeployment.Name)
+			cmd.Printf("Secret=%s\n", secret.Name)
+			cmd.Printf("ClusterRole=%s\n", clusterRole.Name)
+			cmd.Printf("ClusterRoleBinding=%s\n", binding.Name)
+			cmd.Printf("ServiceAccount=%s\n", serviceAccount.Name)
 
 			return nil
 		},

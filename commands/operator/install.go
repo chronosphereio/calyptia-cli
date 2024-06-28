@@ -129,12 +129,12 @@ func NewCmdInstall() *cobra.Command {
 					return err
 				}
 				start := time.Now()
-				fmt.Println("Waiting for core operator manager to be ready...")
+				cmd.Println("Waiting for core operator manager to be ready...")
 				err = k.WaitReady(ctx, namespace, deployment, false, waitTimeout)
 				if err != nil {
 					return err
 				}
-				fmt.Printf("Core operator manager is ready. Took %s\n", time.Since(start))
+				cmd.Printf("Core operator manager is ready. Took %s\n", time.Since(start))
 			}
 
 			cmd.Printf("Core operator manager successfully installed.\n")
@@ -254,7 +254,6 @@ func injectNamespace(s, namespace string) string {
 
 func injectArguments(s string, externalTrafficPolicyLocal bool) string {
 	if externalTrafficPolicyLocal {
-		fmt.Println("Enabling traffic policy LOCAL: ", EnableExternalTrafficPolicyLocal)
 		return strings.ReplaceAll(s, "args: []", "args: ['"+EnableExternalTrafficPolicyLocal+"']")
 	}
 	return s

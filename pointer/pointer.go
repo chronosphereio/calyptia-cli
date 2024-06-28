@@ -11,7 +11,7 @@ func From[T any](v T) *T {
 // Example:
 //
 //	var n *int
-//	fmt.Println(pointer.OrZero(n)) // 0
+//	pointer.OrZero(n) == 0
 func OrZero[T any](v *T) T {
 	var zero T
 	if v == nil {

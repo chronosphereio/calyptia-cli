@@ -1,8 +1,6 @@
 package ingestcheck
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 
 	"github.com/calyptia/cli/config"
@@ -20,7 +18,7 @@ func NewCmdGetIngestCheckLogs(cfg *config.Config) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			fmt.Println(string(check.Logs))
+			cmd.Println(string(check.Logs))
 			return nil
 		},
 	}

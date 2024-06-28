@@ -80,7 +80,7 @@ func NewCmdGetPipelineLog(cfg *config.Config) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			fmt.Println(check.Logs)
+			cmd.Println(check.Logs)
 			return nil
 		},
 	}

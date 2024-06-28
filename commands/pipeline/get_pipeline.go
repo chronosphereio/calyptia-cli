@@ -193,7 +193,7 @@ func NewCmdGetPipeline(cfg *config.Config) *cobra.Command {
 			}
 
 			if onlyConfig {
-				fmt.Println(strings.TrimSpace(pip.Config.RawConfig))
+				cmd.Println(strings.TrimSpace(pip.Config.RawConfig))
 				return nil
 			}
 
