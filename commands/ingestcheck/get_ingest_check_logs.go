@@ -1,7 +1,6 @@
 package ingestcheck
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/spf13/cobra"
@@ -15,7 +14,7 @@ func NewCmdGetIngestCheckLogs(cfg *config.Config) *cobra.Command {
 		Short: "Get a specific ingest check logs",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx := context.Background()
+			ctx := cmd.Context()
 			id := args[0]
 			check, err := cfg.Cloud.IngestCheck(ctx, id)
 			if err != nil {

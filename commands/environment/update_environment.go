@@ -1,7 +1,6 @@
 package environment
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/spf13/cobra"
@@ -17,11 +16,12 @@ func NewCmdUpdateEnvironment(cfg *config.Config) *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		Short: "Update an environment",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
 			name := args[0]
 			if name == newName {
 				return fmt.Errorf("environment name unchanged")
 			}
-			ctx := context.Background()
+
 			environments, err := cfg.Cloud.Environments(ctx, cfg.ProjectID, cloudtypes.EnvironmentsParams{Name: &name})
 			if err != nil {
 				return err

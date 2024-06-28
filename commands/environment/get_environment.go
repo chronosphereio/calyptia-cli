@@ -1,7 +1,6 @@
 package environment
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"text/tabwriter"
@@ -22,7 +21,7 @@ func NewCmdGetEnvironment(cfg *config.Config) *cobra.Command {
 		Use:   "environment",
 		Short: "Get environments",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx := context.Background()
+			ctx := cmd.Context()
 			ee, err := cfg.Cloud.Environments(ctx, cfg.ProjectID, cloudtypes.EnvironmentsParams{Last: &last})
 			if err != nil {
 				return err

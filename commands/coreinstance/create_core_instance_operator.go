@@ -1,7 +1,6 @@
 package coreinstance
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"strconv"
@@ -57,7 +56,7 @@ func newCmdCreateCoreInstanceOperator(cfg *config.Config, testClientSet kubernet
 		Aliases: []string{"opr", "k8s"},
 		Short:   "Setup a new core instance on top of a operator installation",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx := context.Background()
+			ctx := cmd.Context()
 			if configOverrides.Context.Namespace == "" {
 				namespace, err := k8s.GetCurrentContextNamespace()
 				if err != nil {

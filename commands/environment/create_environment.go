@@ -1,8 +1,6 @@
 package environment
 
 import (
-	"context"
-
 	"github.com/spf13/cobra"
 
 	cloudtypes "github.com/calyptia/api/types"
@@ -15,8 +13,8 @@ func NewCmdCreateEnvironment(cfg *config.Config) *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		Short: "Create an environment",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
 			name := args[0]
-			ctx := context.Background()
 			environment := cloudtypes.CreateEnvironment{Name: name}
 			createEnvironment, err := cfg.Cloud.CreateEnvironment(ctx, cfg.ProjectID, environment)
 			if err != nil {

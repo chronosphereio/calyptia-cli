@@ -1,7 +1,6 @@
 package coreinstance
 
 import (
-	"context"
 	"fmt"
 	"strings"
 	"time"
@@ -59,9 +58,8 @@ func NewCmdUpdateCoreInstanceOperator(cfg *config.Config, testClientSet kubernet
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx := context.Background()
+			ctx := cmd.Context()
 			coreInstanceKey := args[0]
-
 			coreInstanceID, err := cfg.Completer.LoadCoreInstanceID(ctx, coreInstanceKey)
 			if err != nil {
 				return err

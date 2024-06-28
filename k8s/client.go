@@ -1157,7 +1157,7 @@ func (client *Client) IsOperatorInstalled(ctx context.Context) (bool, error) {
 	}
 
 	gkv := schema.GroupVersionResource{Group: "core.calyptia.com", Version: "v1", Resource: "pipelines"}
-	_, err = dynClient.Resource(gkv).List(context.TODO(), metav1.ListOptions{})
+	_, err = dynClient.Resource(gkv).List(ctx, metav1.ListOptions{})
 	if err == nil {
 		operatorIncomplete.Errors = append(operatorIncomplete.Errors, fmt.Errorf("CustomResourceDefinition Pipeline installed"))
 	}
@@ -1180,7 +1180,7 @@ func (client *Client) IsOperatorInstalled(ctx context.Context) (bool, error) {
 		return false, err
 	}
 	deploymentList := &appsv1.DeploymentList{}
-	if err := k8sc.List(context.Background(), deploymentList, &k8sclient.ListOptions{}); err != nil {
+	if err := k8sc.List(ctx, deploymentList, &k8sclient.ListOptions{}); err != nil {
 		return false, err
 	}
 	for _, i := range deploymentList.Items {
@@ -1190,7 +1190,7 @@ func (client *Client) IsOperatorInstalled(ctx context.Context) (bool, error) {
 	}
 
 	clusterRoles := &rbacv1.ClusterRoleList{}
-	if err := k8sc.List(context.Background(), clusterRoles, &k8sclient.ListOptions{}); err != nil {
+	if err := k8sc.List(ctx, clusterRoles, &k8sclient.ListOptions{}); err != nil {
 		return false, err
 	}
 	for _, i := range clusterRoles.Items {
@@ -1209,7 +1209,7 @@ func (client *Client) IsOperatorInstalled(ctx context.Context) (bool, error) {
 	}
 
 	crbList := &rbacv1.ClusterRoleBindingList{}
-	if err := k8sc.List(context.Background(), crbList, &k8sclient.ListOptions{}); err != nil {
+	if err := k8sc.List(ctx, crbList, &k8sclient.ListOptions{}); err != nil {
 		panic(err)
 	}
 
@@ -1223,7 +1223,7 @@ func (client *Client) IsOperatorInstalled(ctx context.Context) (bool, error) {
 	}
 
 	saList := &corev1.ServiceAccountList{}
-	if err := k8sc.List(context.Background(), saList, &k8sclient.ListOptions{}); err != nil {
+	if err := k8sc.List(ctx, saList, &k8sclient.ListOptions{}); err != nil {
 		return false, err
 	}
 

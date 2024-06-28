@@ -1,7 +1,6 @@
 package operator
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"os"
@@ -60,6 +59,8 @@ func NewCmdUpdate() *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
+
 			var namespace string
 			if configOverrides.Context.Namespace == "" {
 				configOverrides.Context.Namespace = apiv1.NamespaceDefault
@@ -119,7 +120,7 @@ func NewCmdUpdate() *cobra.Command {
 				}
 				start := time.Now()
 				fmt.Printf("Waiting for core operator manager to be updated...\n")
-				err = k.WaitReady(context.Background(), namespace, deployment, false, waitTimeout)
+				err = k.WaitReady(ctx, namespace, deployment, false, waitTimeout)
 				if err != nil {
 					return err
 				}

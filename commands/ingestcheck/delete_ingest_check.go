@@ -1,8 +1,6 @@
 package ingestcheck
 
 import (
-	"context"
-
 	"github.com/spf13/cobra"
 
 	"github.com/calyptia/cli/config"
@@ -14,7 +12,7 @@ func NewCmdDeleteIngestCheck(cfg *config.Config) *cobra.Command {
 		Short: "Delete a specific ingest check",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx := context.Background()
+			ctx := cmd.Context()
 			id := args[0]
 			err := cfg.Cloud.DeleteIngestCheck(ctx, id)
 			if err != nil {

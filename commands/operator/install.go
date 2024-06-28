@@ -1,7 +1,6 @@
 package operator
 
 import (
-	"context"
 	_ "embed"
 	"errors"
 	"fmt"
@@ -113,7 +112,7 @@ func NewCmdInstall() *cobra.Command {
 				}
 			}
 
-			_, err = k.GetNamespace(context.Background(), namespace)
+			_, err = k.GetNamespace(ctx, namespace)
 			if err != nil && !kerrors.IsNotFound(err) {
 				return err
 			}
@@ -131,7 +130,7 @@ func NewCmdInstall() *cobra.Command {
 				}
 				start := time.Now()
 				fmt.Println("Waiting for core operator manager to be ready...")
-				err = k.WaitReady(context.Background(), namespace, deployment, false, waitTimeout)
+				err = k.WaitReady(ctx, namespace, deployment, false, waitTimeout)
 				if err != nil {
 					return err
 				}
