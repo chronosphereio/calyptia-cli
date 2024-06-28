@@ -30,7 +30,6 @@ func NewCmdUpdatePipeline(cfg *config.Config) *cobra.Command {
 	var files []string
 	var encryptFiles bool
 	var image string
-	var outputFormat, goTemplate string
 	var metadataPairs []string
 	var metadataFile string
 	var providedConfigFormat string

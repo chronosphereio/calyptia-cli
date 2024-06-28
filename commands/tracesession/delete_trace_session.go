@@ -18,7 +18,6 @@ import (
 func NewCmdDeleteTraceSession(cfg *config.Config) *cobra.Command {
 	var confirmed bool
 	var pipelineKey string
-	var outputFormat, goTemplate string
 
 	cmd := &cobra.Command{
 		Use:   "trace_session", // child of `delete`

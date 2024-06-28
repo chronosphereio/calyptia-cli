@@ -16,7 +16,6 @@ func NewCmdCreateTraceSession(cfg *config.Config) *cobra.Command {
 	var pipelineKey string
 	var plugins []string
 	var lifespan time.Duration
-	var outputFormat, goTemplate string
 
 	cmd := &cobra.Command{
 		Use:   "trace_session", // child of `create`

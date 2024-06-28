@@ -17,7 +17,6 @@ func NewCmdRolloutPipeline(cfg *config.Config) *cobra.Command {
 	var stepsBack uint
 	var toConfigID string
 	var noAutoCreateEndpointsFromConfig, skipConfigValidation bool
-	var outputFormat, goTemplate string
 
 	cmd := &cobra.Command{
 		Use:               "pipeline PIPELINE",

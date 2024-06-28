@@ -107,7 +107,7 @@ func NewCmdGetPipeline(cfg *config.Config) *cobra.Command {
 	var includeEndpoints, includeConfigHistory, includeSecrets bool
 	var showIDs bool
 	var renderWithConfigSections bool
-	var outputFormat, goTemplate, configFormat string
+	var configFormat string
 
 	cmd := &cobra.Command{
 		Use:               "pipeline PIPELINE",
@@ -132,6 +132,9 @@ func NewCmdGetPipeline(cfg *config.Config) *cobra.Command {
 					return fmt.Errorf("not a valid config format: %s", configFormat)
 				}
 			}
+
+			fs := cmd.Flags()
+			outputFormat := formatters.OutputFormatFromFlags(fs)
 
 			if outputFormat == "table" && (includeEndpoints || includeConfigHistory || includeSecrets) && !onlyConfig {
 				g, gctx := errgroup.WithContext(ctx)
@@ -204,10 +207,8 @@ func NewCmdGetPipeline(cfg *config.Config) *cobra.Command {
 				return nil
 			}
 
-			fs := cmd.Flags()
-			outputFormat := formatters.OutputFormatFromFlags(fs)
 			if fn, ok := formatters.ShouldApplyTemplating(outputFormat); ok {
-				return fn(cmd.OutOrStdout(), formatters.TemplateFromFlags(fs), out)
+				return fn(cmd.OutOrStdout(), formatters.TemplateFromFlags(fs), pip)
 			}
 
 			switch outputFormat {
