@@ -5,11 +5,11 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/calyptia/api/types"
-	cfg "github.com/calyptia/cli/config"
+	cloudtypes "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/config"
 )
 
-func NewCmdCreateIngestCheck(config *cfg.Config) *cobra.Command {
+func NewCmdCreateIngestCheck(cfg *config.Config) *cobra.Command {
 	var (
 		retries         uint
 		configSectionID string
@@ -26,7 +26,7 @@ func NewCmdCreateIngestCheck(config *cfg.Config) *cobra.Command {
 			ctx := cmd.Context()
 			coreInstance := args[0]
 
-			params := types.CreateIngestCheck{
+			params := cloudtypes.CreateIngestCheck{
 				CollectLogs: collectLogs,
 			}
 			if configSectionID == "" {
@@ -38,24 +38,24 @@ func NewCmdCreateIngestCheck(config *cfg.Config) *cobra.Command {
 				params.Retries = retries
 			}
 
-			if status != "" && !types.ValidCheckStatus(types.CheckStatus(status)) {
+			if status != "" && !cloudtypes.ValidCheckStatus(cloudtypes.CheckStatus(status)) {
 				return fmt.Errorf("invalid check status")
 			}
 
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = config.Completer.LoadEnvironmentID(ctx, environment)
+				environmentID, err = cfg.Completer.LoadEnvironmentID(ctx, environment)
 				if err != nil {
 					return err
 				}
 			}
-			coreInstanceID, err := config.Completer.LoadCoreInstanceID(ctx, coreInstance, environmentID)
+			coreInstanceID, err := cfg.Completer.LoadCoreInstanceID(ctx, coreInstance, environmentID)
 			if err != nil {
 				return err
 			}
 
-			check, err := config.Cloud.CreateIngestCheck(ctx, coreInstanceID, params)
+			check, err := cfg.Cloud.CreateIngestCheck(ctx, coreInstanceID, params)
 			if err != nil {
 				return err
 			}

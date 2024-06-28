@@ -5,18 +5,18 @@ import (
 
 	"github.com/spf13/cobra"
 
-	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/confirm"
 )
 
-func NewCmdDeleteEndpoint(config *cfg.Config) *cobra.Command {
+func NewCmdDeleteEndpoint(cfg *config.Config) *cobra.Command {
 	var confirmed bool
 
 	cmd := &cobra.Command{
 		Use:               "endpoint ENDPOINT",
 		Short:             "Delete a single endpoint by ID",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.Completer.CompletePipelines,
+		ValidArgsFunction: cfg.Completer.CompletePipelines,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			portID := args[0]
@@ -33,7 +33,7 @@ func NewCmdDeleteEndpoint(config *cfg.Config) *cobra.Command {
 				}
 			}
 
-			err := config.Cloud.DeletePipelinePort(ctx, portID)
+			err := cfg.Cloud.DeletePipelinePort(ctx, portID)
 			if err != nil {
 				return fmt.Errorf("could not delete endpoint: %w", err)
 			}

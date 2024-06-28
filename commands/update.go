@@ -13,32 +13,32 @@ import (
 	"github.com/calyptia/cli/commands/operator"
 	"github.com/calyptia/cli/commands/pipeline"
 	"github.com/calyptia/cli/commands/project"
-	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/config"
 )
 
-func newCmdUpdate(config *cfg.Config) *cobra.Command {
+func newCmdUpdate(cfg *config.Config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update",
 		Short: "Update core instances, pipelines, etc.",
 	}
 
 	cmd.AddCommand(
-		project.NewCmdUpdateProject(config),
-		members.NewCmdUpdateMember(config),
-		agent.NewCmdUpdateAgent(config),
-		fleet.NewCmdUpdateFleet(config),
-		fleet.NewCmdUpdateFleetFile(config),
-		pipeline.NewCmdUpdatePipeline(config),
-		pipeline.NewCmdUpdatePipelineSecret(config),
-		pipeline.NewCmdUpdatePipelineFile(config),
-		pipeline.NewCmdUpdatePipelineClusterObject(config),
-		endpoint.NewCmdUpdateEndpoint(config),
-		coreinstance.NewCmdUpdateCoreInstance(config),
-		coreinstance.NewCmdUpdateCoreInstanceFile(config),
-		coreinstance.NewCmdUpdateCoreInstanceSecret(config),
-		environment.NewCmdUpdateEnvironment(config),
-		configsection.NewCmdUpdateConfigSection(config),
-		configsection.NewCmdUpdateConfigSectionSet(config),
+		project.NewCmdUpdateProject(cfg),
+		members.NewCmdUpdateMember(cfg),
+		agent.NewCmdUpdateAgent(cfg),
+		fleet.NewCmdUpdateFleet(cfg),
+		fleet.NewCmdUpdateFleetFile(cfg),
+		pipeline.NewCmdUpdatePipeline(cfg),
+		pipeline.NewCmdUpdatePipelineSecret(cfg),
+		pipeline.NewCmdUpdatePipelineFile(cfg),
+		pipeline.NewCmdUpdatePipelineClusterObject(cfg),
+		endpoint.NewCmdUpdateEndpoint(cfg),
+		coreinstance.NewCmdUpdateCoreInstance(cfg),
+		coreinstance.NewCmdUpdateCoreInstanceFile(cfg),
+		coreinstance.NewCmdUpdateCoreInstanceSecret(cfg),
+		environment.NewCmdUpdateEnvironment(cfg),
+		configsection.NewCmdUpdateConfigSection(cfg),
+		configsection.NewCmdUpdateConfigSectionSet(cfg),
 		operator.NewCmdUpdate(),
 	)
 

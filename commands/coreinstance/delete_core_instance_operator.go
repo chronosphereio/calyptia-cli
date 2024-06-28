@@ -7,16 +7,16 @@ import (
 
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
-	apiv1 "k8s.io/api/core/v1"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes"
-	restclient "k8s.io/client-go/rest"
+	krest "k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 
-	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/k8s"
 )
 
-func NewCmdDeleteCoreInstanceOperator(config *cfg.Config, testClientSet kubernetes.Interface) *cobra.Command {
+func NewCmdDeleteCoreInstanceOperator(cfg *config.Config, testClientSet kubernetes.Interface) *cobra.Command {
 	var (
 		confirmed   bool
 		environment string
@@ -38,22 +38,22 @@ func NewCmdDeleteCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = config.Completer.LoadEnvironmentID(ctx, environment)
+				environmentID, err = cfg.Completer.LoadEnvironmentID(ctx, environment)
 				if err != nil {
 					return err
 				}
 			}
 			coreInstanceKey := args[0]
-			coreInstanceID, err := config.Completer.LoadCoreInstanceID(ctx, coreInstanceKey, environmentID)
+			coreInstanceID, err := cfg.Completer.LoadCoreInstanceID(ctx, coreInstanceKey, environmentID)
 			if err != nil {
 				return err
 			}
-			coreInstance, err := config.Cloud.CoreInstance(ctx, coreInstanceID)
+			coreInstance, err := cfg.Cloud.CoreInstance(ctx, coreInstanceID)
 			if err != nil {
 				return err
 			}
 
-			err = config.Cloud.DeleteCoreInstance(ctx, coreInstance.ID)
+			err = cfg.Cloud.DeleteCoreInstance(ctx, coreInstance.ID)
 			if err != nil {
 				return err
 			}
@@ -71,12 +71,12 @@ func NewCmdDeleteCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				if namespace != "" {
 					configOverrides.Context.Namespace = namespace
 				} else {
-					configOverrides.Context.Namespace = apiv1.NamespaceDefault
+					configOverrides.Context.Namespace = corev1.NamespaceDefault
 				}
 
 			}
 			var clientSet kubernetes.Interface
-			var kubeClientConfig *restclient.Config
+			var kubeClientConfig *krest.Config
 			if testClientSet != nil {
 				clientSet = testClientSet
 			} else {
@@ -96,8 +96,8 @@ func NewCmdDeleteCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 			k8sClient := &k8s.Client{
 				Interface:    clientSet,
 				Namespace:    configOverrides.Context.Namespace,
-				ProjectToken: config.ProjectToken,
-				CloudBaseURL: config.BaseURL,
+				ProjectToken: cfg.ProjectToken,
+				CloudBaseURL: cfg.BaseURL,
 				Config:       kubeClientConfig,
 			}
 

@@ -5,10 +5,10 @@ import (
 
 	"github.com/spf13/cobra"
 
-	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/config"
 )
 
-func NewCmdDeleteIngestCheck(c *cfg.Config) *cobra.Command {
+func NewCmdDeleteIngestCheck(cfg *config.Config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "ingest_check INGEST_CHECK_ID",
 		Short: "Delete a specific ingest check",
@@ -16,7 +16,7 @@ func NewCmdDeleteIngestCheck(c *cfg.Config) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.Background()
 			id := args[0]
-			err := c.Cloud.DeleteIngestCheck(ctx, id)
+			err := cfg.Cloud.DeleteIngestCheck(ctx, id)
 			if err != nil {
 				return err
 			}

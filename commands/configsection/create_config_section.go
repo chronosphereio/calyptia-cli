@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 
-	"github.com/calyptia/api/types"
+	cloudtypes "github.com/calyptia/api/types"
 	"github.com/calyptia/cli/completer"
 	"github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
@@ -28,13 +28,13 @@ func NewCmdCreateConfigSection(cfg *config.Config) *cobra.Command {
 		Long:  "Create a snipet of a reutilizable config section that you can attach later to pipelines",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			props := propsFromSlice(propsSlice)
-			props = append(types.Pairs{
+			props = append(cloudtypes.Pairs{
 				{Key: "name", Value: name},
 			}, props...)
 
 			ctx := cmd.Context()
-			created, err := cfg.Cloud.CreateConfigSection(ctx, cfg.ProjectID, types.CreateConfigSection{
-				Kind:       types.ConfigSectionKind(kind),
+			created, err := cfg.Cloud.CreateConfigSection(ctx, cfg.ProjectID, cloudtypes.CreateConfigSection{
+				Kind:       cloudtypes.ConfigSectionKind(kind),
 				Properties: props,
 			})
 			if err != nil {
@@ -79,12 +79,12 @@ func NewCmdCreateConfigSection(cfg *config.Config) *cobra.Command {
 //	foo bar -> "foo", "bar"
 var reSpacesOrEqualSignMoreThanOnce = regexp.MustCompile(`[\s|=]+`)
 
-func propsFromSlice(ss []string) types.Pairs {
+func propsFromSlice(ss []string) cloudtypes.Pairs {
 	if len(ss) == 0 {
 		return nil
 	}
 
-	var out types.Pairs
+	var out cloudtypes.Pairs
 	for _, s := range ss {
 		ss := reSpacesOrEqualSignMoreThanOnce.Split(s, 2)
 		if len(ss) == 0 {
@@ -99,9 +99,9 @@ func propsFromSlice(ss []string) types.Pairs {
 		}
 
 		if out == nil {
-			out = types.Pairs{}
+			out = cloudtypes.Pairs{}
 		}
-		out = append(out, types.Pair{
+		out = append(out, cloudtypes.Pair{
 			Key:   key,
 			Value: value,
 		})

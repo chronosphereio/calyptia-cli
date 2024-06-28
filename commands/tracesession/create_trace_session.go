@@ -10,12 +10,12 @@ import (
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 
-	"github.com/calyptia/api/types"
-	cfg "github.com/calyptia/cli/config"
+	cloudtypes "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
 
-func NewCmdCreateTraceSession(config *cfg.Config) *cobra.Command {
+func NewCmdCreateTraceSession(cfg *config.Config) *cobra.Command {
 	var pipelineKey string
 	var plugins []string
 	var lifespan time.Duration
@@ -30,14 +30,14 @@ func NewCmdCreateTraceSession(config *cfg.Config) *cobra.Command {
 			"or update it and extend its lifespan.",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			pipelineID, err := config.Completer.LoadPipelineID(ctx, pipelineKey)
+			pipelineID, err := cfg.Completer.LoadPipelineID(ctx, pipelineKey)
 			if err != nil {
 				return err
 			}
 
-			created, err := config.Cloud.CreateTraceSession(ctx, pipelineID, types.CreateTraceSession{
+			created, err := cfg.Cloud.CreateTraceSession(ctx, pipelineID, cloudtypes.CreateTraceSession{
 				Plugins:  plugins,
-				Lifespan: types.Duration(lifespan),
+				Lifespan: cloudtypes.Duration(lifespan),
 			})
 			if err != nil {
 				return err
@@ -72,11 +72,11 @@ func NewCmdCreateTraceSession(config *cfg.Config) *cobra.Command {
 
 	_ = cmd.MarkFlagRequired("pipeline")
 
-	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.Completer.CompletePipelines)
+	_ = cmd.RegisterFlagCompletionFunc("pipeline", cfg.Completer.CompletePipelines)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("plugins", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		ctx := cmd.Context()
-		return config.Completer.CompletePipelinePlugins(ctx, pipelineKey, cmd, args, toComplete)
+		return cfg.Completer.CompletePipelinePlugins(ctx, pipelineKey, cmd, args, toComplete)
 	})
 
 	return cmd

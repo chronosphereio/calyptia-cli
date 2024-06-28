@@ -10,12 +10,12 @@ import (
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 
-	cloud "github.com/calyptia/api/types"
-	cfg "github.com/calyptia/cli/config"
+	cloudtypes "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
 
-func NewCmdGetPipelineFiles(config *cfg.Config) *cobra.Command {
+func NewCmdGetPipelineFiles(cfg *config.Config) *cobra.Command {
 	var pipelineKey string
 	var last uint
 	var outputFormat, goTemplate string
@@ -26,12 +26,12 @@ func NewCmdGetPipelineFiles(config *cfg.Config) *cobra.Command {
 		Short: "Get pipeline files",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			pipelineID, err := config.Completer.LoadPipelineID(ctx, pipelineKey)
+			pipelineID, err := cfg.Completer.LoadPipelineID(ctx, pipelineKey)
 			if err != nil {
 				return err
 			}
 
-			ff, err := config.Cloud.PipelineFiles(ctx, pipelineID, cloud.PipelineFilesParams{
+			ff, err := cfg.Cloud.PipelineFiles(ctx, pipelineID, cloudtypes.PipelineFilesParams{
 				Last: &last,
 			})
 			if err != nil {
@@ -64,14 +64,14 @@ func NewCmdGetPipelineFiles(config *cfg.Config) *cobra.Command {
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
-	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.Completer.CompletePipelines)
+	_ = cmd.RegisterFlagCompletionFunc("pipeline", cfg.Completer.CompletePipelines)
 
 	_ = cmd.MarkFlagRequired("pipeline") // TODO: use default pipeline key from config cmd.
 
 	return cmd
 }
 
-func NewCmdGetPipelineFile(config *cfg.Config) *cobra.Command {
+func NewCmdGetPipelineFile(cfg *config.Config) *cobra.Command {
 	var pipelineKey string
 	var name string
 	var outputFormat, goTemplate string
@@ -82,17 +82,17 @@ func NewCmdGetPipelineFile(config *cfg.Config) *cobra.Command {
 		Short: "Get a single file from a pipeline by its name",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			pipelineID, err := config.Completer.LoadPipelineID(ctx, pipelineKey)
+			pipelineID, err := cfg.Completer.LoadPipelineID(ctx, pipelineKey)
 			if err != nil {
 				return err
 			}
 
-			ff, err := config.Cloud.PipelineFiles(ctx, pipelineID, cloud.PipelineFilesParams{})
+			ff, err := cfg.Cloud.PipelineFiles(ctx, pipelineID, cloudtypes.PipelineFilesParams{})
 			if err != nil {
 				return fmt.Errorf("could not find your pipeline file by name: %w", err)
 			}
 
-			var file cloud.PipelineFile
+			var file cloudtypes.PipelineFile
 			var found bool
 			for _, f := range ff.Items {
 				if f.Name == name {
@@ -150,7 +150,7 @@ func NewCmdGetPipelineFile(config *cfg.Config) *cobra.Command {
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
-	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.Completer.CompletePipelines)
+	_ = cmd.RegisterFlagCompletionFunc("pipeline", cfg.Completer.CompletePipelines)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
 	_ = cmd.MarkFlagRequired("pipeline") // TODO: use default pipeline key from config cmd.
@@ -159,7 +159,7 @@ func NewCmdGetPipelineFile(config *cfg.Config) *cobra.Command {
 	return cmd
 }
 
-func renderPipelineFiles(w io.Writer, ff []cloud.PipelineFile, showIDs bool) {
+func renderPipelineFiles(w io.Writer, ff []cloudtypes.PipelineFile, showIDs bool) {
 	tw := tabwriter.NewWriter(w, 0, 4, 1, ' ', 0)
 	if showIDs {
 		fmt.Fprint(tw, "ID\t")

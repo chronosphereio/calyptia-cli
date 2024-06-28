@@ -10,12 +10,12 @@ import (
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 
-	cloud "github.com/calyptia/api/types"
-	cfg "github.com/calyptia/cli/config"
+	cloudtypes "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
 
-func NewCmdGetPipelineSecrets(config *cfg.Config) *cobra.Command {
+func NewCmdGetPipelineSecrets(cfg *config.Config) *cobra.Command {
 	var pipelineKey string
 	var last uint
 	var outputFormat, goTemplate string
@@ -26,12 +26,12 @@ func NewCmdGetPipelineSecrets(config *cfg.Config) *cobra.Command {
 		Short: "Get pipeline secrets",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			pipelineID, err := config.Completer.LoadPipelineID(ctx, pipelineKey)
+			pipelineID, err := cfg.Completer.LoadPipelineID(ctx, pipelineKey)
 			if err != nil {
 				return err
 			}
 
-			ss, err := config.Cloud.PipelineSecrets(ctx, pipelineID, cloud.PipelineSecretsParams{
+			ss, err := cfg.Cloud.PipelineSecrets(ctx, pipelineID, cloudtypes.PipelineSecretsParams{
 				Last: &last,
 			})
 			if err != nil {
@@ -64,14 +64,14 @@ func NewCmdGetPipelineSecrets(config *cfg.Config) *cobra.Command {
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
-	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.Completer.CompletePipelines)
+	_ = cmd.RegisterFlagCompletionFunc("pipeline", cfg.Completer.CompletePipelines)
 
 	_ = cmd.MarkFlagRequired("pipeline") // TODO: use default pipeline key from config cmd.
 
 	return cmd
 }
 
-func renderPipelineSecrets(w io.Writer, ss []cloud.PipelineSecret, showIDs bool) {
+func renderPipelineSecrets(w io.Writer, ss []cloudtypes.PipelineSecret, showIDs bool) {
 	tw := tabwriter.NewWriter(w, 0, 4, 1, ' ', 0)
 	if showIDs {
 		fmt.Fprint(tw, "ID\t")

@@ -3,14 +3,14 @@ package coreinstance
 import (
 	"github.com/spf13/cobra"
 
-	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/config"
 )
 
-func NewCmdUpdateCoreInstance(config *cfg.Config) *cobra.Command {
+func NewCmdUpdateCoreInstance(cfg *config.Config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "core_instance",
 		Short: "Update a core instance on a Kubernetes cluster.",
 	}
-	cmd.AddCommand(NewCmdUpdateCoreInstanceOperator(config, nil))
+	cmd.AddCommand(NewCmdUpdateCoreInstanceOperator(cfg, nil))
 	return cmd
 }

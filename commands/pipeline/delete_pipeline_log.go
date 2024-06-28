@@ -3,11 +3,11 @@ package pipeline
 import (
 	"github.com/spf13/cobra"
 
-	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/confirm"
 )
 
-func NewCmdDeletePipelineLog(config *cfg.Config) *cobra.Command {
+func NewCmdDeletePipelineLog(cfg *config.Config) *cobra.Command {
 	var confirmed bool
 
 	cmd := &cobra.Command{
@@ -30,7 +30,7 @@ func NewCmdDeletePipelineLog(config *cfg.Config) *cobra.Command {
 				}
 			}
 
-			_, err := config.Cloud.DeletePipelineLog(ctx, pipelineLogID)
+			_, err := cfg.Cloud.DeletePipelineLog(ctx, pipelineLogID)
 			return err
 		},
 	}

@@ -2,7 +2,6 @@ package operator
 
 import (
 	"context"
-	"embed"
 	_ "embed"
 	"errors"
 	"fmt"
@@ -16,11 +15,11 @@ import (
 	"github.com/spf13/pflag"
 	"gopkg.in/yaml.v3"
 	apiv1 "k8s.io/api/core/v1"
-	k8serrors "k8s.io/apimachinery/pkg/api/errors"
+	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
-	"k8s.io/component-base/logs"
+	klogs "k8s.io/component-base/logs"
 	kubectl "k8s.io/kubectl/pkg/cmd"
 
 	"github.com/calyptia/cli/confirm"
@@ -29,9 +28,8 @@ import (
 )
 
 //go:embed manifest.yaml
-var f embed.FS
+var manifestYAML string
 
-const manifestFile = "manifest.yaml"
 const EnableExternalTrafficPolicyLocal = "-enable-external-traffic-policy-local=true"
 
 func NewCmdInstall() *cobra.Command {
@@ -111,11 +109,11 @@ func NewCmdInstall() *cobra.Command {
 			}
 
 			_, err = k.GetNamespace(context.Background(), namespace)
-			if err != nil && !k8serrors.IsNotFound(err) {
+			if err != nil && !kerrors.IsNotFound(err) {
 				return err
 			}
 
-			manifest, err := installManifest(namespace, coreDockerImage, coreInstanceVersion, k8serrors.IsNotFound(err), externalTrafficPolicyLocal)
+			manifest, err := installManifest(namespace, coreDockerImage, coreInstanceVersion, kerrors.IsNotFound(err), externalTrafficPolicyLocal)
 			if err != nil {
 				return err
 			}
@@ -180,12 +178,7 @@ func extractDeployment(yml string) (string, error) {
 }
 
 func prepareInstallManifest(coreDockerImage, coreInstanceVersion, namespace string, createNamespace bool, externalTrafficPolicyLocal bool) (string, error) {
-	file, err := f.ReadFile(manifestFile)
-	if err != nil {
-		return "", err
-	}
-	fullFile := string(file)
-	solveNamespace := solveNamespaceCreation(createNamespace, fullFile, namespace)
+	solveNamespace := solveNamespaceCreation(createNamespace, manifestYAML, namespace)
 	withNamespace := injectNamespace(solveNamespace, namespace)
 
 	withImage, err := addImage(coreDockerImage, coreInstanceVersion, withNamespace)
@@ -288,13 +281,13 @@ func newKubectlCmd() *cobra.Command {
 		Arguments: os.Args,
 	}
 
-	cmd := kubectl.NewKubectlCommand(args)
+	kubectlCmd := kubectl.NewKubectlCommand(args)
 
-	cmd.Aliases = []string{"kc"}
-	cmd.Hidden = true
+	kubectlCmd.Aliases = []string{"kc"}
+	kubectlCmd.Hidden = true
 	// Get handle on the original kubectl prerun so we can call it later
-	originalPreRunE := cmd.PersistentPreRunE
-	cmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
+	originalPreRunE := kubectlCmd.PersistentPreRunE
+	kubectlCmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
 		// Call parents pre-run if exists, cobra does not do this automatically
 		// See: https://github.com/spf13/cobra/issues/216
 		if parent := cmd.Parent(); parent != nil {
@@ -311,14 +304,14 @@ func newKubectlCmd() *cobra.Command {
 		return originalPreRunE(cmd, args)
 	}
 
-	originalRun := cmd.Run
-	cmd.RunE = func(cmd *cobra.Command, args []string) error {
+	originalRun := kubectlCmd.Run
+	kubectlCmd.RunE = func(cmd *cobra.Command, args []string) error {
 		originalRun(cmd, args)
 		return nil
 	}
 
-	logs.AddFlags(cmd.PersistentFlags())
-	return cmd
+	klogs.AddFlags(kubectlCmd.PersistentFlags())
+	return kubectlCmd
 }
 
 func installManifest(namespace, coreDockerImage, coreInstanceVersion string, createNamespace bool, externalTrafficPolicyLocal bool) (string, error) {

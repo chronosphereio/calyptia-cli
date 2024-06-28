@@ -12,20 +12,13 @@ import (
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 
-	"github.com/calyptia/api/types"
-	cfg "github.com/calyptia/cli/config"
+	cloudtypes "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
 
-func getFormat(configFile, configFormat string) types.ConfigFormat {
-	if configFormat == "" || strings.ToLower(configFormat) == "auto" {
-		return types.ConfigFormat(strings.TrimPrefix(filepath.Ext(configFile), "."))
-	}
-	return types.ConfigFormat(configFormat)
-}
-
-func NewCmdCreateFleet(config *cfg.Config) *cobra.Command {
-	var in types.CreateFleet
+func NewCmdCreateFleet(cfg *config.Config) *cobra.Command {
+	var in cloudtypes.CreateFleet
 	var configFile, configFormat string
 	var outputFormat, goTemplate string
 
@@ -43,9 +36,9 @@ func NewCmdCreateFleet(config *cfg.Config) *cobra.Command {
 			}
 
 			in.ConfigFormat = getFormat(configFile, configFormat)
-			in.ProjectID = config.ProjectID
+			in.ProjectID = cfg.ProjectID
 
-			created, err := config.Cloud.CreateFleet(ctx, in)
+			created, err := cfg.Cloud.CreateFleet(ctx, in)
 			if err != nil {
 				return err
 			}
@@ -99,4 +92,11 @@ func readConfig(filename string) (string, error) {
 
 func completeConfigFormat(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
 	return []string{"yaml", "json", "classic"}, cobra.ShellCompDirectiveNoFileComp
+}
+
+func getFormat(configFile, configFormat string) cloudtypes.ConfigFormat {
+	if configFormat == "" || strings.ToLower(configFormat) == "auto" {
+		return cloudtypes.ConfigFormat(strings.TrimPrefix(filepath.Ext(configFile), "."))
+	}
+	return cloudtypes.ConfigFormat(configFormat)
 }

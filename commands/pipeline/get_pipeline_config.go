@@ -10,12 +10,12 @@ import (
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 
-	"github.com/calyptia/api/types"
-	cfg "github.com/calyptia/cli/config"
+	cloudtypes "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
 
-func NewCmdGetPipelineConfigHistory(config *cfg.Config) *cobra.Command {
+func NewCmdGetPipelineConfigHistory(cfg *config.Config) *cobra.Command {
 	var outputFormat, goTemplate string
 	var pipelineKey string
 	var last uint
@@ -25,12 +25,12 @@ func NewCmdGetPipelineConfigHistory(config *cfg.Config) *cobra.Command {
 		Short: "Display latest config history from a pipeline",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			pipelineID, err := config.Completer.LoadPipelineID(ctx, pipelineKey)
+			pipelineID, err := cfg.Completer.LoadPipelineID(ctx, pipelineKey)
 			if err != nil {
 				return err
 			}
 
-			cc, err := config.Cloud.PipelineConfigHistory(ctx, pipelineID, types.PipelineConfigHistoryParams{
+			cc, err := cfg.Cloud.PipelineConfigHistory(ctx, pipelineID, cloudtypes.PipelineConfigHistoryParams{
 				Last: &last,
 			})
 			if err != nil {
@@ -62,14 +62,14 @@ func NewCmdGetPipelineConfigHistory(config *cfg.Config) *cobra.Command {
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
-	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.Completer.CompletePipelines)
+	_ = cmd.RegisterFlagCompletionFunc("pipeline", cfg.Completer.CompletePipelines)
 
 	_ = cmd.MarkFlagRequired("pipeline") // TODO: use default pipeline key from config cmd.
 
 	return cmd
 }
 
-func renderPipelineConfigHistory(w io.Writer, cc []types.PipelineConfig) {
+func renderPipelineConfigHistory(w io.Writer, cc []cloudtypes.PipelineConfig) {
 	tw := tabwriter.NewWriter(w, 0, 4, 1, ' ', 0)
 	fmt.Fprintln(tw, "ID\tAGE")
 	for _, c := range cc {

@@ -8,11 +8,11 @@ import (
 
 	"github.com/spf13/cobra"
 
-	cloud "github.com/calyptia/api/types"
-	cfg "github.com/calyptia/cli/config"
+	cloudtypes "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/config"
 )
 
-func NewCmdUpdatePipelineFile(config *cfg.Config) *cobra.Command {
+func NewCmdUpdatePipelineFile(cfg *config.Config) *cobra.Command {
 	var pipelineKey string
 	var file string
 	var encrypt bool
@@ -30,19 +30,19 @@ func NewCmdUpdatePipelineFile(config *cfg.Config) *cobra.Command {
 			name := filepath.Base(file)
 			name = strings.TrimSuffix(name, filepath.Ext(name))
 
-			pipelineID, err := config.Completer.LoadPipelineID(ctx, pipelineKey)
+			pipelineID, err := cfg.Completer.LoadPipelineID(ctx, pipelineKey)
 			if err != nil {
 				return err
 			}
 
-			ff, err := config.Cloud.PipelineFiles(ctx, pipelineID, cloud.PipelineFilesParams{})
+			ff, err := cfg.Cloud.PipelineFiles(ctx, pipelineID, cloudtypes.PipelineFilesParams{})
 			if err != nil {
 				return err
 			}
 
 			for _, f := range ff.Items {
 				if f.Name == name {
-					return config.Cloud.UpdatePipelineFile(ctx, f.ID, cloud.UpdatePipelineFile{
+					return cfg.Cloud.UpdatePipelineFile(ctx, f.ID, cloudtypes.UpdatePipelineFile{
 						Contents:  &contents,
 						Encrypted: &encrypt,
 					})
@@ -58,7 +58,7 @@ func NewCmdUpdatePipelineFile(config *cfg.Config) *cobra.Command {
 	fs.StringVar(&file, "file", "", "File path. The file you want to update. It must exists already.")
 	fs.BoolVar(&encrypt, "encrypt", false, "Encrypt file contents")
 
-	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.Completer.CompletePipelines)
+	_ = cmd.RegisterFlagCompletionFunc("pipeline", cfg.Completer.CompletePipelines)
 	_ = cmd.MarkFlagRequired("file")
 
 	_ = cmd.MarkFlagRequired("pipeline") // TODO: use default pipeline key from config cmd.

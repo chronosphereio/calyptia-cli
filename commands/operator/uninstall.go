@@ -85,18 +85,12 @@ func NewCmdUninstall() *cobra.Command {
 }
 
 func prepareUninstallManifest(namespace string) (string, error) {
-	file, err := f.ReadFile(manifestFile)
-	if err != nil {
-		return "", err
-	}
-
-	fullFile := string(file)
 	var isNamespace bool
 	if namespace != "" {
 		isNamespace = true
 	}
 
-	solveNamespace := solveNamespaceCreation(isNamespace, fullFile, namespace)
+	solveNamespace := solveNamespaceCreation(isNamespace, manifestYAML, namespace)
 	withNamespace := injectNamespace(solveNamespace, namespace)
 
 	dir, err := os.MkdirTemp("", "calyptia-operator")

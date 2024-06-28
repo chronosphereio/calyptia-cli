@@ -5,22 +5,22 @@ import (
 
 	"github.com/spf13/cobra"
 
-	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/config"
 )
 
-func NewCmdCreateCoreInstance(config *cfg.Config) *cobra.Command {
+func NewCmdCreateCoreInstance(cfg *config.Config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:               "core_instance",
 		Short:             "Setup a new core instance on a Kubernetes cluster.",
-		PersistentPreRunE: checkForProjectToken(config),
+		PersistentPreRunE: checkForProjectToken(cfg),
 	}
-	cmd.AddCommand(newCmdCreateCoreInstanceOperator(config, nil))
+	cmd.AddCommand(newCmdCreateCoreInstanceOperator(cfg, nil))
 	return cmd
 }
 
-func checkForProjectToken(config *cfg.Config) func(cmd *cobra.Command, args []string) error {
+func checkForProjectToken(cfg *config.Config) func(cmd *cobra.Command, args []string) error {
 	return func(cmd *cobra.Command, args []string) error {
-		if config.ProjectToken == "" {
+		if cfg.ProjectToken == "" {
 			return fmt.Errorf("project token is required to realize this action.\nPlease set it with `calyptia config set_token <token>`")
 		}
 		return nil

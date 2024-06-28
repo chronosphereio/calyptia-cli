@@ -8,26 +8,26 @@ import (
 	"github.com/spf13/cobra"
 	"golang.org/x/term"
 
-	"github.com/calyptia/api/types"
+	cloudtypes "github.com/calyptia/api/types"
 	"github.com/calyptia/cli/completer"
-	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/confirm"
 	"github.com/calyptia/cli/pointer"
 )
 
-func NewCmdDeleteCoreInstance(config *cfg.Config) *cobra.Command {
+func NewCmdDeleteCoreInstance(cfg *config.Config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "core_instance",
 		Aliases: []string{"instance", "core_instance"},
 		Short:   "Delete a core instance from a Kubernetes cluster.",
 	}
 	cmd.AddCommand(
-		NewCmdDeleteCoreInstanceOperator(config, nil),
+		NewCmdDeleteCoreInstanceOperator(cfg, nil),
 	)
 	return cmd
 }
 
-func NewCmdDeleteCoreInstances(config *cfg.Config) *cobra.Command {
+func NewCmdDeleteCoreInstances(cfg *config.Config) *cobra.Command {
 	var confirmed bool
 
 	cmd := &cobra.Command{
@@ -35,7 +35,7 @@ func NewCmdDeleteCoreInstances(config *cfg.Config) *cobra.Command {
 		Short: "Delete many core instances from project",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			aa, err := config.Cloud.CoreInstances(ctx, config.ProjectID, types.CoreInstancesParams{
+			aa, err := cfg.Cloud.CoreInstances(ctx, cfg.ProjectID, cloudtypes.CoreInstancesParams{
 				Last: pointer.From(uint(0)),
 			})
 			if err != nil {
@@ -65,7 +65,7 @@ func NewCmdDeleteCoreInstances(config *cfg.Config) *cobra.Command {
 				coreInstanceIDs[i] = a.ID
 			}
 
-			err = config.Cloud.DeleteCoreInstances(ctx, config.ProjectID, coreInstanceIDs...)
+			err = cfg.Cloud.DeleteCoreInstances(ctx, cfg.ProjectID, coreInstanceIDs...)
 			if err != nil {
 				return fmt.Errorf("delete core instances: %w", err)
 			}

@@ -11,13 +11,13 @@ import (
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 
-	cloud "github.com/calyptia/api/types"
-	cfg "github.com/calyptia/cli/config"
+	cloudtypes "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 	"github.com/calyptia/cli/pointer"
 )
 
-func NewCmdGetAgents(config *cfg.Config) *cobra.Command {
+func NewCmdGetAgents(cfg *config.Config) *cobra.Command {
 	var last uint
 	var outputFormat, goTemplate string
 	var showIDs bool
@@ -31,12 +31,12 @@ func NewCmdGetAgents(config *cfg.Config) *cobra.Command {
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = config.Completer.LoadEnvironmentID(ctx, environment)
+				environmentID, err = cfg.Completer.LoadEnvironmentID(ctx, environment)
 				if err != nil {
 					return err
 				}
 			}
-			var params cloud.AgentsParams
+			var params cloudtypes.AgentsParams
 
 			params.Last = &last
 			if environmentID != "" {
@@ -45,7 +45,7 @@ func NewCmdGetAgents(config *cfg.Config) *cobra.Command {
 
 			fs := cmd.Flags()
 			if fs.Changed("fleet") {
-				fleedID, err := config.Completer.LoadFleetID(ctx, fleetKey)
+				fleedID, err := cfg.Completer.LoadFleetID(ctx, fleetKey)
 				if err != nil {
 					return err
 				}
@@ -53,7 +53,7 @@ func NewCmdGetAgents(config *cfg.Config) *cobra.Command {
 				params.FleetID = &fleedID
 			}
 
-			aa, err := config.Cloud.Agents(ctx, config.ProjectID, params)
+			aa, err := cfg.Cloud.Agents(ctx, cfg.ProjectID, params)
 			if err != nil {
 				return fmt.Errorf("could not fetch your agents: %w", err)
 			}
@@ -96,14 +96,14 @@ func NewCmdGetAgents(config *cfg.Config) *cobra.Command {
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
-	_ = cmd.RegisterFlagCompletionFunc("environment", config.Completer.CompleteEnvironments)
-	_ = cmd.RegisterFlagCompletionFunc("fleet", config.Completer.CompleteFleets)
+	_ = cmd.RegisterFlagCompletionFunc("environment", cfg.Completer.CompleteEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("fleet", cfg.Completer.CompleteFleets)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
 	return cmd
 }
 
-func NewCmdGetAgent(config *cfg.Config) *cobra.Command {
+func NewCmdGetAgent(config *config.Config) *cobra.Command {
 	var outputFormat, goTemplate string
 	var showIDs bool
 	var onlyConfig bool

@@ -49,7 +49,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.manifest-artefact }}
-          path: cmd/operator
+          path: commands/operator
 
       - name: Generate PR
         id: cpr

@@ -10,12 +10,12 @@ import (
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 
-	"github.com/calyptia/api/types"
-	cfg "github.com/calyptia/cli/config"
+	cloudtypes "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
 
-func NewCmdGetTraceRecords(config *cfg.Config) *cobra.Command {
+func NewCmdGetTraceRecords(cfg *config.Config) *cobra.Command {
 	var sessionID string
 	var last uint
 	var before string
@@ -39,7 +39,7 @@ func NewCmdGetTraceRecords(config *cfg.Config) *cobra.Command {
 				beforeOpt = &before
 			}
 
-			ss, err := config.Cloud.TraceRecords(ctx, sessionID, types.TraceRecordsParams{
+			ss, err := cfg.Cloud.TraceRecords(ctx, sessionID, cloudtypes.TraceRecordsParams{
 				Last:   lastOpt,
 				Before: beforeOpt,
 			})
@@ -73,12 +73,12 @@ func NewCmdGetTraceRecords(config *cfg.Config) *cobra.Command {
 	_ = cmd.MarkFlagRequired("session")
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
-	_ = cmd.RegisterFlagCompletionFunc("session", config.Completer.CompleteTraceSessions)
+	_ = cmd.RegisterFlagCompletionFunc("session", cfg.Completer.CompleteTraceSessions)
 
 	return cmd
 }
 
-func renderTraceRecordsTable(w io.Writer, rr types.TraceRecords, sessionID string, showIDs bool) error {
+func renderTraceRecordsTable(w io.Writer, rr cloudtypes.TraceRecords, sessionID string, showIDs bool) error {
 	tw := tabwriter.NewWriter(w, 0, 4, 1, ' ', 0)
 	if showIDs {
 		if _, err := fmt.Fprint(tw, "ID\t"); err != nil {
@@ -119,15 +119,15 @@ func renderTraceRecordsTable(w io.Writer, rr types.TraceRecords, sessionID strin
 	return nil
 }
 
-func fmtTraceRecordKind(kind types.TraceRecordKind) string {
+func fmtTraceRecordKind(kind cloudtypes.TraceRecordKind) string {
 	switch kind {
-	case types.TraceRecordKindInput:
+	case cloudtypes.TraceRecordKindInput:
 		return "input"
-	case types.TraceRecordKindFilter:
+	case cloudtypes.TraceRecordKindFilter:
 		return "filter"
-	case types.TraceRecordKindPreOutput:
+	case cloudtypes.TraceRecordKindPreOutput:
 		return "pre-output"
-	case types.TraceRecordKindOutput:
+	case cloudtypes.TraceRecordKindOutput:
 		return "output"
 	}
 	return "unknown"

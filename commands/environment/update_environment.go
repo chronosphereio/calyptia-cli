@@ -6,11 +6,11 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/calyptia/api/types"
-	cfg "github.com/calyptia/cli/config"
+	cloudtypes "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/config"
 )
 
-func NewCmdUpdateEnvironment(c *cfg.Config) *cobra.Command {
+func NewCmdUpdateEnvironment(cfg *config.Config) *cobra.Command {
 	var newName string
 	cmd := &cobra.Command{
 		Use:   "environment ENVIRONMENT_NAME",
@@ -22,7 +22,7 @@ func NewCmdUpdateEnvironment(c *cfg.Config) *cobra.Command {
 				return fmt.Errorf("environment name unchanged")
 			}
 			ctx := context.Background()
-			environments, err := c.Cloud.Environments(ctx, c.ProjectID, types.EnvironmentsParams{Name: &name})
+			environments, err := cfg.Cloud.Environments(ctx, cfg.ProjectID, cloudtypes.EnvironmentsParams{Name: &name})
 			if err != nil {
 				return err
 			}
@@ -31,7 +31,7 @@ func NewCmdUpdateEnvironment(c *cfg.Config) *cobra.Command {
 			}
 			environment := environments.Items[0]
 
-			err = c.Cloud.UpdateEnvironment(ctx, environment.ID, types.UpdateEnvironment{Name: &newName})
+			err = cfg.Cloud.UpdateEnvironment(ctx, environment.ID, cloudtypes.UpdateEnvironment{Name: &newName})
 			if err != nil {
 				return err
 			}

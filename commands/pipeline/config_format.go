@@ -4,17 +4,17 @@ import (
 	"fmt"
 	"path/filepath"
 
-	cloud "github.com/calyptia/api/types"
+	cloudtypes "github.com/calyptia/api/types"
 )
 
-func InferConfigFormat(configFile string) (cloud.ConfigFormat, error) {
+func InferConfigFormat(configFile string) (cloudtypes.ConfigFormat, error) {
 	switch filepath.Ext(configFile) {
 	case ".ini", ".conf":
-		return cloud.ConfigFormatINI, nil
+		return cloudtypes.ConfigFormatINI, nil
 	case ".yaml", ".yml":
-		return cloud.ConfigFormatYAML, nil
+		return cloudtypes.ConfigFormatYAML, nil
 	case ".json":
-		return cloud.ConfigFormatJSON, nil
+		return cloudtypes.ConfigFormatJSON, nil
 	default:
 		return "", fmt.Errorf("unknown configuration file format for file: %q", configFile)
 	}

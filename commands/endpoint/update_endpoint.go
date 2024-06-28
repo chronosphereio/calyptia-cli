@@ -5,15 +5,14 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/calyptia/cli/commands/coreinstance"
-
 	"github.com/spf13/cobra"
 
-	cloud "github.com/calyptia/api/types"
-	cfg "github.com/calyptia/cli/config"
+	cloudtypes "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/formatters"
 )
 
-func NewCmdUpdateEndpoint(config *cfg.Config) *cobra.Command {
+func NewCmdUpdateEndpoint(cfg *config.Config) *cobra.Command {
 	var protocol string
 	var ports string
 	var serviceType string
@@ -56,7 +55,7 @@ func NewCmdUpdateEndpoint(config *cfg.Config) *cobra.Command {
 				bpport = &bport
 			}
 
-			var opts cloud.UpdatePipelinePort
+			var opts cloudtypes.UpdatePipelinePort
 
 			if bpport != nil {
 				opts.BackendPort = bpport
@@ -70,7 +69,7 @@ func NewCmdUpdateEndpoint(config *cfg.Config) *cobra.Command {
 				opts.Protocol = &protocol
 			}
 
-			err := config.Cloud.UpdatePipelinePort(ctx, portID, opts)
+			err := cfg.Cloud.UpdatePipelinePort(ctx, portID, opts)
 			if err != nil {
 				return fmt.Errorf("could not update your pipeline endpoint: %w", err)
 			}
@@ -81,7 +80,7 @@ func NewCmdUpdateEndpoint(config *cfg.Config) *cobra.Command {
 	fs := cmd.Flags()
 	fs.StringVar(&protocol, "protocol", "", "Endpoint protocol, tcp or tcps")
 	fs.StringVar(&ports, "ports", "", "define frontend and backend port, either: [port] or [frotend]:[backend]")
-	fs.StringVar(&serviceType, "service-type", "", fmt.Sprintf("Service type to use for the ports, options: %s", coreinstance.AllValidPortKinds()))
+	fs.StringVar(&serviceType, "service-type", "", fmt.Sprintf("Service type to use for the ports, options: %s", formatters.PortKinds()))
 
 	_ = fs.MarkDeprecated("service-type", "service kind is set at the pipeline level")
 

@@ -8,10 +8,10 @@ import (
 	"strings"
 	"time"
 
-	semver "github.com/hashicorp/go-version"
+	"github.com/hashicorp/go-version"
 	"github.com/spf13/cobra"
 	apiv1 "k8s.io/api/core/v1"
-	k8serrors "k8s.io/apimachinery/pkg/api/errors"
+	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 
@@ -20,9 +20,7 @@ import (
 	"github.com/calyptia/core-images-index/go-index"
 )
 
-const (
-	defaultWaitTimeout = time.Second * 30
-)
+const defaultWaitTimeout = time.Second * 30
 
 func NewCmdUpdate() *cobra.Command {
 	var (
@@ -46,7 +44,7 @@ func NewCmdUpdate() *cobra.Command {
 			if !strings.HasPrefix(coreOperatorVersion, "v") {
 				coreOperatorVersion = fmt.Sprintf("v%s", coreOperatorVersion)
 			}
-			if _, err := semver.NewSemver(coreOperatorVersion); err != nil {
+			if _, err := version.NewSemver(coreOperatorVersion); err != nil {
 				return err
 			}
 
@@ -99,7 +97,7 @@ func NewCmdUpdate() *cobra.Command {
 				Namespace: configOverrides.Context.Namespace,
 			}
 			_, err = k.GetNamespace(cmd.Context(), namespace)
-			if err != nil && !k8serrors.IsNotFound(err) {
+			if err != nil && !kerrors.IsNotFound(err) {
 				return err
 			}
 
@@ -107,7 +105,7 @@ func NewCmdUpdate() *cobra.Command {
 				coreOperatorVersion = coreversions.DefaultCoreOperatorDockerImageTag
 			}
 
-			manifest, err := installManifest(namespace, coreversions.DefaultCoreOperatorDockerImage, coreOperatorVersion, k8serrors.IsNotFound(err), externalTrafficPolicyLocal)
+			manifest, err := installManifest(namespace, coreversions.DefaultCoreOperatorDockerImage, coreOperatorVersion, kerrors.IsNotFound(err), externalTrafficPolicyLocal)
 			if err != nil {
 				return err
 			}

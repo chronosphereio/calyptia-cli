@@ -9,13 +9,12 @@ import (
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 
-	"github.com/calyptia/api/types"
-	cfg "github.com/calyptia/cli/config"
+	cloudtypes "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
 
-func NewCmdGetCoreInstanceFiles(config *cfg.Config) *cobra.Command {
-
+func NewCmdGetCoreInstanceFiles(cfg *config.Config) *cobra.Command {
 	var instanceKey string
 
 	cmd := &cobra.Command{
@@ -24,12 +23,12 @@ func NewCmdGetCoreInstanceFiles(config *cfg.Config) *cobra.Command {
 		Long:  "List files from a core instance with backward pagination",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			instanceID, err := config.Completer.LoadCoreInstanceID(ctx, instanceKey, "")
+			instanceID, err := cfg.Completer.LoadCoreInstanceID(ctx, instanceKey, "")
 			if err != nil {
 				return err
 			}
 
-			in := types.ListCoreInstanceFiles{
+			in := cloudtypes.ListCoreInstanceFiles{
 				CoreInstanceID: instanceID,
 			}
 
@@ -50,7 +49,7 @@ func NewCmdGetCoreInstanceFiles(config *cfg.Config) *cobra.Command {
 				in.Before = &before
 			}
 
-			out, err := config.Cloud.CoreInstanceFiles(ctx, in)
+			out, err := cfg.Cloud.CoreInstanceFiles(ctx, in)
 			if err != nil {
 				return err
 			}
@@ -77,14 +76,14 @@ func NewCmdGetCoreInstanceFiles(config *cfg.Config) *cobra.Command {
 	fs.String("before", "", "Retrieve files before the given cursor")
 	formatters.BindFormatFlags(cmd)
 
-	_ = cmd.RegisterFlagCompletionFunc("core-instance", config.Completer.CompleteCoreInstances)
+	_ = cmd.RegisterFlagCompletionFunc("core-instance", cfg.Completer.CompleteCoreInstances)
 
 	_ = cmd.MarkFlagRequired("core-instance")
 
 	return cmd
 }
 
-func renderCoreInstanceFiles(w io.Writer, coreInstanceID string, paging bool, data types.CoreInstanceFiles) error {
+func renderCoreInstanceFiles(w io.Writer, coreInstanceID string, paging bool, data cloudtypes.CoreInstanceFiles) error {
 	if len(data.Items) == 0 {
 		if paging {
 			fmt.Fprintln(w, "End reached.")

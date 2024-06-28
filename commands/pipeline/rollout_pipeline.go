@@ -9,12 +9,12 @@ import (
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 
-	cloud "github.com/calyptia/api/types"
-	cfg "github.com/calyptia/cli/config"
+	cloudtypes "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
 
-func NewCmdRolloutPipeline(config *cfg.Config) *cobra.Command {
+func NewCmdRolloutPipeline(cfg *config.Config) *cobra.Command {
 	var stepsBack uint
 	var toConfigID string
 	var noAutoCreateEndpointsFromConfig, skipConfigValidation bool
@@ -23,19 +23,19 @@ func NewCmdRolloutPipeline(config *cfg.Config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:               "pipeline PIPELINE",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.Completer.CompletePipelines,
+		ValidArgsFunction: cfg.Completer.CompletePipelines,
 		Short:             "Rollout a pipeline to a previous config",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			pipelineKey := args[0]
-			pipelineID, err := config.Completer.LoadPipelineID(ctx, pipelineKey)
+			pipelineID, err := cfg.Completer.LoadPipelineID(ctx, pipelineKey)
 			if err != nil {
 				return err
 			}
 
 			var rawConfig string
 			if toConfigID != "" {
-				hh, err := config.Cloud.PipelineConfigHistory(ctx, pipelineID, cloud.PipelineConfigHistoryParams{})
+				hh, err := cfg.Cloud.PipelineConfigHistory(ctx, pipelineID, cloudtypes.PipelineConfigHistoryParams{})
 				if err != nil {
 					return err
 				}
@@ -51,7 +51,7 @@ func NewCmdRolloutPipeline(config *cfg.Config) *cobra.Command {
 					return fmt.Errorf("could not find config %q", toConfigID)
 				}
 			} else if stepsBack > 0 {
-				hh, err := config.Cloud.PipelineConfigHistory(ctx, pipelineID, cloud.PipelineConfigHistoryParams{
+				hh, err := cfg.Cloud.PipelineConfigHistory(ctx, pipelineID, cloudtypes.PipelineConfigHistoryParams{
 					Last: &stepsBack,
 				})
 				if err != nil {
@@ -67,7 +67,7 @@ func NewCmdRolloutPipeline(config *cfg.Config) *cobra.Command {
 				return fmt.Errorf("no config specified")
 			}
 
-			updated, err := config.Cloud.UpdatePipeline(ctx, pipelineID, cloud.UpdatePipeline{
+			updated, err := cfg.Cloud.UpdatePipeline(ctx, pipelineID, cloudtypes.UpdatePipeline{
 				RawConfig:                       &rawConfig,
 				NoAutoCreateEndpointsFromConfig: noAutoCreateEndpointsFromConfig,
 				SkipConfigValidation:            skipConfigValidation,

@@ -9,19 +9,17 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/calyptia/cli/commands/coreinstance"
-	"github.com/calyptia/cli/pointer"
-
 	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 
-	cloud "github.com/calyptia/api/types"
-	cfg "github.com/calyptia/cli/config"
+	cloudtypes "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
+	"github.com/calyptia/cli/pointer"
 )
 
-func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
+func NewCmdUpdatePipeline(cfg *config.Config) *cobra.Command {
 	var newName string
 	var newConfigFile string
 	var newReplicasCount int
@@ -52,7 +50,7 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 		Use:               "pipeline PIPELINE",
 		Short:             "Update a single pipeline by ID or name",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.Completer.CompletePipelines,
+		ValidArgsFunction: cfg.Completer.CompletePipelines,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			fs := cmd.Flags()
 			if fs.Changed("scale-up-type") {
@@ -110,7 +108,7 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 				return err
 			}
 
-			var updatePipelineFiles []cloud.UpdatePipelineFile
+			var updatePipelineFiles []cloudtypes.UpdatePipelineFile
 			for _, f := range files {
 				if f == "" {
 					continue
@@ -124,7 +122,7 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 					return fmt.Errorf("coult not read file %q: %w", f, err)
 				}
 
-				updatePipelineFiles = append(updatePipelineFiles, cloud.UpdatePipelineFile{
+				updatePipelineFiles = append(updatePipelineFiles, cloudtypes.UpdatePipelineFile{
 					Name:      &name,
 					Contents:  &contents,
 					Encrypted: &encryptFiles,
@@ -148,15 +146,15 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 			}
 
 			pipelineKey := args[0]
-			pipelineID, err := config.Completer.LoadPipelineID(ctx, pipelineKey)
+			pipelineID, err := cfg.Completer.LoadPipelineID(ctx, pipelineKey)
 			if err != nil {
 				return err
 			}
 
-			var format cloud.ConfigFormat
+			var format cloudtypes.ConfigFormat
 
 			if providedConfigFormat != "" {
-				format = cloud.ConfigFormat(providedConfigFormat)
+				format = cloudtypes.ConfigFormat(providedConfigFormat)
 			} else if rawConfig != "" {
 				// infer the configuration format from the file.
 				format, err = InferConfigFormat(newConfigFile)
@@ -164,13 +162,13 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 					return err
 				}
 			} else {
-				format = cloud.ConfigFormatINI
+				format = cloudtypes.ConfigFormatINI
 			}
 
-			sut := cloud.HPAScalingPolicyType(scaleUpType)
-			sdt := cloud.HPAScalingPolicyType(scaleDownType)
+			sut := cloudtypes.HPAScalingPolicyType(scaleUpType)
+			sdt := cloudtypes.HPAScalingPolicyType(scaleDownType)
 
-			update := cloud.UpdatePipeline{
+			update := cloudtypes.UpdatePipeline{
 				NoAutoCreateEndpointsFromConfig: noAutoCreateEndpointsFromConfig,
 				SkipConfigValidation:            skipConfigValidation,
 				ConfigFormat:                    &format,
@@ -211,7 +209,7 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 				}
 			}
 
-			ports, err := config.Cloud.PipelinePorts(ctx, pipelineID, cloud.PipelinePortsParams{})
+			ports, err := cfg.Cloud.PipelinePorts(ctx, pipelineID, cloudtypes.PipelinePortsParams{})
 			if err != nil {
 				return fmt.Errorf("could not update pipeline: %w", err)
 			}
@@ -222,22 +220,22 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 			}
 
 			if portsServiceType != "" {
-				if !coreinstance.ValidPipelinePortKind(portsServiceType) {
-					return fmt.Errorf("invalid provided service type %s, options are: %s", portsServiceType, coreinstance.AllValidPortKinds())
+				if !formatters.ValidPortKind(portsServiceType) {
+					return fmt.Errorf("invalid provided service type %s, options are: %s", portsServiceType, formatters.PortKinds())
 				}
-				k := cloud.PipelinePortKind(portsServiceType)
+				k := cloudtypes.PipelinePortKind(portsServiceType)
 				update.PortKind = &k
 			} else if currentPortKind != "" {
-				k := cloud.PipelinePortKind(currentPortKind)
+				k := cloudtypes.PipelinePortKind(currentPortKind)
 				update.PortKind = &k
 			}
 
-			var strategy *cloud.DeploymentStrategy
+			var strategy *cloudtypes.DeploymentStrategy
 			if deploymentStrategy != "" {
 				if !isValidDeploymentStrategy(deploymentStrategy) {
 					return fmt.Errorf("invalid provided deployment strategy: %s", deploymentStrategy)
 				}
-				s := cloud.DeploymentStrategy(deploymentStrategy)
+				s := cloudtypes.DeploymentStrategy(deploymentStrategy)
 				strategy = &s
 			}
 
@@ -259,7 +257,7 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 				update.Image = &image
 			}
 
-			updated, err := config.Cloud.UpdatePipeline(ctx, pipelineID, update)
+			updated, err := cfg.Cloud.UpdatePipeline(ctx, pipelineID, update)
 			if err != nil {
 				return fmt.Errorf("could not update pipeline: %w", err)
 			}
@@ -296,7 +294,7 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 	fs.StringVar(&providedConfigFormat, "config-format", "", "Default configuration format to use (yaml, ini(deprecated))")
 	fs.IntVar(&newReplicasCount, "replicas", -1, "New pipeline replica size")
 	fs.BoolVar(&noAutoCreateEndpointsFromConfig, "disable-auto-ports", false, "Disables automatically creating ports from the config file if updated")
-	fs.StringVar(&portsServiceType, "service-type", "", fmt.Sprintf("Service type to use for all ports that are auto-created on this pipeline, options are: %s", coreinstance.AllValidPortKinds()))
+	fs.StringVar(&portsServiceType, "service-type", "", fmt.Sprintf("Service type to use for all ports that are auto-created on this pipeline, options are: %s", formatters.PortKinds()))
 	fs.BoolVar(&skipConfigValidation, "skip-config-validation", false, "Opt-in to skip config validation (Use with caution as this option might be removed soon)")
 	fs.StringVar(&secretsFile, "secrets-file", "", "Optional file containing a full definition of all secrets.\nThe format is derived either from the extension or the --secrets-format argument.\nThese can be referenced in pipeline files as such:\n{{ secrets.name }}\nThe prefix is the same for all secrets, the name is defined in the secrets file.")
 	fs.StringVar(&secretsFormat, "secrets-format", "auto", "Secrets file format. Allowed: auto, env, json, yaml. If not set it is derived from secrets file extension")
@@ -325,7 +323,7 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 	return cmd
 }
 
-func parseUpdatePipelineSecrets(file, format string) ([]cloud.UpdatePipelineSecret, error) {
+func parseUpdatePipelineSecrets(file, format string) ([]cloudtypes.UpdatePipelineSecret, error) {
 	if file == "" {
 		return nil, nil
 	}
@@ -348,7 +346,7 @@ func parseUpdatePipelineSecrets(file, format string) ([]cloud.UpdatePipelineSecr
 		}
 	}
 
-	var secrets []cloud.UpdatePipelineSecret
+	var secrets []cloudtypes.UpdatePipelineSecret
 	switch format {
 	case "env", "dotenv":
 		m, err := godotenv.Parse(bytes.NewReader(b))
@@ -356,9 +354,9 @@ func parseUpdatePipelineSecrets(file, format string) ([]cloud.UpdatePipelineSecr
 			return nil, fmt.Errorf("could not parse secrets file %q: %w", file, err)
 		}
 
-		secrets = make([]cloud.UpdatePipelineSecret, 0, len(m))
+		secrets = make([]cloudtypes.UpdatePipelineSecret, 0, len(m))
 		for k, v := range m {
-			secrets = append(secrets, cloud.UpdatePipelineSecret{
+			secrets = append(secrets, cloudtypes.UpdatePipelineSecret{
 				Key:   &k,
 				Value: pointer.From([]byte(v)),
 			})
@@ -369,9 +367,9 @@ func parseUpdatePipelineSecrets(file, format string) ([]cloud.UpdatePipelineSecr
 			return nil, fmt.Errorf("could not parse secrets file %q: %w", file, err)
 		}
 
-		secrets = make([]cloud.UpdatePipelineSecret, 0, len(m))
+		secrets = make([]cloudtypes.UpdatePipelineSecret, 0, len(m))
 		for k, v := range m {
-			secrets = append(secrets, cloud.UpdatePipelineSecret{
+			secrets = append(secrets, cloudtypes.UpdatePipelineSecret{
 				Key:   &k,
 				Value: pointer.From([]byte(fmt.Sprintf("%v", v))),
 			})
@@ -382,9 +380,9 @@ func parseUpdatePipelineSecrets(file, format string) ([]cloud.UpdatePipelineSecr
 			return nil, fmt.Errorf("could not parse secrets file %q: %w", file, err)
 		}
 
-		secrets = make([]cloud.UpdatePipelineSecret, 0, len(m))
+		secrets = make([]cloudtypes.UpdatePipelineSecret, 0, len(m))
 		for k, v := range m {
-			secrets = append(secrets, cloud.UpdatePipelineSecret{
+			secrets = append(secrets, cloudtypes.UpdatePipelineSecret{
 				Key:   &k,
 				Value: pointer.From([]byte(fmt.Sprintf("%v", v))),
 			})

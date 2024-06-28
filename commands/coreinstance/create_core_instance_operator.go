@@ -5,25 +5,25 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
-	apiv1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/runtime/schema"
+	corev1 "k8s.io/api/core/v1"
+	kschema "k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/kubernetes"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp" // register GCP auth provider
-	restclient "k8s.io/client-go/rest"
+	krest "k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 
-	cloud "github.com/calyptia/api/types"
+	cloudtypes "github.com/calyptia/api/types"
 	"github.com/calyptia/cli/commands/version"
-	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/coreversions"
+	"github.com/calyptia/cli/formatters"
 	"github.com/calyptia/cli/k8s"
 )
 
-func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernetes.Interface) *cobra.Command {
+func newCmdCreateCoreInstanceOperator(cfg *config.Config, testClientSet kubernetes.Interface) *cobra.Command {
 	var (
 		coreInstanceName                           string
 		coreCloudURL                               string
@@ -70,12 +70,12 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				if namespace != "" {
 					configOverrides.Context.Namespace = namespace
 				} else {
-					configOverrides.Context.Namespace = apiv1.NamespaceDefault
+					configOverrides.Context.Namespace = corev1.NamespaceDefault
 				}
 
 			}
 			var clientSet kubernetes.Interface
-			var kubeClientConfig *restclient.Config
+			var kubeClientConfig *krest.Config
 			if testClientSet != nil {
 				clientSet = testClientSet
 			} else {
@@ -94,13 +94,13 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 			}
 
 			if coreCloudURL == "" {
-				coreCloudURL = config.BaseURL
+				coreCloudURL = cfg.BaseURL
 			}
 
 			k8sClient := &k8s.Client{
 				Interface:    clientSet,
 				Namespace:    configOverrides.Context.Namespace,
-				ProjectToken: config.ProjectToken,
+				ProjectToken: cfg.ProjectToken,
 				CloudBaseURL: coreCloudURL,
 				Config:       kubeClientConfig,
 			}
@@ -112,7 +112,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = config.Completer.LoadEnvironmentID(ctx, environment)
+				environmentID, err = cfg.Completer.LoadEnvironmentID(ctx, environment)
 				if err != nil {
 					return err
 				}
@@ -137,7 +137,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				return err
 			}
 
-			coreInstanceParams := cloud.CreateCoreInstance{
+			coreInstanceParams := cloudtypes.CreateCoreInstance{
 				Name:                   coreInstanceName,
 				AddHealthCheckPipeline: !noHealthCheckPipeline,
 				ClusterLogging:         enableClusterLogging,
@@ -160,10 +160,10 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				}
 
 				if healthCheckPipelineServiceType != "" {
-					if !ValidPipelinePortKind(healthCheckPipelineServiceType) {
+					if !formatters.ValidPortKind(healthCheckPipelineServiceType) {
 						return fmt.Errorf("invalid health check pipeline service type: %s", healthCheckPipelineServiceType)
 					}
-					coreInstanceParams.HealthCheckPipelinePortKind = cloud.PipelinePortKind(healthCheckPipelineServiceType)
+					coreInstanceParams.HealthCheckPipelinePortKind = cloudtypes.PipelinePortKind(healthCheckPipelineServiceType)
 				}
 			}
 
@@ -177,7 +177,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				coreInstanceParams.Image = &coreFluentBitDockerImage
 			}
 
-			created, err := config.Cloud.CreateCoreInstance(ctx, coreInstanceParams)
+			created, err := cfg.Cloud.CreateCoreInstance(ctx, coreInstanceParams)
 			if err != nil {
 				return fmt.Errorf("could not create core instance (%q) at calyptia cloud (%q): %w", coreInstanceName, coreCloudURL, err)
 			}
@@ -189,7 +189,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 					k8s.LabelComponent:    "operator",
 					k8s.LabelManagedBy:    "calyptia-cli",
 					k8s.LabelCreatedBy:    "calyptia-cli",
-					k8s.LabelProjectID:    config.ProjectID,
+					k8s.LabelProjectID:    cfg.ProjectID,
 					k8s.LabelAggregatorID: created.ID,
 					k8s.LabelInstance:     coreInstanceName,
 				}
@@ -301,7 +301,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 
 			syncDeployment, err := k8sClient.DeployCoreOperatorSync(ctx, syncParams)
 			if err != nil {
-				if err := config.Cloud.DeleteCoreInstance(ctx, created.ID); err != nil {
+				if err := cfg.Cloud.DeleteCoreInstance(ctx, created.ID); err != nil {
 					return fmt.Errorf("failed to rollback created core instance %v", err)
 				}
 				fmt.Printf("An error occurred while creating the core operator instance. %s Rolling back created resources.\n", err)
@@ -345,7 +345,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 	fs := cmd.Flags()
 	fs.StringVar(&coreInstanceName, "name", "", "Core instance name (autogenerated if empty)")
 	fs.StringVar(&coreFluentBitDockerImage, "fluent-bit-image", "", "Calyptia core fluent-bit image to use.")
-	fs.StringVar(&coreCloudURL, "core-cloud-url", config.BaseURL, "Override the cloud URL for the core operator instance")
+	fs.StringVar(&coreCloudURL, "core-cloud-url", cfg.BaseURL, "Override the cloud URL for the core operator instance")
 
 	fs.StringVar(&coreDockerToCloudImage, "image-to-cloud", "", "Calyptia core operator (to-cloud) docker image to use (fully composed docker image).")
 	err := fs.MarkHidden("image-to-cloud")
@@ -363,7 +363,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 	fs.DurationVar(&waitTimeout, "timeout", time.Second*30, "Wait timeout")
 	fs.BoolVar(&noHealthCheckPipeline, "no-health-check-pipeline", false, "Disable health check pipeline creation alongside the core instance")
 	fs.StringVar(&healthCheckPipelinePort, "health-check-pipeline-port-number", "", "Port number to expose the health-check pipeline")
-	fs.StringVar(&healthCheckPipelineServiceType, "health-check-pipeline-service-type", "", fmt.Sprintf("Service type to use for health-check pipeline, options: %s", AllValidPortKinds()))
+	fs.StringVar(&healthCheckPipelineServiceType, "health-check-pipeline-service-type", "", fmt.Sprintf("Service type to use for health-check pipeline, options: %s", formatters.PortKinds()))
 	fs.BoolVar(&enableClusterLogging, "enable-cluster-logging", false, "Enable cluster logging pipeline creation.")
 	fs.BoolVar(&skipServiceCreation, "skip-service-creation", false, "Skip the creation of kubernetes services for any pipeline under this core instance.")
 	fs.BoolVar(&dryRun, "dry-run", false, "Passing this value will skip creation of any Kubernetes resources and it will return resources as YAML manifest")
@@ -383,8 +383,8 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 
 	clientcmd.BindOverrideFlags(configOverrides, fs, clientcmd.RecommendedConfigOverrideFlags("kube-"))
 
-	_ = cmd.RegisterFlagCompletionFunc("environment", config.Completer.CompleteEnvironments)
-	_ = cmd.RegisterFlagCompletionFunc("version", config.Completer.CompleteCoreContainerVersion)
+	_ = cmd.RegisterFlagCompletionFunc("environment", cfg.Completer.CompleteEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("version", cfg.Completer.CompleteCoreContainerVersion)
 
 	return cmd
 }
@@ -397,7 +397,7 @@ func addToRollBack(err error, name string, namespace string, resource string, re
 	*resourcesCreated = append(*resourcesCreated, k8s.ResourceRollBack{
 		Name:      name,
 		Namespace: namespace,
-		GVR: schema.GroupVersionResource{
+		GVR: kschema.GroupVersionResource{
 			Resource: resource,
 		},
 	})
@@ -405,8 +405,8 @@ func addToRollBack(err error, name string, namespace string, resource string, re
 	return nil
 }
 
-func getCoreInstanceMetadata(k8s *k8s.Client) (cloud.CoreInstanceMetadata, error) {
-	var metadata cloud.CoreInstanceMetadata
+func getCoreInstanceMetadata(k8s *k8s.Client) (cloudtypes.CoreInstanceMetadata, error) {
+	var metadata cloudtypes.CoreInstanceMetadata
 
 	info, err := k8s.GetClusterInfo()
 	if err != nil {
@@ -433,21 +433,4 @@ func getClusterName() (string, error) {
 	}
 
 	return clusterName, nil
-}
-
-func ValidPipelinePortKind(s string) bool {
-	for _, pk := range cloud.AllValidPipelinePortKinds {
-		if cloud.PipelinePortKind(s) == pk {
-			return true
-		}
-	}
-	return false
-}
-
-func AllValidPortKinds() string {
-	var r []string
-	for _, v := range cloud.AllValidPipelinePortKinds {
-		r = append(r, string(v))
-	}
-	return strings.Join(r, ",")
 }

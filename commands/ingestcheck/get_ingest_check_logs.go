@@ -6,10 +6,10 @@ import (
 
 	"github.com/spf13/cobra"
 
-	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/config"
 )
 
-func NewCmdGetIngestCheckLogs(c *cfg.Config) *cobra.Command {
+func NewCmdGetIngestCheckLogs(cfg *config.Config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "ingest_check_logs INGEST_CHECK_ID",
 		Short: "Get a specific ingest check logs",
@@ -17,7 +17,7 @@ func NewCmdGetIngestCheckLogs(c *cfg.Config) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.Background()
 			id := args[0]
-			check, err := c.Cloud.IngestCheck(ctx, id)
+			check, err := cfg.Cloud.IngestCheck(ctx, id)
 			if err != nil {
 				return err
 			}

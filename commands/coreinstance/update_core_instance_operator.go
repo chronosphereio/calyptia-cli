@@ -11,14 +11,14 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 
-	cloud "github.com/calyptia/api/types"
-	cfg "github.com/calyptia/cli/config"
+	cloudtypes "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/coreversions"
 	"github.com/calyptia/cli/k8s"
 	"github.com/calyptia/core-images-index/go-index"
 )
 
-func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernetes.Interface) *cobra.Command {
+func NewCmdUpdateCoreInstanceOperator(cfg *config.Config, testClientSet kubernetes.Interface) *cobra.Command {
 	var newVersion, newName, environment string
 	var (
 		disableClusterLogging                      bool
@@ -38,7 +38,7 @@ func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 		Aliases:           []string{"opr", "k8s"},
 		Short:             "update a core instance operator",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.Completer.CompleteCoreInstances,
+		ValidArgsFunction: cfg.Completer.CompleteCoreInstances,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if newVersion == "" {
 				return nil
@@ -65,12 +65,12 @@ func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = config.Completer.LoadEnvironmentID(ctx, environment)
+				environmentID, err = cfg.Completer.LoadEnvironmentID(ctx, environment)
 				if err != nil {
 					return err
 				}
 			}
-			coreInstanceID, err := config.Completer.LoadCoreInstanceID(ctx, coreInstanceKey, environmentID)
+			coreInstanceID, err := cfg.Completer.LoadCoreInstanceID(ctx, coreInstanceKey, environmentID)
 			if err != nil {
 				return err
 			}
@@ -79,7 +79,7 @@ func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				return fmt.Errorf("cannot update core instance with the same name")
 			}
 
-			var opts cloud.UpdateCoreInstance
+			var opts cloudtypes.UpdateCoreInstance
 
 			if newName != "" {
 				opts.Name = &newName
@@ -100,7 +100,7 @@ func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				opts.SkipServiceCreation = &skipServiceCreation
 			}
 
-			err = config.Cloud.UpdateCoreInstance(ctx, coreInstanceID, opts)
+			err = cfg.Cloud.UpdateCoreInstance(ctx, coreInstanceID, opts)
 			if err != nil {
 				return fmt.Errorf("could not update core instance at calyptia cloud: %w", err)
 			}
@@ -132,8 +132,8 @@ func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 			k8sClient := &k8s.Client{
 				Interface:    clientSet,
 				Namespace:    configOverrides.Context.Namespace,
-				ProjectToken: config.ProjectToken,
-				CloudBaseURL: config.BaseURL,
+				ProjectToken: cfg.ProjectToken,
+				CloudBaseURL: cfg.BaseURL,
 			}
 
 			if err := k8sClient.EnsureOwnNamespace(ctx); err != nil {
@@ -182,8 +182,8 @@ func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 	fs.BoolVar(&skipServiceCreation, "skip-service-creation", false, "Skip the creation of kubernetes services for any pipeline under this core instance.")
 	fs.BoolVar(&metrics, "metrics", false, "flag to enable/disable core instance metrics")
 
-	_ = cmd.RegisterFlagCompletionFunc("environment", config.Completer.CompleteEnvironments)
-	_ = cmd.RegisterFlagCompletionFunc("version", config.Completer.CompleteCoreOperatorVersion)
+	_ = cmd.RegisterFlagCompletionFunc("environment", cfg.Completer.CompleteEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("version", cfg.Completer.CompleteCoreOperatorVersion)
 	clientcmd.BindOverrideFlags(configOverrides, fs, clientcmd.RecommendedConfigOverrideFlags("kube-"))
 	return cmd
 }

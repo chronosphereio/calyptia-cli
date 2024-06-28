@@ -16,47 +16,47 @@ import (
 	"github.com/calyptia/cli/commands/resourceprofile"
 	"github.com/calyptia/cli/commands/tracerecord"
 	"github.com/calyptia/cli/commands/tracesession"
-	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/config"
 )
 
-func newCmdGet(config *cfg.Config) *cobra.Command {
+func newCmdGet(cfg *config.Config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "get",
 		Short: "Display one or many resources",
 	}
 
 	cmd.AddCommand(
-		members.NewCmdGetMembers(config),
-		agent.NewCmdGetAgents(config),
-		agent.NewCmdGetAgent(config),
-		coreinstance.NewCmdGetCoreInstances(config),
-		coreinstance.NewCmdGetCoreInstanceFiles(config),
-		coreinstance.NewCmdGetCoreInstanceSecrets(config),
-		pipeline.NewCmdGetPipelines(config),
-		pipeline.NewCmdGetPipeline(config),
-		endpoint.NewCmdGetEndpoints(config),
-		pipeline.NewCmdGetPipelineConfigHistory(config),
-		pipeline.NewCmdGetPipelineStatusHistory(config),
-		pipeline.NewCmdGetPipelineSecrets(config),
-		pipeline.NewCmdGetPipelineFiles(config),
-		pipeline.NewCmdGetPipelineFile(config),
-		pipeline.NewCmdGetPipelineLog(config),
-		pipeline.NewCmdGetPipelineLogs(config),
-		clusterobject.NewCmdGetClusterObjects(config),
-		pipeline.NewCmdGetPipelineClusterObjects(config),
-		resourceprofile.NewCmdGetResourceProfiles(config),
-		environment.NewCmdGetEnvironment(config),
-		tracesession.NewCmdGetTraceSessions(config),
-		tracesession.NewCmdGetTraceSession(config),
-		tracerecord.NewCmdGetTraceRecords(config),
-		configsection.NewCmdGetConfigSections(config),
-		ingestcheck.NewCmdGetIngestChecks(config),
-		ingestcheck.NewCmdGetIngestCheck(config),
-		ingestcheck.NewCmdGetIngestCheckLogs(config),
-		fleet.NewCmdGetFleets(config),
-		fleet.NewCmdGetFleet(config),
-		fleet.NewCmdGetFleetFiles(config),
-		fleet.NewCmdGetFleetFile(config),
+		members.NewCmdGetMembers(cfg),
+		agent.NewCmdGetAgents(cfg),
+		agent.NewCmdGetAgent(cfg),
+		coreinstance.NewCmdGetCoreInstances(cfg),
+		coreinstance.NewCmdGetCoreInstanceFiles(cfg),
+		coreinstance.NewCmdGetCoreInstanceSecrets(cfg),
+		pipeline.NewCmdGetPipelines(cfg),
+		pipeline.NewCmdGetPipeline(cfg),
+		endpoint.NewCmdGetEndpoints(cfg),
+		pipeline.NewCmdGetPipelineConfigHistory(cfg),
+		pipeline.NewCmdGetPipelineStatusHistory(cfg),
+		pipeline.NewCmdGetPipelineSecrets(cfg),
+		pipeline.NewCmdGetPipelineFiles(cfg),
+		pipeline.NewCmdGetPipelineFile(cfg),
+		pipeline.NewCmdGetPipelineLog(cfg),
+		pipeline.NewCmdGetPipelineLogs(cfg),
+		clusterobject.NewCmdGetClusterObjects(cfg),
+		pipeline.NewCmdGetPipelineClusterObjects(cfg),
+		resourceprofile.NewCmdGetResourceProfiles(cfg),
+		environment.NewCmdGetEnvironment(cfg),
+		tracesession.NewCmdGetTraceSessions(cfg),
+		tracesession.NewCmdGetTraceSession(cfg),
+		tracerecord.NewCmdGetTraceRecords(cfg),
+		configsection.NewCmdGetConfigSections(cfg),
+		ingestcheck.NewCmdGetIngestChecks(cfg),
+		ingestcheck.NewCmdGetIngestCheck(cfg),
+		ingestcheck.NewCmdGetIngestCheckLogs(cfg),
+		fleet.NewCmdGetFleets(cfg),
+		fleet.NewCmdGetFleet(cfg),
+		fleet.NewCmdGetFleetFiles(cfg),
+		fleet.NewCmdGetFleetFile(cfg),
 	)
 
 	return cmd

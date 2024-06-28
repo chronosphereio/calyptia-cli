@@ -8,14 +8,13 @@ import (
 	"golang.org/x/term"
 	"gopkg.in/yaml.v3"
 
-	"github.com/calyptia/api/types"
-	cfg "github.com/calyptia/cli/config"
+	cloudtypes "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/confirm"
 	"github.com/calyptia/cli/formatters"
 )
 
-func NewCmdDeleteCoreInstanceSecret(config *cfg.Config) *cobra.Command {
-
+func NewCmdDeleteCoreInstanceSecret(cfg *config.Config) *cobra.Command {
 	var confirmed bool
 	var instanceKey string
 	var key string
@@ -39,12 +38,12 @@ func NewCmdDeleteCoreInstanceSecret(config *cfg.Config) *cobra.Command {
 				}
 			}
 
-			instanceID, err := config.Completer.LoadCoreInstanceID(ctx, instanceKey, "")
+			instanceID, err := cfg.Completer.LoadCoreInstanceID(ctx, instanceKey, "")
 			if err != nil {
 				return err
 			}
 
-			secrets, err := config.Cloud.CoreInstanceSecrets(ctx, types.ListCoreInstanceSecrets{
+			secrets, err := cfg.Cloud.CoreInstanceSecrets(ctx, cloudtypes.ListCoreInstanceSecrets{
 				CoreInstanceID: instanceID,
 			})
 			if err != nil {
@@ -64,7 +63,7 @@ func NewCmdDeleteCoreInstanceSecret(config *cfg.Config) *cobra.Command {
 				return nil
 			}
 
-			out, err := config.Cloud.DeleteCoreInstanceSecret(ctx, secretID)
+			out, err := cfg.Cloud.DeleteCoreInstanceSecret(ctx, secretID)
 			if err != nil {
 				return err
 			}
@@ -93,7 +92,7 @@ func NewCmdDeleteCoreInstanceSecret(config *cfg.Config) *cobra.Command {
 	fs.StringVar(&instanceKey, "core-instance", "", "Parent core instance ID or name")
 	fs.StringVar(&key, "key", "", "Secret key")
 
-	_ = cmd.RegisterFlagCompletionFunc("core-instance", config.Completer.CompleteCoreInstances)
+	_ = cmd.RegisterFlagCompletionFunc("core-instance", cfg.Completer.CompleteCoreInstances)
 
 	_ = cmd.MarkFlagRequired("core-instance")
 	_ = cmd.MarkFlagRequired("key")

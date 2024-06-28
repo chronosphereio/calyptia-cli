@@ -5,23 +5,23 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/calyptia/api/types"
+	cloudtypes "github.com/calyptia/api/types"
 	"github.com/calyptia/cli/config"
 )
 
-func NewCmdUpdateMember(config *config.Config) *cobra.Command {
+func NewCmdUpdateMember(cfg *config.Config) *cobra.Command {
 	var permissions []string
 
 	cmd := &cobra.Command{
 		Use:               "member MEMBER-ID",
 		Short:             "Update a member permissions given its membership ID",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.Completer.CompleteMembers,
+		ValidArgsFunction: cfg.Completer.CompleteMembers,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			memberID := args[0]
 
-			in := types.UpdateMember{
+			in := cloudtypes.UpdateMember{
 				MemberID: memberID,
 			}
 
@@ -35,7 +35,7 @@ func NewCmdUpdateMember(config *config.Config) *cobra.Command {
 				in.Permissions = &[]string{}
 			}
 
-			err := config.Cloud.UpdateMember(ctx, in)
+			err := cfg.Cloud.UpdateMember(ctx, in)
 			if err != nil {
 				return fmt.Errorf("update member: %w", err)
 			}
@@ -45,9 +45,9 @@ func NewCmdUpdateMember(config *config.Config) *cobra.Command {
 	}
 
 	fs := cmd.Flags()
-	fs.StringSliceVar(&permissions, "permissions", nil, "Permissions to grant to the member")
+	fs.StringSliceVar(&permissions, "permissions", []string{cloudtypes.PermReadAll}, "Permissions to grant to the member")
 
-	_ = cmd.RegisterFlagCompletionFunc("permissions", config.Completer.CompletePermissions)
+	_ = cmd.RegisterFlagCompletionFunc("permissions", cfg.Completer.CompletePermissions)
 
 	return cmd
 }

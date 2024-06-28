@@ -9,12 +9,12 @@ import (
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 
-	cloud "github.com/calyptia/api/types"
-	cnfg "github.com/calyptia/cli/config"
+	cloudtypes "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
 
-func NewCmdGetClusterObjects(config *cnfg.Config) *cobra.Command {
+func NewCmdGetClusterObjects(cfg *config.Config) *cobra.Command {
 	var coreInstanceKey string
 	var last uint
 	var outputFormat, goTemplate string
@@ -29,18 +29,18 @@ func NewCmdGetClusterObjects(config *cnfg.Config) *cobra.Command {
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = config.Completer.LoadEnvironmentID(ctx, environment)
+				environmentID, err = cfg.Completer.LoadEnvironmentID(ctx, environment)
 				if err != nil {
 					return err
 				}
 			}
 
-			coreInstanceID, err := config.Completer.LoadCoreInstanceID(ctx, coreInstanceKey, environmentID)
+			coreInstanceID, err := cfg.Completer.LoadCoreInstanceID(ctx, coreInstanceKey, environmentID)
 			if err != nil {
 				return err
 			}
 
-			co, err := config.Cloud.ClusterObjects(ctx, coreInstanceID, cloud.ClusterObjectParams{
+			co, err := cfg.Cloud.ClusterObjects(ctx, coreInstanceID, cloudtypes.ClusterObjectParams{
 				Last: &last,
 			})
 			if err != nil {
@@ -87,7 +87,7 @@ func NewCmdGetClusterObjects(config *cnfg.Config) *cobra.Command {
 
 	_ = cmd.MarkFlagRequired("core-instance")
 
-	_ = cmd.RegisterFlagCompletionFunc("core-instance", config.Completer.CompleteCoreInstances)
+	_ = cmd.RegisterFlagCompletionFunc("core-instance", cfg.Completer.CompleteCoreInstances)
 
 	return cmd
 }

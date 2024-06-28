@@ -11,12 +11,12 @@ import (
 	"golang.org/x/term"
 	"gopkg.in/yaml.v3"
 
-	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/confirm"
 	"github.com/calyptia/cli/formatters"
 )
 
-func NewCmdDeleteTraceSession(config *cfg.Config) *cobra.Command {
+func NewCmdDeleteTraceSession(cfg *config.Config) *cobra.Command {
 	var confirmed bool
 	var pipelineKey string
 	var outputFormat, goTemplate string
@@ -41,12 +41,12 @@ func NewCmdDeleteTraceSession(config *cfg.Config) *cobra.Command {
 				}
 			}
 
-			pipelineID, err := config.Completer.LoadPipelineID(ctx, pipelineKey)
+			pipelineID, err := cfg.Completer.LoadPipelineID(ctx, pipelineKey)
 			if err != nil {
 				return err
 			}
 
-			terminated, err := config.Cloud.TerminateActiveTraceSession(ctx, pipelineID)
+			terminated, err := cfg.Cloud.TerminateActiveTraceSession(ctx, pipelineID)
 			if err != nil {
 				return err
 			}
@@ -81,7 +81,7 @@ func NewCmdDeleteTraceSession(config *cfg.Config) *cobra.Command {
 
 	_ = cmd.MarkFlagRequired("pipeline")
 
-	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.Completer.CompletePipelines)
+	_ = cmd.RegisterFlagCompletionFunc("pipeline", cfg.Completer.CompletePipelines)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
 	return cmd

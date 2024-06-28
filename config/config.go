@@ -1,3 +1,4 @@
+// Package config contains shared dependencies for all commands.
 package config
 
 import (
@@ -6,6 +7,7 @@ import (
 	"github.com/calyptia/cli/localdata"
 )
 
+// Config injects the dependencies that all commands share.
 type Config struct {
 	BaseURL      string
 	Cloud        *client.Client

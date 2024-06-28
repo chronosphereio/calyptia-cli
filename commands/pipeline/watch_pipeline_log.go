@@ -6,11 +6,11 @@ import (
 
 	"github.com/spf13/cobra"
 
-	cloud "github.com/calyptia/api/types"
-	cfg "github.com/calyptia/cli/config"
+	cloudtypes "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/config"
 )
 
-func NewCmdWatchPipelineLogs(config *cfg.Config) *cobra.Command {
+func NewCmdWatchPipelineLogs(cfg *config.Config) *cobra.Command {
 	var interval int
 
 	cmd := &cobra.Command{
@@ -21,17 +21,17 @@ func NewCmdWatchPipelineLogs(config *cfg.Config) *cobra.Command {
 			ctx := cmd.Context()
 			pipelineKey := args[0] // Pipeline ID or name is the first argument
 
-			pipelineID, err := config.Completer.LoadPipelineID(ctx, pipelineKey)
+			pipelineID, err := cfg.Completer.LoadPipelineID(ctx, pipelineKey)
 			if err != nil {
 				return
 			}
 
-			status := cloud.PipelineLogStatusDone
+			status := cloudtypes.PipelineLogStatusDone
 			watched := make(map[string]bool)
 
 			// Function to fetch and display logs
 			fetchLogs := func() {
-				ff, err := config.Cloud.PipelineLogs(ctx, cloud.ListPipelineLogs{
+				ff, err := cfg.Cloud.PipelineLogs(ctx, cloudtypes.ListPipelineLogs{
 					PipelineID: pipelineID,
 					Status:     &status,
 				})

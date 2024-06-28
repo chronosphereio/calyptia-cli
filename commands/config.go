@@ -3,23 +3,23 @@ package commands
 import (
 	"github.com/spf13/cobra"
 
-	cnfg "github.com/calyptia/cli/commands/config"
-	cfg "github.com/calyptia/cli/config"
+	configcmd "github.com/calyptia/cli/commands/config"
+	"github.com/calyptia/cli/config"
 )
 
-func newCmdConfig(config *cfg.Config) *cobra.Command {
+func newCmdConfig(cfg *config.Config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "config",
 		Short: "Configure Calyptia CLI",
 	}
 
 	cmd.AddCommand(
-		cnfg.NewCmdConfigSetToken(config),
-		cnfg.NewCmdConfigCurrentToken(config),
-		cnfg.NewCmdConfigUnsetToken(config),
-		cnfg.NewCmdConfigSetURL(config),
-		cnfg.NewCmdConfigCurrentURL(config),
-		cnfg.NewCmdConfigUnsetURL(config),
+		configcmd.NewCmdConfigSetToken(cfg),
+		configcmd.NewCmdConfigCurrentToken(cfg),
+		configcmd.NewCmdConfigUnsetToken(cfg),
+		configcmd.NewCmdConfigSetURL(cfg),
+		configcmd.NewCmdConfigCurrentURL(cfg),
+		configcmd.NewCmdConfigUnsetURL(cfg),
 	)
 
 	return cmd

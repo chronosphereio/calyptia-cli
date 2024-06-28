@@ -3,24 +3,17 @@ package invitation
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/calyptia/api/types"
+	cloudtypes "github.com/calyptia/api/types"
 	"github.com/calyptia/cli/config"
 )
 
-var allPermissions = []string{
-	"create:*",
-	"read:*",
-	"update:*",
-	"delete:*",
-}
-
-func NewCmdSendInvitation(config *config.Config) *cobra.Command {
+func NewCmdSendInvitation(cfg *config.Config) *cobra.Command {
 	redirectURI := "https://core.calyptia.com"
 
-	if config.BaseURL == "https://cloud-api-dev.calyptia.com" {
+	if cfg.BaseURL == "https://cloud-api-dev.calyptia.com" {
 		redirectURI = "https://core-dev.calyptia.com"
 	}
-	if config.BaseURL == "https://cloud-api-staging.calyptia.com" {
+	if cfg.BaseURL == "https://cloud-api-staging.calyptia.com" {
 		redirectURI = "https://core-staging.calyptia.com"
 	}
 
@@ -33,7 +26,7 @@ func NewCmdSendInvitation(config *config.Config) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			for _, email := range args {
-				err := config.Cloud.CreateInvitation(ctx, config.ProjectID, types.CreateInvitation{
+				err := cfg.Cloud.CreateInvitation(ctx, cfg.ProjectID, cloudtypes.CreateInvitation{
 					Email:       email,
 					RedirectURI: redirectURI,
 					Permissions: permissions,
@@ -52,11 +45,9 @@ func NewCmdSendInvitation(config *config.Config) *cobra.Command {
 
 	fs := cmd.Flags()
 	fs.StringVar(&redirectURI, "redirect-uri", redirectURI, "Redirect URI for the invitation, it should point to the Calyptia UI.")
-	fs.StringSliceVar(&permissions, "permissions", allPermissions, "Permissions to grant to the invited user.")
+	fs.StringSliceVar(&permissions, "permissions", []string{cloudtypes.PermReadAll}, "Permissions to grant to the invited user.")
 
-	_ = cmd.RegisterFlagCompletionFunc("permissions", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return allPermissions, cobra.ShellCompDirectiveNoFileComp
-	})
+	_ = cmd.RegisterFlagCompletionFunc("permissions", cfg.Completer.CompletePermissions)
 
 	return cmd
 }

@@ -7,12 +7,12 @@ import (
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 
-	"github.com/calyptia/api/types"
-	cfg "github.com/calyptia/cli/config"
+	cloudtypes "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
 
-func NewCmdUpdateCoreInstanceSecret(config *cfg.Config) *cobra.Command {
+func NewCmdUpdateCoreInstanceSecret(cfg *config.Config) *cobra.Command {
 
 	var instanceKey string
 	var key, value string
@@ -35,12 +35,12 @@ func NewCmdUpdateCoreInstanceSecret(config *cfg.Config) *cobra.Command {
 				cmd.Println()
 			}
 
-			instanceID, err := config.Completer.LoadCoreInstanceID(ctx, instanceKey, "")
+			instanceID, err := cfg.Completer.LoadCoreInstanceID(ctx, instanceKey, "")
 			if err != nil {
 				return err
 			}
 
-			secrets, err := config.Cloud.CoreInstanceSecrets(ctx, types.ListCoreInstanceSecrets{
+			secrets, err := cfg.Cloud.CoreInstanceSecrets(ctx, cloudtypes.ListCoreInstanceSecrets{
 				CoreInstanceID: instanceID,
 			})
 			if err != nil {
@@ -60,7 +60,7 @@ func NewCmdUpdateCoreInstanceSecret(config *cfg.Config) *cobra.Command {
 			}
 
 			newValue := []byte(value)
-			out, err := config.Cloud.UpdateCoreInstanceSecret(ctx, types.UpdateCoreInstanceSecret{
+			out, err := cfg.Cloud.UpdateCoreInstanceSecret(ctx, cloudtypes.UpdateCoreInstanceSecret{
 				ID:    secretID,
 				Value: &newValue,
 			})
@@ -89,7 +89,7 @@ func NewCmdUpdateCoreInstanceSecret(config *cfg.Config) *cobra.Command {
 	fs.StringVar(&key, "key", "", "Secret key")
 	fs.StringVar(&value, "value", "", "Secret value")
 
-	_ = cmd.RegisterFlagCompletionFunc("core-instance", config.Completer.CompleteCoreInstances)
+	_ = cmd.RegisterFlagCompletionFunc("core-instance", cfg.Completer.CompleteCoreInstances)
 
 	_ = cmd.MarkFlagRequired("key")
 

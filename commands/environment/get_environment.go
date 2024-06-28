@@ -10,12 +10,12 @@ import (
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 
-	cloud "github.com/calyptia/api/types"
-	cfg "github.com/calyptia/cli/config"
+	cloudtypes "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
 
-func NewCmdGetEnvironment(c *cfg.Config) *cobra.Command {
+func NewCmdGetEnvironment(cfg *config.Config) *cobra.Command {
 	var last uint
 	var outputFormat, goTemplate string
 	var showIDs bool
@@ -25,7 +25,7 @@ func NewCmdGetEnvironment(c *cfg.Config) *cobra.Command {
 		Short: "Get environments",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.Background()
-			ee, err := c.Cloud.Environments(ctx, c.ProjectID, cloud.EnvironmentsParams{Last: &last})
+			ee, err := cfg.Cloud.Environments(ctx, cfg.ProjectID, cloudtypes.EnvironmentsParams{Last: &last})
 			if err != nil {
 				return err
 			}

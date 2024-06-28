@@ -10,19 +10,17 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/calyptia/cli/commands/coreinstance"
-	"github.com/calyptia/cli/completer"
-
 	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 
-	cloud "github.com/calyptia/api/types"
-	cfg "github.com/calyptia/cli/config"
+	cloudtypes "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/completer"
+	"github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
 
-func NewCmdCreatePipeline(config *cfg.Config) *cobra.Command {
+func NewCmdCreatePipeline(cfg *config.Config) *cobra.Command {
 	var coreInstanceKey string
 	var name string
 	var replicasCount uint
@@ -109,7 +107,7 @@ func NewCmdCreatePipeline(config *cfg.Config) *cobra.Command {
 				}
 			}
 
-			var addFilesPayload []cloud.CreatePipelineFile
+			var addFilesPayload []cloudtypes.CreatePipelineFile
 			for _, f := range files {
 				if f == "" {
 					continue
@@ -123,7 +121,7 @@ func NewCmdCreatePipeline(config *cfg.Config) *cobra.Command {
 					return fmt.Errorf("coult not read file %q: %w", f, err)
 				}
 
-				addFilesPayload = append(addFilesPayload, cloud.CreatePipelineFile{
+				addFilesPayload = append(addFilesPayload, cloudtypes.CreatePipelineFile{
 					Name:      name,
 					Contents:  contents,
 					Encrypted: encryptFiles,
@@ -133,21 +131,21 @@ func NewCmdCreatePipeline(config *cfg.Config) *cobra.Command {
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = config.Completer.LoadEnvironmentID(ctx, environment)
+				environmentID, err = cfg.Completer.LoadEnvironmentID(ctx, environment)
 				if err != nil {
 					return err
 				}
 			}
 
-			coreInstanceID, err := config.Completer.LoadCoreInstanceID(ctx, coreInstanceKey, environmentID)
+			coreInstanceID, err := cfg.Completer.LoadCoreInstanceID(ctx, coreInstanceKey, environmentID)
 			if err != nil {
 				return err
 			}
 
-			var format cloud.ConfigFormat
+			var format cloudtypes.ConfigFormat
 
 			if providedConfigFormat != "" {
-				format = cloud.ConfigFormat(providedConfigFormat)
+				format = cloudtypes.ConfigFormat(providedConfigFormat)
 			} else if configFile != "" {
 				// infer the configuration format from the file.
 				format, err = InferConfigFormat(configFile)
@@ -155,22 +153,22 @@ func NewCmdCreatePipeline(config *cfg.Config) *cobra.Command {
 					return err
 				}
 			} else {
-				format = cloud.ConfigFormatINI
+				format = cloudtypes.ConfigFormatINI
 			}
 
-			strategy := cloud.DefaultDeploymentStrategy
+			strategy := cloudtypes.DefaultDeploymentStrategy
 			if deploymentStrategy == "" {
 				if hotReload {
-					strategy = cloud.DeploymentStrategyHotReload
+					strategy = cloudtypes.DeploymentStrategyHotReload
 				}
 			} else {
 				if !isValidDeploymentStrategy(deploymentStrategy) {
 					return fmt.Errorf("invalid provided deployment strategy: %s", deploymentStrategy)
 				}
-				strategy = cloud.DeploymentStrategy(deploymentStrategy)
+				strategy = cloudtypes.DeploymentStrategy(deploymentStrategy)
 			}
 
-			in := cloud.CreatePipeline{
+			in := cloudtypes.CreatePipeline{
 				Name:                            name,
 				ReplicasCount:                   replicasCount,
 				RawConfig:                       string(rawConfig),
@@ -183,10 +181,10 @@ func NewCmdCreatePipeline(config *cfg.Config) *cobra.Command {
 				Metadata:                        metadata,
 				DeploymentStrategy:              strategy,
 				MinReplicas:                     minReplicas,
-				ScaleUpType:                     cloud.HPAScalingPolicyType(scaleUpType),
+				ScaleUpType:                     cloudtypes.HPAScalingPolicyType(scaleUpType),
 				ScaleUpValue:                    scaleUpValue,
 				ScaleUpPeriodSeconds:            scaleUpPeriodSeconds,
-				ScaleDownType:                   cloud.HPAScalingPolicyType(scaleDownType),
+				ScaleDownType:                   cloudtypes.HPAScalingPolicyType(scaleDownType),
 				ScaleDownValue:                  scaleDownValue,
 				ScaleDownPeriodSeconds:          scaleDownPeriodSeconds,
 				UtilizationCPUAverage:           utilizationCPUAverage,
@@ -194,19 +192,19 @@ func NewCmdCreatePipeline(config *cfg.Config) *cobra.Command {
 			}
 
 			if portsServiceType != "" {
-				if !coreinstance.ValidPipelinePortKind(portsServiceType) {
-					return fmt.Errorf("invalid provided service type %s, options are: %s", portsServiceType, coreinstance.AllValidPortKinds())
+				if !formatters.ValidPortKind(portsServiceType) {
+					return fmt.Errorf("invalid provided service type %s, options are: %s", portsServiceType, formatters.PortKinds())
 				}
-				in.PortKind = cloud.PipelinePortKind(portsServiceType)
+				in.PortKind = cloudtypes.PipelinePortKind(portsServiceType)
 			}
 
 			if image != "" {
 				in.Image = &image
 			}
 
-			a, err := config.Cloud.CreatePipeline(ctx, coreInstanceID, in)
+			a, err := cfg.Cloud.CreatePipeline(ctx, coreInstanceID, in)
 			if err != nil {
-				if e, ok := err.(*cloud.Error); ok && e.Detail != nil {
+				if e, ok := err.(*cloudtypes.Error); ok && e.Detail != nil {
 					return fmt.Errorf("could not create pipeline: %s: %s", err, *e.Detail)
 				}
 
@@ -248,9 +246,9 @@ func NewCmdCreatePipeline(config *cfg.Config) *cobra.Command {
 	fs.BoolVar(&hotReload, "hot-reload", false, "Use the hotReload deployment strategy when deploying the pipeline to the cluster, (mutually exclusive with deployment-strategy)")
 	fs.StringVar(&image, "image", "", "Fluent-bit docker image")
 	fs.BoolVar(&noAutoCreateEndpointsFromConfig, "disable-auto-ports", false, "Disables automatically creating ports from the config file")
-	fs.StringVar(&portsServiceType, "service-type", "", fmt.Sprintf("Service type to use for all ports that are auto-created on this pipeline, options are: %s", coreinstance.AllValidPortKinds()))
+	fs.StringVar(&portsServiceType, "service-type", "", fmt.Sprintf("Service type to use for all ports that are auto-created on this pipeline, options are: %s", formatters.PortKinds()))
 	fs.BoolVar(&skipConfigValidation, "skip-config-validation", false, "Opt-in to skip config validation (Use with caution as this option might be removed soon)")
-	fs.StringVar(&resourceProfileName, "resource-profile", cloud.DefaultResourceProfileName, "Resource profile name")
+	fs.StringVar(&resourceProfileName, "resource-profile", cloudtypes.DefaultResourceProfileName, "Resource profile name")
 	fs.StringSliceVar(&metadataPairs, "metadata", nil, "Metadata to attach to the pipeline in the form of key:value. You could instead use a file with the --metadata-file option")
 	fs.StringVar(&metadataFile, "metadata-file", "", "Metadata JSON file to attach to the pipeline intead of passing multiple --metadata flags")
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
@@ -268,8 +266,8 @@ func NewCmdCreatePipeline(config *cfg.Config) *cobra.Command {
 	fs.Int32Var(&utilizationCPUAverage, "utilization-cpu-average", 0, "UtilizationCPUAverage defines the target percentage value for average CPU utilization.")
 	fs.Int32Var(&utilizationMemoryAverage, "utilization-memory-average", 0, "UtilizationCPUAverage defines the target percentage value for average memory utilization.")
 
-	_ = cmd.RegisterFlagCompletionFunc("environment", config.Completer.CompleteEnvironments)
-	_ = cmd.RegisterFlagCompletionFunc("core-instance", config.Completer.CompleteCoreInstances)
+	_ = cmd.RegisterFlagCompletionFunc("environment", cfg.Completer.CompleteEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("core-instance", cfg.Completer.CompleteCoreInstances)
 	_ = cmd.RegisterFlagCompletionFunc("secrets-format", func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
 		return []string{"auto", "env", "json", "yaml"}, cobra.ShellCompDirectiveNoFileComp
 	})
@@ -297,7 +295,7 @@ func readFile(name string) ([]byte, error) {
 	return b, nil
 }
 
-func parseCreatePipelineSecret(file, format string) ([]cloud.CreatePipelineSecret, error) {
+func parseCreatePipelineSecret(file, format string) ([]cloudtypes.CreatePipelineSecret, error) {
 	if file == "" {
 		return nil, nil
 	}
@@ -320,7 +318,7 @@ func parseCreatePipelineSecret(file, format string) ([]cloud.CreatePipelineSecre
 		}
 	}
 
-	var secrets []cloud.CreatePipelineSecret
+	var secrets []cloudtypes.CreatePipelineSecret
 	switch format {
 	case "env", "dotenv":
 		m, err := godotenv.Parse(bytes.NewReader(b))
@@ -328,9 +326,9 @@ func parseCreatePipelineSecret(file, format string) ([]cloud.CreatePipelineSecre
 			return nil, fmt.Errorf("could not parse secrets file %q: %w", file, err)
 		}
 
-		secrets = make([]cloud.CreatePipelineSecret, 0, len(m))
+		secrets = make([]cloudtypes.CreatePipelineSecret, 0, len(m))
 		for k, v := range m {
-			secrets = append(secrets, cloud.CreatePipelineSecret{
+			secrets = append(secrets, cloudtypes.CreatePipelineSecret{
 				Key:   k,
 				Value: []byte(v),
 			})
@@ -341,9 +339,9 @@ func parseCreatePipelineSecret(file, format string) ([]cloud.CreatePipelineSecre
 			return nil, fmt.Errorf("could not parse secrets file %q: %w", file, err)
 		}
 
-		secrets = make([]cloud.CreatePipelineSecret, 0, len(m))
+		secrets = make([]cloudtypes.CreatePipelineSecret, 0, len(m))
 		for k, v := range m {
-			secrets = append(secrets, cloud.CreatePipelineSecret{
+			secrets = append(secrets, cloudtypes.CreatePipelineSecret{
 				Key:   k,
 				Value: []byte(fmt.Sprintf("%v", v)),
 			})
@@ -354,9 +352,9 @@ func parseCreatePipelineSecret(file, format string) ([]cloud.CreatePipelineSecre
 			return nil, fmt.Errorf("could not parse secrets file %q: %w", file, err)
 		}
 
-		secrets = make([]cloud.CreatePipelineSecret, 0, len(m))
+		secrets = make([]cloudtypes.CreatePipelineSecret, 0, len(m))
 		for k, v := range m {
-			secrets = append(secrets, cloud.CreatePipelineSecret{
+			secrets = append(secrets, cloudtypes.CreatePipelineSecret{
 				Key:   k,
 				Value: []byte(fmt.Sprintf("%v", v)),
 			})
@@ -401,8 +399,8 @@ func parseMetadataPairs(pairs []string) (*json.RawMessage, error) {
 }
 
 func isValidDeploymentStrategy(s string) bool {
-	for _, v := range cloud.AllValidDeploymentStrategies {
-		if cloud.DeploymentStrategy(s) == v {
+	for _, v := range cloudtypes.AllValidDeploymentStrategies {
+		if cloudtypes.DeploymentStrategy(s) == v {
 			return true
 		}
 	}

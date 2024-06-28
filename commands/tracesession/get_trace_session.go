@@ -12,12 +12,12 @@ import (
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 
-	"github.com/calyptia/api/types"
-	cnfg "github.com/calyptia/cli/config"
+	cloudtypes "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
 
-func NewCmdGetTraceSessions(config *cnfg.Config) *cobra.Command {
+func NewCmdGetTraceSessions(cfg *config.Config) *cobra.Command {
 	var pipelineKey string
 	var last uint
 	var before string
@@ -31,7 +31,7 @@ func NewCmdGetTraceSessions(config *cnfg.Config) *cobra.Command {
 			"sorted by creation time in descending order.",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			pipelineID, err := config.Completer.LoadPipelineID(ctx, pipelineKey)
+			pipelineID, err := cfg.Completer.LoadPipelineID(ctx, pipelineKey)
 			if err != nil {
 				return err
 			}
@@ -46,7 +46,7 @@ func NewCmdGetTraceSessions(config *cnfg.Config) *cobra.Command {
 				beforeOpt = &before
 			}
 
-			ss, err := config.Cloud.TraceSessions(ctx, pipelineID, types.TraceSessionsParams{
+			ss, err := cfg.Cloud.TraceSessions(ctx, pipelineID, cloudtypes.TraceSessionsParams{
 				Last:   lastOpt,
 				Before: beforeOpt,
 			})
@@ -80,12 +80,12 @@ func NewCmdGetTraceSessions(config *cnfg.Config) *cobra.Command {
 	_ = cmd.MarkFlagRequired("pipeline")
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
-	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.Completer.CompletePipelines)
+	_ = cmd.RegisterFlagCompletionFunc("pipeline", cfg.Completer.CompletePipelines)
 
 	return cmd
 }
 
-func NewCmdGetTraceSession(config *cnfg.Config) *cobra.Command {
+func NewCmdGetTraceSession(cfg *config.Config) *cobra.Command {
 	var pipelineKey string
 	var showID bool
 	var outputFormat, goTemplate string
@@ -98,11 +98,11 @@ func NewCmdGetTraceSession(config *cnfg.Config) *cobra.Command {
 		Args: cobra.MaximumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			var session types.TraceSession
+			var session cloudtypes.TraceSession
 			if len(args) == 1 {
 				sessionID := args[0]
 				var err error
-				session, err = config.Cloud.TraceSession(ctx, sessionID)
+				session, err = cfg.Cloud.TraceSession(ctx, sessionID)
 				if err != nil {
 					return err
 				}
@@ -111,12 +111,12 @@ func NewCmdGetTraceSession(config *cnfg.Config) *cobra.Command {
 					return errors.New("flag needs an argument: --pipeline")
 				}
 
-				pipelineID, err := config.Completer.LoadPipelineID(ctx, pipelineKey)
+				pipelineID, err := cfg.Completer.LoadPipelineID(ctx, pipelineKey)
 				if err != nil {
 					return err
 				}
 
-				session, err = config.Cloud.ActiveTraceSession(ctx, pipelineID)
+				session, err = cfg.Cloud.ActiveTraceSession(ctx, pipelineID)
 				if err != nil {
 					return err
 				}
@@ -145,12 +145,12 @@ func NewCmdGetTraceSession(config *cnfg.Config) *cobra.Command {
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
-	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.Completer.CompletePipelines)
+	_ = cmd.RegisterFlagCompletionFunc("pipeline", cfg.Completer.CompletePipelines)
 
 	return cmd
 }
 
-func renderTraceSessionsTable(w io.Writer, ss types.TraceSessions, pipelineID string, showIDs bool) error {
+func renderTraceSessionsTable(w io.Writer, ss cloudtypes.TraceSessions, pipelineID string, showIDs bool) error {
 	tw := tabwriter.NewWriter(w, 0, 4, 1, ' ', 0)
 	if showIDs {
 		if _, err := fmt.Fprint(tw, "ID\t"); err != nil {
@@ -184,7 +184,7 @@ func renderTraceSessionsTable(w io.Writer, ss types.TraceSessions, pipelineID st
 	return nil
 }
 
-func renderTraceSessionTable(w io.Writer, sess types.TraceSession, showIDs bool) error {
+func renderTraceSessionTable(w io.Writer, sess cloudtypes.TraceSession, showIDs bool) error {
 	tw := tabwriter.NewWriter(w, 0, 4, 1, ' ', 0)
 	if showIDs {
 		if _, err := fmt.Fprint(tw, "ID\t"); err != nil {

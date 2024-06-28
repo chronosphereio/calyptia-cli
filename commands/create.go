@@ -12,30 +12,30 @@ import (
 	"github.com/calyptia/cli/commands/pipeline"
 	"github.com/calyptia/cli/commands/resourceprofile"
 	"github.com/calyptia/cli/commands/tracesession"
-	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/config"
 )
 
-func newCmdCreate(config *cfg.Config) *cobra.Command {
+func newCmdCreate(cfg *config.Config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create",
 		Short: "Create core instances, pipelines, etc.",
 	}
 
 	cmd.AddCommand(
-		invitation.NewCmdSendInvitation(config),
-		coreinstance.NewCmdCreateCoreInstance(config),
-		coreinstance.NewCmdCreateCoreInstanceFile(config),
-		coreinstance.NewCmdCreateCoreInstanceSecret(config),
-		pipeline.NewCmdCreatePipeline(config),
-		resourceprofile.NewCmdCreateResourceProfile(config),
-		pipeline.NewCmdCreatePipelineFile(config),
-		pipeline.NewCmdCreatePipelineLog(config),
-		environment.NewCmdCreateEnvironment(config),
-		tracesession.NewCmdCreateTraceSession(config),
-		configsection.NewCmdCreateConfigSection(config),
-		ingestcheck.NewCmdCreateIngestCheck(config),
-		fleet.NewCmdCreateFleet(config),
-		fleet.NewCmdCreateFleetFile(config),
+		invitation.NewCmdSendInvitation(cfg),
+		coreinstance.NewCmdCreateCoreInstance(cfg),
+		coreinstance.NewCmdCreateCoreInstanceFile(cfg),
+		coreinstance.NewCmdCreateCoreInstanceSecret(cfg),
+		pipeline.NewCmdCreatePipeline(cfg),
+		resourceprofile.NewCmdCreateResourceProfile(cfg),
+		pipeline.NewCmdCreatePipelineFile(cfg),
+		pipeline.NewCmdCreatePipelineLog(cfg),
+		environment.NewCmdCreateEnvironment(cfg),
+		tracesession.NewCmdCreateTraceSession(cfg),
+		configsection.NewCmdCreateConfigSection(cfg),
+		ingestcheck.NewCmdCreateIngestCheck(cfg),
+		fleet.NewCmdCreateFleet(cfg),
+		fleet.NewCmdCreateFleetFile(cfg),
 	)
 
 	return cmd

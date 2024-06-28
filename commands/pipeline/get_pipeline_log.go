@@ -10,12 +10,12 @@ import (
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 
-	cloud "github.com/calyptia/api/types"
-	cfg "github.com/calyptia/cli/config"
+	cloudtypes "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
 
-func NewCmdGetPipelineLogs(config *cfg.Config) *cobra.Command {
+func NewCmdGetPipelineLogs(cfg *config.Config) *cobra.Command {
 	var pipelineKey string
 	var last uint
 	var outputFormat, goTemplate string
@@ -26,12 +26,12 @@ func NewCmdGetPipelineLogs(config *cfg.Config) *cobra.Command {
 		Short: "Get pipeline logs",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			pipelineID, err := config.Completer.LoadPipelineID(ctx, pipelineKey)
+			pipelineID, err := cfg.Completer.LoadPipelineID(ctx, pipelineKey)
 			if err != nil {
 				return err
 			}
 
-			ff, err := config.Cloud.PipelineLogs(ctx, cloud.ListPipelineLogs{
+			ff, err := cfg.Cloud.PipelineLogs(ctx, cloudtypes.ListPipelineLogs{
 				PipelineID: pipelineID,
 				Last:       &last,
 			})
@@ -66,14 +66,14 @@ func NewCmdGetPipelineLogs(config *cfg.Config) *cobra.Command {
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
-	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.Completer.CompletePipelines)
+	_ = cmd.RegisterFlagCompletionFunc("pipeline", cfg.Completer.CompletePipelines)
 
 	_ = cmd.MarkFlagRequired("pipeline") // TODO: use default pipeline key from config cmd.
 
 	return cmd
 }
 
-func NewCmdGetPipelineLog(c *cfg.Config) *cobra.Command {
+func NewCmdGetPipelineLog(cfg *config.Config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "pipeline_log PIPELINE_LOGS_ID",
 		Short: "Get a specific pipeline log",
@@ -81,7 +81,7 @@ func NewCmdGetPipelineLog(c *cfg.Config) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			id := args[0]
-			check, err := c.Cloud.PipelineLog(ctx, id)
+			check, err := cfg.Cloud.PipelineLog(ctx, id)
 			if err != nil {
 				return err
 			}
@@ -92,7 +92,7 @@ func NewCmdGetPipelineLog(c *cfg.Config) *cobra.Command {
 	return cmd
 }
 
-func renderPipelineLogs(w io.Writer, ff []cloud.PipelineLog, showIDs bool) {
+func renderPipelineLogs(w io.Writer, ff []cloudtypes.PipelineLog, showIDs bool) {
 	tw := tabwriter.NewWriter(w, 0, 4, 1, ' ', 0)
 	if showIDs {
 		fmt.Fprint(tw, "ID\t")

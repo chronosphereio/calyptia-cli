@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 
-	"github.com/calyptia/api/types"
+	cloudtypes "github.com/calyptia/api/types"
 	"github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
@@ -37,11 +37,11 @@ func NewCmdUpdateConfigSection(cfg *config.Config) *cobra.Command {
 			}
 
 			props := propsFromSlice(propsSlice)
-			props = append(types.Pairs{
+			props = append(cloudtypes.Pairs{
 				{Key: "name", Value: formatters.PairsName(cs.Properties)},
 			}, props...)
 
-			updated, err := cfg.Cloud.UpdateConfigSection(ctx, configSectionID, types.UpdateConfigSection{
+			updated, err := cfg.Cloud.UpdateConfigSection(ctx, configSectionID, cloudtypes.UpdateConfigSection{
 				Properties: &props,
 			})
 			if err != nil {

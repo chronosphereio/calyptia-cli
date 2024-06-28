@@ -12,7 +12,7 @@ import (
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 
-	"github.com/calyptia/api/types"
+	cloudtypes "github.com/calyptia/api/types"
 	"github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
@@ -30,7 +30,7 @@ func NewCmdGetConfigSections(cfg *config.Config) *cobra.Command {
 			"sorted by creation time in descending order.",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			params := types.ConfigSectionsParams{}
+			params := cloudtypes.ConfigSectionsParams{}
 			if last != 0 {
 				params.Last = &last
 			}
@@ -69,7 +69,7 @@ func NewCmdGetConfigSections(cfg *config.Config) *cobra.Command {
 	return cmd
 }
 
-func renderConfigSectionsTable(w io.Writer, cc types.ConfigSections, showIDs bool) error {
+func renderConfigSectionsTable(w io.Writer, cc cloudtypes.ConfigSections, showIDs bool) error {
 	tw := tabwriter.NewWriter(w, 0, 4, 1, ' ', 0)
 	if showIDs {
 		if _, err := fmt.Fprint(tw, "ID\t"); err != nil {
@@ -110,7 +110,7 @@ func renderConfigSectionsTable(w io.Writer, cc types.ConfigSections, showIDs boo
 	return nil
 }
 
-func pairsToLogfmt(pp types.Pairs, skipName bool) (string, error) {
+func pairsToLogfmt(pp cloudtypes.Pairs, skipName bool) (string, error) {
 	var buff bytes.Buffer
 	enc := logfmt.NewEncoder(&buff)
 	for _, p := range pp {
@@ -129,7 +129,7 @@ func pairsToLogfmt(pp types.Pairs, skipName bool) (string, error) {
 	return buff.String(), nil
 }
 
-func pairsName(pp types.Pairs) string {
+func pairsName(pp cloudtypes.Pairs) string {
 	if v, ok := pp.Get("Name"); ok {
 		return fmt.Sprintf("%v", v)
 	}

@@ -5,11 +5,11 @@ import (
 
 	"github.com/spf13/cobra"
 
-	cloud "github.com/calyptia/api/types"
-	cfg "github.com/calyptia/cli/config"
+	cloudtypes "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/config"
 )
 
-func NewCmdUpdateAgent(config *cfg.Config) *cobra.Command {
+func NewCmdUpdateAgent(cfg *config.Config) *cobra.Command {
 	var newName string
 	var fleetKey string
 	var environment string
@@ -18,30 +18,30 @@ func NewCmdUpdateAgent(config *cfg.Config) *cobra.Command {
 		Use:               "agent AGENT",
 		Short:             "Update a single agent by ID or name",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.Completer.CompleteAgents,
+		ValidArgsFunction: cfg.Completer.CompleteAgents,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			agentKey := args[0]
-			agentID, err := config.Completer.LoadAgentID(ctx, agentKey, "")
+			agentID, err := cfg.Completer.LoadAgentID(ctx, agentKey, "")
 			if err != nil {
 				return err
 			}
 
 			fs := cmd.Flags()
 
-			var in cloud.UpdateAgent
+			var in cloudtypes.UpdateAgent
 			if fs.Changed("new-name") {
 				in.Name = &newName
 			}
 			if fs.Changed("environment") {
-				envID, err := config.Completer.LoadEnvironmentID(ctx, environment)
+				envID, err := cfg.Completer.LoadEnvironmentID(ctx, environment)
 				if err != nil {
 					return err
 				}
 				in.EnvironmentID = &envID
 			}
 			if fs.Changed("fleet") {
-				fleetID, err := config.Completer.LoadFleetID(ctx, fleetKey)
+				fleetID, err := cfg.Completer.LoadFleetID(ctx, fleetKey)
 				if err != nil {
 					return err
 				}
@@ -49,7 +49,7 @@ func NewCmdUpdateAgent(config *cfg.Config) *cobra.Command {
 				in.FleetID = &fleetID
 			}
 
-			err = config.Cloud.UpdateAgent(ctx, agentID, in)
+			err = cfg.Cloud.UpdateAgent(ctx, agentID, in)
 			if err != nil {
 				return fmt.Errorf("could not update agent: %w", err)
 			}
@@ -63,8 +63,8 @@ func NewCmdUpdateAgent(config *cfg.Config) *cobra.Command {
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 	fs.StringVar(&fleetKey, "fleet", "", "Attach this agent to the given fleet")
 
-	_ = cmd.RegisterFlagCompletionFunc("environment", config.Completer.CompleteEnvironments)
-	_ = cmd.RegisterFlagCompletionFunc("fleet", config.Completer.CompleteFleets)
+	_ = cmd.RegisterFlagCompletionFunc("environment", cfg.Completer.CompleteEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("fleet", cfg.Completer.CompleteFleets)
 
 	return cmd
 }

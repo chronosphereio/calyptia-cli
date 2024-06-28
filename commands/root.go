@@ -12,7 +12,7 @@ import (
 	"github.com/spf13/cobra"
 
 	cloudclient "github.com/calyptia/api/client"
-	cnfg "github.com/calyptia/cli/commands/config"
+	configcmd "github.com/calyptia/cli/commands/config"
 	"github.com/calyptia/cli/commands/version"
 	"github.com/calyptia/cli/completer"
 	"github.com/calyptia/cli/config"
@@ -30,22 +30,22 @@ func NewRootCmd() *cobra.Command {
 		if err != nil {
 			cobra.CheckErr(fmt.Errorf("could not set a base directory for storing local configuration: %w", err))
 		}
-		storageDir = filepath.Join(baseDir, cnfg.BackUpFolder)
+		storageDir = filepath.Join(baseDir, configcmd.BackUpFolder)
 	}
 
-	localData := localdata.New(cnfg.ServiceName, storageDir)
+	localData := localdata.New(configcmd.ServiceName, storageDir)
 	cfg := &config.Config{
 		Cloud:     client,
 		LocalData: localData,
 		Completer: &completer.Completer{},
 	}
 
-	token, err := localData.Get(cnfg.KeyToken)
+	token, err := localData.Get(configcmd.KeyToken)
 	if err != nil && !errors.Is(err, localdata.ErrNotFound) {
 		cobra.CheckErr(fmt.Errorf("could not retrieve your stored token: %w", err))
 	}
 
-	cloudURLStr, err := localData.Get(cnfg.KeyBaseURL)
+	cloudURLStr, err := localData.Get(configcmd.KeyBaseURL)
 	if err != nil && !errors.Is(err, localdata.ErrNotFound) {
 		cobra.CheckErr(fmt.Errorf("could not retrieve your stored cloud url: %w", err))
 	}
@@ -71,7 +71,7 @@ func NewRootCmd() *cobra.Command {
 			return
 		}
 
-		projectID, err := cnfg.DecodeToken([]byte(token))
+		projectID, err := configcmd.DecodeToken([]byte(token))
 		if err != nil {
 			cobra.CheckErr(err)
 			return

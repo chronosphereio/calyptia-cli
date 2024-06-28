@@ -7,11 +7,11 @@ import (
 
 	"github.com/spf13/cobra"
 
-	cloud "github.com/calyptia/api/types"
-	cfg "github.com/calyptia/cli/config"
+	cloudtypes "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/config"
 )
 
-func NewCmdUpdateFleetFile(config *cfg.Config) *cobra.Command {
+func NewCmdUpdateFleetFile(cfg *config.Config) *cobra.Command {
 	var fleetKey string
 	var file string
 
@@ -27,19 +27,19 @@ func NewCmdUpdateFleetFile(config *cfg.Config) *cobra.Command {
 
 			name := filepath.Base(file)
 
-			fleetID, err := config.Completer.LoadFleetID(ctx, fleetKey)
+			fleetID, err := cfg.Completer.LoadFleetID(ctx, fleetKey)
 			if err != nil {
 				return err
 			}
 
-			ff, err := config.Cloud.FleetFiles(ctx, fleetID, cloud.FleetFilesParams{})
+			ff, err := cfg.Cloud.FleetFiles(ctx, fleetID, cloudtypes.FleetFilesParams{})
 			if err != nil {
 				return err
 			}
 
 			for _, f := range ff.Items {
 				if f.Name == name {
-					return config.Cloud.UpdateFleetFile(ctx, f.ID, cloud.UpdateFleetFile{
+					return cfg.Cloud.UpdateFleetFile(ctx, f.ID, cloudtypes.UpdateFleetFile{
 						Contents: &contents,
 					})
 				}
@@ -53,7 +53,7 @@ func NewCmdUpdateFleetFile(config *cfg.Config) *cobra.Command {
 	fs.StringVar(&fleetKey, "fleet", "", "Parent fleet ID or name")
 	fs.StringVar(&file, "file", "", "File path. The file you want to update. It must exists already.")
 
-	_ = cmd.RegisterFlagCompletionFunc("fleet", config.Completer.CompleteFleets)
+	_ = cmd.RegisterFlagCompletionFunc("fleet", cfg.Completer.CompleteFleets)
 	_ = cmd.MarkFlagRequired("file")
 
 	_ = cmd.MarkFlagRequired("fleet") // TODO: use default fleet key from config cmd.

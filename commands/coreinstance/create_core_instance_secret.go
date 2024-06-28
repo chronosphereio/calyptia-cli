@@ -8,13 +8,12 @@ import (
 	"golang.org/x/term"
 	"gopkg.in/yaml.v3"
 
-	"github.com/calyptia/api/types"
-	cfg "github.com/calyptia/cli/config"
+	cloudtypes "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
 
-func NewCmdCreateCoreInstanceSecret(config *cfg.Config) *cobra.Command {
-
+func NewCmdCreateCoreInstanceSecret(cfg *config.Config) *cobra.Command {
 	var instanceKey string
 	var key string
 	var value string
@@ -37,12 +36,12 @@ func NewCmdCreateCoreInstanceSecret(config *cfg.Config) *cobra.Command {
 				cmd.Println()
 			}
 
-			instanceID, err := config.Completer.LoadCoreInstanceID(ctx, instanceKey, "")
+			instanceID, err := cfg.Completer.LoadCoreInstanceID(ctx, instanceKey, "")
 			if err != nil {
 				return err
 			}
 
-			out, err := config.Cloud.CreateCoreInstanceSecret(ctx, types.CreateCoreInstanceSecret{
+			out, err := cfg.Cloud.CreateCoreInstanceSecret(ctx, cloudtypes.CreateCoreInstanceSecret{
 				CoreInstanceID: instanceID,
 				Key:            key,
 				Value:          []byte(value),
@@ -73,7 +72,7 @@ func NewCmdCreateCoreInstanceSecret(config *cfg.Config) *cobra.Command {
 	fs.StringVar(&value, "value", "", "Secret value")
 	formatters.BindFormatFlags(cmd)
 
-	_ = cmd.RegisterFlagCompletionFunc("core-instance", config.Completer.CompleteCoreInstances)
+	_ = cmd.RegisterFlagCompletionFunc("core-instance", cfg.Completer.CompleteCoreInstances)
 
 	_ = cmd.MarkFlagRequired("core-instance")
 	_ = cmd.MarkFlagRequired("key")

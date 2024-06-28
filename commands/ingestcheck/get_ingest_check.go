@@ -10,12 +10,12 @@ import (
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 
-	"github.com/calyptia/api/types"
-	cfg "github.com/calyptia/cli/config"
+	cloudtypes "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
 
-func NewCmdGetIngestCheck(c *cfg.Config) *cobra.Command {
+func NewCmdGetIngestCheck(cfg *config.Config) *cobra.Command {
 	var (
 		outputFormat string
 		showIDs      bool
@@ -28,7 +28,7 @@ func NewCmdGetIngestCheck(c *cfg.Config) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := context.Background()
 			id := args[0]
-			check, err := c.Cloud.IngestCheck(ctx, id)
+			check, err := cfg.Cloud.IngestCheck(ctx, id)
 			if err != nil {
 				return err
 			}
@@ -73,7 +73,7 @@ func NewCmdGetIngestCheck(c *cfg.Config) *cobra.Command {
 	return cmd
 }
 
-func NewCmdGetIngestChecks(c *cfg.Config) *cobra.Command {
+func NewCmdGetIngestChecks(cfg *config.Config) *cobra.Command {
 	var (
 		outputFormat string
 		showIDs      bool
@@ -92,16 +92,16 @@ func NewCmdGetIngestChecks(c *cfg.Config) *cobra.Command {
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = c.Completer.LoadEnvironmentID(ctx, environment)
+				environmentID, err = cfg.Completer.LoadEnvironmentID(ctx, environment)
 				if err != nil {
 					return err
 				}
 			}
-			aggregatorID, err := c.Completer.LoadCoreInstanceID(ctx, id, environmentID)
+			aggregatorID, err := cfg.Completer.LoadCoreInstanceID(ctx, id, environmentID)
 			if err != nil {
 				return err
 			}
-			check, err := c.Cloud.IngestChecks(ctx, aggregatorID, types.IngestChecksParams{Last: &last})
+			check, err := cfg.Cloud.IngestChecks(ctx, aggregatorID, cloudtypes.IngestChecksParams{Last: &last})
 			if err != nil {
 				return err
 			}

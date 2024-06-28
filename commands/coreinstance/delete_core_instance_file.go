@@ -10,13 +10,13 @@ import (
 	"golang.org/x/term"
 	"gopkg.in/yaml.v3"
 
-	"github.com/calyptia/api/types"
-	cfg "github.com/calyptia/cli/config"
+	cloudtypes "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/confirm"
 	"github.com/calyptia/cli/formatters"
 )
 
-func NewCmdDeleteCoreInstanceFile(config *cfg.Config) *cobra.Command {
+func NewCmdDeleteCoreInstanceFile(cfg *config.Config) *cobra.Command {
 
 	var confirmed bool
 	var instanceKey string
@@ -44,12 +44,12 @@ func NewCmdDeleteCoreInstanceFile(config *cfg.Config) *cobra.Command {
 				}
 			}
 
-			instanceID, err := config.Completer.LoadCoreInstanceID(ctx, instanceKey, "")
+			instanceID, err := cfg.Completer.LoadCoreInstanceID(ctx, instanceKey, "")
 			if err != nil {
 				return err
 			}
 
-			files, err := config.Cloud.CoreInstanceFiles(ctx, types.ListCoreInstanceFiles{
+			files, err := cfg.Cloud.CoreInstanceFiles(ctx, cloudtypes.ListCoreInstanceFiles{
 				CoreInstanceID: instanceID,
 			})
 			if err != nil {
@@ -69,7 +69,7 @@ func NewCmdDeleteCoreInstanceFile(config *cfg.Config) *cobra.Command {
 				return nil
 			}
 
-			out, err := config.Cloud.DeleteCoreInstanceFile(ctx, fileID)
+			out, err := cfg.Cloud.DeleteCoreInstanceFile(ctx, fileID)
 			if err != nil {
 				return err
 			}
@@ -98,7 +98,7 @@ func NewCmdDeleteCoreInstanceFile(config *cfg.Config) *cobra.Command {
 	fs.StringVar(&instanceKey, "core-instance", "", "Parent core instance ID or name")
 	fs.StringVar(&name, "name", "", "Name of the file to delete")
 
-	_ = cmd.RegisterFlagCompletionFunc("core-instance", config.Completer.CompleteCoreInstances)
+	_ = cmd.RegisterFlagCompletionFunc("core-instance", cfg.Completer.CompleteCoreInstances)
 
 	_ = cmd.MarkFlagRequired("core-instance")
 	_ = cmd.MarkFlagRequired("name")

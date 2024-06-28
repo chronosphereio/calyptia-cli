@@ -7,15 +7,15 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/calyptia/cli/commands/version"
-	cfg "github.com/calyptia/cli/config"
+	versioncmd "github.com/calyptia/cli/commands/version"
+	"github.com/calyptia/cli/config"
 )
 
 var ErrURLNotFound = errors.New("url not found")
 
 const KeyBaseURL = "base_url"
 
-func NewCmdConfigSetURL(config *cfg.Config) *cobra.Command {
+func NewCmdConfigSetURL(cfg *config.Config) *cobra.Command {
 	return &cobra.Command{
 		Use:   "set_url URL",
 		Short: "Set the default cloud URL so you don't have to specify it on all commands",
@@ -30,39 +30,39 @@ func NewCmdConfigSetURL(config *cfg.Config) *cobra.Command {
 				return fmt.Errorf("invalid cloud url scheme %q", cloudURL.Scheme)
 			}
 
-			err = config.LocalData.Save(KeyBaseURL, cloudURL.String())
+			err = cfg.LocalData.Save(KeyBaseURL, cloudURL.String())
 			if err != nil {
 				return err
 			}
 
-			config.BaseURL = cloudURL.String()
+			cfg.BaseURL = cloudURL.String()
 
 			return nil
 		},
 	}
 }
 
-func NewCmdConfigCurrentURL(config *cfg.Config) *cobra.Command {
+func NewCmdConfigCurrentURL(cfg *config.Config) *cobra.Command {
 	return &cobra.Command{
 		Use:   "current_url",
 		Short: "Get the current configured default cloud URL",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cmd.Println(config.BaseURL)
+			cmd.Println(cfg.BaseURL)
 			return nil
 		},
 	}
 }
 
-func NewCmdConfigUnsetURL(config *cfg.Config) *cobra.Command {
+func NewCmdConfigUnsetURL(cfg *config.Config) *cobra.Command {
 	return &cobra.Command{
 		Use:   "unset_url",
 		Short: "Unset the current configured default cloud URL",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			err := config.LocalData.Delete(KeyBaseURL)
+			err := cfg.LocalData.Delete(KeyBaseURL)
 			if err != nil {
 				return err
 			}
-			config.BaseURL = version.DefaultCloudURLStr
+			cfg.BaseURL = versioncmd.DefaultCloudURLStr
 			return nil
 		},
 	}

@@ -10,12 +10,12 @@ import (
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 
-	"github.com/calyptia/api/types"
-	cfg "github.com/calyptia/cli/config"
+	cloudtypes "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
 
-func NewCmdGetFleets(config *cfg.Config) *cobra.Command {
+func NewCmdGetFleets(cfg *config.Config) *cobra.Command {
 	var name, before string
 	var tags []string
 	var last uint
@@ -29,7 +29,7 @@ func NewCmdGetFleets(config *cfg.Config) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 
-			var in types.FleetsParams
+			var in cloudtypes.FleetsParams
 
 			fs := cmd.Flags()
 			if fs.Changed("name") {
@@ -45,9 +45,9 @@ func NewCmdGetFleets(config *cfg.Config) *cobra.Command {
 				in.Before = &before
 			}
 
-			in.ProjectID = config.ProjectID
+			in.ProjectID = cfg.ProjectID
 
-			fleets, err := config.Cloud.Fleets(ctx, in)
+			fleets, err := cfg.Cloud.Fleets(ctx, in)
 			if err != nil {
 				return err
 			}
@@ -83,25 +83,25 @@ func NewCmdGetFleets(config *cfg.Config) *cobra.Command {
 	return cmd
 }
 
-func NewCmdGetFleet(config *cfg.Config) *cobra.Command {
+func NewCmdGetFleet(cfg *config.Config) *cobra.Command {
 	var showIDs bool
 	var outputFormat, goTemplate string
 
 	cmd := &cobra.Command{
 		Use:               "fleet FLEET", // calyptia get fleets
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: config.Completer.CompleteFleets,
+		ValidArgsFunction: cfg.Completer.CompleteFleets,
 		Short:             "Display a Fleet Fleet",
 		Long:              "Display a Fleet by ID or name",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			fleetKey := args[0]
-			fleetID, err := config.Completer.LoadFleetID(ctx, fleetKey)
+			fleetID, err := cfg.Completer.LoadFleetID(ctx, fleetKey)
 			if err != nil {
 				return err
 			}
 
-			fleet, err := config.Cloud.Fleet(ctx, types.FleetParams{FleetID: fleetID})
+			fleet, err := cfg.Cloud.Fleet(ctx, cloudtypes.FleetParams{FleetID: fleetID})
 			if err != nil {
 				return err
 			}
@@ -113,7 +113,7 @@ func NewCmdGetFleet(config *cfg.Config) *cobra.Command {
 			switch outputFormat {
 			case "table":
 				return renderFleetsTable(cmd.OutOrStdout(),
-					types.Fleets{Items: []types.Fleet{fleet}}, showIDs)
+					cloudtypes.Fleets{Items: []cloudtypes.Fleet{fleet}}, showIDs)
 			case "json":
 				return json.NewEncoder(cmd.OutOrStdout()).Encode(fleet)
 			case "yml", "yaml":
@@ -134,7 +134,7 @@ func NewCmdGetFleet(config *cfg.Config) *cobra.Command {
 	return cmd
 }
 
-func renderFleetsTable(w io.Writer, fleets types.Fleets, showIDs bool) error {
+func renderFleetsTable(w io.Writer, fleets cloudtypes.Fleets, showIDs bool) error {
 	tw := tabwriter.NewWriter(w, 0, 4, 1, ' ', 0)
 	if showIDs {
 		if _, err := fmt.Fprint(tw, "ID\t"); err != nil {

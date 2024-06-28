@@ -11,12 +11,12 @@ import (
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 
-	cloud "github.com/calyptia/api/types"
-	cfg "github.com/calyptia/cli/config"
+	cloudtypes "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
 
-func NewCmdCreateFleetFile(config *cfg.Config) *cobra.Command {
+func NewCmdCreateFleetFile(cfg *config.Config) *cobra.Command {
 	var fleetKey string
 	var file string
 	var outputFormat, goTemplate string
@@ -33,12 +33,12 @@ func NewCmdCreateFleetFile(config *cfg.Config) *cobra.Command {
 				return err
 			}
 
-			fleetID, err := config.Completer.LoadFleetID(ctx, fleetKey)
+			fleetID, err := cfg.Completer.LoadFleetID(ctx, fleetKey)
 			if err != nil {
 				return err
 			}
 
-			out, err := config.Cloud.CreateFleetFile(ctx, fleetID, cloud.CreateFleetFile{
+			out, err := cfg.Cloud.CreateFleetFile(ctx, fleetID, cloudtypes.CreateFleetFile{
 				Name:     name,
 				Contents: contents,
 			})
@@ -77,7 +77,7 @@ func NewCmdCreateFleetFile(config *cfg.Config) *cobra.Command {
 	_ = cmd.MarkFlagRequired("fleet")
 	_ = cmd.MarkFlagRequired("file")
 
-	_ = cmd.RegisterFlagCompletionFunc("fleet", config.Completer.CompleteFleets)
+	_ = cmd.RegisterFlagCompletionFunc("fleet", cfg.Completer.CompleteFleets)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
 	return cmd

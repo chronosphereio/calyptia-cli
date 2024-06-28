@@ -4,17 +4,17 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/calyptia/cli/commands/pipeline"
-	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/config"
 )
 
-func newCmdWatch(config *cfg.Config) *cobra.Command {
+func newCmdWatch(cfg *config.Config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "watch",
 		Short: "watch for events or logs",
 	}
 
 	cmd.AddCommand(
-		pipeline.NewCmdWatchPipelineLogs(config),
+		pipeline.NewCmdWatchPipelineLogs(cfg),
 	)
 
 	return cmd

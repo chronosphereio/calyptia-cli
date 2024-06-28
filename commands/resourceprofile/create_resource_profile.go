@@ -10,42 +10,12 @@ import (
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 
-	cloud "github.com/calyptia/api/types"
-	cfg "github.com/calyptia/cli/config"
+	cloudtypes "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
 
-type ResourceProfileSpec struct {
-	Resources struct {
-		Storage struct {
-			SyncFull        bool   `json:"syncFull"`
-			BacklogMemLimit string `json:"backlogMemLimit"`
-			VolumeSize      string `json:"volumeSize"`
-			MaxChunksUp     uint   `json:"maxChunksUp"`
-			MaxChunksPause  bool   `json:"maxChunksPause"`
-		} `json:"storage"`
-		CPU struct {
-			BufferWorkers uint   `json:"bufferWorkers"`
-			Limit         string `json:"limit"`
-			Request       string `json:"request"`
-		} `json:"cpu"`
-		Memory struct {
-			Limit   string `json:"limit"`
-			Request string `json:"request"`
-		} `json:"memory"`
-	} `json:"resources"`
-}
-
-var resourceProfileSpecExample = func() string {
-	b, err := json.MarshalIndent(ResourceProfileSpec{}, "", "  ")
-	if err != nil {
-		panic("failed to marshal example spec")
-	}
-
-	return string(b)
-}()
-
-func NewCmdCreateResourceProfile(config *cfg.Config) *cobra.Command {
+func NewCmdCreateResourceProfile(cfg *config.Config) *cobra.Command {
 	var coreInstanceKey string
 	var name string
 	var specFile string
@@ -71,18 +41,18 @@ func NewCmdCreateResourceProfile(config *cfg.Config) *cobra.Command {
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = config.Completer.LoadEnvironmentID(ctx, environment)
+				environmentID, err = cfg.Completer.LoadEnvironmentID(ctx, environment)
 				if err != nil {
 					return err
 				}
 			}
 
-			aggregatorID, err := config.Completer.LoadCoreInstanceID(ctx, coreInstanceKey, environmentID)
+			aggregatorID, err := cfg.Completer.LoadCoreInstanceID(ctx, coreInstanceKey, environmentID)
 			if err != nil {
 				return err
 			}
 
-			rp, err := config.Cloud.CreateResourceProfile(ctx, aggregatorID, cloud.CreateResourceProfile{
+			rp, err := cfg.Cloud.CreateResourceProfile(ctx, aggregatorID, cloudtypes.CreateResourceProfile{
 				Name:                   name,
 				StorageMaxChunksUp:     spec.Resources.Storage.MaxChunksUp,
 				StorageSyncFull:        spec.Resources.Storage.SyncFull,
@@ -128,8 +98,8 @@ func NewCmdCreateResourceProfile(config *cfg.Config) *cobra.Command {
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
-	_ = cmd.RegisterFlagCompletionFunc("environment", config.Completer.CompleteEnvironments)
-	_ = cmd.RegisterFlagCompletionFunc("core-instance", config.Completer.CompleteCoreInstances)
+	_ = cmd.RegisterFlagCompletionFunc("environment", cfg.Completer.CompleteEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("core-instance", cfg.Completer.CompleteCoreInstances)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("name", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return nil, cobra.ShellCompDirectiveNoFileComp

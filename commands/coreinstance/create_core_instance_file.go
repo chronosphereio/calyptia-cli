@@ -9,12 +9,12 @@ import (
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 
-	"github.com/calyptia/api/types"
-	cfg "github.com/calyptia/cli/config"
+	cloudtypes "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
 
-func NewCmdCreateCoreInstanceFile(config *cfg.Config) *cobra.Command {
+func NewCmdCreateCoreInstanceFile(cfg *config.Config) *cobra.Command {
 	var instanceKey string
 	var file string
 	var encrypted bool
@@ -32,14 +32,14 @@ func NewCmdCreateCoreInstanceFile(config *cfg.Config) *cobra.Command {
 				return err
 			}
 
-			instanceID, err := config.Completer.LoadCoreInstanceID(ctx, instanceKey, "")
+			instanceID, err := cfg.Completer.LoadCoreInstanceID(ctx, instanceKey, "")
 			if err != nil {
 				return err
 			}
 
 			fs := cmd.Flags()
 
-			out, err := config.Cloud.CreateCoreInstanceFile(ctx, types.CreateCoreInstanceFile{
+			out, err := cfg.Cloud.CreateCoreInstanceFile(ctx, cloudtypes.CreateCoreInstanceFile{
 				CoreInstanceID: instanceID,
 				Name:           name,
 				Contents:       contents,
@@ -71,7 +71,7 @@ func NewCmdCreateCoreInstanceFile(config *cfg.Config) *cobra.Command {
 	fs.BoolVar(&encrypted, "encrypted", false, "Encrypt the file contents")
 	formatters.BindFormatFlags(cmd)
 
-	_ = cmd.RegisterFlagCompletionFunc("core-instance", config.Completer.CompleteCoreInstances)
+	_ = cmd.RegisterFlagCompletionFunc("core-instance", cfg.Completer.CompleteCoreInstances)
 
 	_ = cmd.MarkFlagRequired("core-instance")
 	_ = cmd.MarkFlagRequired("file")
