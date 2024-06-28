@@ -123,9 +123,15 @@ jobs:
         if: always()
         run: |
           kubectl get events -A
+          echo '-------------------------------------------------------------------------------'
           kubectl get pods -A --show-labels
+          echo '-------------------------------------------------------------------------------'
           kubectl get deployments -A --show-labels
+          echo '-------------------------------------------------------------------------------'
           kubectl describe pods -A -l core-pipeline
+          echo '-------------------------------------------------------------------------------'
+          kubectl describe deployments -A -l core-pipeline
+          echo '-------------------------------------------------------------------------------'
         shell: bash
 
       - name: list images in cluster
