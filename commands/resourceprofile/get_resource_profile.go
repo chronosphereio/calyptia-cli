@@ -10,7 +10,6 @@ import (
 	"gopkg.in/yaml.v3"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
@@ -21,27 +20,27 @@ func NewCmdGetResourceProfiles(config *cfg.Config) *cobra.Command {
 	var outputFormat, goTemplate string
 	var showIDs bool
 	var environment string
-	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:   "resource_profiles",
 		Short: "Display latest resource profiles from an aggregator",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = completer.LoadEnvironmentID(environment)
+				environmentID, err = config.Completer.LoadEnvironmentID(ctx, environment)
 				if err != nil {
 					return err
 				}
 			}
 
-			coreInstanceID, err := completer.LoadCoreInstanceID(coreInstanceKey, environmentID)
+			coreInstanceID, err := config.Completer.LoadCoreInstanceID(ctx, coreInstanceKey, environmentID)
 			if err != nil {
 				return err
 			}
 
-			pp, err := config.Cloud.ResourceProfiles(config.Ctx, coreInstanceID, cloud.ResourceProfilesParams{
+			pp, err := config.Cloud.ResourceProfiles(ctx, coreInstanceID, cloud.ResourceProfilesParams{
 				Last: &last,
 			})
 			if err != nil {
@@ -85,9 +84,9 @@ func NewCmdGetResourceProfiles(config *cfg.Config) *cobra.Command {
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
-	_ = cmd.RegisterFlagCompletionFunc("environment", completer.CompleteEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("environment", config.Completer.CompleteEnvironments)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
-	_ = cmd.RegisterFlagCompletionFunc("core-instance", completer.CompleteCoreInstances)
+	_ = cmd.RegisterFlagCompletionFunc("core-instance", config.Completer.CompleteCoreInstances)
 
 	_ = cmd.MarkFlagRequired("core-instance") // TODO: use default aggregator ID from config cmd.
 

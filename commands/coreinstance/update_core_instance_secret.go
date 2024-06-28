@@ -8,13 +8,11 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
 
 func NewCmdUpdateCoreInstanceSecret(config *cfg.Config) *cobra.Command {
-	loader := completer.Completer{Config: config}
 
 	var instanceKey string
 	var key, value string
@@ -24,6 +22,7 @@ func NewCmdUpdateCoreInstanceSecret(config *cfg.Config) *cobra.Command {
 		Short: "Update core instance secret",
 		Long:  "Update a secret within a core instance",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
 			fs := cmd.Flags()
 			if !fs.Changed("value") {
 				cmd.Print("Enter secret value: ")
@@ -36,12 +35,10 @@ func NewCmdUpdateCoreInstanceSecret(config *cfg.Config) *cobra.Command {
 				cmd.Println()
 			}
 
-			instanceID, err := loader.LoadCoreInstanceID(instanceKey, "")
+			instanceID, err := config.Completer.LoadCoreInstanceID(ctx, instanceKey, "")
 			if err != nil {
 				return err
 			}
-
-			ctx := cmd.Context()
 
 			secrets, err := config.Cloud.CoreInstanceSecrets(ctx, types.ListCoreInstanceSecrets{
 				CoreInstanceID: instanceID,
@@ -92,7 +89,7 @@ func NewCmdUpdateCoreInstanceSecret(config *cfg.Config) *cobra.Command {
 	fs.StringVar(&key, "key", "", "Secret key")
 	fs.StringVar(&value, "value", "", "Secret value")
 
-	_ = cmd.RegisterFlagCompletionFunc("core-instance", loader.CompleteCoreInstances)
+	_ = cmd.RegisterFlagCompletionFunc("core-instance", config.Completer.CompleteCoreInstances)
 
 	_ = cmd.MarkFlagRequired("key")
 

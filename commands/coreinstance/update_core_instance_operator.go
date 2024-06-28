@@ -13,7 +13,6 @@ import (
 
 	cloud "github.com/calyptia/api/types"
 	"github.com/calyptia/cli/commands/utils"
-	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/k8s"
 	"github.com/calyptia/core-images-index/go-index"
@@ -33,14 +32,13 @@ func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 	)
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	configOverrides := &clientcmd.ConfigOverrides{}
-	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:               "operator CORE_INSTANCE",
 		Aliases:           []string{"opr", "k8s"},
 		Short:             "update a core instance operator",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: completer.CompleteCoreInstances,
+		ValidArgsFunction: config.Completer.CompleteCoreInstances,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			if newVersion == "" {
 				return nil
@@ -67,12 +65,12 @@ func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = completer.LoadEnvironmentID(environment)
+				environmentID, err = config.Completer.LoadEnvironmentID(ctx, environment)
 				if err != nil {
 					return err
 				}
 			}
-			coreInstanceID, err := completer.LoadCoreInstanceID(coreInstanceKey, environmentID)
+			coreInstanceID, err := config.Completer.LoadCoreInstanceID(ctx, coreInstanceKey, environmentID)
 			if err != nil {
 				return err
 			}
@@ -102,7 +100,7 @@ func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 				opts.SkipServiceCreation = &skipServiceCreation
 			}
 
-			err = config.Cloud.UpdateCoreInstance(config.Ctx, coreInstanceID, opts)
+			err = config.Cloud.UpdateCoreInstance(ctx, coreInstanceID, opts)
 			if err != nil {
 				return fmt.Errorf("could not update core instance at calyptia cloud: %w", err)
 			}
@@ -187,8 +185,8 @@ func NewCmdUpdateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 	fs.BoolVar(&skipServiceCreation, "skip-service-creation", false, "Skip the creation of kubernetes services for any pipeline under this core instance.")
 	fs.BoolVar(&metrics, "metrics", false, "flag to enable/disable core instance metrics")
 
-	_ = cmd.RegisterFlagCompletionFunc("environment", completer.CompleteEnvironments)
-	_ = cmd.RegisterFlagCompletionFunc("version", completer.CompleteCoreOperatorVersion)
+	_ = cmd.RegisterFlagCompletionFunc("environment", config.Completer.CompleteEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("version", config.Completer.CompleteCoreOperatorVersion)
 	clientcmd.BindOverrideFlags(configOverrides, fs, clientcmd.RecommendedConfigOverrideFlags("kube-"))
 	return cmd
 }

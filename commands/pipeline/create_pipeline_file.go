@@ -11,7 +11,6 @@ import (
 	"gopkg.in/yaml.v3"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
@@ -21,12 +20,12 @@ func NewCmdCreatePipelineFile(config *cfg.Config) *cobra.Command {
 	var file string
 	var encrypt bool
 	var outputFormat, goTemplate string
-	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:   "pipeline_file",
 		Short: "Create a new file within a pipeline",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
 			name := filepath.Base(file)
 			name = strings.TrimSuffix(name, filepath.Ext(name))
 
@@ -35,12 +34,12 @@ func NewCmdCreatePipelineFile(config *cfg.Config) *cobra.Command {
 				return err
 			}
 
-			pipelineID, err := completer.LoadPipelineID(pipelineKey)
+			pipelineID, err := config.Completer.LoadPipelineID(ctx, pipelineKey)
 			if err != nil {
 				return err
 			}
 
-			out, err := config.Cloud.CreatePipelineFile(config.Ctx, pipelineID, cloud.CreatePipelineFile{
+			out, err := config.Cloud.CreatePipelineFile(ctx, pipelineID, cloud.CreatePipelineFile{
 				Name:      name,
 				Contents:  contents,
 				Encrypted: encrypt,
@@ -81,7 +80,7 @@ func NewCmdCreatePipelineFile(config *cfg.Config) *cobra.Command {
 	_ = cmd.MarkFlagRequired("pipeline")
 	_ = cmd.MarkFlagRequired("file")
 
-	_ = cmd.RegisterFlagCompletionFunc("pipeline", completer.CompletePipelines)
+	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.Completer.CompletePipelines)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
 	return cmd

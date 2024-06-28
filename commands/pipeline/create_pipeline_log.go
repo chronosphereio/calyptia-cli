@@ -10,7 +10,6 @@ import (
 	"gopkg.in/yaml.v3"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
@@ -19,13 +18,13 @@ func NewCmdCreatePipelineLog(config *cfg.Config) *cobra.Command {
 	var pipelineKey string
 	var lines int
 	var outputFormat, goTemplate string
-	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:   "pipeline_log",
 		Short: "Create a new log request within a pipeline",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			pipelineID, err := completer.LoadPipelineID(pipelineKey)
+			ctx := cmd.Context()
+			pipelineID, err := config.Completer.LoadPipelineID(ctx, pipelineKey)
 			if err != nil {
 				return err
 			}
@@ -38,7 +37,7 @@ func NewCmdCreatePipelineLog(config *cfg.Config) *cobra.Command {
 				params.Lines = lines
 			}
 
-			out, err := config.Cloud.CreatePipelineLog(config.Ctx, params)
+			out, err := config.Cloud.CreatePipelineLog(ctx, params)
 			if err != nil {
 				return err
 			}
@@ -72,7 +71,7 @@ func NewCmdCreatePipelineLog(config *cfg.Config) *cobra.Command {
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
 	_ = cmd.MarkFlagRequired("pipeline")
-	_ = cmd.RegisterFlagCompletionFunc("pipeline", completer.CompletePipelines)
+	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.Completer.CompletePipelines)
 
 	return cmd
 }

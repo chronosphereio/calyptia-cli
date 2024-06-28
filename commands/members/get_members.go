@@ -23,7 +23,8 @@ func NewCmdGetMembers(config *cfg.Config) *cobra.Command {
 		Use:   "members",
 		Short: "Display latest members from a project",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			mm, err := config.Cloud.Members(config.Ctx, config.ProjectID, cloud.MembersParams{
+			ctx := cmd.Context()
+			mm, err := config.Cloud.Members(ctx, config.ProjectID, cloud.MembersParams{
 				Last: &last,
 			})
 			if err != nil {

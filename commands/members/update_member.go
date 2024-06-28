@@ -6,20 +6,17 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/completer"
 	"github.com/calyptia/cli/config"
 )
 
 func NewCmdUpdateMember(config *config.Config) *cobra.Command {
-	completer := &completer.Completer{Config: config}
-
 	var permissions []string
 
 	cmd := &cobra.Command{
 		Use:               "member MEMBER-ID",
 		Short:             "Update a member permissions given its membership ID",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: completer.CompleteMembers,
+		ValidArgsFunction: config.Completer.CompleteMembers,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			memberID := args[0]
@@ -50,7 +47,7 @@ func NewCmdUpdateMember(config *config.Config) *cobra.Command {
 	fs := cmd.Flags()
 	fs.StringSliceVar(&permissions, "permissions", nil, "Permissions to grant to the member")
 
-	_ = cmd.RegisterFlagCompletionFunc("permissions", completer.CompletePermissions)
+	_ = cmd.RegisterFlagCompletionFunc("permissions", config.Completer.CompletePermissions)
 
 	return cmd
 }

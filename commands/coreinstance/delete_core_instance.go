@@ -12,6 +12,7 @@ import (
 	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/confirm"
+	"github.com/calyptia/cli/pointer"
 )
 
 func NewCmdDeleteCoreInstance(config *cfg.Config) *cobra.Command {
@@ -35,7 +36,7 @@ func NewCmdDeleteCoreInstances(config *cfg.Config) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			aa, err := config.Cloud.CoreInstances(ctx, config.ProjectID, types.CoreInstancesParams{
-				Last: cfg.Ptr(uint(0)),
+				Last: pointer.From(uint(0)),
 			})
 			if err != nil {
 				return fmt.Errorf("could not prefetch core instances to delete: %w", err)

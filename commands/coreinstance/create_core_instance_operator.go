@@ -19,7 +19,6 @@ import (
 	cloud "github.com/calyptia/api/types"
 	"github.com/calyptia/cli/commands/utils"
 	"github.com/calyptia/cli/commands/version"
-	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/k8s"
 )
@@ -52,7 +51,6 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	configOverrides := &clientcmd.ConfigOverrides{}
-	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:     "operator",
@@ -114,7 +112,7 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = completer.LoadEnvironmentID(environment)
+				environmentID, err = config.Completer.LoadEnvironmentID(ctx, environment)
 				if err != nil {
 					return err
 				}
@@ -385,8 +383,8 @@ func newCmdCreateCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 
 	clientcmd.BindOverrideFlags(configOverrides, fs, clientcmd.RecommendedConfigOverrideFlags("kube-"))
 
-	_ = cmd.RegisterFlagCompletionFunc("environment", completer.CompleteEnvironments)
-	_ = cmd.RegisterFlagCompletionFunc("version", completer.CompleteCoreContainerVersion)
+	_ = cmd.RegisterFlagCompletionFunc("environment", config.Completer.CompleteEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("version", config.Completer.CompleteCoreContainerVersion)
 
 	return cmd
 }

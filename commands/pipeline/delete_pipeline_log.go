@@ -17,6 +17,7 @@ func NewCmdDeletePipelineLog(config *cfg.Config) *cobra.Command {
 		Short: "Delete a specific pipeline log",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
 			pipelineLogID := args[0]
 			if !confirmed {
 				cmd.Printf("Are you sure you want to delete %q? (y/N) ", pipelineLogID)
@@ -36,7 +37,7 @@ func NewCmdDeletePipelineLog(config *cfg.Config) *cobra.Command {
 				}
 			}
 
-			_, err := config.Cloud.DeletePipelineLog(config.Ctx, pipelineLogID)
+			_, err := config.Cloud.DeletePipelineLog(ctx, pipelineLogID)
 			return err
 		},
 	}

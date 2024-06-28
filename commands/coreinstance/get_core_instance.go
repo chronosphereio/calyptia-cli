@@ -10,7 +10,6 @@ import (
 	"gopkg.in/yaml.v3"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
@@ -21,17 +20,17 @@ func NewCmdGetCoreInstances(config *cfg.Config) *cobra.Command {
 	var showMetadata bool
 	var environment string
 	var outputFormat, goTemplate string
-	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:     "core_instances",
 		Aliases: []string{"instances", "core_instances"},
 		Short:   "Display latest core instances from a project",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = completer.LoadEnvironmentID(environment)
+				environmentID, err = config.Completer.LoadEnvironmentID(ctx, environment)
 				if err != nil {
 					return err
 				}
@@ -43,7 +42,7 @@ func NewCmdGetCoreInstances(config *cfg.Config) *cobra.Command {
 				params.EnvironmentID = &environmentID
 			}
 
-			aa, err := config.Cloud.CoreInstances(config.Ctx, config.ProjectID, params)
+			aa, err := config.Cloud.CoreInstances(ctx, config.ProjectID, params)
 			if err != nil {
 				return fmt.Errorf("could not fetch your core instances: %w", err)
 			}
@@ -99,7 +98,7 @@ func NewCmdGetCoreInstances(config *cfg.Config) *cobra.Command {
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
-	_ = cmd.RegisterFlagCompletionFunc("environment", completer.CompleteEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("environment", config.Completer.CompleteEnvironments)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
 	return cmd

@@ -9,6 +9,7 @@ import (
 	"text/tabwriter"
 
 	"github.com/calyptia/cli/commands/coreinstance"
+	"github.com/calyptia/cli/pointer"
 
 	"github.com/joho/godotenv"
 	"github.com/pkg/errors"
@@ -17,7 +18,6 @@ import (
 
 	cloud "github.com/calyptia/api/types"
 	"github.com/calyptia/cli/commands/utils"
-	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
@@ -49,13 +49,11 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 	var utilizationCPUAverage int32
 	var utilizationMemoryAverage int32
 
-	completer := completer.Completer{Config: config}
-
 	cmd := &cobra.Command{
 		Use:               "pipeline PIPELINE",
 		Short:             "Update a single pipeline by ID or name",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: completer.CompletePipelines,
+		ValidArgsFunction: config.Completer.CompletePipelines,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			fs := cmd.Flags()
 			if fs.Changed("scale-up-type") {
@@ -95,6 +93,7 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
 			fs := cmd.Flags()
 
 			var rawConfig string
@@ -150,7 +149,7 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 			}
 
 			pipelineKey := args[0]
-			pipelineID, err := completer.LoadPipelineID(pipelineKey)
+			pipelineID, err := config.Completer.LoadPipelineID(ctx, pipelineKey)
 			if err != nil {
 				return err
 			}
@@ -213,7 +212,7 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 				}
 			}
 
-			ports, err := config.Cloud.PipelinePorts(config.Ctx, pipelineID, cloud.PipelinePortsParams{})
+			ports, err := config.Cloud.PipelinePorts(ctx, pipelineID, cloud.PipelinePortsParams{})
 			if err != nil {
 				return fmt.Errorf("could not update pipeline: %w", err)
 			}
@@ -251,7 +250,7 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 				update.Name = &newName
 			}
 			if newReplicasCount >= 0 {
-				update.ReplicasCount = cfg.Ptr(uint(newReplicasCount))
+				update.ReplicasCount = pointer.From(uint(newReplicasCount))
 			}
 
 			if rawConfig != "" {
@@ -261,7 +260,7 @@ func NewCmdUpdatePipeline(config *cfg.Config) *cobra.Command {
 				update.Image = &image
 			}
 
-			updated, err := config.Cloud.UpdatePipeline(config.Ctx, pipelineID, update)
+			updated, err := config.Cloud.UpdatePipeline(ctx, pipelineID, update)
 			if err != nil {
 				return fmt.Errorf("could not update pipeline: %w", err)
 			}

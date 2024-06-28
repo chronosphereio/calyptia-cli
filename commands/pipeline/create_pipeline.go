@@ -11,13 +11,13 @@ import (
 	"text/tabwriter"
 
 	"github.com/calyptia/cli/commands/coreinstance"
+	"github.com/calyptia/cli/completer"
 
 	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
@@ -54,8 +54,6 @@ func NewCmdCreatePipeline(config *cfg.Config) *cobra.Command {
 	var utilizationCPUAverage int32
 	var utilizationMemoryAverage int32
 
-	completer := completer.Completer{Config: config}
-
 	cmd := &cobra.Command{
 		Use:   "pipeline",
 		Short: "Create a new pipeline",
@@ -87,6 +85,8 @@ func NewCmdCreatePipeline(config *cfg.Config) *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
+
 			// TODO: support `@INCLUDE`. See https://docs.fluentbit.io/manual/administration/configuring-fluent-bit/configuration-file#config_include_file-1
 			secrets, err := parseCreatePipelineSecret(secretsFile, secretsFormat)
 			if err != nil {
@@ -133,13 +133,13 @@ func NewCmdCreatePipeline(config *cfg.Config) *cobra.Command {
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = completer.LoadEnvironmentID(environment)
+				environmentID, err = config.Completer.LoadEnvironmentID(ctx, environment)
 				if err != nil {
 					return err
 				}
 			}
 
-			coreInstanceID, err := completer.LoadCoreInstanceID(coreInstanceKey, environmentID)
+			coreInstanceID, err := config.Completer.LoadCoreInstanceID(ctx, coreInstanceKey, environmentID)
 			if err != nil {
 				return err
 			}
@@ -204,7 +204,7 @@ func NewCmdCreatePipeline(config *cfg.Config) *cobra.Command {
 				in.Image = &image
 			}
 
-			a, err := config.Cloud.CreatePipeline(config.Ctx, coreInstanceID, in)
+			a, err := config.Cloud.CreatePipeline(ctx, coreInstanceID, in)
 			if err != nil {
 				if e, ok := err.(*cloud.Error); ok && e.Detail != nil {
 					return fmt.Errorf("could not create pipeline: %s: %s", err, *e.Detail)
@@ -268,8 +268,8 @@ func NewCmdCreatePipeline(config *cfg.Config) *cobra.Command {
 	fs.Int32Var(&utilizationCPUAverage, "utilization-cpu-average", 0, "UtilizationCPUAverage defines the target percentage value for average CPU utilization.")
 	fs.Int32Var(&utilizationMemoryAverage, "utilization-memory-average", 0, "UtilizationCPUAverage defines the target percentage value for average memory utilization.")
 
-	_ = cmd.RegisterFlagCompletionFunc("environment", completer.CompleteEnvironments)
-	_ = cmd.RegisterFlagCompletionFunc("core-instance", completer.CompleteCoreInstances)
+	_ = cmd.RegisterFlagCompletionFunc("environment", config.Completer.CompleteEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("core-instance", config.Completer.CompleteCoreInstances)
 	_ = cmd.RegisterFlagCompletionFunc("secrets-format", func(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
 		return []string{"auto", "env", "json", "yaml"}, cobra.ShellCompDirectiveNoFileComp
 	})

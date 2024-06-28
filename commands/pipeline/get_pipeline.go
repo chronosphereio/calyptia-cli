@@ -11,7 +11,6 @@ import (
 	"gopkg.in/yaml.v3"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
@@ -24,21 +23,20 @@ func NewCmdGetPipelines(config *cfg.Config) *cobra.Command {
 	var environment string
 	var renderWithConfigSections bool
 
-	completer := completer.Completer{Config: config}
-
 	cmd := &cobra.Command{
 		Use:   "pipelines",
 		Short: "Display latest pipelines from a core-instance",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = completer.LoadEnvironmentID(environment)
+				environmentID, err = config.Completer.LoadEnvironmentID(ctx, environment)
 				if err != nil {
 					return err
 				}
 			}
-			coreInstanceID, err := completer.LoadCoreInstanceID(coreInstanceKey, environmentID)
+			coreInstanceID, err := config.Completer.LoadCoreInstanceID(ctx, coreInstanceKey, environmentID)
 			if err != nil {
 				return err
 			}
@@ -48,7 +46,7 @@ func NewCmdGetPipelines(config *cfg.Config) *cobra.Command {
 					return fmt.Errorf("not a valid config format: %s", configFormat)
 				}
 			}
-			pp, err := config.Cloud.Pipelines(config.Ctx, cloud.PipelinesParams{
+			pp, err := config.Cloud.Pipelines(ctx, cloud.PipelinesParams{
 				Last:                     &last,
 				RenderWithConfigSections: renderWithConfigSections,
 				CoreInstanceID:           &coreInstanceID,
@@ -97,9 +95,9 @@ func NewCmdGetPipelines(config *cfg.Config) *cobra.Command {
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 	fs.StringVar(&configFormat, "config-format", string(cloud.ConfigFormatYAML), "Format to get the configuration file from the API (yaml/json/ini).")
 
-	_ = cmd.RegisterFlagCompletionFunc("environment", completer.CompleteEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("environment", config.Completer.CompleteEnvironments)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
-	_ = cmd.RegisterFlagCompletionFunc("core-instance", completer.CompleteCoreInstances)
+	_ = cmd.RegisterFlagCompletionFunc("core-instance", config.Completer.CompleteCoreInstances)
 
 	_ = cmd.MarkFlagRequired("core-instance") // TODO: use default core instance ID from config cmd.
 
@@ -113,16 +111,16 @@ func NewCmdGetPipeline(config *cfg.Config) *cobra.Command {
 	var showIDs bool
 	var renderWithConfigSections bool
 	var outputFormat, goTemplate, configFormat string
-	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:               "pipeline PIPELINE",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: completer.CompletePipelines,
+		ValidArgsFunction: config.Completer.CompletePipelines,
 		Short:             "Display a pipelines by ID or name",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
 			pipelineKey := args[0]
-			pipelineID, err := completer.LoadPipelineID(pipelineKey)
+			pipelineID, err := config.Completer.LoadPipelineID(ctx, pipelineKey)
 			if err != nil {
 				return err
 			}
@@ -139,10 +137,10 @@ func NewCmdGetPipeline(config *cfg.Config) *cobra.Command {
 			}
 
 			if outputFormat == "table" && (includeEndpoints || includeConfigHistory || includeSecrets) && !onlyConfig {
-				g, gctx := errgroup.WithContext(config.Ctx)
+				g, gctx := errgroup.WithContext(ctx)
 				g.Go(func() error {
 					var err error
-					pip, err = config.Cloud.Pipeline(config.Ctx, pipelineID, cloud.PipelineParams{
+					pip, err = config.Cloud.Pipeline(ctx, pipelineID, cloud.PipelineParams{
 						RenderWithConfigSections: renderWithConfigSections,
 						ConfigFormat:             (*cloud.ConfigFormat)(&configFormat),
 					})
@@ -195,7 +193,7 @@ func NewCmdGetPipeline(config *cfg.Config) *cobra.Command {
 				}
 			} else {
 				var err error
-				pip, err = config.Cloud.Pipeline(config.Ctx, pipelineID, cloud.PipelineParams{
+				pip, err = config.Cloud.Pipeline(ctx, pipelineID, cloud.PipelineParams{
 					RenderWithConfigSections: renderWithConfigSections,
 					ConfigFormat:             (*cloud.ConfigFormat)(&configFormat),
 				})

@@ -11,7 +11,6 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
@@ -22,13 +21,14 @@ func NewCmdGetTraceRecords(config *cfg.Config) *cobra.Command {
 	var before string
 	var showIDs bool
 	var outputFormat, goTemplate string
-	completer := completer.Completer{Config: config}
+
 	cmd := &cobra.Command{
 		Use:   "trace_records", // child of `create`
 		Short: "List trace records",
 		Long: "List all records from the given trace session,\n" +
 			"sorted by creation time in descending order.",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
 			var lastOpt *uint
 			var beforeOpt *string
 
@@ -39,7 +39,7 @@ func NewCmdGetTraceRecords(config *cfg.Config) *cobra.Command {
 				beforeOpt = &before
 			}
 
-			ss, err := config.Cloud.TraceRecords(config.Ctx, sessionID, types.TraceRecordsParams{
+			ss, err := config.Cloud.TraceRecords(ctx, sessionID, types.TraceRecordsParams{
 				Last:   lastOpt,
 				Before: beforeOpt,
 			})
@@ -73,7 +73,7 @@ func NewCmdGetTraceRecords(config *cfg.Config) *cobra.Command {
 	_ = cmd.MarkFlagRequired("session")
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
-	_ = cmd.RegisterFlagCompletionFunc("session", completer.CompleteTraceSessions)
+	_ = cmd.RegisterFlagCompletionFunc("session", config.Completer.CompleteTraceSessions)
 
 	return cmd
 }

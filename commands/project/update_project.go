@@ -16,11 +16,12 @@ func NewCmdUpdateProject(config *cfg.Config) *cobra.Command {
 		Use:   "project",
 		Short: "Update the current project",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
 			if newName == "" {
 				return nil
 			}
 
-			err := config.Cloud.UpdateProject(config.Ctx, config.ProjectID, cloud.UpdateProject{
+			err := config.Cloud.UpdateProject(ctx, config.ProjectID, cloud.UpdateProject{
 				Name: &newName,
 			})
 			if err != nil {

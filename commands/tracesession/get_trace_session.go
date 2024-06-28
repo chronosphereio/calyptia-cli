@@ -13,7 +13,6 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/completer"
 	cnfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
@@ -24,7 +23,6 @@ func NewCmdGetTraceSessions(config *cnfg.Config) *cobra.Command {
 	var before string
 	var showIDs bool
 	var outputFormat, goTemplate string
-	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:   "trace_sessions", // child of `get`
@@ -32,7 +30,8 @@ func NewCmdGetTraceSessions(config *cnfg.Config) *cobra.Command {
 		Long: "List all trace sessions from the given pipeline,\n" +
 			"sorted by creation time in descending order.",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			pipelineID, err := completer.LoadPipelineID(pipelineKey)
+			ctx := cmd.Context()
+			pipelineID, err := config.Completer.LoadPipelineID(ctx, pipelineKey)
 			if err != nil {
 				return err
 			}
@@ -47,7 +46,7 @@ func NewCmdGetTraceSessions(config *cnfg.Config) *cobra.Command {
 				beforeOpt = &before
 			}
 
-			ss, err := config.Cloud.TraceSessions(config.Ctx, pipelineID, types.TraceSessionsParams{
+			ss, err := config.Cloud.TraceSessions(ctx, pipelineID, types.TraceSessionsParams{
 				Last:   lastOpt,
 				Before: beforeOpt,
 			})
@@ -81,7 +80,7 @@ func NewCmdGetTraceSessions(config *cnfg.Config) *cobra.Command {
 	_ = cmd.MarkFlagRequired("pipeline")
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
-	_ = cmd.RegisterFlagCompletionFunc("pipeline", completer.CompletePipelines)
+	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.Completer.CompletePipelines)
 
 	return cmd
 }
@@ -90,7 +89,6 @@ func NewCmdGetTraceSession(config *cnfg.Config) *cobra.Command {
 	var pipelineKey string
 	var showID bool
 	var outputFormat, goTemplate string
-	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:   "trace_session TRACE_SESSION", // child of `get`
@@ -99,11 +97,12 @@ func NewCmdGetTraceSession(config *cnfg.Config) *cobra.Command {
 			"or getting the current active trace session from the given pipeline.",
 		Args: cobra.MaximumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
 			var session types.TraceSession
 			if len(args) == 1 {
 				sessionID := args[0]
 				var err error
-				session, err = config.Cloud.TraceSession(config.Ctx, sessionID)
+				session, err = config.Cloud.TraceSession(ctx, sessionID)
 				if err != nil {
 					return err
 				}
@@ -112,12 +111,12 @@ func NewCmdGetTraceSession(config *cnfg.Config) *cobra.Command {
 					return errors.New("flag needs an argument: --pipeline")
 				}
 
-				pipelineID, err := completer.LoadPipelineID(pipelineKey)
+				pipelineID, err := config.Completer.LoadPipelineID(ctx, pipelineKey)
 				if err != nil {
 					return err
 				}
 
-				session, err = config.Cloud.ActiveTraceSession(config.Ctx, pipelineID)
+				session, err = config.Cloud.ActiveTraceSession(ctx, pipelineID)
 				if err != nil {
 					return err
 				}
@@ -146,7 +145,7 @@ func NewCmdGetTraceSession(config *cnfg.Config) *cobra.Command {
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
-	_ = cmd.RegisterFlagCompletionFunc("pipeline", completer.CompletePipelines)
+	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.Completer.CompletePipelines)
 
 	return cmd
 }

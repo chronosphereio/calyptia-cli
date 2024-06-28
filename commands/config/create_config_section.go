@@ -21,7 +21,6 @@ func NewCmdCreateConfigSection(config *cfg.Config) *cobra.Command {
 	var name string
 	var propsSlice []string
 	var outputFormat, goTemplate string
-	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:   "config_section", // child of `create`
@@ -68,7 +67,7 @@ func NewCmdCreateConfigSection(config *cfg.Config) *cobra.Command {
 
 	_ = cmd.RegisterFlagCompletionFunc("kind", completer.CompletePluginKinds)
 	_ = cmd.RegisterFlagCompletionFunc("name", completer.CompletePluginNames)
-	_ = cmd.RegisterFlagCompletionFunc("prop", completer.CompletePluginProps)
+	_ = cmd.RegisterFlagCompletionFunc("prop", config.Completer.CompletePluginProps)
 
 	return cmd
 }

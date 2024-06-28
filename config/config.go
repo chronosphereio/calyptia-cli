@@ -1,28 +1,26 @@
 package config
 
 import (
-	"context"
 	"fmt"
 	"io"
 	"os"
-	"regexp"
 	"time"
 
 	"github.com/hako/durafmt"
-	"github.com/spf13/cobra"
 
 	"github.com/calyptia/api/client"
 	cloud "github.com/calyptia/api/types"
+	"github.com/calyptia/cli/completer"
 	"github.com/calyptia/cli/localdata"
 )
 
 type Config struct {
-	Ctx          context.Context
 	BaseURL      string
 	Cloud        *client.Client
 	ProjectToken string
 	ProjectID    string
 	LocalData    *localdata.Keyring
+	Completer    *completer.Completer
 }
 
 func AgentStatus(lastMetricsAddedAt *time.Time, start time.Duration) string {
@@ -64,10 +62,6 @@ func Env(key, fallback string) string {
 	return v
 }
 
-func CompleteOutputFormat(*cobra.Command, []string, string) ([]string, cobra.ShellCompDirective) {
-	return []string{"table", "json", "yaml", "go-template"}, cobra.ShellCompDirectiveNoFileComp
-}
-
 func ReadFile(name string) ([]byte, error) {
 	f, err := os.Open(name)
 	if err != nil {
@@ -82,12 +76,4 @@ func ReadFile(name string) ([]byte, error) {
 	}
 
 	return b, nil
-}
-
-var reUUID4 = regexp.MustCompile("^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$")
-
-func Ptr[T any](p T) *T { return &p }
-
-func ValidUUID(s string) bool {
-	return reUUID4.MatchString(s)
 }

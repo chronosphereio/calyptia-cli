@@ -10,13 +10,11 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
 
 func NewCmdGetCoreInstanceSecrets(config *cfg.Config) *cobra.Command {
-	loader := completer.Completer{Config: config}
 
 	var instanceKey string
 
@@ -25,12 +23,12 @@ func NewCmdGetCoreInstanceSecrets(config *cfg.Config) *cobra.Command {
 		Short: "List core instance secrets",
 		Long:  "List secrets from a core instance with backward pagination",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			instanceID, err := loader.LoadCoreInstanceID(instanceKey, "")
+			ctx := cmd.Context()
+			instanceID, err := config.Completer.LoadCoreInstanceID(ctx, instanceKey, "")
 			if err != nil {
 				return err
 			}
 
-			ctx := cmd.Context()
 			in := types.ListCoreInstanceSecrets{
 				CoreInstanceID: instanceID,
 			}
@@ -79,7 +77,7 @@ func NewCmdGetCoreInstanceSecrets(config *cfg.Config) *cobra.Command {
 	fs.String("before", "", "Retrieve secrets before the given cursor")
 	formatters.BindFormatFlags(cmd)
 
-	_ = cmd.RegisterFlagCompletionFunc("core-instance", loader.CompleteCoreInstances)
+	_ = cmd.RegisterFlagCompletionFunc("core-instance", config.Completer.CompleteCoreInstances)
 
 	_ = cmd.MarkFlagRequired("core-instance")
 

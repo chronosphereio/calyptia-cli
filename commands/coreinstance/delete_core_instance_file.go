@@ -11,14 +11,12 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/confirm"
 	"github.com/calyptia/cli/formatters"
 )
 
 func NewCmdDeleteCoreInstanceFile(config *cfg.Config) *cobra.Command {
-	loader := completer.Completer{Config: config}
 
 	var confirmed bool
 	var instanceKey string
@@ -29,6 +27,7 @@ func NewCmdDeleteCoreInstanceFile(config *cfg.Config) *cobra.Command {
 		Short: "Delete core instance file",
 		Long:  "Delete a file within a core instance",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
 			name := filepath.Base(name)
 			name = strings.TrimSuffix(name, filepath.Ext(name))
 
@@ -45,12 +44,11 @@ func NewCmdDeleteCoreInstanceFile(config *cfg.Config) *cobra.Command {
 				}
 			}
 
-			instanceID, err := loader.LoadCoreInstanceID(instanceKey, "")
+			instanceID, err := config.Completer.LoadCoreInstanceID(ctx, instanceKey, "")
 			if err != nil {
 				return err
 			}
 
-			ctx := cmd.Context()
 			files, err := config.Cloud.CoreInstanceFiles(ctx, types.ListCoreInstanceFiles{
 				CoreInstanceID: instanceID,
 			})
@@ -100,7 +98,7 @@ func NewCmdDeleteCoreInstanceFile(config *cfg.Config) *cobra.Command {
 	fs.StringVar(&instanceKey, "core-instance", "", "Parent core instance ID or name")
 	fs.StringVar(&name, "name", "", "Name of the file to delete")
 
-	_ = cmd.RegisterFlagCompletionFunc("core-instance", loader.CompleteCoreInstances)
+	_ = cmd.RegisterFlagCompletionFunc("core-instance", config.Completer.CompleteCoreInstances)
 
 	_ = cmd.MarkFlagRequired("core-instance")
 	_ = cmd.MarkFlagRequired("name")

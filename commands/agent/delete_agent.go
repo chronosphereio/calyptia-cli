@@ -13,32 +13,31 @@ import (
 	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/confirm"
+	"github.com/calyptia/cli/pointer"
 )
 
 func NewCmdDeleteAgent(config *cfg.Config) *cobra.Command {
 	var confirmed bool
 	var environment string
-	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:               "agent AGENT",
 		Short:             "Delete a single agent by ID or name",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: completer.CompleteAgents,
+		ValidArgsFunction: config.Completer.CompleteAgents,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-
 			agentKey := args[0]
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = completer.LoadEnvironmentID(environment)
+				environmentID, err = config.Completer.LoadEnvironmentID(ctx, environment)
 				if err != nil {
 					return err
 				}
 			}
 
-			agentID, err := completer.LoadAgentID(agentKey, environmentID)
+			agentID, err := config.Completer.LoadAgentID(ctx, agentKey, environmentID)
 			if err != nil {
 				return err
 			}
@@ -73,7 +72,7 @@ func NewCmdDeleteAgent(config *cfg.Config) *cobra.Command {
 	fs.BoolVarP(&confirmed, "yes", "y", isNonInteractive, "Confirm deletion")
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
 
-	_ = cmd.RegisterFlagCompletionFunc("environment", completer.CompleteEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("environment", config.Completer.CompleteEnvironments)
 
 	return cmd
 }
@@ -88,7 +87,7 @@ func NewCmdDeleteAgents(config *cfg.Config) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			aa, err := config.Cloud.Agents(ctx, config.ProjectID, types.AgentsParams{
-				Last: cfg.Ptr(uint(0)),
+				Last: pointer.From(uint(0)),
 			})
 			if err != nil {
 				return fmt.Errorf("could not prefetch agents to delete: %w", err)

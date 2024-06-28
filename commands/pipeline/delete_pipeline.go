@@ -9,21 +9,22 @@ import (
 	"golang.org/x/term"
 
 	"github.com/calyptia/api/types"
-	cmpltr "github.com/calyptia/cli/completer"
+	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/confirm"
+	"github.com/calyptia/cli/pointer"
 )
 
 func NewCmdDeletePipeline(config *cfg.Config) *cobra.Command {
 	var confirmed bool
-	completer := cmpltr.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:               "pipeline PIPELINE",
 		Short:             "Delete a single pipeline by ID or name",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: completer.CompletePipelines,
+		ValidArgsFunction: config.Completer.CompletePipelines,
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
 			pipelineKey := args[0]
 			if !confirmed {
 				cmd.Printf("Are you sure you want to delete %q? (y/N) ", pipelineKey)
@@ -43,12 +44,12 @@ func NewCmdDeletePipeline(config *cfg.Config) *cobra.Command {
 				}
 			}
 
-			pipelineID, err := completer.LoadPipelineID(pipelineKey)
+			pipelineID, err := config.Completer.LoadPipelineID(ctx, pipelineKey)
 			if err != nil {
 				return err
 			}
 
-			err = config.Cloud.DeletePipeline(config.Ctx, pipelineID)
+			err = config.Cloud.DeletePipeline(ctx, pipelineID)
 			if err != nil {
 				return fmt.Errorf("could not delete pipeline: %w", err)
 			}
@@ -67,7 +68,6 @@ func NewCmdDeletePipelines(config *cfg.Config) *cobra.Command {
 	var confirmed bool
 	var coreInstanceKey string
 	var environmentKey string
-	completer := cmpltr.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:   "pipelines",
@@ -77,19 +77,19 @@ func NewCmdDeletePipelines(config *cfg.Config) *cobra.Command {
 			var environmentID string
 			if environmentKey != "" {
 				var err error
-				environmentID, err = completer.LoadEnvironmentID(environmentKey)
+				environmentID, err = config.Completer.LoadEnvironmentID(ctx, environmentKey)
 				if err != nil {
 					return err
 				}
 			}
 
-			coreInstanceID, err := completer.LoadCoreInstanceID(coreInstanceKey, environmentID)
+			coreInstanceID, err := config.Completer.LoadCoreInstanceID(ctx, coreInstanceKey, environmentID)
 			if err != nil {
 				return err
 			}
 
 			pp, err := config.Cloud.Pipelines(ctx, types.PipelinesParams{
-				Last:           cfg.Ptr(uint(0)),
+				Last:           pointer.From(uint(0)),
 				CoreInstanceID: &coreInstanceID,
 			})
 			if err != nil {
@@ -102,7 +102,7 @@ func NewCmdDeletePipelines(config *cfg.Config) *cobra.Command {
 			}
 
 			if !confirmed {
-				cmd.Printf("You are about to delete:\n\n%s\n\nAre you sure you want to delete all of them? (y/N) ", strings.Join(cmpltr.PipelinesKeys(pp.Items), "\n"))
+				cmd.Printf("You are about to delete:\n\n%s\n\nAre you sure you want to delete all of them? (y/N) ", strings.Join(completer.PipelinesKeys(pp.Items), "\n"))
 				confirmed, err := confirm.Read(cmd.InOrStdin())
 				if err != nil {
 					return err
@@ -137,8 +137,8 @@ func NewCmdDeletePipelines(config *cfg.Config) *cobra.Command {
 	fs.StringVar(&coreInstanceKey, "core-instance", "", "Parent core-instance ID or name")
 	fs.StringVar(&environmentKey, "environment", "", "Calyptia environment ID or name")
 
-	_ = cmd.RegisterFlagCompletionFunc("core-instance", completer.CompleteCoreInstances)
-	_ = cmd.RegisterFlagCompletionFunc("environment", completer.CompleteEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("core-instance", config.Completer.CompleteCoreInstances)
+	_ = cmd.RegisterFlagCompletionFunc("environment", config.Completer.CompleteEnvironments)
 
 	_ = cmd.MarkFlagRequired("core-instance")
 

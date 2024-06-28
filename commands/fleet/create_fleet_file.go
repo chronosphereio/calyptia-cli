@@ -11,7 +11,6 @@ import (
 	"gopkg.in/yaml.v3"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
@@ -20,12 +19,12 @@ func NewCmdCreateFleetFile(config *cfg.Config) *cobra.Command {
 	var fleetKey string
 	var file string
 	var outputFormat, goTemplate string
-	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:   "fleet_file",
 		Short: "Create a new file within a fleet",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
 			name := filepath.Base(file)
 
 			contents, err := cfg.ReadFile(file)
@@ -33,12 +32,12 @@ func NewCmdCreateFleetFile(config *cfg.Config) *cobra.Command {
 				return err
 			}
 
-			fleetID, err := completer.LoadFleetID(fleetKey)
+			fleetID, err := config.Completer.LoadFleetID(ctx, fleetKey)
 			if err != nil {
 				return err
 			}
 
-			out, err := config.Cloud.CreateFleetFile(config.Ctx, fleetID, cloud.CreateFleetFile{
+			out, err := config.Cloud.CreateFleetFile(ctx, fleetID, cloud.CreateFleetFile{
 				Name:     name,
 				Contents: contents,
 			})
@@ -77,7 +76,7 @@ func NewCmdCreateFleetFile(config *cfg.Config) *cobra.Command {
 	_ = cmd.MarkFlagRequired("fleet")
 	_ = cmd.MarkFlagRequired("file")
 
-	_ = cmd.RegisterFlagCompletionFunc("fleet", completer.CompleteFleets)
+	_ = cmd.RegisterFlagCompletionFunc("fleet", config.Completer.CompleteFleets)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
 	return cmd

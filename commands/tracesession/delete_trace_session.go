@@ -11,7 +11,6 @@ import (
 	"golang.org/x/term"
 	"gopkg.in/yaml.v3"
 
-	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/confirm"
 	"github.com/calyptia/cli/formatters"
@@ -21,7 +20,6 @@ func NewCmdDeleteTraceSession(config *cfg.Config) *cobra.Command {
 	var confirmed bool
 	var pipelineKey string
 	var outputFormat, goTemplate string
-	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:   "trace_session", // child of `delete`
@@ -29,6 +27,7 @@ func NewCmdDeleteTraceSession(config *cfg.Config) *cobra.Command {
 		Long: "Terminate the current active trace session from the given pipeline.\n" +
 			"It does so by reducing its lifespan to now, effectively terminating it.",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
 			if !confirmed {
 				cmd.Printf("Are you sure you want to terminate the current active trace session for pipeline %q? (y/N) ", pipelineKey)
 				ok, err := confirm.Read(cmd.InOrStdin())
@@ -42,12 +41,12 @@ func NewCmdDeleteTraceSession(config *cfg.Config) *cobra.Command {
 				}
 			}
 
-			pipelineID, err := completer.LoadPipelineID(pipelineKey)
+			pipelineID, err := config.Completer.LoadPipelineID(ctx, pipelineKey)
 			if err != nil {
 				return err
 			}
 
-			terminated, err := config.Cloud.TerminateActiveTraceSession(config.Ctx, pipelineID)
+			terminated, err := config.Cloud.TerminateActiveTraceSession(ctx, pipelineID)
 			if err != nil {
 				return err
 			}
@@ -82,7 +81,7 @@ func NewCmdDeleteTraceSession(config *cfg.Config) *cobra.Command {
 
 	_ = cmd.MarkFlagRequired("pipeline")
 
-	_ = cmd.RegisterFlagCompletionFunc("pipeline", completer.CompletePipelines)
+	_ = cmd.RegisterFlagCompletionFunc("pipeline", config.Completer.CompletePipelines)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
 	return cmd

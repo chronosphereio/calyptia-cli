@@ -23,6 +23,7 @@ func NewCmdUpdateEndpoint(config *cfg.Config) *cobra.Command {
 		Short: "Update pipeline endpoint",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
 			var fport, bport uint
 			var fpport, bpport *uint
 
@@ -69,7 +70,7 @@ func NewCmdUpdateEndpoint(config *cfg.Config) *cobra.Command {
 				opts.Protocol = &protocol
 			}
 
-			err := config.Cloud.UpdatePipelinePort(config.Ctx, portID, opts)
+			err := config.Cloud.UpdatePipelinePort(ctx, portID, opts)
 			if err != nil {
 				return fmt.Errorf("could not update your pipeline endpoint: %w", err)
 			}

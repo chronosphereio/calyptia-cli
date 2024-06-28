@@ -10,13 +10,11 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
 
 func NewCmdUpdateCoreInstanceFile(config *cfg.Config) *cobra.Command {
-	loader := completer.Completer{Config: config}
 
 	var instanceKey string
 	var file string
@@ -26,6 +24,7 @@ func NewCmdUpdateCoreInstanceFile(config *cfg.Config) *cobra.Command {
 		Short: "Update core instance file",
 		Long:  "Update a file within a core instance",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
 			name := filepath.Base(file)
 			name = strings.TrimSuffix(name, filepath.Ext(name))
 			contents, err := cfg.ReadFile(file)
@@ -33,12 +32,10 @@ func NewCmdUpdateCoreInstanceFile(config *cfg.Config) *cobra.Command {
 				return err
 			}
 
-			instanceID, err := loader.LoadCoreInstanceID(instanceKey, "")
+			instanceID, err := config.Completer.LoadCoreInstanceID(ctx, instanceKey, "")
 			if err != nil {
 				return err
 			}
-
-			ctx := cmd.Context()
 
 			files, err := config.Cloud.CoreInstanceFiles(ctx, types.ListCoreInstanceFiles{
 				CoreInstanceID: instanceID,
@@ -98,7 +95,7 @@ func NewCmdUpdateCoreInstanceFile(config *cfg.Config) *cobra.Command {
 	fs.StringVar(&file, "file", "", "File path. The file you want to update. It must exists already.")
 	fs.Bool("encrypted", false, "Encrypt file contents")
 
-	_ = cmd.RegisterFlagCompletionFunc("core-instance", loader.CompleteCoreInstances)
+	_ = cmd.RegisterFlagCompletionFunc("core-instance", config.Completer.CompleteCoreInstances)
 
 	_ = cmd.MarkFlagRequired("file")
 

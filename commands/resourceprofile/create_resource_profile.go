@@ -10,7 +10,6 @@ import (
 	"gopkg.in/yaml.v3"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
@@ -51,12 +50,12 @@ func NewCmdCreateResourceProfile(config *cfg.Config) *cobra.Command {
 	var specFile string
 	var outputFormat, goTemplate string
 	var environment string
-	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:   "resource_profile",
 		Short: "Create a new resource profile attached to a core-instance",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
 			rawSpec, err := cfg.ReadFile(specFile)
 			if err != nil {
 				return fmt.Errorf("could not read spec file: %w", err)
@@ -71,18 +70,18 @@ func NewCmdCreateResourceProfile(config *cfg.Config) *cobra.Command {
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = completer.LoadEnvironmentID(environment)
+				environmentID, err = config.Completer.LoadEnvironmentID(ctx, environment)
 				if err != nil {
 					return err
 				}
 			}
 
-			aggregatorID, err := completer.LoadCoreInstanceID(coreInstanceKey, environmentID)
+			aggregatorID, err := config.Completer.LoadCoreInstanceID(ctx, coreInstanceKey, environmentID)
 			if err != nil {
 				return err
 			}
 
-			rp, err := config.Cloud.CreateResourceProfile(config.Ctx, aggregatorID, cloud.CreateResourceProfile{
+			rp, err := config.Cloud.CreateResourceProfile(ctx, aggregatorID, cloud.CreateResourceProfile{
 				Name:                   name,
 				StorageMaxChunksUp:     spec.Resources.Storage.MaxChunksUp,
 				StorageSyncFull:        spec.Resources.Storage.SyncFull,
@@ -128,8 +127,8 @@ func NewCmdCreateResourceProfile(config *cfg.Config) *cobra.Command {
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
-	_ = cmd.RegisterFlagCompletionFunc("environment", completer.CompleteEnvironments)
-	_ = cmd.RegisterFlagCompletionFunc("core-instance", completer.CompleteCoreInstances)
+	_ = cmd.RegisterFlagCompletionFunc("environment", config.Completer.CompleteEnvironments)
+	_ = cmd.RegisterFlagCompletionFunc("core-instance", config.Completer.CompleteCoreInstances)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("name", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		return nil, cobra.ShellCompDirectiveNoFileComp

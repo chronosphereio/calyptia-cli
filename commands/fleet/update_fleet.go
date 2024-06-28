@@ -11,7 +11,6 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
@@ -20,21 +19,17 @@ func NewCmdUpdateFleet(config *cfg.Config) *cobra.Command {
 	var in types.UpdateFleet
 	var configFile, configFormat string
 	var outputFormat, goTemplate string
-	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:               "fleet",
 		Short:             "Update fleet by name",
 		Long:              "Update a fleet's shared configuration.",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: completer.CompleteFleets,
+		ValidArgsFunction: config.Completer.CompleteFleets,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			var err error
-
 			ctx := cmd.Context()
-
 			fleetKey := args[0]
-			fleetID, err := completer.LoadFleetID(fleetKey)
+			fleetID, err := config.Completer.LoadFleetID(ctx, fleetKey)
 			if err != nil {
 				return err
 			}

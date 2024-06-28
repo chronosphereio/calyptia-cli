@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/calyptia/cli/completer"
-
 	"github.com/spf13/cobra"
 
 	cloud "github.com/calyptia/api/types"
@@ -14,16 +12,16 @@ import (
 
 func NewCmdWatchPipelineLogs(config *cfg.Config) *cobra.Command {
 	var interval int
-	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:   "pipeline_log [pipeline name or id]",
 		Short: "Get a specific pipeline log",
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
+			ctx := cmd.Context()
 			pipelineKey := args[0] // Pipeline ID or name is the first argument
 
-			pipelineID, err := completer.LoadPipelineID(pipelineKey)
+			pipelineID, err := config.Completer.LoadPipelineID(ctx, pipelineKey)
 			if err != nil {
 				return
 			}
@@ -33,7 +31,7 @@ func NewCmdWatchPipelineLogs(config *cfg.Config) *cobra.Command {
 
 			// Function to fetch and display logs
 			fetchLogs := func() {
-				ff, err := config.Cloud.PipelineLogs(config.Ctx, cloud.ListPipelineLogs{
+				ff, err := config.Cloud.PipelineLogs(ctx, cloud.ListPipelineLogs{
 					PipelineID: pipelineID,
 					Status:     &status,
 				})
@@ -65,7 +63,7 @@ func NewCmdWatchPipelineLogs(config *cfg.Config) *cobra.Command {
 				select {
 				case <-ticker.C:
 					fetchLogs()
-				case <-config.Ctx.Done():
+				case <-ctx.Done():
 					return
 				}
 			}

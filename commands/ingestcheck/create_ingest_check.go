@@ -1,13 +1,11 @@
 package ingestcheck
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/spf13/cobra"
 
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 )
 
@@ -19,15 +17,14 @@ func NewCmdCreateIngestCheck(config *cfg.Config) *cobra.Command {
 		environment     string
 		collectLogs     bool
 	)
-	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:   "ingest_check CORE_INSTANCE",
 		Short: "Create an ingest check",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
 			coreInstance := args[0]
-			ctx := context.Background()
 
 			params := types.CreateIngestCheck{
 				CollectLogs: collectLogs,
@@ -48,12 +45,12 @@ func NewCmdCreateIngestCheck(config *cfg.Config) *cobra.Command {
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = completer.LoadEnvironmentID(environment)
+				environmentID, err = config.Completer.LoadEnvironmentID(ctx, environment)
 				if err != nil {
 					return err
 				}
 			}
-			coreInstanceID, err := completer.LoadCoreInstanceID(coreInstance, environmentID)
+			coreInstanceID, err := config.Completer.LoadCoreInstanceID(ctx, coreInstance, environmentID)
 			if err != nil {
 				return err
 			}

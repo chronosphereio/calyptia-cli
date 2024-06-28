@@ -11,7 +11,6 @@ import (
 	"gopkg.in/yaml.v3"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 )
@@ -21,18 +20,18 @@ func NewCmdGetFleetFiles(config *cfg.Config) *cobra.Command {
 	var last uint
 	var outputFormat, goTemplate string
 	var showIDs bool
-	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:   "fleet_files",
 		Short: "Get fleet files",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			fleetID, err := completer.LoadFleetID(fleetKey)
+			ctx := cmd.Context()
+			fleetID, err := config.Completer.LoadFleetID(ctx, fleetKey)
 			if err != nil {
 				return err
 			}
 
-			ff, err := config.Cloud.FleetFiles(config.Ctx, fleetID, cloud.FleetFilesParams{
+			ff, err := config.Cloud.FleetFiles(ctx, fleetID, cloud.FleetFilesParams{
 				Last: &last,
 			})
 			if err != nil {
@@ -65,7 +64,7 @@ func NewCmdGetFleetFiles(config *cfg.Config) *cobra.Command {
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
-	_ = cmd.RegisterFlagCompletionFunc("fleet", completer.CompleteFleets)
+	_ = cmd.RegisterFlagCompletionFunc("fleet", config.Completer.CompleteFleets)
 
 	_ = cmd.MarkFlagRequired("fleet") // TODO: use default fleet key from config cmd.
 
@@ -77,18 +76,18 @@ func NewCmdGetFleetFile(config *cfg.Config) *cobra.Command {
 	var name string
 	var outputFormat, goTemplate string
 	var showIDs, onlyContents bool
-	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:   "fleet_file",
 		Short: "Get a single file from a fleet by its name",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			fleetID, err := completer.LoadFleetID(fleetKey)
+			ctx := cmd.Context()
+			fleetID, err := config.Completer.LoadFleetID(ctx, fleetKey)
 			if err != nil {
 				return err
 			}
 
-			ff, err := config.Cloud.FleetFiles(config.Ctx, fleetID, cloud.FleetFilesParams{})
+			ff, err := config.Cloud.FleetFiles(ctx, fleetID, cloud.FleetFilesParams{})
 			if err != nil {
 				return fmt.Errorf("could not find your fleet file by name: %w", err)
 			}
@@ -147,7 +146,7 @@ func NewCmdGetFleetFile(config *cfg.Config) *cobra.Command {
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
-	_ = cmd.RegisterFlagCompletionFunc("fleet", completer.CompleteFleets)
+	_ = cmd.RegisterFlagCompletionFunc("fleet", config.Completer.CompleteFleets)
 	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
 	_ = cmd.MarkFlagRequired("fleet") // TODO: use default fleet key from config cmd.

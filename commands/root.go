@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"net/http"
@@ -14,11 +13,12 @@ import (
 	cloudclient "github.com/calyptia/api/client"
 	cnfg "github.com/calyptia/cli/commands/config"
 	"github.com/calyptia/cli/commands/version"
-	cfg "github.com/calyptia/cli/config"
+	"github.com/calyptia/cli/completer"
+	"github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/localdata"
 )
 
-func NewRootCmd(ctx context.Context) *cobra.Command {
+func NewRootCmd() *cobra.Command {
 	client := &cloudclient.Client{
 		Client: http.DefaultClient,
 	}
@@ -33,10 +33,10 @@ func NewRootCmd(ctx context.Context) *cobra.Command {
 	}
 
 	localData := localdata.New(cnfg.ServiceName, storageDir)
-	config := &cfg.Config{
-		Ctx:       ctx,
+	cfg := &config.Config{
 		Cloud:     client,
 		LocalData: localData,
+		Completer: &completer.Completer{},
 	}
 
 	token, err := localData.Get(cnfg.KeyToken)
@@ -64,7 +64,7 @@ func NewRootCmd(ctx context.Context) *cobra.Command {
 		}
 
 		client.BaseURL = cloudURL.String()
-		config.BaseURL = client.BaseURL
+		cfg.BaseURL = client.BaseURL
 
 		if token == "" {
 			return
@@ -77,8 +77,11 @@ func NewRootCmd(ctx context.Context) *cobra.Command {
 		}
 
 		client.SetProjectToken(token)
-		config.ProjectToken = token
-		config.ProjectID = projectID
+		cfg.ProjectToken = token
+		cfg.ProjectID = projectID
+
+		cfg.Completer.Cloud = client
+		cfg.Completer.ProjectID = projectID
 	})
 	cmd := &cobra.Command{
 		Use:           "calyptia",
@@ -90,20 +93,20 @@ func NewRootCmd(ctx context.Context) *cobra.Command {
 	cmd.SetOut(os.Stdout)
 
 	fs := cmd.PersistentFlags()
-	fs.StringVar(&cloudURLStr, "cloud-url", cfg.Env("CALYPTIA_CLOUD_URL", cloudURLStr), "Calyptia Cloud URL")
-	fs.StringVar(&token, "token", cfg.Env("CALYPTIA_CLOUD_TOKEN", token), "Calyptia Cloud Project token")
+	fs.StringVar(&cloudURLStr, "cloud-url", config.Env("CALYPTIA_CLOUD_URL", cloudURLStr), "Calyptia Cloud URL")
+	fs.StringVar(&token, "token", config.Env("CALYPTIA_CLOUD_TOKEN", token), "Calyptia Cloud Project token")
 	fs.Lookup("token").DefValue = "check with the 'calyptia config current_token' command"
 
 	cmd.AddCommand(
-		newCmdConfig(config),
-		newCmdCreate(config),
-		newCmdGet(config),
-		newCmdUpdate(config),
-		newCmdRollout(config),
+		newCmdConfig(cfg),
+		newCmdCreate(cfg),
+		newCmdGet(cfg),
+		newCmdUpdate(cfg),
+		newCmdRollout(cfg),
 		newCmdInstall(),
 		newCmdUninstall(),
-		newCmdDelete(config),
-		newCmdWatch(config),
+		newCmdDelete(cfg),
+		newCmdWatch(cfg),
 		version.NewVersionCommand(),
 	)
 

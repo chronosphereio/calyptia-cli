@@ -1,8 +1,6 @@
 package main
 
 import (
-	"context"
-
 	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
 
@@ -12,6 +10,6 @@ import (
 func main() {
 	_ = godotenv.Load()
 
-	root := commands.NewRootCmd(context.Background())
+	root := commands.NewRootCmd()
 	cobra.CheckErr(root.Execute())
 }

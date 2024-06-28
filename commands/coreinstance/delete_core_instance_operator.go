@@ -12,7 +12,6 @@ import (
 	restclient "k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 
-	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/k8s"
 )
@@ -24,7 +23,7 @@ func NewCmdDeleteCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 		wait        bool
 	)
 	configOverrides := &clientcmd.ConfigOverrides{}
-	completer := completer.Completer{Config: config}
+
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 
 	cmd := &cobra.Command{
@@ -39,13 +38,13 @@ func NewCmdDeleteCoreInstanceOperator(config *cfg.Config, testClientSet kubernet
 			var environmentID string
 			if environment != "" {
 				var err error
-				environmentID, err = completer.LoadEnvironmentID(environment)
+				environmentID, err = config.Completer.LoadEnvironmentID(ctx, environment)
 				if err != nil {
 					return err
 				}
 			}
 			coreInstanceKey := args[0]
-			coreInstanceID, err := completer.LoadCoreInstanceID(coreInstanceKey, environmentID)
+			coreInstanceID, err := config.Completer.LoadCoreInstanceID(ctx, coreInstanceKey, environmentID)
 			if err != nil {
 				return err
 			}

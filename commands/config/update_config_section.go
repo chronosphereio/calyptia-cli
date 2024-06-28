@@ -9,7 +9,6 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/completer"
 	cfg "github.com/calyptia/cli/config"
 	"github.com/calyptia/cli/formatters"
 	"github.com/calyptia/cli/helpers"
@@ -18,18 +17,17 @@ import (
 func NewCmdUpdateConfigSection(config *cfg.Config) *cobra.Command {
 	var propsSlice []string
 	var outputFormat, goTemplate string
-	completer := completer.Completer{Config: config}
 
 	cmd := &cobra.Command{
 		Use:               "config_section CONFIG_SECTION", // child of `update`
 		Short:             "Update a config section",
 		Long:              "Update a config section either by the plugin kind:name or by its ID",
 		Args:              cobra.ExactArgs(1),
-		ValidArgsFunction: completer.CompleteConfigSections,
+		ValidArgsFunction: config.Completer.CompleteConfigSections,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			configSectionKey := args[0]
-			configSectionID, err := completer.LoadConfigSectionID(ctx, configSectionKey)
+			configSectionID, err := config.Completer.LoadConfigSectionID(ctx, configSectionKey)
 			if err != nil {
 				return fmt.Errorf("load config section ID from key: %w", err)
 			}
@@ -71,7 +69,7 @@ func NewCmdUpdateConfigSection(config *cfg.Config) *cobra.Command {
 	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
 	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 
-	_ = cmd.RegisterFlagCompletionFunc("prop", completer.CompletePluginProps)
+	_ = cmd.RegisterFlagCompletionFunc("prop", config.Completer.CompletePluginProps)
 
 	return cmd
 }
