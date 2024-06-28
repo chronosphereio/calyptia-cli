@@ -20,7 +20,6 @@ func NewCmdGetFleets(cfg *config.Config) *cobra.Command {
 	var tags []string
 	var last uint
 	var showIDs bool
-	var outputFormat, goTemplate string
 
 	cmd := &cobra.Command{
 		Use:   "fleets", // calyptia get fleets
@@ -52,19 +51,18 @@ func NewCmdGetFleets(cfg *config.Config) *cobra.Command {
 				return err
 			}
 
-			if strings.HasPrefix(outputFormat, "go-template") {
-				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, fleets)
+			outputFormat := formatters.OutputFormatFromFlags(fs)
+			if fn, ok := formatters.ShouldApplyTemplating(outputFormat); ok {
+				return fn(cmd.OutOrStdout(), formatters.TemplateFromFlags(fs), fleets)
 			}
 
 			switch outputFormat {
-			case "table":
-				return renderFleetsTable(cmd.OutOrStdout(), fleets, showIDs)
 			case "json":
 				return json.NewEncoder(cmd.OutOrStdout()).Encode(fleets)
 			case "yml", "yaml":
 				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(fleets)
 			default:
-				return fmt.Errorf("unknown output format %q", outputFormat)
+				return renderFleetsTable(cmd.OutOrStdout(), fleets, showIDs)
 			}
 		},
 	}
@@ -75,17 +73,13 @@ func NewCmdGetFleets(cfg *config.Config) *cobra.Command {
 	fs.UintVar(&last, "last", 0, "Paginate and retrieve only the last N fleets")
 	fs.StringVar(&before, "before", "", "Paginate and retrieve the fleets before the given cursor")
 	fs.BoolVar(&showIDs, "show-ids", false, "Show fleets IDs. Only applies when output format is table")
-	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
-	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
-
-	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
+	formatters.BindFormatFlags(cmd)
 
 	return cmd
 }
 
 func NewCmdGetFleet(cfg *config.Config) *cobra.Command {
 	var showIDs bool
-	var outputFormat, goTemplate string
 
 	cmd := &cobra.Command{
 		Use:               "fleet FLEET", // calyptia get fleets
@@ -106,30 +100,27 @@ func NewCmdGetFleet(cfg *config.Config) *cobra.Command {
 				return err
 			}
 
-			if strings.HasPrefix(outputFormat, "go-template") {
-				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, fleet)
+			fs := cmd.Flags()
+			outputFormat := formatters.OutputFormatFromFlags(fs)
+			if fn, ok := formatters.ShouldApplyTemplating(outputFormat); ok {
+				return fn(cmd.OutOrStdout(), formatters.TemplateFromFlags(fs), fleet)
 			}
 
 			switch outputFormat {
-			case "table":
-				return renderFleetsTable(cmd.OutOrStdout(),
-					cloudtypes.Fleets{Items: []cloudtypes.Fleet{fleet}}, showIDs)
 			case "json":
 				return json.NewEncoder(cmd.OutOrStdout()).Encode(fleet)
 			case "yml", "yaml":
 				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(fleet)
 			default:
-				return fmt.Errorf("unknown output format %q", outputFormat)
+				return renderFleetsTable(cmd.OutOrStdout(),
+					cloudtypes.Fleets{Items: []cloudtypes.Fleet{fleet}}, showIDs)
 			}
 		},
 	}
 
 	fs := cmd.Flags()
 	fs.BoolVar(&showIDs, "show-ids", false, "Show fleets IDs. Only applies when output format is table")
-	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
-	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
-
-	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
+	formatters.BindFormatFlags(cmd)
 
 	return cmd
 }

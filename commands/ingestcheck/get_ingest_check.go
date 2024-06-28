@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strings"
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
@@ -16,11 +15,8 @@ import (
 )
 
 func NewCmdGetIngestCheck(cfg *config.Config) *cobra.Command {
-	var (
-		outputFormat string
-		showIDs      bool
-		goTemplate   string
-	)
+	var showIDs bool
+
 	cmd := &cobra.Command{
 		Use:   "ingest_check INGEST_CHECK_ID",
 		Short: "Get a specific ingest check",
@@ -32,11 +28,19 @@ func NewCmdGetIngestCheck(cfg *config.Config) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			if strings.HasPrefix(outputFormat, "go-template") {
-				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, check)
+
+			fs := cmd.Flags()
+			outputFormat := formatters.OutputFormatFromFlags(fs)
+			if fn, ok := formatters.ShouldApplyTemplating(outputFormat); ok {
+				return fn(cmd.OutOrStdout(), formatters.TemplateFromFlags(fs), check)
 			}
+
 			switch outputFormat {
-			case "table":
+			case "json":
+				return json.NewEncoder(cmd.OutOrStdout()).Encode(check)
+			case "yml", "yaml":
+				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(check)
+			default:
 				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 3, 1, ' ', 0)
 				if showIDs {
 					fmt.Fprintf(tw, "ID\t")
@@ -50,36 +54,21 @@ func NewCmdGetIngestCheck(cfg *config.Config) *cobra.Command {
 				fmt.Fprintf(tw, "%s\t", check.Status)
 				fmt.Fprintf(tw, "%d\t", check.Retries)
 				fmt.Fprintln(tw, formatters.FmtTime(check.CreatedAt))
-				err := tw.Flush()
-				if err != nil {
-					return err
-				}
-			case "json":
-				return json.NewEncoder(cmd.OutOrStdout()).Encode(check)
-			case "yml", "yaml":
-				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(check)
-			default:
-				return fmt.Errorf("unknown output format %q", outputFormat)
+				return tw.Flush()
 			}
-
-			return nil
 		},
 	}
 	fs := cmd.Flags()
 	fs.BoolVar(&showIDs, "show-ids", false, "Include member IDs in table output")
-	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
-	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
-	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
+	formatters.BindFormatFlags(cmd)
 	return cmd
 }
 
 func NewCmdGetIngestChecks(cfg *config.Config) *cobra.Command {
 	var (
-		outputFormat string
-		showIDs      bool
-		last         uint
-		goTemplate   string
-		environment  string
+		showIDs     bool
+		last        uint
+		environment string
 	)
 
 	cmd := &cobra.Command{
@@ -106,11 +95,18 @@ func NewCmdGetIngestChecks(cfg *config.Config) *cobra.Command {
 				return err
 			}
 
-			if strings.HasPrefix(outputFormat, "go-template") {
-				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, check.Items)
+			fs := cmd.Flags()
+			outputFormat := formatters.OutputFormatFromFlags(fs)
+			if fn, ok := formatters.ShouldApplyTemplating(outputFormat); ok {
+				return fn(cmd.OutOrStdout(), formatters.TemplateFromFlags(fs), check.Items)
 			}
+
 			switch outputFormat {
-			case "table":
+			case "json":
+				return json.NewEncoder(cmd.OutOrStdout()).Encode(check.Items)
+			case "yml", "yaml":
+				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(check.Items)
+			default:
 				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 3, 1, ' ', 0)
 				if showIDs {
 					fmt.Fprintf(tw, "ID\t")
@@ -126,27 +122,14 @@ func NewCmdGetIngestChecks(cfg *config.Config) *cobra.Command {
 					fmt.Fprintf(tw, "%d\t", m.Retries)
 					fmt.Fprintln(tw, formatters.FmtTime(m.CreatedAt))
 				}
-				err := tw.Flush()
-				if err != nil {
-					return err
-				}
-			case "json":
-				return json.NewEncoder(cmd.OutOrStdout()).Encode(check.Items)
-			case "yml", "yaml":
-				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(check.Items)
-			default:
-				return fmt.Errorf("unknown output format %q", outputFormat)
+				return tw.Flush()
 			}
-
-			return nil
 		},
 	}
 	fs := cmd.Flags()
 	fs.UintVarP(&last, "last", "l", 0, "Last `N` members. 0 means no limit")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include member IDs in table output")
-	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
-	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
 	fs.StringVar(&environment, "environment", "default", "Environment name")
-	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
+	formatters.BindFormatFlags(cmd)
 	return cmd
 }

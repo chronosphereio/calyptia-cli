@@ -22,7 +22,6 @@ func NewCmdGetTraceSessions(cfg *config.Config) *cobra.Command {
 	var last uint
 	var before string
 	var showIDs bool
-	var outputFormat, goTemplate string
 
 	cmd := &cobra.Command{
 		Use:   "trace_sessions", // child of `get`
@@ -54,8 +53,10 @@ func NewCmdGetTraceSessions(cfg *config.Config) *cobra.Command {
 				return err
 			}
 
-			if strings.HasPrefix(outputFormat, "go-template") {
-				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, ss.Items)
+			fs := cmd.Flags()
+			outputFormat := formatters.OutputFormatFromFlags(fs)
+			if fn, ok := formatters.ShouldApplyTemplating(outputFormat); ok {
+				return fn(cmd.OutOrStdout(), formatters.TemplateFromFlags(fs), ss.Items)
 			}
 
 			switch outputFormat {
@@ -74,12 +75,9 @@ func NewCmdGetTraceSessions(cfg *config.Config) *cobra.Command {
 	fs.UintVarP(&last, "last", "l", 0, "Last `N` trace sessions. 0 means no limit")
 	fs.StringVar(&before, "before", "", "Only show trace sessions created before the given cursor")
 	fs.BoolVar(&showIDs, "show-ids", false, "Show trace session IDs. Only applies when output format is table")
-	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
-	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
+	formatters.BindFormatFlags(cmd)
 
 	_ = cmd.MarkFlagRequired("pipeline")
-	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
-
 	_ = cmd.RegisterFlagCompletionFunc("pipeline", cfg.Completer.CompletePipelines)
 
 	return cmd
@@ -88,7 +86,6 @@ func NewCmdGetTraceSessions(cfg *config.Config) *cobra.Command {
 func NewCmdGetTraceSession(cfg *config.Config) *cobra.Command {
 	var pipelineKey string
 	var showID bool
-	var outputFormat, goTemplate string
 
 	cmd := &cobra.Command{
 		Use:   "trace_session TRACE_SESSION", // child of `get`
@@ -122,8 +119,10 @@ func NewCmdGetTraceSession(cfg *config.Config) *cobra.Command {
 				}
 			}
 
-			if strings.HasPrefix(outputFormat, "go-template") {
-				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, session)
+			fs := cmd.Flags()
+			outputFormat := formatters.OutputFormatFromFlags(fs)
+			if fn, ok := formatters.ShouldApplyTemplating(outputFormat); ok {
+				return fn(cmd.OutOrStdout(), formatters.TemplateFromFlags(fs), session)
 			}
 
 			switch outputFormat {
@@ -140,10 +139,7 @@ func NewCmdGetTraceSession(cfg *config.Config) *cobra.Command {
 	fs := cmd.Flags()
 	fs.StringVar(&pipelineKey, "pipeline", "", "Parent pipeline (name or ID) from which to fetch the current active trace session. Only required if TRACE_SESSION argument is not provided")
 	fs.BoolVar(&showID, "show-id", false, "Show trace session ID. Only applies when output format is table")
-	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
-	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
-
-	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
+	formatters.BindFormatFlags(cmd)
 
 	_ = cmd.RegisterFlagCompletionFunc("pipeline", cfg.Completer.CompletePipelines)
 

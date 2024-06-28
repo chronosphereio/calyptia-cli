@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"strings"
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
@@ -18,7 +17,6 @@ import (
 func NewCmdGetFleetFiles(cfg *config.Config) *cobra.Command {
 	var fleetKey string
 	var last uint
-	var outputFormat, goTemplate string
 	var showIDs bool
 
 	cmd := &cobra.Command{
@@ -38,21 +36,20 @@ func NewCmdGetFleetFiles(cfg *config.Config) *cobra.Command {
 				return fmt.Errorf("could not fetch your fleet files: %w", err)
 			}
 
-			if strings.HasPrefix(outputFormat, "go-template") {
-				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, ff.Items)
+			fs := cmd.Flags()
+			outputFormat := formatters.OutputFormatFromFlags(fs)
+			if fn, ok := formatters.ShouldApplyTemplating(outputFormat); ok {
+				return fn(cmd.OutOrStdout(), formatters.TemplateFromFlags(fs), ff)
 			}
 
 			switch outputFormat {
-			case "table":
-				renderFleetFiles(cmd.OutOrStdout(), ff.Items, showIDs)
 			case "json":
 				return json.NewEncoder(cmd.OutOrStdout()).Encode(ff.Items)
 			case "yml", "yaml":
 				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(ff.Items)
 			default:
-				return fmt.Errorf("unknown output format %q", outputFormat)
+				return renderFleetFiles(cmd.OutOrStdout(), ff.Items, showIDs)
 			}
-			return nil
 		},
 	}
 
@@ -60,10 +57,8 @@ func NewCmdGetFleetFiles(cfg *config.Config) *cobra.Command {
 	fs.StringVar(&fleetKey, "fleet", "", "Parent fleet ID or name")
 	fs.UintVarP(&last, "last", "l", 0, "Last `N` fleet files. 0 means no limit")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include status IDs in table output")
-	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
-	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
+	formatters.BindFormatFlags(cmd)
 
-	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("fleet", cfg.Completer.CompleteFleets)
 
 	_ = cmd.MarkFlagRequired("fleet") // TODO: use default fleet key from config cmd.
@@ -74,7 +69,6 @@ func NewCmdGetFleetFiles(cfg *config.Config) *cobra.Command {
 func NewCmdGetFleetFile(cfg *config.Config) *cobra.Command {
 	var fleetKey string
 	var name string
-	var outputFormat, goTemplate string
 	var showIDs, onlyContents bool
 
 	cmd := &cobra.Command{
@@ -111,12 +105,18 @@ func NewCmdGetFleetFile(cfg *config.Config) *cobra.Command {
 				return nil
 			}
 
-			if strings.HasPrefix(outputFormat, "go-template") {
-				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, file)
+			fs := cmd.Flags()
+			outputFormat := formatters.OutputFormatFromFlags(fs)
+			if fn, ok := formatters.ShouldApplyTemplating(outputFormat); ok {
+				return fn(cmd.OutOrStdout(), formatters.TemplateFromFlags(fs), file)
 			}
 
 			switch outputFormat {
-			case "table":
+			case "json":
+				return json.NewEncoder(cmd.OutOrStdout()).Encode(file)
+			case "yml", "yaml":
+				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(file)
+			default:
 				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
 				if showIDs {
 					fmt.Fprint(tw, "ID\t")
@@ -126,15 +126,8 @@ func NewCmdGetFleetFile(cfg *config.Config) *cobra.Command {
 					fmt.Fprintf(tw, "%s\t", file.ID)
 				}
 				fmt.Fprintf(tw, "%s\t%s\n", file.Name, formatters.FmtTime(file.CreatedAt))
-				tw.Flush()
-			case "json":
-				return json.NewEncoder(cmd.OutOrStdout()).Encode(file)
-			case "yml", "yaml":
-				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(file)
-			default:
-				return fmt.Errorf("unknown output format %q", outputFormat)
+				return tw.Flush()
 			}
-			return nil
 		},
 	}
 
@@ -143,11 +136,9 @@ func NewCmdGetFleetFile(cfg *config.Config) *cobra.Command {
 	fs.StringVar(&name, "name", "", "File name")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include status IDs in table output")
 	fs.BoolVar(&onlyContents, "only-contents", false, "Only print file contents")
-	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
-	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
+	formatters.BindFormatFlags(cmd)
 
 	_ = cmd.RegisterFlagCompletionFunc("fleet", cfg.Completer.CompleteFleets)
-	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 
 	_ = cmd.MarkFlagRequired("fleet") // TODO: use default fleet key from config cmd.
 	_ = cmd.MarkFlagRequired("name")
@@ -155,17 +146,24 @@ func NewCmdGetFleetFile(cfg *config.Config) *cobra.Command {
 	return cmd
 }
 
-func renderFleetFiles(w io.Writer, ff []cloudtypes.FleetFile, showIDs bool) {
+func renderFleetFiles(w io.Writer, ff []cloudtypes.FleetFile, showIDs bool) error {
 	tw := tabwriter.NewWriter(w, 0, 4, 1, ' ', 0)
 	if showIDs {
-		fmt.Fprint(tw, "ID\t")
+		if _, err := fmt.Fprint(tw, "ID\t"); err != nil {
+			return err
+		}
 	}
 	fmt.Fprintln(tw, "NAME\tAGE")
 	for _, f := range ff {
 		if showIDs {
-			fmt.Fprintf(tw, "%s\t", f.ID)
+			if _, err := fmt.Fprintf(tw, "%s\t", f.ID); err != nil {
+				return err
+			}
 		}
-		fmt.Fprintf(tw, "%s\t%s\n", f.Name, formatters.FmtTime(f.CreatedAt))
+		_, err := fmt.Fprintf(tw, "%s\t%s\n", f.Name, formatters.FmtTime(f.CreatedAt))
+		if err != nil {
+			return err
+		}
 	}
-	tw.Flush()
+	return tw.Flush()
 }

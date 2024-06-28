@@ -126,10 +126,12 @@ func ConfigSectionKindName(cs cloudtypes.ConfigSection) string {
 	return fmt.Sprintf("%s:%s", cs.Kind, PairsName(cs.Properties))
 }
 
-func RenderEndpointsTable(w io.Writer, pp []cloudtypes.PipelinePort, showIDs bool) {
+func RenderEndpointsTable(w io.Writer, pp []cloudtypes.PipelinePort, showIDs bool) error {
 	tw := tabwriter.NewWriter(w, 0, 4, 1, ' ', 0)
 	if showIDs {
-		fmt.Fprint(tw, "ID\t")
+		if _, err := fmt.Fprint(tw, "ID\t"); err != nil {
+			return err
+		}
 	}
 	fmt.Fprintln(tw, "PROTOCOL\tSERVICE-TYPE\tFRONTEND-PORT\tBACKEND-PORT\tENDPOINT\tAGE")
 	for _, p := range pp {
@@ -138,11 +140,16 @@ func RenderEndpointsTable(w io.Writer, pp []cloudtypes.PipelinePort, showIDs boo
 			endpoint = "Pending"
 		}
 		if showIDs {
-			fmt.Fprintf(tw, "%s\t", p.ID)
+			if _, err := fmt.Fprintf(tw, "%s\t", p.ID); err != nil {
+				return err
+			}
 		}
-		fmt.Fprintf(tw, "%s\t%s\t%d\t%d\t%s\t%s\n", p.Protocol, p.Kind, p.FrontendPort, p.BackendPort, endpoint, FmtTime(p.CreatedAt))
+		_, err := fmt.Fprintf(tw, "%s\t%s\t%d\t%d\t%s\t%s\n", p.Protocol, p.Kind, p.FrontendPort, p.BackendPort, endpoint, FmtTime(p.CreatedAt))
+		if err != nil {
+			return err
+		}
 	}
-	tw.Flush()
+	return tw.Flush()
 }
 
 func RenderUpdatedTable(w io.Writer, updatedAt time.Time) error {

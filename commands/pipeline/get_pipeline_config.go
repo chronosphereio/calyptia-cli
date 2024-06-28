@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"strings"
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
@@ -16,7 +15,6 @@ import (
 )
 
 func NewCmdGetPipelineConfigHistory(cfg *config.Config) *cobra.Command {
-	var outputFormat, goTemplate string
 	var pipelineKey string
 	var last uint
 
@@ -37,31 +35,28 @@ func NewCmdGetPipelineConfigHistory(cfg *config.Config) *cobra.Command {
 				return fmt.Errorf("could not fetch your pipeline config history: %w", err)
 			}
 
-			if strings.HasPrefix(outputFormat, "go-template") {
-				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, cc.Items)
+			fs := cmd.Flags()
+			outputFormat := formatters.OutputFormatFromFlags(fs)
+			if fn, ok := formatters.ShouldApplyTemplating(outputFormat); ok {
+				return fn(cmd.OutOrStdout(), formatters.TemplateFromFlags(fs), cc)
 			}
 
 			switch outputFormat {
-			case "table":
-				renderPipelineConfigHistory(cmd.OutOrStdout(), cc.Items)
 			case "json":
 				return json.NewEncoder(cmd.OutOrStdout()).Encode(cc.Items)
 			case "yml", "yaml":
 				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(cc.Items)
 			default:
-				return fmt.Errorf("unknown output format %q", outputFormat)
+				return renderPipelineConfigHistory(cmd.OutOrStdout(), cc.Items)
 			}
-			return nil
 		},
 	}
 
 	fs := cmd.Flags()
 	fs.StringVar(&pipelineKey, "pipeline", "", "Parent pipeline ID or name")
 	fs.UintVarP(&last, "last", "l", 0, "Last `N` pipeline config history entries. 0 means no limit")
-	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
-	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
+	formatters.BindFormatFlags(cmd)
 
-	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("pipeline", cfg.Completer.CompletePipelines)
 
 	_ = cmd.MarkFlagRequired("pipeline") // TODO: use default pipeline key from config cmd.
@@ -69,11 +64,17 @@ func NewCmdGetPipelineConfigHistory(cfg *config.Config) *cobra.Command {
 	return cmd
 }
 
-func renderPipelineConfigHistory(w io.Writer, cc []cloudtypes.PipelineConfig) {
+func renderPipelineConfigHistory(w io.Writer, cc []cloudtypes.PipelineConfig) error {
 	tw := tabwriter.NewWriter(w, 0, 4, 1, ' ', 0)
-	fmt.Fprintln(tw, "ID\tAGE")
-	for _, c := range cc {
-		fmt.Fprintf(tw, "%s\t%s\n", c.ID, formatters.FmtTime(c.CreatedAt))
+	if _, err := fmt.Fprintln(tw, "ID\tAGE"); err != nil {
+		return err
 	}
-	tw.Flush()
+
+	for _, c := range cc {
+		_, err := fmt.Fprintf(tw, "%s\t%s\n", c.ID, formatters.FmtTime(c.CreatedAt))
+		if err != nil {
+			return err
+		}
+	}
+	return tw.Flush()
 }

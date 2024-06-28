@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"strings"
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
@@ -20,7 +19,6 @@ func NewCmdGetTraceRecords(cfg *config.Config) *cobra.Command {
 	var last uint
 	var before string
 	var showIDs bool
-	var outputFormat, goTemplate string
 
 	cmd := &cobra.Command{
 		Use:   "trace_records", // child of `create`
@@ -47,8 +45,10 @@ func NewCmdGetTraceRecords(cfg *config.Config) *cobra.Command {
 				return err
 			}
 
-			if strings.HasPrefix(outputFormat, "go-template") {
-				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, ss.Items)
+			fs := cmd.Flags()
+			outputFormat := formatters.OutputFormatFromFlags(fs)
+			if fn, ok := formatters.ShouldApplyTemplating(outputFormat); ok {
+				return fn(cmd.OutOrStdout(), formatters.TemplateFromFlags(fs), ss)
 			}
 
 			switch outputFormat {
@@ -67,12 +67,9 @@ func NewCmdGetTraceRecords(cfg *config.Config) *cobra.Command {
 	fs.UintVarP(&last, "last", "l", 0, "Last `N` trace records. 0 means no limit")
 	fs.StringVar(&before, "before", "", "Only show trace records created before the given cursor")
 	fs.BoolVar(&showIDs, "show-ids", false, "Show trace records IDs. Only applies when output format is table")
-	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
-	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
+	formatters.BindFormatFlags(cmd)
 
 	_ = cmd.MarkFlagRequired("session")
-
-	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("session", cfg.Completer.CompleteTraceSessions)
 
 	return cmd

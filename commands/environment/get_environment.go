@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strings"
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
@@ -17,7 +16,6 @@ import (
 
 func NewCmdGetEnvironment(cfg *config.Config) *cobra.Command {
 	var last uint
-	var outputFormat, goTemplate string
 	var showIDs bool
 
 	cmd := &cobra.Command{
@@ -30,12 +28,18 @@ func NewCmdGetEnvironment(cfg *config.Config) *cobra.Command {
 				return err
 			}
 
-			if strings.HasPrefix(outputFormat, "go-template") {
-				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, ee.Items)
+			fs := cmd.Flags()
+			outputFormat := formatters.OutputFormatFromFlags(fs)
+			if fn, ok := formatters.ShouldApplyTemplating(outputFormat); ok {
+				return fn(cmd.OutOrStdout(), formatters.TemplateFromFlags(fs), ee)
 			}
 
 			switch outputFormat {
-			case "table":
+			case "json":
+				return json.NewEncoder(cmd.OutOrStdout()).Encode(ee.Items)
+			case "yml", "yaml":
+				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(ee.Items)
+			default:
 				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 3, 1, ' ', 0)
 				if showIDs {
 					fmt.Fprintf(tw, "ID\t")
@@ -50,25 +54,15 @@ func NewCmdGetEnvironment(cfg *config.Config) *cobra.Command {
 					fmt.Fprintf(tw, "%s\t", m.Name)
 					fmt.Fprintln(tw, formatters.FmtTime(m.CreatedAt))
 				}
-				tw.Flush()
-			case "json":
-				return json.NewEncoder(cmd.OutOrStdout()).Encode(ee.Items)
-			case "yml", "yaml":
-				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(ee.Items)
-			default:
-				return fmt.Errorf("unknown output format %q", outputFormat)
+				return tw.Flush()
 			}
-			return nil
 		},
 	}
 
 	fs := cmd.Flags()
 	fs.UintVarP(&last, "last", "l", 0, "Last `N` members. 0 means no limit")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include member IDs in table output")
-	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
-	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
-
-	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
+	formatters.BindFormatFlags(cmd)
 
 	return cmd
 }

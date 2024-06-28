@@ -3,7 +3,6 @@ package endpoint
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
 
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
@@ -16,7 +15,6 @@ import (
 func NewCmdGetEndpoints(cfg *config.Config) *cobra.Command {
 	var pipelineKey string
 	var last uint
-	var outputFormat, goTemplate string
 	var showIDs bool
 
 	cmd := &cobra.Command{
@@ -36,21 +34,20 @@ func NewCmdGetEndpoints(cfg *config.Config) *cobra.Command {
 				return fmt.Errorf("could not fetch your pipeline endpoints: %w", err)
 			}
 
-			if strings.HasPrefix(outputFormat, "go-template") {
-				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, pp.Items)
+			fs := cmd.Flags()
+			outputFormat := formatters.OutputFormatFromFlags(fs)
+			if fn, ok := formatters.ShouldApplyTemplating(outputFormat); ok {
+				return fn(cmd.OutOrStdout(), formatters.TemplateFromFlags(fs), pp)
 			}
 
 			switch outputFormat {
-			case "table":
-				formatters.RenderEndpointsTable(cmd.OutOrStdout(), pp.Items, showIDs)
 			case "json":
 				return json.NewEncoder(cmd.OutOrStdout()).Encode(pp.Items)
 			case "yml", "yaml":
 				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(pp.Items)
 			default:
-				return fmt.Errorf("unknown output format %q", outputFormat)
+				return formatters.RenderEndpointsTable(cmd.OutOrStdout(), pp.Items, showIDs)
 			}
-			return nil
 		},
 	}
 
@@ -58,10 +55,8 @@ func NewCmdGetEndpoints(cfg *config.Config) *cobra.Command {
 	fs.StringVar(&pipelineKey, "pipeline", "", "Parent pipeline ID or name")
 	fs.UintVarP(&last, "last", "l", 0, "Last `N` pipeline endpoints. 0 means no limit")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include endpoint IDs in table output")
-	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
-	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
+	formatters.BindFormatFlags(cmd)
 
-	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("pipeline", cfg.Completer.CompletePipelines)
 
 	_ = cmd.MarkFlagRequired("pipeline") // TODO: use default pipeline key from config cmd.

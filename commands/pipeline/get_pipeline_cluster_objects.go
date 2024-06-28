@@ -3,7 +3,6 @@ package pipeline
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
@@ -17,7 +16,6 @@ import (
 func NewCmdGetPipelineClusterObjects(cfg *config.Config) *cobra.Command {
 	var pipelineKey string
 	var last uint
-	var outputFormat, goTemplate string
 	var showIDs bool
 
 	cmd := &cobra.Command{
@@ -37,12 +35,18 @@ func NewCmdGetPipelineClusterObjects(cfg *config.Config) *cobra.Command {
 				return err
 			}
 
-			if strings.HasPrefix(outputFormat, "go-template") {
-				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, co.Items)
+			fs := cmd.Flags()
+			outputFormat := formatters.OutputFormatFromFlags(fs)
+			if fn, ok := formatters.ShouldApplyTemplating(outputFormat); ok {
+				return fn(cmd.OutOrStdout(), formatters.TemplateFromFlags(fs), co.Items)
 			}
 
 			switch outputFormat {
-			case "table":
+			case "json":
+				return json.NewEncoder(cmd.OutOrStdout()).Encode(co.Items)
+			case "yml", "yaml":
+				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(co.Items)
+			default:
 				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
 				if showIDs {
 					fmt.Fprintf(tw, "ID\t")
@@ -55,12 +59,6 @@ func NewCmdGetPipelineClusterObjects(cfg *config.Config) *cobra.Command {
 					fmt.Fprintf(tw, "%s\t%s\t%s\n", c.Name, string(c.Kind), formatters.FmtTime(c.CreatedAt))
 				}
 				return tw.Flush()
-			case "json":
-				return json.NewEncoder(cmd.OutOrStdout()).Encode(co.Items)
-			case "yml", "yaml":
-				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(co.Items)
-			default:
-				return fmt.Errorf("unknown output format %q", outputFormat)
 			}
 		},
 	}
@@ -69,8 +67,7 @@ func NewCmdGetPipelineClusterObjects(cfg *config.Config) *cobra.Command {
 	fs.StringVar(&pipelineKey, "pipeline", "", "Pipeline to list cluster objects for")
 	fs.UintVarP(&last, "last", "l", 0, "Last `N` cluster objects. 0 means no limit")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include status IDs in table output")
-	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
-	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
+	formatters.BindFormatFlags(cmd)
 
 	_ = cmd.RegisterFlagCompletionFunc("pipeline", cfg.Completer.CompletePipelines)
 

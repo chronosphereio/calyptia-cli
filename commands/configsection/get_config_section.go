@@ -20,7 +20,6 @@ import (
 func NewCmdGetConfigSections(cfg *config.Config) *cobra.Command {
 	var last uint
 	var before string
-	var outputFormat, goTemplate string
 	var showIDs bool
 
 	cmd := &cobra.Command{
@@ -42,8 +41,10 @@ func NewCmdGetConfigSections(cfg *config.Config) *cobra.Command {
 				return fmt.Errorf("cloud: %w", err)
 			}
 
-			if strings.HasPrefix(outputFormat, "go-template") {
-				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, cc.Items)
+			fs := cmd.Flags()
+			outputFormat := formatters.OutputFormatFromFlags(fs)
+			if fn, ok := formatters.ShouldApplyTemplating(outputFormat); ok {
+				return fn(cmd.OutOrStdout(), formatters.TemplateFromFlags(fs), cc)
 			}
 
 			switch outputFormat {
@@ -61,10 +62,7 @@ func NewCmdGetConfigSections(cfg *config.Config) *cobra.Command {
 	fs.UintVarP(&last, "last", "l", 0, "Last `N` config sections. 0 means no limit")
 	fs.StringVar(&before, "before", "", "Only show config sections created before the given cursor")
 	fs.BoolVar(&showIDs, "show-ids", false, "Show config section IDs. Only applies when output format is table")
-	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
-	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
-
-	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
+	formatters.BindFormatFlags(cmd)
 
 	return cmd
 }

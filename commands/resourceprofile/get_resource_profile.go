@@ -3,7 +3,6 @@ package resourceprofile
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
@@ -17,7 +16,6 @@ import (
 func NewCmdGetResourceProfiles(cfg *config.Config) *cobra.Command {
 	var coreInstanceKey string
 	var last uint
-	var outputFormat, goTemplate string
 	var showIDs bool
 	var environment string
 
@@ -47,12 +45,18 @@ func NewCmdGetResourceProfiles(cfg *config.Config) *cobra.Command {
 				return fmt.Errorf("could not fetch your resource profiles: %w", err)
 			}
 
-			if strings.HasPrefix(outputFormat, "go-template") {
-				return formatters.ApplyGoTemplate(cmd.OutOrStdout(), outputFormat, goTemplate, pp.Items)
+			fs := cmd.Flags()
+			outputFormat := formatters.OutputFormatFromFlags(fs)
+			if fn, ok := formatters.ShouldApplyTemplating(outputFormat); ok {
+				return fn(cmd.OutOrStdout(), formatters.TemplateFromFlags(fs), pp.Items)
 			}
 
 			switch outputFormat {
-			case "table":
+			case "json":
+				return json.NewEncoder(cmd.OutOrStdout()).Encode(pp.Items)
+			case "yml", "yaml":
+				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(pp.Items)
+			default:
 				tw := tabwriter.NewWriter(cmd.OutOrStdout(), 0, 4, 1, ' ', 0)
 				if showIDs {
 					fmt.Fprintf(tw, "ID\t")
@@ -64,15 +68,8 @@ func NewCmdGetResourceProfiles(cfg *config.Config) *cobra.Command {
 					}
 					fmt.Fprintf(tw, "%s\t%d\t%v\t%s\t%s\t%v\t%d\t%s\t%s\t%s\t%s\t%s\n", p.Name, p.StorageMaxChunksUp, p.StorageSyncFull, p.StorageBacklogMemLimit, p.StorageVolumeSize, p.StorageMaxChunksPause, p.CPUBufferWorkers, p.CPULimit, p.CPURequest, p.MemoryLimit, p.MemoryRequest, formatters.FmtTime(p.CreatedAt))
 				}
-				tw.Flush()
-			case "json":
-				return json.NewEncoder(cmd.OutOrStdout()).Encode(pp.Items)
-			case "yml", "yaml":
-				return yaml.NewEncoder(cmd.OutOrStdout()).Encode(pp.Items)
-			default:
-				return fmt.Errorf("unknown output format %q", outputFormat)
+				return tw.Flush()
 			}
-			return nil
 		},
 	}
 
@@ -81,11 +78,9 @@ func NewCmdGetResourceProfiles(cfg *config.Config) *cobra.Command {
 	fs.UintVarP(&last, "last", "l", 0, "Last `N` pipelines. 0 means no limit")
 	fs.BoolVar(&showIDs, "show-ids", false, "Include resource profile IDs in table output")
 	fs.StringVar(&environment, "environment", "", "Calyptia environment name")
-	fs.StringVarP(&outputFormat, "output-format", "o", "table", "Output format. Allowed: table, json, yaml, go-template, go-template-file")
-	fs.StringVar(&goTemplate, "template", "", "Template string or path to use when -o=go-template, -o=go-template-file. The template format is golang templates\n[http://golang.org/pkg/text/template/#pkg-overview]")
+	formatters.BindFormatFlags(cmd)
 
 	_ = cmd.RegisterFlagCompletionFunc("environment", cfg.Completer.CompleteEnvironments)
-	_ = cmd.RegisterFlagCompletionFunc("output-format", formatters.CompleteOutputFormat)
 	_ = cmd.RegisterFlagCompletionFunc("core-instance", cfg.Completer.CompleteCoreInstances)
 
 	_ = cmd.MarkFlagRequired("core-instance") // TODO: use default aggregator ID from config cmd.
