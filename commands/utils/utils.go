@@ -1,13 +1,5 @@
 package utils
 
-import (
-	"fmt"
-	"math"
-	"strings"
-
-	"code.cloudfoundry.org/bytefmt"
-)
-
 const (
 	LatestVersion                  = "latest"
 	DefaultCoreOperatorDockerImage = "ghcr.io/calyptia/core-operator"
@@ -22,50 +14,3 @@ const (
 	// DefaultCoreOperatorFromCloudDockerImageTag not manually modified, CI should switch this version on every new release.
 	DefaultCoreOperatorFromCloudDockerImageTag = "v2.14.0"
 )
-
-type RecordCell struct {
-	Value *float64
-}
-
-func (f RecordCell) String() string {
-	if f.Value == nil {
-		return ""
-	}
-
-	var s string
-	if *f.Value > -1 && *f.Value < 1 {
-		s = fmt.Sprintf("%.2f", *f.Value)
-	} else {
-		s = fmt.Sprintf("%.0f", math.Round(*f.Value))
-	}
-	s = strings.TrimSuffix(s, "0")
-	s = strings.TrimSuffix(s, "0")
-	s = strings.TrimSuffix(s, ".")
-	return s
-}
-
-type ByteCell struct {
-	Value *float64
-}
-
-func (f ByteCell) String() string {
-	if f.Value == nil {
-		return ""
-	}
-
-	s := bytefmt.ByteSize(uint64(math.Round(*f.Value)))
-	s = strings.TrimSuffix(s, "B")
-	s = strings.ToLower(s)
-	return s
-}
-
-type Rates struct {
-	InputBytes    *float64
-	InputRecords  *float64
-	OutputBytes   *float64
-	OutputRecords *float64
-}
-
-func (rates Rates) OK() bool {
-	return rates.InputBytes != nil || rates.InputRecords != nil || rates.OutputBytes != nil || rates.OutputRecords != nil
-}
