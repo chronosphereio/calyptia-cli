@@ -1,3 +1,4 @@
+// Package formatters provides utilities for formatting command output.
 package formatters
 
 import (

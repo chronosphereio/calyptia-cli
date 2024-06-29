@@ -139,8 +139,8 @@ func NewCmdUpdateCoreInstanceOperator(cfg *config.Config, testClientSet kubernet
 				SkipServiceCreation: skipServiceCreation,
 				NoTLSVerify:         noTLSVerify,
 				CloudProxy:          cloudProxy,
-				HttpProxy:           httpProxy,
-				HttpsProxy:          httpsProxy,
+				HTTPProxy:           httpProxy,
+				HTTPSProxy:          httpsProxy,
 				NoProxy:             noProxy,
 				Image:               newVersion,
 			}

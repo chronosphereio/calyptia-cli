@@ -1,3 +1,4 @@
+// Package k8s provides with an opinionated way to interact with kubernetes resources.
 package k8s
 
 import (
@@ -47,8 +48,8 @@ const (
 	serviceAccountObjectType      objectType = "service-account"
 	coreTLSVerifyEnvVar           string     = "CORE_TLS_VERIFY"
 	syncTLSVerifyEnvVar           string     = "NO_TLS_VERIFY"
-	syncHttpProxy                 string     = "HTTP_PROXY"
-	syncHttpsProxy                string     = "HTTPS_PROXY"
+	syncHTTPProxy                 string     = "HTTP_PROXY"
+	syncHTTPSProxy                string     = "HTTPS_PROXY"
 	metrics                       string     = "METRICS"
 	syncNoProxy                   string     = "NO_PROXY"
 	syncCloudProxy                string     = "CLOUD_PROXY"
@@ -526,8 +527,8 @@ func (client *Client) UpdateSyncDeploymentByLabel(ctx context.Context, label str
 			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncTLSVerifyEnvVar, strconv.FormatBool(!params.NoTLSVerify))
 			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncCloudProxy, params.CloudProxy)
 			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncNoProxy, params.NoProxy)
-			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncHttpProxy, params.HttpProxy)
-			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncHttpsProxy, params.HttpsProxy)
+			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncHTTPProxy, params.HTTPProxy)
+			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncHTTPSProxy, params.HTTPSProxy)
 			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, metrics, strconv.FormatBool(params.Metrics))
 		}
 		if strings.Contains(container.Name, "from-cloud") {
@@ -535,8 +536,8 @@ func (client *Client) UpdateSyncDeploymentByLabel(ctx context.Context, label str
 			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncTLSVerifyEnvVar, strconv.FormatBool(!params.NoTLSVerify))
 			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncCloudProxy, params.CloudProxy)
 			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncNoProxy, params.NoProxy)
-			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncHttpProxy, params.HttpProxy)
-			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncHttpsProxy, params.HttpsProxy)
+			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncHTTPProxy, params.HTTPProxy)
+			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncHTTPSProxy, params.HTTPSProxy)
 			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, metrics, strconv.FormatBool(params.Metrics))
 			if params.SkipServiceCreation {
 				deployment.Spec.Template.Spec.Containers[i].Env = append(deployment.Spec.Template.Spec.Containers[i].Env, corev1.EnvVar{
@@ -647,8 +648,8 @@ type DeployCoreOperatorSync struct {
 	SkipServiceCreation bool
 	NoTLSVerify         bool
 	CloudProxy          string
-	HttpProxy           string
-	HttpsProxy          string
+	HTTPProxy           string
+	HTTPSProxy          string
 	NoProxy             string
 	CoreInstance        cloud.CreatedCoreInstance
 	ServiceAccount      string
@@ -663,8 +664,8 @@ type UpdateCoreOperatorSync struct {
 	SkipServiceCreation bool
 	NoTLSVerify         bool
 	CloudProxy          string
-	HttpProxy           string
-	HttpsProxy          string
+	HTTPProxy           string
+	HTTPSProxy          string
 	NoProxy             string
 	CoreInstance        cloud.CreatedCoreInstance
 	ServiceAccount      string
@@ -721,11 +722,11 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, params DeployC
 		},
 		{
 			Name:  "HTTP_PROXY",
-			Value: params.HttpProxy,
+			Value: params.HTTPProxy,
 		},
 		{
 			Name:  "HTTPS_PROXY",
-			Value: params.HttpsProxy,
+			Value: params.HTTPSProxy,
 		},
 		{
 			Name:  "ANNOTATIONS",

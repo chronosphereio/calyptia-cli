@@ -288,8 +288,8 @@ func TestUpdateSyncDeploymentByLabel(t *testing.T) {
 			label := fmt.Sprintf("%s=%s,%s=%s,%s=%s", LabelComponent, "operator", LabelCreatedBy, "calyptia-cli", LabelAggregatorID, tc.aggID)
 			params := UpdateCoreOperatorSync{
 				CloudProxy:          "",
-				HttpProxy:           "",
-				HttpsProxy:          "",
+				HTTPProxy:           "",
+				HTTPSProxy:          "",
 				NoProxy:             "",
 				Image:               fmt.Sprintf("%s:%s", coreversions.DefaultCoreOperatorDockerImage, "1234"),
 				NoTLSVerify:         true,

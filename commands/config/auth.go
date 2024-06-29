@@ -19,7 +19,7 @@ type projectTokenPayload struct {
 	ProjectID string // no json tag
 }
 
-// decodeToken decodes a project token without verifying its signature
+// DecodeToken decodes a project token without verifying its signature
 // and getting its inner project ID.
 func DecodeToken(token []byte) (string, error) {
 	parts := bytes.Split(token, []byte("."))

@@ -1,4 +1,4 @@
-// Package local_data provides a keyring implementation that stores data in the system keyring.
+// Package localdata provides a keyring implementation that stores data in the system keyring.
 // If the keyring is not available, it falls back to storing the data in a file.
 package localdata
 

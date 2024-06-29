@@ -1,3 +1,5 @@
+// Package coreversions provides the default versions for the core components of the Calyptia platform.
+// These values get replaced by CI/CD on every new release.
 package coreversions
 
 const (

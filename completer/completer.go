@@ -1,3 +1,5 @@
+// Package completer provides utilities for shell completion
+// and ID resoultion from names.
 package completer
 
 import (

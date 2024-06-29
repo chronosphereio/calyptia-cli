@@ -1,4 +1,4 @@
-// Package config provides utilities ask confirmation from stdin.
+// Package confirm provides utilities ask confirmation from stdin.
 package confirm
 
 import (
