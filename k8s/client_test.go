@@ -14,7 +14,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes/fake"
 
-	"github.com/calyptia/cli/cmd/utils"
+	"github.com/calyptia/cli/coreversions"
 )
 
 func TestGetCurrentContextNamespace(t *testing.T) {
@@ -184,7 +184,7 @@ func TestUpdateOperatorDeploymentByLabel(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			label := fmt.Sprintf("%s=%s,%s=%s,%s=%s", LabelComponent, tc.manager, LabelCreatedBy, "operator", LabelInstance, "controller-manager")
 
-			if err := tc.client.UpdateOperatorDeploymentByLabel(context.TODO(), label, fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorDockerImage, "1234"), false, time.Minute); err != nil && !tc.expectErr {
+			if err := tc.client.UpdateOperatorDeploymentByLabel(context.TODO(), label, fmt.Sprintf("%s:%s", coreversions.DefaultCoreOperatorDockerImage, "1234"), false, time.Minute); err != nil && !tc.expectErr {
 				t.Errorf("failed to find deployment by label %s", err)
 			}
 		})
@@ -288,10 +288,10 @@ func TestUpdateSyncDeploymentByLabel(t *testing.T) {
 			label := fmt.Sprintf("%s=%s,%s=%s,%s=%s", LabelComponent, "operator", LabelCreatedBy, "calyptia-cli", LabelAggregatorID, tc.aggID)
 			params := UpdateCoreOperatorSync{
 				CloudProxy:          "",
-				HttpProxy:           "",
-				HttpsProxy:          "",
+				HTTPProxy:           "",
+				HTTPSProxy:          "",
 				NoProxy:             "",
-				Image:               fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorDockerImage, "1234"),
+				Image:               fmt.Sprintf("%s:%s", coreversions.DefaultCoreOperatorDockerImage, "1234"),
 				NoTLSVerify:         true,
 				SkipServiceCreation: false,
 			}
