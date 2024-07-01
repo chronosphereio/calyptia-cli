@@ -1,11 +1,10 @@
-// Package local_data provides a keyring implementation that stores data in the system keyring.
+// Package localdata provides a keyring implementation that stores data in the system keyring.
 // If the keyring is not available, it falls back to storing the data in a file.
 package localdata
 
 import (
 	"errors"
 	"fmt"
-	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -67,7 +66,7 @@ func (k *Keyring) Get(key string) (string, error) {
 		return data, nil
 	}
 
-	b, err := readFile(filepath.Join(k.backupFile, key))
+	b, err := os.ReadFile(filepath.Join(k.backupFile, key))
 	if errors.Is(err, fs.ErrNotExist) {
 		return "", ErrNotFound
 	}
@@ -102,25 +101,4 @@ func (k *Keyring) Delete(key string) error {
 	}
 
 	return nil
-}
-
-func readFile(name string) ([]byte, error) {
-	f, err := os.Open(name)
-	if err != nil {
-		return nil, fmt.Errorf("could not open file: %w", err)
-	}
-
-	defer func(f *os.File) {
-		err := f.Close()
-		if err != nil {
-			fmt.Printf("could not close file: %v", err)
-		}
-	}(f)
-
-	b, err := io.ReadAll(f)
-	if err != nil {
-		return nil, fmt.Errorf("could not read contents: %w", err)
-	}
-
-	return b, nil
 }

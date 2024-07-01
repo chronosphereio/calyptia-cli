@@ -6,6 +6,6 @@ CONFIG=$(curl -sSfl https://raw.githubusercontent.com/calyptia/core-product-rele
 echo "$CONFIG" | jq .
 
 export NEW_VERSION=${NEW_VERSION:-$(echo "$CONFIG" | jq -r .versions.core_operator)}
-sed -i -E "s/DefaultCoreOperatorDockerImageTag = .*$/DefaultCoreOperatorDockerImageTag = \"$NEW_VERSION\"/g" "$SCRIPT_DIR/"cmd/utils/utils.go
-sed -i -E "s/DefaultCoreOperatorToCloudDockerImageTag = .*$/DefaultCoreOperatorToCloudDockerImageTag = \"$NEW_VERSION\"/g" "$SCRIPT_DIR/"cmd/utils/utils.go
-sed -i -E "s/DefaultCoreOperatorFromCloudDockerImageTag = .*$/DefaultCoreOperatorFromCloudDockerImageTag = \"$NEW_VERSION\"/g" "$SCRIPT_DIR/"cmd/utils/utils.go
+sed -i -E "s/DefaultCoreOperatorDockerImageTag = .*$/DefaultCoreOperatorDockerImageTag = \"$NEW_VERSION\"/g" "$SCRIPT_DIR/"coreversions/core_versions.go
+sed -i -E "s/DefaultCoreOperatorToCloudDockerImageTag = .*$/DefaultCoreOperatorToCloudDockerImageTag = \"$NEW_VERSION\"/g" "$SCRIPT_DIR/"coreversions/core_versions.go
+sed -i -E "s/DefaultCoreOperatorFromCloudDockerImageTag = .*$/DefaultCoreOperatorFromCloudDockerImageTag = \"$NEW_VERSION\"/g" "$SCRIPT_DIR/"coreversions/core_versions.go

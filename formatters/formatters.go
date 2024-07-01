@@ -1,3 +1,4 @@
+// Package formatters provides utilities for formatting command output.
 package formatters
 
 import (
@@ -17,8 +18,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 
-	"github.com/calyptia/api/types"
-	"github.com/calyptia/cli/helpers"
+	cloudtypes "github.com/calyptia/api/types"
 )
 
 type OutputFormat string
@@ -35,10 +35,10 @@ func (o OutputFormat) String() string {
 	return string(o)
 }
 
-func ShouldApplyTemplating(fmt OutputFormat) (func(w io.Writer, tmpl string, data any) error, bool) {
+func ShouldApplyTemplating(format OutputFormat) (func(w io.Writer, tmpl string, data any) error, bool) {
 	return func(w io.Writer, tmpl string, data any) error {
-		return ApplyGoTemplate(w, fmt.String(), tmpl, data)
-	}, fmt == OutputFormatGoTmpl || fmt == OutputFormatGoTmplFile
+		return ApplyGoTemplate(w, format.String(), tmpl, data)
+	}, format == OutputFormatGoTmpl || format == OutputFormatGoTmplFile
 }
 
 func RenderWithTemplating(w io.Writer, format OutputFormat, tmpl string, data any) error {
@@ -86,21 +86,21 @@ func CompleteOutputFormat(*cobra.Command, []string, string) ([]string, cobra.She
 	return []string{"table", "json", "yaml", "go-template", "go-template-file"}, cobra.ShellCompDirectiveNoFileComp
 }
 
-func RenderCreated(w io.Writer, created types.Created) error {
+func RenderCreated(w io.Writer, created cloudtypes.Created) error {
 	tw := tabwriter.NewWriter(w, 0, 4, 1, ' ', 0)
 	fmt.Fprintln(tw, "ID\tCREATED-AT")
 	fmt.Fprintf(tw, "%s\t%s\n", created.ID, created.CreatedAt.Format(time.RFC3339))
 	return tw.Flush()
 }
 
-func RenderUpdated(w io.Writer, updated types.Updated) error {
+func RenderUpdated(w io.Writer, updated cloudtypes.Updated) error {
 	tw := tabwriter.NewWriter(w, 0, 4, 1, ' ', 0)
 	fmt.Fprintln(tw, "UPDATED-AT")
 	fmt.Fprintf(tw, "%s\n", updated.UpdatedAt.Format(time.RFC3339))
 	return tw.Flush()
 }
 
-func RenderDeleted(w io.Writer, deleted types.Deleted) error {
+func RenderDeleted(w io.Writer, deleted cloudtypes.Deleted) error {
 	tw := tabwriter.NewWriter(w, 0, 4, 1, ' ', 0)
 	fmt.Fprint(tw, "DELETED")
 	if deleted.DeletedAt != nil {
@@ -123,14 +123,16 @@ func BindFormatFlags(cmd *cobra.Command) {
 	_ = cmd.RegisterFlagCompletionFunc("output-format", CompleteOutputFormat)
 }
 
-func ConfigSectionKindName(cs types.ConfigSection) string {
-	return fmt.Sprintf("%s:%s", cs.Kind, helpers.PairsName(cs.Properties))
+func ConfigSectionKindName(cs cloudtypes.ConfigSection) string {
+	return fmt.Sprintf("%s:%s", cs.Kind, PairsName(cs.Properties))
 }
 
-func RenderEndpointsTable(w io.Writer, pp []types.PipelinePort, showIDs bool) {
+func RenderEndpointsTable(w io.Writer, pp []cloudtypes.PipelinePort, showIDs bool) error {
 	tw := tabwriter.NewWriter(w, 0, 4, 1, ' ', 0)
 	if showIDs {
-		fmt.Fprint(tw, "ID\t")
+		if _, err := fmt.Fprint(tw, "ID\t"); err != nil {
+			return err
+		}
 	}
 	fmt.Fprintln(tw, "PROTOCOL\tSERVICE-TYPE\tFRONTEND-PORT\tBACKEND-PORT\tENDPOINT\tAGE")
 	for _, p := range pp {
@@ -139,11 +141,16 @@ func RenderEndpointsTable(w io.Writer, pp []types.PipelinePort, showIDs bool) {
 			endpoint = "Pending"
 		}
 		if showIDs {
-			fmt.Fprintf(tw, "%s\t", p.ID)
+			if _, err := fmt.Fprintf(tw, "%s\t", p.ID); err != nil {
+				return err
+			}
 		}
-		fmt.Fprintf(tw, "%s\t%s\t%d\t%d\t%s\t%s\n", p.Protocol, p.Kind, p.FrontendPort, p.BackendPort, endpoint, FmtTime(p.CreatedAt))
+		_, err := fmt.Fprintf(tw, "%s\t%s\t%d\t%d\t%s\t%s\n", p.Protocol, p.Kind, p.FrontendPort, p.BackendPort, endpoint, FmtTime(p.CreatedAt))
+		if err != nil {
+			return err
+		}
 	}
-	tw.Flush()
+	return tw.Flush()
 }
 
 func RenderUpdatedTable(w io.Writer, updatedAt time.Time) error {
@@ -215,7 +222,7 @@ func RenderCreatedTable(w io.Writer, createdID string, createdAt time.Time) erro
 	return tw.Flush()
 }
 
-func FilterOutEmptyMetadata(metadata types.CoreInstanceMetadata) ([]byte, error) {
+func FilterOutEmptyMetadata(metadata cloudtypes.CoreInstanceMetadata) ([]byte, error) {
 	b, err := json.Marshal(metadata)
 	if err != nil {
 		return nil, err
@@ -261,4 +268,30 @@ func FmtTime(t time.Time) string {
 
 func FmtDuration(d time.Duration) string {
 	return durafmt.ParseShort(d).LimitFirstN(1).String()
+}
+
+func PairsName(pp cloudtypes.Pairs) string {
+	if v, ok := pp.Get("Name"); ok {
+		return fmt.Sprintf("%v", v)
+	}
+	return ""
+}
+
+// PortKinds returns all available pipeline port kinds joined by comma.
+func PortKinds() string {
+	var r []string
+	for _, v := range cloudtypes.AllValidPipelinePortKinds {
+		r = append(r, string(v))
+	}
+	return strings.Join(r, ",")
+}
+
+// ValidPortKind checks if the provided string is a valid pipeline port kind.
+func ValidPortKind(s string) bool {
+	for _, k := range cloudtypes.AllValidPipelinePortKinds {
+		if cloudtypes.PipelinePortKind(s) == k {
+			return true
+		}
+	}
+	return false
 }
