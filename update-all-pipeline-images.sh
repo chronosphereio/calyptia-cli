@@ -17,9 +17,12 @@ fi
 for instance in $(calyptia get core_instances -o json | jq -cr '.[].id')
 do
     echo "Updating for instance: $instance"
-    for pipeline in $(calyptia get pipelines --core-instance "$instance" -o json | jq -cr '.[].id')
+    for pipeline in $(calyptia get pipelines --core-instance "$instance" -o json | jq -cr '.[].name')
     do
         echo "Updating pipeline: $pipeline"
         calyptia update pipeline "$pipeline" --image "$NEW_IMAGE"
+        img=$(calyptia get pipeline "$pipeline" -o json | jq -cr '.image')
+        echo "Updated pipeline image to $img"
+        sleep 2      
     done
 done
