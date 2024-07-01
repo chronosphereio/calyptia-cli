@@ -1,11 +1,10 @@
+// Package k8s provides with an opinionated way to interact with kubernetes resources.
 package k8s
 
 import (
 	"context"
-	"encoding/json"
+	"errors"
 	"fmt"
-	"io"
-	"net/http"
 	"os"
 	"strconv"
 	"strings"
@@ -34,7 +33,7 @@ import (
 	k8sclient "sigs.k8s.io/controller-runtime/pkg/client"
 
 	cloud "github.com/calyptia/api/types"
-	"github.com/calyptia/cli/cmd/utils"
+	"github.com/calyptia/cli/coreversions"
 )
 
 type objectType string
@@ -49,8 +48,8 @@ const (
 	serviceAccountObjectType      objectType = "service-account"
 	coreTLSVerifyEnvVar           string     = "CORE_TLS_VERIFY"
 	syncTLSVerifyEnvVar           string     = "NO_TLS_VERIFY"
-	syncHttpProxy                 string     = "HTTP_PROXY"
-	syncHttpsProxy                string     = "HTTPS_PROXY"
+	syncHTTPProxy                 string     = "HTTP_PROXY"
+	syncHTTPSProxy                string     = "HTTPS_PROXY"
 	metrics                       string     = "METRICS"
 	syncNoProxy                   string     = "NO_PROXY"
 	syncCloudProxy                string     = "CLOUD_PROXY"
@@ -524,21 +523,21 @@ func (client *Client) UpdateSyncDeploymentByLabel(ctx context.Context, label str
 
 	for i, container := range deployment.Spec.Template.Spec.Containers {
 		if strings.Contains(container.Name, "to-cloud") {
-			deployment.Spec.Template.Spec.Containers[i].Image = fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorToCloudDockerImage, params.Image)
+			deployment.Spec.Template.Spec.Containers[i].Image = fmt.Sprintf("%s:%s", coreversions.DefaultCoreOperatorToCloudDockerImage, params.Image)
 			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncTLSVerifyEnvVar, strconv.FormatBool(!params.NoTLSVerify))
 			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncCloudProxy, params.CloudProxy)
 			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncNoProxy, params.NoProxy)
-			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncHttpProxy, params.HttpProxy)
-			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncHttpsProxy, params.HttpsProxy)
+			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncHTTPProxy, params.HTTPProxy)
+			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncHTTPSProxy, params.HTTPSProxy)
 			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, metrics, strconv.FormatBool(params.Metrics))
 		}
 		if strings.Contains(container.Name, "from-cloud") {
-			deployment.Spec.Template.Spec.Containers[i].Image = fmt.Sprintf("%s:%s", utils.DefaultCoreOperatorFromCloudDockerImage, params.Image)
+			deployment.Spec.Template.Spec.Containers[i].Image = fmt.Sprintf("%s:%s", coreversions.DefaultCoreOperatorFromCloudDockerImage, params.Image)
 			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncTLSVerifyEnvVar, strconv.FormatBool(!params.NoTLSVerify))
 			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncCloudProxy, params.CloudProxy)
 			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncNoProxy, params.NoProxy)
-			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncHttpProxy, params.HttpProxy)
-			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncHttpsProxy, params.HttpsProxy)
+			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncHTTPProxy, params.HTTPProxy)
+			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, syncHTTPSProxy, params.HTTPSProxy)
 			deployment.Spec.Template.Spec.Containers[i].Env = client.updateEnvVars(container.Env, metrics, strconv.FormatBool(params.Metrics))
 			if params.SkipServiceCreation {
 				deployment.Spec.Template.Spec.Containers[i].Env = append(deployment.Spec.Template.Spec.Containers[i].Env, corev1.EnvVar{
@@ -569,7 +568,7 @@ func (client *Client) UpdateSyncDeploymentByLabel(ctx context.Context, label str
 }
 
 func (client *Client) rolloutDeployment(ctx context.Context, namespace, deployment string) error {
-	data := fmt.Sprintf(`{"spec": {"template": {"metadata": {"annotations": {"kubectl.kubernetes.io/restartedAt": "%s"}}}}}`, time.Now().Format("20060102150405"))
+	data := fmt.Sprintf(`{"spec": {"template": {"metadata": {"annotations": {"kubectl.kubernetes.io/restartedAt": %q}}}}}`, time.Now().Format("20060102150405"))
 	_, err := client.AppsV1().Deployments(namespace).Patch(ctx, deployment, types.StrategicMergePatchType, []byte(data), metav1.PatchOptions{})
 
 	return err
@@ -596,7 +595,7 @@ func (client *Client) updateEnvVars(envVars []corev1.EnvVar, key, value string) 
 	return envVars
 }
 
-func (client *Client) UpdateOperatorDeploymentByLabel(ctx context.Context, label string, newImage string, verbose bool, waitTimeout time.Duration) error {
+func (client *Client) UpdateOperatorDeploymentByLabel(ctx context.Context, label, newImage string, verbose bool, waitTimeout time.Duration) error {
 	deploymentList, err := client.FindDeploymentByLabel(ctx, label)
 	if err != nil {
 		return err
@@ -649,8 +648,8 @@ type DeployCoreOperatorSync struct {
 	SkipServiceCreation bool
 	NoTLSVerify         bool
 	CloudProxy          string
-	HttpProxy           string
-	HttpsProxy          string
+	HTTPProxy           string
+	HTTPSProxy          string
 	NoProxy             string
 	CoreInstance        cloud.CreatedCoreInstance
 	ServiceAccount      string
@@ -665,8 +664,8 @@ type UpdateCoreOperatorSync struct {
 	SkipServiceCreation bool
 	NoTLSVerify         bool
 	CloudProxy          string
-	HttpProxy           string
-	HttpsProxy          string
+	HTTPProxy           string
+	HTTPSProxy          string
 	NoProxy             string
 	CoreInstance        cloud.CreatedCoreInstance
 	ServiceAccount      string
@@ -723,11 +722,11 @@ func (client *Client) DeployCoreOperatorSync(ctx context.Context, params DeployC
 		},
 		{
 			Name:  "HTTP_PROXY",
-			Value: params.HttpProxy,
+			Value: params.HTTPProxy,
 		},
 		{
 			Name:  "HTTPS_PROXY",
-			Value: params.HttpsProxy,
+			Value: params.HTTPSProxy,
 		},
 		{
 			Name:  "ANNOTATIONS",
@@ -832,85 +831,13 @@ func (client *Client) DeleteResources(ctx context.Context, resources []ResourceR
 	}
 
 	if len(errs) > 0 {
-		errStr := ""
+		var err error
 		for _, e := range errs {
-			errStr += e.Error()
+			err = errors.Join(err, e)
 		}
-		return nil, fmt.Errorf(errStr)
+		return nil, err
 	}
 	return deletedResources, nil
-}
-
-var GetOperatorManifest = func(version string) ([]byte, error) {
-	url, err := getOperatorDownloadURL(version)
-	if err != nil {
-		return nil, err
-	}
-	response, err := http.Get(url)
-	if err != nil {
-		return nil, fmt.Errorf("error downloading operator manifest: %w", err)
-	}
-	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
-			fmt.Println("Error closing response body:", err)
-		}
-	}(response.Body)
-
-	manifestBytes, err := io.ReadAll(response.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	return manifestBytes, nil
-}
-
-func getOperatorDownloadURL(version string) (string, error) {
-	const operatorReleases = "https://api.github.com/repos/chronosphereio/calyptia-core-operator-releases/releases"
-	type Release struct {
-		TagName string `json:"tag_name"`
-		Assets  []struct {
-			BrowserDownloadUrl string `json:"browser_download_url"`
-		} `json:"assets"`
-	}
-
-	resp, err := http.Get(operatorReleases)
-	if err != nil {
-		return "", fmt.Errorf("failed to get releases: %w", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("unexpected HTTP status: %d", resp.StatusCode)
-	}
-
-	var releases []Release
-	err = json.NewDecoder(resp.Body).Decode(&releases)
-	if err != nil {
-		return "", fmt.Errorf("failed to decode releases: %w", err)
-	}
-
-	if len(releases) == 0 {
-		return "", fmt.Errorf("no releases found")
-	}
-
-	if version == "" {
-		if len(releases[0].Assets) == 0 {
-			return "", fmt.Errorf("no assets found for the latest release")
-		}
-		return releases[0].Assets[0].BrowserDownloadUrl, nil
-	}
-
-	for _, release := range releases {
-		if release.TagName == version {
-			if len(release.Assets) == 0 {
-				return "", fmt.Errorf("no assets found for the version: %s", version)
-			}
-			return release.Assets[0].BrowserDownloadUrl, nil
-		}
-	}
-
-	return "", fmt.Errorf("version %s not found", version)
 }
 
 func GetCurrentContextNamespace() (string, error) {
@@ -926,11 +853,11 @@ func GetCurrentContextNamespace() (string, error) {
 	if currentContext == "" {
 		return "", ErrNoContext
 	}
-	context := config.Contexts[currentContext]
-	if context == nil {
+	foundContext, ok := config.Contexts[currentContext]
+	if !ok || foundContext == nil {
 		return "", ErrNoContext
 	}
-	return context.Namespace, nil
+	return foundContext.Namespace, nil
 }
 
 func (client *Client) WaitReady(ctx context.Context, namespace, name string, verbose bool, waitTimeout time.Duration) error {
@@ -1156,22 +1083,31 @@ func (client *Client) IsOperatorInstalled(ctx context.Context) (bool, error) {
 	}
 
 	gkv := schema.GroupVersionResource{Group: "core.calyptia.com", Version: "v1", Resource: "pipelines"}
-	_, err = dynClient.Resource(gkv).List(context.TODO(), metav1.ListOptions{})
+	_, err = dynClient.Resource(gkv).List(ctx, metav1.ListOptions{})
 	if err == nil {
 		operatorIncomplete.Errors = append(operatorIncomplete.Errors, fmt.Errorf("CustomResourceDefinition Pipeline installed"))
 	}
 
 	scheme := runtime.NewScheme()
-	appsv1.AddToScheme(scheme)
-	rbacv1.AddToScheme(scheme)
-	corev1.AddToScheme(scheme)
+	if err := appsv1.AddToScheme(scheme); err != nil {
+		return false, err
+	}
+
+	if err := rbacv1.AddToScheme(scheme); err != nil {
+		return false, err
+	}
+
+	if err := corev1.AddToScheme(scheme); err != nil {
+		return false, err
+	}
+
 	k8sc, err := k8sclient.New(client.Config, k8sclient.Options{Scheme: scheme})
 	if err != nil {
-		panic(err)
+		return false, err
 	}
 	deploymentList := &appsv1.DeploymentList{}
-	if err := k8sc.List(context.Background(), deploymentList, &k8sclient.ListOptions{}); err != nil {
-		panic(err)
+	if err := k8sc.List(ctx, deploymentList, &k8sclient.ListOptions{}); err != nil {
+		return false, err
 	}
 	for _, i := range deploymentList.Items {
 		if i.Name == operatorDeploymentName {
@@ -1180,8 +1116,8 @@ func (client *Client) IsOperatorInstalled(ctx context.Context) (bool, error) {
 	}
 
 	clusterRoles := &rbacv1.ClusterRoleList{}
-	if err := k8sc.List(context.Background(), clusterRoles, &k8sclient.ListOptions{}); err != nil {
-		panic(err)
+	if err := k8sc.List(ctx, clusterRoles, &k8sclient.ListOptions{}); err != nil {
+		return false, err
 	}
 	for _, i := range clusterRoles.Items {
 		if i.Name == "calyptia-core-manager-role" {
@@ -1199,7 +1135,7 @@ func (client *Client) IsOperatorInstalled(ctx context.Context) (bool, error) {
 	}
 
 	crbList := &rbacv1.ClusterRoleBindingList{}
-	if err := k8sc.List(context.Background(), crbList, &k8sclient.ListOptions{}); err != nil {
+	if err := k8sc.List(ctx, crbList, &k8sclient.ListOptions{}); err != nil {
 		panic(err)
 	}
 
@@ -1213,8 +1149,8 @@ func (client *Client) IsOperatorInstalled(ctx context.Context) (bool, error) {
 	}
 
 	saList := &corev1.ServiceAccountList{}
-	if err := k8sc.List(context.Background(), saList, &k8sclient.ListOptions{}); err != nil {
-		panic(err)
+	if err := k8sc.List(ctx, saList, &k8sclient.ListOptions{}); err != nil {
+		return false, err
 	}
 
 	for _, i := range saList.Items {
@@ -1226,6 +1162,7 @@ func (client *Client) IsOperatorInstalled(ctx context.Context) (bool, error) {
 	if len(operatorIncomplete.Errors) > 0 {
 		return true, &operatorIncomplete
 	}
+
 	return false, nil
 }
 
