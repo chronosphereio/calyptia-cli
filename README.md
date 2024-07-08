@@ -1,18 +1,9 @@
 # Calyptia Cloud CLI
 
-[![CI](https://github.com/calyptia/cli/actions/workflows/ci.yml/badge.svg)](https://github.com/calyptia/cloud-cli/actions/workflows/ci.yml)
-
 This CLI interacts with the [Calyptia Cloud](https://cloud.calyptia.com) service
 using the [API Client](https://github.com/calyptia/api).
 Further documentation on how to use the CLI
 can be found on [Calyptia Docs](https://docs.calyptia.com).
-
-## Build instructions
-
-```markdown
-go mod download
-go build
-```
 
 ## Install
 
@@ -25,16 +16,6 @@ Alternatively, you can use `Brew`:
 brew tap calyptia/tap
 brew install calyptia
 ```
-
-You can even install latest from `main` branch using `Go`:
-
----
-
-```bash
-go install github.com/calyptia/cli@latest
-```
-
----
 
 ## Run
 
