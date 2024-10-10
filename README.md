@@ -1,14 +1,14 @@
 # Calyptia Cloud CLI
 
-This CLI interacts with the [Calyptia Cloud](https://cloud.calyptia.com) service
-using the [API Client](https://github.com/calyptia/api).
+This CLI interacts with the [Calyptia Cloud](https://core.calyptia.com) service
+using the [API Client](https://github.com/chronosphereio/calyptia-api).
 Further documentation on how to use the CLI
-can be found on [Calyptia Docs](https://docs.calyptia.com).
+can be found on [Calyptia Docs](https://docs.chronosphere.io/pipelines).
 
 ## Install
 
 You can get the latest release artifacts for the major operating systems
-at the [Releases](https://github.com/calyptia/cloud-cli/releases) page.
+at the [Releases](https://github.com/chronosphereio/calyptia-cli/releases) page.
 
 Alternatively, you can use `Brew`:
 
@@ -22,7 +22,7 @@ brew install calyptia
 The first command you would want to run is `config set_token` otherwise
 you will have to always pass `--token` around.
 
-Get a token (API key) from [cloud.calyptia.com](https://cloud.calyptia.com).
+Get a token (API key) from [core.calyptia.com](https://core.calyptia.com).
 
 ---
 
