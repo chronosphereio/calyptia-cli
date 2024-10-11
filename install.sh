@@ -2,9 +2,11 @@
 set -ef
 
 # Use CLI_INSTALL_DIR or first parameter to specify where to install the Calyptia CLI, otherwise it will default to /usr/local/bin.
-# Use cli_VERSION to specify the version to install, otherwise it will default to latest.
+# Use CLI_VERSION to specify the version to install, otherwise it will default to latest.
 # Use CLI_DOWNLOAD_OUTPUT_DIR to specify another directory other than the current one ($PWD) to download artefacts.
-# Use cli_ARTEFACT_PREFIX to override the name of the artefact used when downloading.
+# Use CLI_ARTEFACT_PREFIX to override the name of the artefact used when downloading.
+# Use CLI_DOWNLOAD_REPO to override the source repository to take the artefacts from.
+# Use CLOUD_API_URL to override the default Cloud API instance to use, this will unset the token as well as a precaution.
 
 if [ -n "${DEBUG}" ]; then
   set -x
@@ -24,6 +26,21 @@ if [  "$_download_output_dir" != "$PWD" ]; then
 fi
 if [ -z "$_download_output_dir" ]; then
   _download_output_dir="."
+fi
+
+_download_repo=${CLI_DOWNLOAD_REPO:-chronosphereio/calyptia-cli}
+
+CLOUD_API_URL=${CLOUD_API_URL:-}
+
+# Cope with legacy names
+CLI_VERSION=${CLI_VERSION:-}
+if [ -n "${cli_VERSION:-}" ]; then
+  CLI_VERSION=$cli_VERSION
+fi
+
+CLI_ARTEFACT_PREFIX=${CLI_ARTEFACT_PREFIX:-calyptia-cli}
+if [ -n "${cli_ARTEFACT_PREFIX:-}" ]; then
+  CLI_ARTEFACT_PREFIX=$cli_ARTEFACT_PREFIX
 fi
 
 if ! command -v curl > /dev/null 2>&1; then
@@ -73,6 +90,14 @@ _detect_os() {
   esac
 }
 
+_curl_auth() {
+  if [ -n "$GITHUB_TOKEN" ]; then
+    curl --header "Authorization: Bearer ${GITHUB_TOKEN}" "$@"
+  else
+    curl "$@"
+  fi
+}
+
 _binary_name="calyptia"
 if [ "$(_detect_os)" = "windows" ]; then
   _binary_name="calyptia.exe"
@@ -83,8 +108,8 @@ _download_binary() {
   _download_arch="$(_detect_arch)"
   _download_os="$(_detect_os)"
   # shellcheck disable=SC2154
-  _download_version="$cli_VERSION"
-  _download_artefact_prefix="${cli_ARTEFACT_PREFIX:-calyptia-cli}"
+  _download_version="$CLI_VERSION"
+  _download_artefact_prefix="$CLI_ARTEFACT_PREFIX"
 
   # releases should be prefixed with `v`
   case "$_download_version" in
@@ -92,15 +117,11 @@ _download_binary() {
     "") ;;
     "v"*) ;;
     *)
-      _download_version="v$cli_VERSION"
+      _download_version="v$CLI_VERSION"
   esac
 
   if [ -z "$_download_version" ] || [ "$_download_version" = "latest" ]; then
-    if [ -n "$GITHUB_TOKEN" ]; then
-      _download_version=$(curl --header "Authorization: Bearer $GITHUB_TOKEN" -sSfL https://api.github.com/repos/chronosphereio/calyptia-cli/releases/latest 2> /dev/null | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
-    else
-      _download_version=$(curl -sSfL https://api.github.com/repos/chronosphereio/calyptia-cli/releases/latest 2> /dev/null | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
-    fi
+    _download_version=$(_curl_auth -sSfL "https://api.github.com/repos/${_download_repo}/releases/latest" 2> /dev/null | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
     if [ -z "$_download_version" ]; then
       echo "Unable to retrieve latest CLI version"
       exit 1
@@ -108,20 +129,20 @@ _download_binary() {
   fi
 
   _download_trailedVersion="$(echo "$_download_version" | tr -d v)"
-  _download_url_prefix="https://github.com/chronosphereio/calyptia-cli/releases/download/${_download_version}/${_download_artefact_prefix}_"
+  _download_url_prefix="https://github.com/${_download_repo}/releases/download/${_download_version}/${_download_artefact_prefix}_"
   rm -f "$_download_output_dir"/cli.tar.gz
 
   # macOS does a universal binary in more recent builds so try that as well as the per-arch option
   _url=${_download_url_prefix}${_download_trailedVersion}_${_download_os}_${_download_arch}.tar.gz
   if [ "$_download_os" = "darwin" ]; then
-    if ! curl --output /dev/null --silent --head --fail "$_url"; then
+    if ! _curl_auth --output /dev/null --silent --head --fail "$_url"; then
       _url="${_download_url_prefix}${_download_trailedVersion}_${_download_os}_all.tar.gz"
     fi
   fi
 
   # If we do not have it yet then use the arch version
   echo "Downloading from URL:  $_url"
-  curl  --progress-bar --output "$_download_output_dir"/cli.tar.gz -SLf "$_url"
+  _curl_auth --progress-bar --output "$_download_output_dir"/cli.tar.gz -SLf "$_url"
   tar -C "$_download_output_dir" -xzf cli.tar.gz "$_binary_name"
   rm -f "$_download_output_dir"/cli.tar.gz
 }
@@ -135,3 +156,12 @@ else
   sudo mv "${_download_output_dir}/$_binary_name" "${install_dir}/$_binary_name"
 fi
 echo "Calyptia CLI installed to ${install_dir}/$_binary_name"
+
+if [ -n "$CLOUD_API_URL" ]; then
+  if [ "$CLOUD_API_URL" != "$("${install_dir}/$_binary_name" current_url)" ]; then
+    "${install_dir}/$_binary_name" config unset_token
+    echo "Unset any previous token as a precaution"
+  fi
+  "${install_dir}/$_binary_name" config set_url "$CLOUD_API_URL"
+  echo "Using URL: $CLOUD_API_URL"
+fi
