@@ -143,7 +143,7 @@ _download_binary() {
   # If we do not have it yet then use the arch version
   echo "Downloading from URL:  $_url"
   _curl_auth --progress-bar --output "$_download_output_dir"/cli.tar.gz -SLf "$_url"
-  tar -C "$_download_output_dir" -xzf "$_download_output_dir"/cli.tar.gz "$_binary_name"
+  tar -C "$_download_output_dir" -xzf cli.tar.gz "$_binary_name"
   rm -f "$_download_output_dir"/cli.tar.gz
 }
 
